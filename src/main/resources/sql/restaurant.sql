@@ -1,0 +1,2 @@
+INSERT INTO restaurant (address, name) VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
+INSERT INTO restaurant (address, name) VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
