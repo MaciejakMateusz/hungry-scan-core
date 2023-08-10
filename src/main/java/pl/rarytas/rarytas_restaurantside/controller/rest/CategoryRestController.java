@@ -1,5 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.controller.rest;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.repository.CategoryRepository;
@@ -32,5 +35,12 @@ public class CategoryRestController {
     @GetMapping("/{id}")
     public Category getCategory(@PathVariable Integer id) {
         return categoryRepository.findById(id).orElseThrow();
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> options() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Allow", "GET, OPTIONS");
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

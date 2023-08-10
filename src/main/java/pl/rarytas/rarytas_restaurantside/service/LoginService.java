@@ -15,7 +15,6 @@ public class LoginService {
         this.userRepository = userRepository;
     }
 
-
     public boolean isAuthenticated(User user) {
 
         boolean isValidated = false;

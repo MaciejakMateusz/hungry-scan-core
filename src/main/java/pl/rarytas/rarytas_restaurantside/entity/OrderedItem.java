@@ -1,5 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,5 +28,8 @@ public class OrderedItem implements Serializable {
     private Order order;
 
     @Column(nullable = false)
+    @Min(value = 1, message = "Ilość musi wynosić minimum 1")
+    @NotNull
+    @NotEmpty
     private Integer quantity;
 }

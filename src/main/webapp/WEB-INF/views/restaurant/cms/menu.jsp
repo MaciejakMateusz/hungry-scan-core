@@ -8,6 +8,7 @@
 
 <div>
     <h4>Edycja menu</h4>
+    <a href="${pageContext.request.contextPath}/restaurant"><button>Powrót do widoku głównego</button></a>
     <a href="${pageContext.request.contextPath}/restaurant/cms/items"><button>Zarządzanie daniami</button></a>
     <a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button>Zarządzanie kategoriami</button></a>
 </div>

@@ -46,10 +46,12 @@ public class AuthFilter implements Filter {
             if (userAttributeFound) {
                 chain.doFilter(request, response);
             } else {
+                log.debug("No user session found, redirecting to login page");
                 response.sendRedirect(request.getContextPath() + "/login");
             }
 
         } else {
+            log.debug("No user session found, redirecting to login page");
             response.sendRedirect(request.getContextPath() + "/login");
         }
     }

@@ -21,11 +21,13 @@
         <label for="name"> Nazwa:
             <form:input path="name"/>
         </label>
+        <form:errors path="name" cssClass="validation"/>
     </div>
     <div>
         <label for="description"> Opis(opcjonalnie):
             <form:input path="description"/>
         </label>
+        <form:errors path="description" cssClass="validation"/>
     </div>
     <div>
         <button type="submit">Edytuj kategorię</button>

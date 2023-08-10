@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 
 @Slf4j
@@ -31,14 +30,14 @@ public class AdminFilter implements Filter {
 
         if (session != null) {
             User user = (User) session.getAttribute("user");
-            boolean userIsAdmin = user.isAdmin();
-
-            if (userIsAdmin) {
+            if (user.isAdmin()) {
                 chain.doFilter(request, response);
             } else {
+                log.error(user.getEmail() + " tried to access restaurant CMS - access denied");
                 response.sendRedirect(request.getContextPath() + "/restaurant");
             }
         } else {
+            log.debug("No user session found, redirecting to login page");
             response.sendRedirect(request.getContextPath() + "/login");
         }
     }

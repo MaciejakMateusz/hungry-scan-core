@@ -3,11 +3,11 @@ package pl.rarytas.rarytas_restaurantside.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
+import pl.rarytas.rarytas_restaurantside.annotation.Email;
 import pl.rarytas.rarytas_restaurantside.annotation.Password;
 
 import java.time.LocalDateTime;
@@ -25,8 +25,7 @@ public class User {
     @Column(length = 100, nullable = false, unique = true)
     @NotNull
     @NotEmpty
-    @Pattern(regexp = "^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.([a-zA-Z]{2,})$",
-            message = "Niepoprawny format adresu email")
+    @Email
     private String email;
 
     @Column(length = 50, nullable = false)

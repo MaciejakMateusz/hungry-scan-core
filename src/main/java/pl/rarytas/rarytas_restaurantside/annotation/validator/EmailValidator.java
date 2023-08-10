@@ -3,20 +3,20 @@ package pl.rarytas.rarytas_restaurantside.annotation.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
-import pl.rarytas.rarytas_restaurantside.annotation.Password;
+import pl.rarytas.rarytas_restaurantside.annotation.Email;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class PasswordValidator implements ConstraintValidator<Password, String> {
+public class EmailValidator implements ConstraintValidator<Email, String> {
 
-    private static final Pattern PASSWORD_REGEX =
-            Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{5,60}$");
+    private static final Pattern EMAIL_REGEX =
+            Pattern.compile("^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.([a-zA-Z]{2,})$");
 
     @Override
-    public void initialize(Password constraintAnnotation) {
-        log.info("Initializing @Password annotation - provided password does not match the regex");
+    public void initialize(Email constraintAnnotation) {
+        log.info("Initializing @Email annotation - provided email does not match the regex");
     }
 
     @Override
@@ -24,7 +24,7 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
         if (value == null || value.isEmpty()) {
             return true;
         }
-        Matcher matcher = PASSWORD_REGEX.matcher(value);
+        Matcher matcher = EMAIL_REGEX.matcher(value);
         return matcher.matches();
     }
 }

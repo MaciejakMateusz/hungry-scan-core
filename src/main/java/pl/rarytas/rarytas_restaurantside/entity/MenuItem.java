@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,8 @@ public class MenuItem {
     private Integer id;
 
     @Column(nullable = false, length = 200)
+    @NotEmpty
+    @NotNull
     private String name;
 
     @ManyToOne
@@ -41,6 +46,9 @@ public class MenuItem {
     private String ingredients;
 
     @Column(nullable = false)
+    @Min(value = 1, message = "Cena musi być większa od 1zł")
+    @NotNull
+    @NotEmpty
     private BigDecimal price;
 
     @Column(name = "is_available", nullable = false)

@@ -21,11 +21,13 @@
         <label for="name"> Nazwa:
             <form:input path="name"/>
         </label>
+        <form:errors path="name" cssClass="validation"/>
     </div>
     <div>
         <label for="description"> Opis:
             <form:input path="description"/>
         </label>
+        <form:errors path="description" cssClass="validation"/>
     </div>
     <div>
         <label for="ingredients"> Składniki:
@@ -36,6 +38,7 @@
         <label for="price"> Cena:
             <form:input path="price"/>
         </label>
+        <form:errors path="price" cssClass="validation"/>
     </div>
     <div>
         <label for="category"> Kategoria:
