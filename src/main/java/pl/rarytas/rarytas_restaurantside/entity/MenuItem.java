@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,8 +31,7 @@ public class MenuItem {
     private Integer id;
 
     @Column(nullable = false, length = 200)
-    @NotEmpty
-    @NotNull
+    @NotBlank
     private String name;
 
     @ManyToOne
@@ -40,6 +40,7 @@ public class MenuItem {
     private Category category;
 
     @Column(length = 500)
+    @SizeIfNotEmpty
     private String description;
 
     @Column(length = 500)
@@ -48,7 +49,6 @@ public class MenuItem {
     @Column(nullable = false)
     @Min(value = 1, message = "Cena musi być większa od 1zł")
     @NotNull
-    @NotEmpty
     private BigDecimal price;
 
     @Column(name = "is_available", nullable = false)

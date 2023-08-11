@@ -1,11 +1,9 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import jakarta.persistence.*;
 
 @Getter
 @Setter
@@ -18,8 +16,7 @@ public class Restaurant {
     private Integer id;
 
     @Column(length = 100, nullable = false)
-    @NotNull
-    @NotEmpty
+    @NotBlank
     private String name;
 
     @Column(length = 300)

@@ -33,7 +33,7 @@ public class AdminFilter implements Filter {
             if (user.isAdmin()) {
                 chain.doFilter(request, response);
             } else {
-                log.error(user.getEmail() + " tried to access restaurant CMS - access denied");
+                log.warn(user.getEmail() + " tried to access restaurant CMS - access denied");
                 response.sendRedirect(request.getContextPath() + "/restaurant");
             }
         } else {

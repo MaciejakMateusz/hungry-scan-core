@@ -1,8 +1,10 @@
-package pl.rarytas.rarytas_restaurantside.controller.cms;
+package pl.rarytas.rarytas_restaurantside.controller.restaurant.cms;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
@@ -42,8 +44,12 @@ public class MenuItemController {
     }
 
     @PostMapping("/add")
-    public String addItem(@ModelAttribute MenuItem menuItem,
+    public String addItem(@Valid MenuItem menuItem,
+                          BindingResult br,
                           @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+        if(br.hasErrors()) {
+            return "restaurant/cms/items/add";
+        }
         menuItemService.save(menuItem, imageFile);
         return "redirect:/restaurant/cms/items";
     }
@@ -56,8 +62,12 @@ public class MenuItemController {
     }
 
     @PostMapping("/update")
-    public String updateItem(@ModelAttribute MenuItem menuItem,
+    public String updateItem(@Valid MenuItem menuItem,
+                             BindingResult br,
                              @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+        if(br.hasErrors()) {
+            return "restaurant/cms/items/edit";
+        }
         menuItemService.save(menuItem, imageFile);
         return "redirect:/restaurant/cms/items";
     }

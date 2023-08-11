@@ -1,17 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
-<head>
-    <title>Rarytas CMS</title>
-</head>
+<!-- Header -->
+<%@ include file="/WEB-INF/views/header.jsp" %>
+<!-- End of Header -->
 <body>
-<h2>Rarytas CMS</h2>
+<h1>Rarytas CMS</h1>
 
 <div>
-    <h4>Edycja menu</h4>
-    <a href="${pageContext.request.contextPath}/restaurant"><button>Powrót do widoku głównego</button></a>
+    <a href="${pageContext.request.contextPath}/restaurant"><button>Powrót</button></a>
     <a href="${pageContext.request.contextPath}/restaurant/cms/items"><button>Zarządzanie daniami</button></a>
     <a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button>Zarządzanie kategoriami</button></a>
 </div>
-
+<div style="padding: 2rem"></div>
+<!-- Footer -->
+<%@ include file="/WEB-INF/views/footer.jsp" %>
+<!-- End of Footer -->
 </body>
 </html>

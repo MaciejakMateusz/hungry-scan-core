@@ -66,6 +66,10 @@
 
 </div>
 
+<!-- Footer -->
+<%@ include file="footer.jsp" %>
+<!-- End of Footer -->
+
 </body>
 
 </html>

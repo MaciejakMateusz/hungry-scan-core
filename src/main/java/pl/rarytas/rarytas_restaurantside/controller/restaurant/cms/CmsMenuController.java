@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.cms;
+package pl.rarytas.rarytas_restaurantside.controller.restaurant.cms;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

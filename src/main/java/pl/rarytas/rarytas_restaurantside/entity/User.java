@@ -1,8 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,25 +22,21 @@ public class User {
     private Integer id;
 
     @Column(length = 100, nullable = false, unique = true)
-    @NotNull
-    @NotEmpty
+    @NotBlank
     @Email
     private String email;
 
     @Column(length = 50, nullable = false)
-    @NotNull
-    @NotEmpty
+    @NotBlank
     private String firstName;
 
     @Column(length = 75, nullable = false)
-    @NotNull
-    @NotEmpty
+    @NotBlank
     private String lastName;
 
     @Column(nullable = false)
+    @NotBlank
     @Password
-    @NotNull
-    @NotEmpty
     private String password;
 
     @Transient

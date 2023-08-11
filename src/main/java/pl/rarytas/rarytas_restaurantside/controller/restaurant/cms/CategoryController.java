@@ -1,9 +1,11 @@
-package pl.rarytas.rarytas_restaurantside.controller.cms;
+package pl.rarytas.rarytas_restaurantside.controller.restaurant.cms;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.repository.CategoryRepository;
@@ -33,7 +35,10 @@ public class CategoryController {
     }
 
     @PostMapping("/add")
-    public String add(@ModelAttribute Category category) {
+    public String add(@Valid Category category, BindingResult br) {
+        if(br.hasErrors()) {
+            return "restaurant/cms/categories/add";
+        }
         categoryRepository.save(category);
         return "redirect:/restaurant/cms/categories";
     }
@@ -47,7 +52,10 @@ public class CategoryController {
 
     @Modifying
     @PostMapping("/update")
-    public String updateItem(@ModelAttribute Category category) {
+    public String updateItem(@Valid Category category, BindingResult br) {
+        if(br.hasErrors()) {
+            return "restaurant/cms/categories/edit";
+        }
         categoryRepository.save(category);
         return "redirect:/restaurant/cms/categories";
     }

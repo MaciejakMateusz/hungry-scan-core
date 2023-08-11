@@ -1,12 +1,11 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Getter
@@ -20,7 +19,7 @@ public class OrderedItem implements Serializable {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "ordered_item_id", referencedColumnName = "id")
+    @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
     private MenuItem menuItem;
 
     @ManyToOne
@@ -30,6 +29,5 @@ public class OrderedItem implements Serializable {
     @Column(nullable = false)
     @Min(value = 1, message = "Ilość musi wynosić minimum 1")
     @NotNull
-    @NotEmpty
     private Integer quantity;
 }

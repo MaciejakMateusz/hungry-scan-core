@@ -1,12 +1,12 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
+import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -20,16 +20,27 @@ public class Category {
     private Integer id;
 
     @Column(length = 100, nullable = false)
-    @NotEmpty
-    @NotNull
+    @NotBlank
     private String name;
 
-    @Column
-    @Length(min = 10, message = "Opis kategorii musi być dłuższy niż 5 znaków")
+    @SizeIfNotEmpty
     private String description;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
     private List<MenuItem> menuItems;
+
+    private LocalDateTime created;
+    private LocalDateTime updated;
+
+    @PrePersist
+    private void prePersist() {
+        this.created = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        this.updated = LocalDateTime.now();
+    }
 
     @Override
     public String toString() {

@@ -39,6 +39,11 @@ public class MainViewController {
         return "restaurant/main-view";
     }
 
+    @GetMapping("/menu")
+    public String menu() {
+        return "/restaurant/menu";
+    }
+
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.removeAttribute("user");

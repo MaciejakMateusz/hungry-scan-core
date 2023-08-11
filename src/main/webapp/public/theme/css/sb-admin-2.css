@@ -11850,3 +11850,10 @@ button-list:focus {
 #sideMenu {
     z-index: 9999;
 }
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding-block: 0.5rem;
+}

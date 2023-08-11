@@ -17,6 +17,12 @@ public class MenuItemService {
     }
 
     public void save(MenuItem menuItem, MultipartFile file) throws IOException {
+
+        if(menuItem.getId() == null) {
+            menuItemRepository.save(menuItem);
+            return;
+        }
+
         if(file.isEmpty()) {
             MenuItem existingItem = menuItemRepository.findById(menuItem.getId()).orElseThrow();
             menuItem.setImage(existingItem.getImage());
