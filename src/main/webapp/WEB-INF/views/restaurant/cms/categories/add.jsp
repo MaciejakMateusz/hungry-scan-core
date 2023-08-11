@@ -21,7 +21,7 @@
     </div>
     <div>
         <label for="description"> Opis(opcjonalnie):
-            <form:input path="description"/>
+            <form:textarea path="description"/>
         </label>
         <form:errors path="description" cssClass="validation"/>
     </div>

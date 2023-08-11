@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 
 import java.util.List;
@@ -32,6 +33,17 @@ public class OrderRestController {
 
     @PostMapping
     public void saveOrder(@RequestBody Order order) {
+        for (OrderedItem orderedItem : order.getOrderedItems()) {
+            orderedItem.setOrder(order);
+        }
+        orderRepository.save(order);
+    }
+
+    @PutMapping
+    public void updateOrder(@RequestBody Order order) {
+        for (OrderedItem orderedItem : order.getOrderedItems()) {
+            orderedItem.setOrder(order);
+        }
         orderRepository.save(order);
     }
 
