@@ -52,11 +52,11 @@
         </label>
     </div>
     <div>
-        <button type="submit">Dodaj danie</button>
+        <button type="submit" class="btn-primary">Dodaj danie</button>
     </div>
 </form:form>
 
-<a href="${pageContext.request.contextPath}/restaurant/cms/items"><button>Powrót</button></a>
+<a href="${pageContext.request.contextPath}/restaurant/cms/items"><button class="btn-primary">Powrót</button></a>
 <div style="padding: 2rem"></div>
 <!-- Footer -->
 <%@ include file="/WEB-INF/views/footer.jsp" %>

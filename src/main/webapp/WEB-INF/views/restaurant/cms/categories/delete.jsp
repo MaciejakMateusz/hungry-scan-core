@@ -23,9 +23,9 @@
             modelAttribute="category"
             cssStyle="display: inline-block">
         <form:hidden path="id"/>
-        <button>Usuń tą kategorię</button>
+        <button class="btn-danger">Usuń tą kategorię</button>
     </form:form>
-    <a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button>Powrót</button></a>
+    <a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button class="btn-primary">Powrót</button></a>
 </div>
 <div style="padding: 2rem"></div>
 <!-- Footer -->

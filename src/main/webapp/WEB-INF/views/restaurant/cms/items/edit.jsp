@@ -9,6 +9,12 @@
 
 <h2>Edytuj danie</h2>
 
+<div style="padding-block: 1rem;">
+    <a href="${pageContext.request.contextPath}/restaurant/cms/items">
+        <button class="btn-primary">Powrót</button>
+    </a>
+</div>
+
 <form:form method="POST"
            action="/restaurant/cms/items/update"
            modelAttribute="menuItem"
@@ -58,13 +64,10 @@
         </label>
     </div>
     <div>
-        <button type="submit">Edytuj danie</button>
+        <button type="submit" class="btn-primary">Edytuj danie</button>
     </div>
 </form:form>
 
-<a href="${pageContext.request.contextPath}/restaurant/cms/items">
-    <button>Powrót</button>
-</a>
 <div style="padding: 2rem"></div>
 <!-- Footer -->
 <%@ include file="/WEB-INF/views/footer.jsp" %>

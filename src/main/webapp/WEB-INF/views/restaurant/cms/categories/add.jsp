@@ -26,11 +26,11 @@
         <form:errors path="description" cssClass="validation"/>
     </div>
     <div>
-        <button type="submit">Dodaj kategorię</button>
+        <button type="submit" class="btn-primary">Dodaj kategorię</button>
     </div>
 </form:form>
 
-<a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button>Powrót</button></a>
+<a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button class="btn-primary">Powrót</button></a>
 
 <div style="padding: 2rem"></div>
 <!-- Footer -->

@@ -37,9 +37,9 @@
             modelAttribute="menuItem"
             cssStyle="display: inline-block">
         <form:hidden path="id"/>
-        <button>Usuń to danie</button>
+        <button class="btn-danger">Usuń to danie</button>
     </form:form>
-    <a href="${pageContext.request.contextPath}/restaurant/cms/items"><button>Powrót</button></a>
+    <a href="${pageContext.request.contextPath}/restaurant/cms/items"><button class="btn-primary">Powrót</button></a>
 </div>
 <div style="padding: 2rem"></div>
 <!-- Footer -->

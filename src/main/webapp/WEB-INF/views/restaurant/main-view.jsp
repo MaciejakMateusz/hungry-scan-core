@@ -8,32 +8,31 @@
 <body>
 <h1>Główny widok restauracji</h1>
 <c:if test="${user.admin==true}">
-    <div>
+    <div style="display: inline-block">
         <a href="${pageContext.request.contextPath}/restaurant/cms">
-            <button>CMS</button>
+            <button class="btn-primary">CMS</button>
         </a>
     </div>
 </c:if>
 
-<div>
+<div style="display: inline-block">
     <a href="${pageContext.request.contextPath}/restaurant/menu">
-        <button>Menu</button>
+        <button class="btn-primary">Menu</button>
     </a>
 </div>
 
-<div>
+<div style="display: inline-block; position: absolute; right: 1rem; top: 1rem;">
     <a href="${pageContext.request.contextPath}/restaurant/logout">
-        <button>Wyloguj się</button>
+        <button class="btn-secondary">Wyloguj się</button>
     </a>
 </div>
 
-<h3>Stoliki i inne funkcjonalności</h3>
-<h3>Zamówienia:</h3>
+<h3 style="margin-block: 1rem">Zamówienia:</h3>
 <div>
     <c:forEach items="${orders}" var="order">
-        <div class="card bg-white order">
+        <div class="card shadow bg-white order">
             <h3>Identyfikator zamówienia: ${order.id}</h3>
-            <div class="card">
+            <div class="card shadow">
                 <p>Zamówione pozycje:</p>
                 <c:forEach items="${order.orderedItems}" var="orderedItem">
                     <p>ID: ${orderedItem.menuItem.id}</p>

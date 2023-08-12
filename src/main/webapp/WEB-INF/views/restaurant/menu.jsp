@@ -9,32 +9,37 @@
 <body>
 <h1>Restaurant menu</h1>
 
-<a href="${pageContext.request.contextPath}/restaurant"><button>Powrót</button></a>
+<a href="${pageContext.request.contextPath}/restaurant">
+    <button class="btn-primary">Powrót</button>
+</a>
 
-<div>
-    <c:forEach items="${menuItems}" var="menuItem">
-        <p>ID: ${menuItem.id}</p>
-        <p>Nazwa: ${menuItem.name}</p>
-        <p>Opis: ${menuItem.description}</p>
-        <p>Składniki: ${menuItem.ingredients}</p>
-        <p>Kategoria: ${menuItem.category}</p>
-        <p>Cena: ${menuItem.price}zł</p>
-        <c:choose>
-            <c:when test="${menuItem.available==true}">
-                <p>Dostępny: tak</p>
-            </c:when>
-            <c:when test="${menuItem.available==false}">
-                <p>Dostępny: nie</p>
-            </c:when>
-        </c:choose>
+<c:forEach items="${menuItems}" var="menuItem">
+    <div class="card order">
+        <p style="text-align: left">ID: ${menuItem.id}</p>
+        <div class="card bg-gradient-primary shadow order">
+            <h2>${menuItem.name}</h2>
+            <h5>${menuItem.description}</h5>
+        </div>
+        <div style="text-align: left; padding-left: 1rem">
+            <p>Składniki: ${menuItem.ingredients}</p>
+            <p>Kategoria: ${menuItem.category}</p>
+            <p>Cena: ${menuItem.price}zł</p>
+            <c:choose>
+                <c:when test="${menuItem.available==true}">
+                    <p>Dostępny: tak</p>
+                </c:when>
+                <c:when test="${menuItem.available==false}">
+                    <p>Dostępny: nie</p>
+                </c:when>
+            </c:choose>
+        </div>
         <c:if test="${menuItem.image!=null}">
-            <p>Zdjęcie:</p>
-            <div>
+            <div style="text-align: left">
                 <img src="data:image/jpeg;base64,${menuItem.base64Image}" alt="${menuItem.name}"/>
             </div>
         </c:if>
-    </c:forEach>
-</div>
+    </div>
+</c:forEach>
 <div style="padding: 2rem"></div>
 <!-- Footer -->
 <%@ include file="/WEB-INF/views/footer.jsp" %>

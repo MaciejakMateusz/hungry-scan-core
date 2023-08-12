@@ -7,9 +7,9 @@
 <h1>Rarytas CMS</h1>
 
 <div>
-    <a href="${pageContext.request.contextPath}/restaurant"><button>Powrót</button></a>
-    <a href="${pageContext.request.contextPath}/restaurant/cms/items"><button>Zarządzanie daniami</button></a>
-    <a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button>Zarządzanie kategoriami</button></a>
+    <a href="${pageContext.request.contextPath}/restaurant"><button class="btn-primary">Powrót</button></a>
+    <a href="${pageContext.request.contextPath}/restaurant/cms/items"><button class="btn-primary">Zarządzanie daniami</button></a>
+    <a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button class="btn-primary">Zarządzanie kategoriami</button></a>
 </div>
 <div style="padding: 2rem"></div>
 <!-- Footer -->
