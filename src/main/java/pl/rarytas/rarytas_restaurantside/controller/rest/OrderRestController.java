@@ -32,12 +32,12 @@ public class OrderRestController {
 
     @PostMapping
     public void saveOrder(@RequestBody Order order) {
-        orderService.saveOrPatch(order);
+        orderService.save(order);
     }
 
     @PatchMapping
     public void updateOrder(@RequestBody Order order) {
-        orderService.saveOrPatch(order);
+        orderService.patch(order);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

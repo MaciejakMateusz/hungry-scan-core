@@ -10,7 +10,6 @@ import pl.rarytas.rarytas_restaurantside.listener.OrderListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter
@@ -49,14 +48,17 @@ public class Order {
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
-    @Column(name = "is_paid")
+    @Column(name = "is_paid", nullable = false)
     private boolean paid = false;
 
-    @Column(name = "take_away")
-    private boolean forTakeAway;
+    @Column(name = "take_away", nullable = false)
+    private boolean forTakeAway = false;
+
+    @Column(name = "bill_requested", nullable = false)
+    private boolean billRequested = false;
 
     @Column(name = "order_number")
-    private Integer orderNumber = 0;
+    private Integer orderNumber;
 
     public BigDecimal getTotalAmount() {
         BigDecimal sum = BigDecimal.valueOf(0);
@@ -66,15 +68,13 @@ public class Order {
         return sum;
     }
 
-    @PrePersist
-    private void prePersist() {
-        this.orderTime = LocalDateTime.now();
-        orderNumber++;
-    }
+//    public String getOrderTime() {
+//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
+//        return orderTime.format(dtf);
+//    }
 
-    public String getOrderTime() {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
-        return orderTime.format(dtf);
+    public LocalDateTime getDateTime() {
+        return this.orderTime;
     }
 
     @Override

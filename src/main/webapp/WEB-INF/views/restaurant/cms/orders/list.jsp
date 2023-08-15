@@ -18,6 +18,7 @@
         <thead>
         <tr>
             <th>ID</th>
+            <th>Numer zamówienia</th>
             <th>Czas zamówienia</th>
             <th>Zamówione pozycje</th>
             <th>Opłacony</th>
@@ -30,6 +31,7 @@
         <c:forEach items="${orders}" var="order">
             <tr>
                 <td>${order.id}</td>
+                <td>${order.orderNumber}</td>
                 <td>${order.orderTime}</td>
                 <td>
                     <table class="table">

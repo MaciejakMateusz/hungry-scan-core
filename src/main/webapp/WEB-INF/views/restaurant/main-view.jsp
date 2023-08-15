@@ -29,26 +29,6 @@
 
 <h3 style="margin-block: 1rem">Zamówienia:</h3>
 <div id="order-container">
-    <div class="order-body">
-        <c:forEach items="${orders}" var="order">
-            <div class="card shadow bg-white order" id="order-card">
-                <h3>Identyfikator zamówienia: ${order.id}</h3>
-                <div class="card shadow">
-                    <p>Zamówione pozycje:</p>
-                    <c:forEach items="${order.orderedItems}" var="orderedItem">
-                        <p>ID: ${orderedItem.menuItem.id}</p>
-                        <p>Nazwa: ${orderedItem.menuItem.name}</p>
-                        <p>Cena: ${orderedItem.menuItem.price}</p>
-                    </c:forEach>
-                </div>
-                <p>Czas zamówienia: ${order.orderTime}</p>
-                <p>Opłacony: ${order.paid}</p>
-                <p>Metoda płatności: ${order.paymentMethod}</p>
-                <p>Numer stolika: ${order.restaurantTable.id}</p>
-                <p>Do zapłaty: ${order.totalAmount}</p>
-            </div>
-        </c:forEach>
-    </div>
 </div>
 
 <div style="padding: 2rem"></div>

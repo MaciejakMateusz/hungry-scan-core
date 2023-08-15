@@ -10,5 +10,7 @@ public interface OrderServiceInterface {
 
     Optional<Order> findById(Integer id);
 
-    void saveOrPatch(Order order);
+    void save(Order order);
+
+    void patch(Order order);
 }
