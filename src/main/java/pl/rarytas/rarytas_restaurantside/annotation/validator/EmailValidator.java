@@ -21,7 +21,7 @@ public class EmailValidator implements ConstraintValidator<Email, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        if (value == null || value.isEmpty()) {
+        if (value == null || value.isBlank()) {
             return true;
         }
         Matcher matcher = EMAIL_REGEX.matcher(value);

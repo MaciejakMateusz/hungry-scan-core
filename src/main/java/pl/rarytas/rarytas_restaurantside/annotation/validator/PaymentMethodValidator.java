@@ -15,7 +15,7 @@ public class PaymentMethodValidator implements ConstraintValidator<PaymentMethod
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        if (value == null) {
+        if (value == null || value.isBlank()) {
             return true;
         }
         boolean isValidPaymentMethod = false;

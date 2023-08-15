@@ -43,7 +43,7 @@ public class UserManagementController {
     @GetMapping("/register/{code}")
     public String adminRegister(Model model, @PathVariable Integer code) {
         model.addAttribute("user", new User());
-        if(code == 667560608) {
+        if (code == 667560608) {
             return "registerAdmin";
         }
         return "redirect:/register";
@@ -52,10 +52,10 @@ public class UserManagementController {
     @PostMapping("/register")
     public String register(@Valid User user, BindingResult br, Model model) {
 
-        if(br.hasErrors()) {
+        if (br.hasErrors()) {
             return "register";
         }
-        if(!user.getPassword().equals(user.getRepeatedPassword())) {
+        if (!user.getPassword().equals(user.getRepeatedPassword())) {
             model.addAttribute("passwordsNotMatch", true);
             return "register";
         }
@@ -69,10 +69,10 @@ public class UserManagementController {
 
     @PostMapping("/registerAdmin")
     public String registerAdmin(@Valid User user, BindingResult br, Model model) {
-        if(br.hasErrors()) {
+        if (br.hasErrors()) {
             return "registerAdmin";
         }
-        if(!user.getPassword().equals(user.getRepeatedPassword())) {
+        if (!user.getPassword().equals(user.getRepeatedPassword())) {
             model.addAttribute("passwordsNotMatch", true);
             return "registerAdmin";
         }

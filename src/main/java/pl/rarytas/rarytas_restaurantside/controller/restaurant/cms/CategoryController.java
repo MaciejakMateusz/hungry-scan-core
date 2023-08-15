@@ -36,7 +36,7 @@ public class CategoryController {
 
     @PostMapping("/add")
     public String add(@Valid Category category, BindingResult br) {
-        if(br.hasErrors()) {
+        if (br.hasErrors()) {
             return "restaurant/cms/categories/add";
         }
         categoryRepository.save(category);
@@ -53,7 +53,7 @@ public class CategoryController {
     @Modifying
     @PostMapping("/update")
     public String updateItem(@Valid Category category, BindingResult br) {
-        if(br.hasErrors()) {
+        if (br.hasErrors()) {
             return "restaurant/cms/categories/edit";
         }
         categoryRepository.save(category);

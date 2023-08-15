@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "restaurants")
+@ToString
 public class Restaurant {
 
     @Id
@@ -21,4 +23,5 @@ public class Restaurant {
 
     @Column(length = 300)
     private String address;
+
 }

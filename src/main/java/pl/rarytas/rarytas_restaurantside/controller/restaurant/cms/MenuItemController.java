@@ -47,7 +47,7 @@ public class MenuItemController {
     public String addItem(@Valid MenuItem menuItem,
                           BindingResult br,
                           @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if(br.hasErrors()) {
+        if (br.hasErrors()) {
             return "restaurant/cms/items/add";
         }
         menuItemService.save(menuItem, imageFile);
@@ -65,7 +65,7 @@ public class MenuItemController {
     public String updateItem(@Valid MenuItem menuItem,
                              BindingResult br,
                              @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if(br.hasErrors()) {
+        if (br.hasErrors()) {
             return "restaurant/cms/items/edit";
         }
         menuItemService.save(menuItem, imageFile);

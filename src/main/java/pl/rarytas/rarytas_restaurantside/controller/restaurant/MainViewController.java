@@ -13,6 +13,7 @@ import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.repository.MenuItemRepository;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
+import pl.rarytas.rarytas_restaurantside.service.OrderService;
 
 import java.util.List;
 
@@ -22,13 +23,15 @@ public class MainViewController {
 
     private final MenuItemRepository menuItemRepository;
     private final OrderRepository orderRepository;
+    private final OrderService orderService;
     private final RestaurantTableRepository restaurantTableRepository;
 
     public MainViewController(MenuItemRepository menuItemRepository,
                               OrderRepository orderRepository,
-                              RestaurantTableRepository restaurantTableRepository) {
+                              OrderService orderService, RestaurantTableRepository restaurantTableRepository) {
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
+        this.orderService = orderService;
         this.restaurantTableRepository = restaurantTableRepository;
     }
 
@@ -57,7 +60,7 @@ public class MainViewController {
 
     @ModelAttribute("orders")
     private List<Order> getOrders() {
-        return orderRepository.findAll();
+        return orderService.findAllNotPaid();
     }
 
     @ModelAttribute("restaurantTables")

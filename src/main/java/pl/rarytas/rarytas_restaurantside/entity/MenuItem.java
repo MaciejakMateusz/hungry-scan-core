@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
@@ -22,6 +23,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "menu_items")
 @Slf4j
 public class MenuItem {

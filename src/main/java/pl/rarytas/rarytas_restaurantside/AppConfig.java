@@ -1,6 +1,5 @@
 package pl.rarytas.rarytas_restaurantside;
 
-import jakarta.servlet.Filter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,4 +27,5 @@ public class AppConfig {
         registrationBean.setUrlPatterns(Collections.singletonList("/restaurant/cms/*"));
         return registrationBean;
     }
+
 }

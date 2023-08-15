@@ -1,9 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import jakarta.persistence.*;
 
 @Getter
 @Setter

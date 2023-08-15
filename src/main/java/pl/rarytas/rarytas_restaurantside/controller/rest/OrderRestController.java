@@ -6,8 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
-import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
+import pl.rarytas.rarytas_restaurantside.service.OrderService;
 
 import java.util.List;
 
@@ -15,42 +14,36 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/orders")
 public class OrderRestController {
-    private final OrderRepository orderRepository;
+    private final OrderService orderService;
 
-    public OrderRestController(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    public OrderRestController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     @GetMapping
-    public List<Order> getAll() {
-        return orderRepository.findAll();
+    public List<Order> getAllNotPaid() {
+        return orderService.findAllNotPaid();
     }
 
     @GetMapping("/{id}")
     public Order getById(@PathVariable Integer id) {
-        return orderRepository.findById(id).orElseThrow();
+        return orderService.findById(id).orElseThrow();
     }
 
     @PostMapping
     public void saveOrder(@RequestBody Order order) {
-        for (OrderedItem orderedItem : order.getOrderedItems()) {
-            orderedItem.setOrder(order);
-        }
-        orderRepository.save(order);
+        orderService.saveOrPatch(order);
     }
 
-    @PutMapping
+    @PatchMapping
     public void updateOrder(@RequestBody Order order) {
-        for (OrderedItem orderedItem : order.getOrderedItems()) {
-            orderedItem.setOrder(order);
-        }
-        orderRepository.save(order);
+        orderService.saveOrPatch(order);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Allow", "GET, POST, PUT, OPTIONS");
+        headers.add("Allow", "GET, POST, PATCH, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

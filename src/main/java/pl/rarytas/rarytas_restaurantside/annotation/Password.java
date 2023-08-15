@@ -14,6 +14,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Password {
     String message() default "{jakarta.validation.constraints.Password.message}";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

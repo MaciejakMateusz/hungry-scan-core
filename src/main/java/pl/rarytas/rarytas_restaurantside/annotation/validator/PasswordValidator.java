@@ -21,7 +21,7 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        if (value == null || value.isEmpty()) {
+        if (value == null || value.isBlank()) {
             return true;
         }
         Matcher matcher = PASSWORD_REGEX.matcher(value);

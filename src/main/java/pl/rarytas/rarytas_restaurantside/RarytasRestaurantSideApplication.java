@@ -3,12 +3,12 @@ package pl.rarytas.rarytas_restaurantside;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-import pl.rarytas.rarytas_restaurantside.filter.AuthFilter;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import pl.rarytas.rarytas_restaurantside.repository.CustomRepositoryImpl;
 
 @SpringBootApplication
+@EnableJpaRepositories(repositoryBaseClass = CustomRepositoryImpl.class)
 public class RarytasRestaurantSideApplication extends SpringBootServletInitializer {
 
     @Override
