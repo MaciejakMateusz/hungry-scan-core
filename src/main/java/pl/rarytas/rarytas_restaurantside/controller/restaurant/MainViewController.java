@@ -4,12 +4,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
-import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.entity.User;
-import pl.rarytas.rarytas_restaurantside.repository.MenuItemRepository;
-import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
+import pl.rarytas.rarytas_restaurantside.service.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.OrderService;
 
 import java.util.List;
@@ -17,16 +14,13 @@ import java.util.List;
 @Controller
 @RequestMapping("/restaurant")
 public class MainViewController {
-
-    private final MenuItemRepository menuItemRepository;
     private final OrderService orderService;
-    private final RestaurantTableRepository restaurantTableRepository;
+    private final CategoryService categoryService;
 
-    public MainViewController(MenuItemRepository menuItemRepository,
-                              OrderService orderService, RestaurantTableRepository restaurantTableRepository) {
-        this.menuItemRepository = menuItemRepository;
+    public MainViewController(OrderService orderService,
+                              CategoryService categoryService) {
         this.orderService = orderService;
-        this.restaurantTableRepository = restaurantTableRepository;
+        this.categoryService = categoryService;
     }
 
     @GetMapping
@@ -50,22 +44,13 @@ public class MainViewController {
     @PostMapping
     public String update(@RequestParam Integer id,
                          @RequestParam boolean paid) {
-        orderService.finishOrder(id, paid);
+        orderService.finish(id, paid);
         return "restaurant/main-view";
     }
 
-    @ModelAttribute("menuItems")
-    private List<MenuItem> getMenuItems() {
-        return menuItemRepository.findAll();
+    @ModelAttribute("categories")
+    private List<Category> getEntireMenu() {
+        return categoryService.findAll();
     }
 
-    @ModelAttribute("orders")
-    private List<Order> getOrders() {
-        return orderService.findAllNotPaid();
-    }
-
-    @ModelAttribute("restaurantTables")
-    private List<RestaurantTable> getRestaurantTables() {
-        return restaurantTableRepository.findAll();
-    }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/api/orders")
+@CrossOrigin(origins = "http://localhost:8080")
 public class OrderRestController {
     private final OrderService orderService;
 
@@ -25,6 +26,11 @@ public class OrderRestController {
         return orderService.findAllNotPaid();
     }
 
+    @GetMapping("/takeAway")
+    public List<Order> getAllTakeAway() {
+        return orderService.findAllTakeAway();
+    }
+
     @GetMapping("/{id}")
     public Order getById(@PathVariable Integer id) {
         return orderService.findById(id).orElseThrow();
@@ -32,11 +38,19 @@ public class OrderRestController {
 
     @PostMapping
     public void saveOrder(@RequestBody Order order) {
+        if (order.isForTakeAway()) {
+            orderService.saveTakeAway(order);
+            return;
+        }
         orderService.save(order);
     }
 
     @PatchMapping
     public void updateOrder(@RequestBody Order order) {
+        if (order.isForTakeAway()) {
+            orderService.patchTakeAway(order);
+            return;
+        }
         orderService.patch(order);
     }
 

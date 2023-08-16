@@ -8,9 +8,19 @@ import java.util.Optional;
 public interface OrderServiceInterface {
     List<Order> findAllNotPaid();
 
+    List<Order> findAllTakeAway();
+
+    List<Order> findAllPaidLimit50();
+
     Optional<Order> findById(Integer id);
 
     void save(Order order);
 
+    void saveTakeAway(Order order);
+
     void patch(Order order);
+
+    void patchTakeAway(Order order);
+
+    void finishTakeAway(Integer id, boolean paid);
 }

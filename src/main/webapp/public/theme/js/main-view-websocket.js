@@ -1,8 +1,8 @@
-const orderContainer = document.querySelector('#order-container')
+const orderContainer = document.querySelector('#order-container');
 
 document.addEventListener("DOMContentLoaded", function () {
     fetchExistingOrders().then(function (orders) {
-        renderOrders(orders)
+        renderOrders(orders);
     });
 });
 
@@ -24,11 +24,9 @@ function fetchExistingOrders() {
 const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
 
-stompClient.connect({}, function (frame) {
-    console.log('Connected: ' + frame);
+stompClient.connect({}, function () {
     stompClient.subscribe('/topic/restaurant-order', function (message) {
         const orders = JSON.parse(message.body);
-        console.log('Received order: ', orders);
         renderOrders(orders);
     });
 });
@@ -44,8 +42,12 @@ function renderOrders(orders) {
         const orderCard = document.createElement('div');
         orderCard.classList.add('card', 'shadow', 'bg-white', 'order');
 
+        const orderNumberH3 = document.createElement('h3');
+        orderNumberH3.innerText = `Numer zamówienia: ${order.orderNumber}`;
+        orderCard.appendChild(orderNumberH3);
+
         const orderIdH3 = document.createElement('h3');
-        orderIdH3.innerText = `Numer zamówienia: ${order.orderNumber}`;
+        orderIdH3.innerText = `Identyfikator zamówienia: ${order.id}`;
         orderCard.appendChild(orderIdH3);
 
         const orderedItemsCard = document.createElement('div');
@@ -61,7 +63,7 @@ function renderOrders(orders) {
             const orderedItemName = document.createElement('p');
             orderedItemName.innerText = `Nazwa: ${orderedItem.menuItem.name}`;
             const orderedItemPrice = document.createElement('p');
-            orderedItemPrice.innerText = `Cena: ${orderedItem.menuItem.price}`;
+            orderedItemPrice.innerText = `Cena: ${orderedItem.menuItem.price.toFixed(2)}zł`;
             orderedItemsCard.appendChild(orderedItemId);
             orderedItemsCard.appendChild(orderedItemName);
             orderedItemsCard.appendChild(orderedItemPrice);
@@ -72,20 +74,27 @@ function renderOrders(orders) {
         orderTime.innerText = `Czas zamówienia: ${order.orderTime}`;
         orderCard.appendChild(orderTime);
 
-        const orderPaymentMethod = document.createElement('p');
-        orderPaymentMethod.innerText = `Metoda płatności: ${order.paymentMethod}`;
-        orderCard.appendChild(orderPaymentMethod);
+        if (order.paymentMethod !== null) {
+            const orderPaymentMethod = document.createElement('p');
+            if(order.paymentMethod === 'card') {
+                orderPaymentMethod.innerText = 'Metoda płatności: karta';
+            } else if (order.paymentMethod === 'cash') {
+                orderPaymentMethod.innerText = 'Metoda płatności: gotówka';
+            }
+            orderCard.appendChild(orderPaymentMethod);
+        }
 
         const orderTableNumber = document.createElement('p');
         orderTableNumber.innerText = `Numer stolika: ${order.restaurantTable.id}`;
         orderCard.appendChild(orderTableNumber);
 
-        const orderTotalAmount = document.createElement('p');
-        orderTotalAmount.innerText = `Do zapłaty: ${order.totalAmount}`;
-        orderCard.appendChild(orderTotalAmount);
 
         // Create button to finish order when bill is requested from customer
         if (order.billRequested === true) {
+
+            const orderTotalAmount = document.createElement('p');
+            orderTotalAmount.innerText = `Do zapłaty: ${order.totalAmount.toFixed(2)}zł`;
+            orderCard.appendChild(orderTotalAmount);
 
             // Create the form element
             const form = document.createElement('form');

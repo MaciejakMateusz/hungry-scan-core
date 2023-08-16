@@ -21,13 +21,18 @@
     </a>
 </div>
 
+<div style="display: inline-block">
+    <a href="${pageContext.request.contextPath}/restaurant/orders">
+        <button class="btn-primary">Lista zamówień</button>
+    </a>
+</div>
+
 <div style="display: inline-block; position: absolute; right: 1rem; top: 1rem;">
     <a href="${pageContext.request.contextPath}/restaurant/logout">
         <button class="btn-secondary">Wyloguj się</button>
     </a>
 </div>
 
-<h3 style="margin-block: 1rem">Zamówienia:</h3>
 <div id="order-container">
 </div>
 
@@ -39,7 +44,7 @@
 
 <script src="<c:url value="/webjars/sockjs-client/1.5.1/sockjs.min.js"/>"></script>
 <script src="<c:url value="/webjars/stomp-websocket/2.3.4/stomp.min.js"/>"></script>
-<script src="${pageContext.request.contextPath}/public/theme/js/websocket.js"></script>
+<script src="${pageContext.request.contextPath}/public/theme/js/main-view-websocket.js"></script>
 
 </body>
 </html>

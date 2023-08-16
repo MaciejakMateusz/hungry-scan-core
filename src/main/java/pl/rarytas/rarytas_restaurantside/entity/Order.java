@@ -9,7 +9,6 @@ import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.listener.OrderListener;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -34,9 +33,9 @@ public class Order {
     @NotNull
     private Restaurant restaurant;
 
-    @Column(name = "order_time", nullable = false)
+    @Column(name = "order_time", length = 20, nullable = false)
     @NotNull
-    private LocalDateTime orderTime;
+    private String orderTime;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<OrderedItem> orderedItems;
@@ -72,10 +71,6 @@ public class Order {
 //        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
 //        return orderTime.format(dtf);
 //    }
-
-    public LocalDateTime getDateTime() {
-        return this.orderTime;
-    }
 
     @Override
     public String toString() {

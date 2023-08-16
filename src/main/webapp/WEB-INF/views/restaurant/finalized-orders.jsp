@@ -7,8 +7,8 @@
 <!-- End of Header -->
 <body>
 
-<a href="${pageContext.request.contextPath}/restaurant/cms">
-    <button class="btn-primary">Powrót do menu głównego</button>
+<a href="${pageContext.request.contextPath}/restaurant">
+    <button class="btn-primary">Powrót</button>
 </a>
 
 <h2>Lista opłaconych zamówień</h2>

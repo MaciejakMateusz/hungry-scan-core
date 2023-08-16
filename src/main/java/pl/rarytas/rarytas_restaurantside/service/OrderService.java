@@ -28,6 +28,16 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
+    public List<Order> findAllTakeAway() {
+        return orderRepository.findAllTakeAway();
+    }
+
+    @Override
+    public List<Order> findAllPaidLimit50() {
+        return orderRepository.findAllPaidLimit50();
+    }
+
+    @Override
     public Optional<Order> findById(Integer id) {
         return orderRepository.findById(id);
     }
@@ -36,7 +46,15 @@ public class OrderService implements OrderServiceInterface {
     public void save(Order order) {
         orderRepository.save(order);
         orderRepository.refresh(order);
-        messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+        if (!order.isForTakeAway()) {
+            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+        }
+    }
+
+    @Override
+    public void saveTakeAway(Order order) {
+        save(order);
+        messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
     @Override
@@ -44,7 +62,7 @@ public class OrderService implements OrderServiceInterface {
         Order existingOrder = orderRepository
                 .findById(order.getId())
                 .orElseThrow();
-        order.setOrderTime(existingOrder.getDateTime());
+        order.setOrderTime(existingOrder.getOrderTime());
         order.setOrderNumber(existingOrder.getOrderNumber());
         order.setRestaurant(existingOrder.getRestaurant());
         order.setRestaurantTable(existingOrder.getRestaurantTable());
@@ -59,19 +77,37 @@ public class OrderService implements OrderServiceInterface {
         if (!order.isBillRequested()) {
             order.setBillRequested(existingOrder.isBillRequested());
         }
+
         orderRepository.saveAndFlush(order);
-        messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+
+        if (!order.isForTakeAway()) {
+            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+            messagingTemplate.convertAndSend("/topic/dineIn-orders", findAllNotPaid());
+        }
     }
 
-    public void finishOrder(Integer id, boolean paid) {
+    @Override
+    public void patchTakeAway(Order order) {
+        patch(order);
+        messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
+    }
+
+    public void finish(Integer id, boolean paid) {
         Order existingOrder = orderRepository
                 .findById(id)
                 .orElseThrow();
         existingOrder.setPaid(paid);
         existingOrder.setBillRequested(true);
         orderRepository.saveAndFlush(existingOrder);
-        messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+        if (!existingOrder.isForTakeAway()) {
+            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+            messagingTemplate.convertAndSend("/topic/dineIn-orders", findAllNotPaid());
+        }
     }
 
-
+    @Override
+    public void finishTakeAway(Integer id, boolean paid) {
+        finish(id, paid);
+        messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
+    }
 }
