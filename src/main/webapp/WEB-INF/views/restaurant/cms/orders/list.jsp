@@ -11,7 +11,7 @@
     <button class="btn-primary">Powrót do menu głównego</button>
 </a>
 
-<h2>Lista opłaconych zamówień</h2>
+<h2>Lista sfinalizowanych zamówień</h2>
 
 <div>
     <table class="table">

@@ -56,21 +56,21 @@ public class Order {
     @Column(name = "bill_requested", nullable = false)
     private boolean billRequested = false;
 
+    @Column(name = "is_resolved", nullable = false)
+    private boolean isResolved = false;
+
     @Column(name = "order_number")
     private Integer orderNumber;
 
     public BigDecimal getTotalAmount() {
         BigDecimal sum = BigDecimal.valueOf(0);
-        for (OrderedItem orderedItem : this.orderedItems) {
-            sum = sum.add(orderedItem.getMenuItem().getPrice());
+        for (OrderedItem orderedItem : this.getOrderedItems()) {
+            BigDecimal itemPrice = orderedItem.getMenuItem().getPrice();
+            int quantity = orderedItem.getQuantity();
+            sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
         }
         return sum;
     }
-
-//    public String getOrderTime() {
-//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
-//        return orderTime.format(dtf);
-//    }
 
     @Override
     public String toString() {

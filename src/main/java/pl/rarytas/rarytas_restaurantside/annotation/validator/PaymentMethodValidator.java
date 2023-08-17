@@ -21,7 +21,7 @@ public class PaymentMethodValidator implements ConstraintValidator<PaymentMethod
         boolean isValidPaymentMethod = false;
 
         switch (value) {
-            case "card", "cash" -> isValidPaymentMethod = true;
+            case "card", "cash", "online" -> isValidPaymentMethod = true;
             default -> log.error("Invalid payment method chosen");
         }
 

@@ -45,11 +45,12 @@
             <th>ID</th>
             <th>Numer</th>
             <th>Czas zamówienia</th>
+            <th>Numer stolika</th>
             <th>Zamówione pozycje</th>
+            <th>Do zapłaty</th>
             <th>Opłacony</th>
             <th>Metoda płatności</th>
-            <th>Numer stolika</th>
-            <th>Zapłacono</th>
+            <th>Akcja</th>
         </tr>
         </thead>
         <tbody id="rendered-body">

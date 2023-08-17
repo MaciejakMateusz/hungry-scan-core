@@ -6,13 +6,13 @@ import pl.rarytas.rarytas_restaurantside.entity.Order;
 import java.util.List;
 
 public interface OrderRepository extends CustomRepository<Order, Integer> {
-    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_paid = false AND take_away = false", nativeQuery = true)
+    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_paid = false AND take_away = false AND is_resolved = false", nativeQuery = true)
     List<Order> findAllNotPaid();
 
-    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_paid = false AND take_away = true", nativeQuery = true)
+    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE take_away = true AND is_resolved = false", nativeQuery = true)
     List<Order> findAllTakeAway();
 
-    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_paid = true LIMIT 50", nativeQuery = true)
-    List<Order> findAllPaidLimit50();
+    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_resolved = true LIMIT 50", nativeQuery = true)
+    List<Order> findAllResolvedLimit50();
 
 }

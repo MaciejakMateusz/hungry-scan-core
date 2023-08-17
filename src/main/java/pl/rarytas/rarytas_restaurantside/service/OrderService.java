@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderServiceInterface;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,7 +36,7 @@ public class OrderService implements OrderServiceInterface {
 
     @Override
     public List<Order> findAllPaidLimit50() {
-        return orderRepository.findAllPaidLimit50();
+        return orderRepository.findAllResolvedLimit50();
     }
 
     @Override
@@ -62,6 +64,9 @@ public class OrderService implements OrderServiceInterface {
         Order existingOrder = orderRepository
                 .findById(order.getId())
                 .orElseThrow();
+        if (existingOrder.isResolved()) {
+            return;
+        }
         order.setOrderTime(existingOrder.getOrderTime());
         order.setOrderNumber(existingOrder.getOrderNumber());
         order.setRestaurant(existingOrder.getRestaurant());
@@ -92,12 +97,17 @@ public class OrderService implements OrderServiceInterface {
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
-    public void finish(Integer id, boolean paid) {
+    @Override
+    public void finish(Integer id, boolean paid, boolean isResolved) {
         Order existingOrder = orderRepository
                 .findById(id)
                 .orElseThrow();
         existingOrder.setPaid(paid);
-        existingOrder.setBillRequested(true);
+        existingOrder.setResolved(isResolved);
+        existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
+        if (!existingOrder.isForTakeAway()) {
+            existingOrder.setBillRequested(true);
+        }
         orderRepository.saveAndFlush(existingOrder);
         if (!existingOrder.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
@@ -106,8 +116,18 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
-    public void finishTakeAway(Integer id, boolean paid) {
-        finish(id, paid);
+    public void finishTakeAway(Integer id, boolean paid, boolean isResolved) {
+        finish(id, paid, isResolved);
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
+    }
+
+    private BigDecimal calculateTotalAmount(Order order) {
+        BigDecimal sum = BigDecimal.valueOf(0);
+        for (OrderedItem orderedItem : order.getOrderedItems()) {
+            BigDecimal itemPrice = orderedItem.getMenuItem().getPrice();
+            int quantity = orderedItem.getQuantity();
+            sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
+        }
+        return sum;
     }
 }

@@ -11,11 +11,11 @@
     <button class="btn-primary">Powrót</button>
 </a>
 
-<h2>Lista opłaconych zamówień</h2>
+<h2>Lista sfinalizowanych zamówień</h2>
 
 <div>
     <table class="table">
-        <thead>
+        <thead style="position: sticky; top: 0; background-color: orange; color: black">
         <tr>
             <th>ID</th>
             <th>Numer zamówienia</th>
@@ -25,6 +25,7 @@
             <th>Metoda płatności</th>
             <th>Numer stolika</th>
             <th>Zapłacono</th>
+            <th>Na wynos</th>
         </tr>
         </thead>
         <tbody>
@@ -40,6 +41,7 @@
                             <th>ID</th>
                             <th>Nazwa</th>
                             <th>Cena</th>
+                            <th>Ilość</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -48,6 +50,7 @@
                                 <td>${orderedItem.menuItem.id}</td>
                                 <td>${orderedItem.menuItem.name}</td>
                                 <td>${orderedItem.menuItem.price}</td>
+                                <td>${orderedItem.quantity}</td>
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -65,7 +68,17 @@
                 </td>
                 <td>${order.paymentMethod}</td>
                 <td>${order.restaurantTable.id}</td>
-                <td>${order.totalAmount}</td>
+                <td>${order.totalAmount}zł</td>
+                <td>
+                    <c:choose>
+                        <c:when test="${order.forTakeAway==true}">
+                            Tak
+                        </c:when>
+                        <c:when test="${order.forTakeAway==false}">
+                            Nie
+                        </c:when>
+                    </c:choose>
+                </td>
             </tr>
         </c:forEach>
         </tbody>

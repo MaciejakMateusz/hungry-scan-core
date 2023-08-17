@@ -1,3 +1,5 @@
+
+
 const orderContainer = document.querySelector('#order-container');
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -58,15 +60,23 @@ function renderOrders(orders) {
         orderedItemsCard.appendChild(orderedItemsParagraph);
 
         order.orderedItems.forEach(function (orderedItem) {
+
             const orderedItemId = document.createElement('p');
             orderedItemId.innerText = `ID: ${orderedItem.menuItem.id}`;
+
             const orderedItemName = document.createElement('p');
             orderedItemName.innerText = `Nazwa: ${orderedItem.menuItem.name}`;
+
             const orderedItemPrice = document.createElement('p');
             orderedItemPrice.innerText = `Cena: ${orderedItem.menuItem.price.toFixed(2)}zł`;
+
+            const orderedItemQuantity = document.createElement('p');
+            orderedItemQuantity.innerText = `Ilość: ${orderedItem.quantity}`;
+
             orderedItemsCard.appendChild(orderedItemId);
             orderedItemsCard.appendChild(orderedItemName);
             orderedItemsCard.appendChild(orderedItemPrice);
+            orderedItemsCard.appendChild(orderedItemQuantity);
         });
         orderCard.appendChild(orderedItemsCard);
 
@@ -77,9 +87,11 @@ function renderOrders(orders) {
         if (order.paymentMethod !== null) {
             const orderPaymentMethod = document.createElement('p');
             if(order.paymentMethod === 'card') {
-                orderPaymentMethod.innerText = 'Metoda płatności: karta';
+                orderPaymentMethod.innerText = 'Metoda płatności: Karta';
             } else if (order.paymentMethod === 'cash') {
-                orderPaymentMethod.innerText = 'Metoda płatności: gotówka';
+                orderPaymentMethod.innerText = 'Metoda płatności: Gotówka';
+            } else if (order.paymentMethod === 'online') {
+                orderPaymentMethod.innerText = 'Metoda płatności: Online';
             }
             orderCard.appendChild(orderPaymentMethod);
         }
@@ -108,6 +120,13 @@ function renderOrders(orders) {
             idInput.value = `${order.id}`;
             form.appendChild(idInput);
 
+            // Create the hidden input for 'isResolved'
+            const isResolvedInput = document.createElement('input');
+            isResolvedInput.type = 'hidden';
+            isResolvedInput.name = 'isResolved';
+            isResolvedInput.value = 'true';
+            form.appendChild(isResolvedInput);
+
             // Create the hidden input for 'paid'
             const paidInput = document.createElement('input');
             paidInput.type = 'hidden';
@@ -119,29 +138,29 @@ function renderOrders(orders) {
             const submitButton = document.createElement('button');
             submitButton.type = 'submit';
             submitButton.className = 'btn-primary';
-            submitButton.textContent = 'Klient opłacił zamówienie';
+            submitButton.textContent = 'Opłacono';
             form.appendChild(submitButton);
-            // Preventing page reloading
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                // Create an object to hold form data
-                const formData = new FormData(form);
-
-                // Perform an AJAX request to send the form data
-                fetch('/restaurant', {
-                    method: 'POST',
-                    body: formData
-                }).then(function (response) {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error("Error while submitting order data to /restaurant URL");
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            });
+            // // Preventing page reloading
+            // form.addEventListener('submit', function (event) {
+            //     event.preventDefault();
+            //
+            //     // Create an object to hold form data
+            //     const formData = new FormData(form);
+            //
+            //     // Perform an AJAX request to send the form data
+            //     fetch('/restaurant', {
+            //         method: 'POST',
+            //         body: formData
+            //     }).then(function (response) {
+            //         if (response.ok) {
+            //             return response.json();
+            //         } else {
+            //             throw new Error("Error while submitting order data to /restaurant URL");
+            //         }
+            //     }).catch(function (error) {
+            //         console.log(error);
+            //     });
+            // });
 
             orderCard.appendChild(form);
         }

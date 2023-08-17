@@ -41,12 +41,30 @@ public class MainViewController {
         return "redirect:/login";
     }
 
+    @PostMapping("/finalize-dineIn")
+    public String finalizeDineInOrder(@RequestParam Integer id,
+                                      @RequestParam boolean paid,
+                                      @RequestParam boolean isResolved) {
+        orderService.finish(id, paid, isResolved);
+        return "restaurant/dine-in";
+    }
+
+    @PostMapping("finalize-takeAway")
+    public String finalizeTakeAwayOrder(@RequestParam Integer id,
+                                        @RequestParam boolean paid,
+                                        @RequestParam boolean isResolved) {
+        orderService.finishTakeAway(id, paid, isResolved);
+        return "restaurant/take-away";
+    }
+
     @PostMapping
-    public String update(@RequestParam Integer id,
-                         @RequestParam boolean paid) {
-        orderService.finish(id, paid);
+    public String finalizeMainViewOrder(@RequestParam Integer id,
+                                        @RequestParam boolean paid,
+                                        @RequestParam boolean isResolved) {
+        orderService.finish(id, paid, isResolved);
         return "restaurant/main-view";
     }
+
 
     @ModelAttribute("categories")
     private List<Category> getEntireMenu() {
