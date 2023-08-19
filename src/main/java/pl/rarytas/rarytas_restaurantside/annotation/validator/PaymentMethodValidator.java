@@ -9,11 +9,6 @@ import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
 public class PaymentMethodValidator implements ConstraintValidator<PaymentMethod, String> {
 
     @Override
-    public void initialize(PaymentMethod constraintAnnotation) {
-        log.info("Initializing @PaymentMethod annotation - provided payment method does not match the criteria");
-    }
-
-    @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         if (value == null || value.isBlank()) {
             return true;

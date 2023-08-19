@@ -1,6 +1,5 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,31 +7,19 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import pl.rarytas.rarytas_restaurantside.entity.User;
-import pl.rarytas.rarytas_restaurantside.service.LoginService;
 import pl.rarytas.rarytas_restaurantside.service.RegisterService;
 
 
 @Controller
-@RequestMapping("/")
-public class UserManagementController {
+public class UserController {
 
-    private final LoginService loginService;
     private final RegisterService registerService;
 
-    public UserManagementController(
-            LoginService loginService,
+    public UserController(
             RegisterService registerService) {
-        this.loginService = loginService;
         this.registerService = registerService;
     }
-
-    @GetMapping
-    public String redirectToLogin() {
-        return "redirect:/login";
-    }
-
 
     @GetMapping("/register")
     public String register(Model model) {
@@ -51,7 +38,6 @@ public class UserManagementController {
 
     @PostMapping("/register")
     public String register(@Valid User user, BindingResult br, Model model) {
-
         if (br.hasErrors()) {
             return "register";
         }
@@ -68,15 +54,15 @@ public class UserManagementController {
     }
 
     @PostMapping("/registerAdmin")
-    public String registerAdmin(@Valid User user, BindingResult br, Model model) {
+    public String registerAdmin(@Valid User admin, BindingResult br, Model model) {
         if (br.hasErrors()) {
             return "registerAdmin";
         }
-        if (!user.getPassword().equals(user.getRepeatedPassword())) {
+        if (!admin.getPassword().equals(admin.getRepeatedPassword())) {
             model.addAttribute("passwordsNotMatch", true);
             return "registerAdmin";
         }
-        if (registerService.validate(user)) {
+        if (registerService.validateAdmin(admin)) {
             return "success-registration";
         } else {
             model.addAttribute("userExists", true);
@@ -87,16 +73,6 @@ public class UserManagementController {
     @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("user", new User());
-        return "login";
-    }
-
-    @PostMapping("/login")
-    public String login(User user, Model model, HttpSession session) {
-        if (loginService.isAuthenticated(user)) {
-            session.setAttribute("user", user);
-            return "redirect:/restaurant";
-        }
-        model.addAttribute("isAuthenticated", false);
         return "login";
     }
 

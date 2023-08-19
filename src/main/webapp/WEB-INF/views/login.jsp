@@ -1,6 +1,8 @@
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+
 <html lang="pl">
 
 <!-- Header -->
@@ -30,10 +32,9 @@
                                            method="POST"
                                            modelAttribute="user">
                                     <div class="form-group">
-                                        <form:input type="email"
-                                                    class="form-control form-control-user"
-                                                    placeholder="Wpisz email..."
-                                                    path="email"/>
+                                        <form:input class="form-control form-control-user"
+                                                    placeholder="Wpisz login..."
+                                                    path="username"/>
                                     </div>
                                     <div class="form-group">
                                         <form:password class="form-control form-control-user"
@@ -44,9 +45,15 @@
                                             style="font-size: 1.1rem;">Zaloguj się
                                     </button>
                                 </form:form>
-                                <c:if test="${isAuthenticated==false}">
-                                    <p class="validation" style="font-size: 0.7rem">Niepoprawny email lub hasło, spróbuj
-                                        ponownie</p>
+                                <c:if test="${param.error != null}">
+                                    <p class="validation" style="font-size: 0.8rem">
+                                        Niepoprawny email lub hasło, spróbuj ponownie
+                                    </p>
+                                </c:if>
+                                <c:if test="${param.logout != null}">
+                                    <p style="font-size: 0.8rem; color: green">
+                                        Wylogowano pomyślnie
+                                    </p>
                                 </c:if>
                                 <hr>
                                 <div class="text-center">

@@ -25,7 +25,7 @@
                                 <div class="text-center">
                                     <p style="color: green">Rejestracja przebiegła pomyślnie.</p>
                                     <hr>
-                                    <a href="${pageContext.request.contextPath}/restaurant/user/login" class="btn btn-primary">Zaloguj
+                                    <a href="${pageContext.request.contextPath}/login" class="btn btn-primary">Zaloguj
                                         się!</a>
                                 </div>
                             </div>

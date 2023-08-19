@@ -20,7 +20,7 @@ public class OrdersManagementController {
 
     @GetMapping
     public String orders() {
-        return "/restaurant/cms/orders/list";
+        return "restaurant/cms/orders/list";
     }
 
     @ModelAttribute(name = "orders")

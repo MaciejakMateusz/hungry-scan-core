@@ -15,11 +15,6 @@ public class EmailValidator implements ConstraintValidator<Email, String> {
             Pattern.compile("^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.([a-zA-Z]{2,})$");
 
     @Override
-    public void initialize(Email constraintAnnotation) {
-        log.info("Initializing @Email annotation - provided email does not match the regex");
-    }
-
-    @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         if (value == null || value.isBlank()) {
             return true;

@@ -15,11 +15,6 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
             Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{5,60}$");
 
     @Override
-    public void initialize(Password constraintAnnotation) {
-        log.info("Initializing @Password annotation - provided password does not match the regex");
-    }
-
-    @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         if (value == null || value.isBlank()) {
             return true;

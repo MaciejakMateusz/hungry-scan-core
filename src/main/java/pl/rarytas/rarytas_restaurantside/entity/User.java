@@ -5,11 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import pl.rarytas.rarytas_restaurantside.annotation.Email;
 import pl.rarytas.rarytas_restaurantside.annotation.Password;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Slf4j
@@ -21,18 +22,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false, unique = true, length = 60)
+    @NotBlank
+    private String username;
+
     @Column(length = 100, nullable = false, unique = true)
     @NotBlank
     @Email
     private String email;
-
-    @Column(length = 50, nullable = false)
-    @NotBlank
-    private String firstName;
-
-    @Column(length = 75, nullable = false)
-    @NotBlank
-    private String lastName;
 
     @Column(nullable = false)
     @NotBlank
@@ -45,8 +42,12 @@ public class User {
     private LocalDateTime created;
     private LocalDateTime updated;
 
-    @Column(name = "is_admin", nullable = false)
-    private boolean isAdmin = false;
+    private int enabled;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles;
 
     @PrePersist
     private void prePersist() {

@@ -31,17 +31,10 @@
                                            modelAttribute="user">
                                     <div class="form-group">
                                         <form:input
-                                                path="firstName"
+                                                path="username"
                                                 class="form-control form-control-user"
-                                                placeholder="Wpisz imię..."/>
-                                        <form:errors path="firstName" cssClass="validation"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <form:input
-                                                path="lastName"
-                                                class="form-control form-control-user"
-                                                placeholder="Wpisz nazwisko..."/>
-                                        <form:errors path="lastName" cssClass="validation"/>
+                                                placeholder="Wpisz nazwę użytkownika..."/>
+                                        <form:errors path="username" cssClass="validation"/>
                                     </div>
                                     <div class="form-group">
                                         <form:input

@@ -1,3 +1,4 @@
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -7,13 +8,13 @@
 <!-- End of Header -->
 <body>
 <h1>Główny widok restauracji</h1>
-<c:if test="${user.admin==true}">
+<sec:authorize access="hasRole('ADMIN')">
     <div style="display: inline-block">
         <a href="${pageContext.request.contextPath}/restaurant/cms">
             <button class="btn-primary">CMS</button>
         </a>
     </div>
-</c:if>
+</sec:authorize>
 
 <div style="display: inline-block">
     <a href="${pageContext.request.contextPath}/restaurant/menu">
