@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.restaurant;
+package pl.rarytas.rarytas_restaurantside.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;

@@ -31,24 +31,9 @@ public class MainViewController {
 
     @GetMapping("/menu")
     public String menu() {
-        return "restaurant/menu";
+        return "restaurant/menu/menu";
     }
 
-    @PostMapping("/finalize-dineIn")
-    public String finalizeDineInOrder(@RequestParam Integer id,
-                                      @RequestParam boolean paid,
-                                      @RequestParam boolean isResolved) {
-        orderService.finish(id, paid, isResolved);
-        return "restaurant/dine-in";
-    }
-
-    @PostMapping("finalize-takeAway")
-    public String finalizeTakeAwayOrder(@RequestParam Integer id,
-                                        @RequestParam boolean paid,
-                                        @RequestParam boolean isResolved) {
-        orderService.finishTakeAway(id, paid, isResolved);
-        return "restaurant/take-away";
-    }
 
     @PostMapping
     public String finalizeMainViewOrder(@RequestParam Integer id,

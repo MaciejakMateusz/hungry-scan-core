@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/items")
-@CrossOrigin(origins = "http://localhost:8080")
+@Deprecated
 public class MenuItemRestController {
 
     private final MenuItemRepository menuItemRepository;

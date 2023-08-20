@@ -116,7 +116,7 @@ export function renderOrdersList(orders) {
 
             // Create the form element
             const form = document.createElement('form');
-            form.action = '/restaurant/finalize-takeAway';
+            form.action = '/restaurant/orders/finalize-takeAway';
             form.method = 'POST';
 
             // Create the hidden input for 'id'
@@ -156,7 +156,7 @@ export function renderOrdersList(orders) {
 
             // Create the form element
             const form = document.createElement('form');
-            form.action = '/restaurant/finalize-dineIn';
+            form.action = '/restaurant/orders/finalize-dineIn';
             form.method = 'POST';
 
             // Create the hidden input for 'id'

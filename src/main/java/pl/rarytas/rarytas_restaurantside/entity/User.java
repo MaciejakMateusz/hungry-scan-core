@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import pl.rarytas.rarytas_restaurantside.annotation.Email;
-import pl.rarytas.rarytas_restaurantside.annotation.EmailExists;
-import pl.rarytas.rarytas_restaurantside.annotation.Password;
-import pl.rarytas.rarytas_restaurantside.annotation.UsernameExists;
+import pl.rarytas.rarytas_restaurantside.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -26,6 +23,7 @@ public class User {
 
     @Column(nullable = false, unique = true, length = 60)
     @NotBlank
+    @Username
     @UsernameExists
     private String username;
 
