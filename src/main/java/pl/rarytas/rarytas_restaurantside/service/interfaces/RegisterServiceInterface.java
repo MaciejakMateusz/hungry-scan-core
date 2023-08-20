@@ -3,7 +3,11 @@ package pl.rarytas.rarytas_restaurantside.service.interfaces;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 
 public interface RegisterServiceInterface {
-    boolean validate(User user);
+    void saveUser(User user);
 
-    boolean validateAdmin(User user);
+    void saveAdmin(User user);
+
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
 }

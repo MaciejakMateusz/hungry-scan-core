@@ -44,9 +44,6 @@
                                                 aria-describedby="emailHelp"
                                                 placeholder="Wpisz email..."/>
                                         <form:errors path="email" cssClass="validation"/>
-                                        <c:if test="${userExists==true}">
-                                            <p class="validation">Użytkownik z podanym adresem email już istnieje.</p>
-                                        </c:if>
                                     </div>
                                     <div class="form-group">
                                         <form:password

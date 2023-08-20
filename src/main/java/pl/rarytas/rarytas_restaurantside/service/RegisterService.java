@@ -25,25 +25,29 @@ public class RegisterService implements RegisterServiceInterface {
     }
 
     @Override
-    public boolean validate(User user) {
-        if (!userRepository.existsByEmail(user.getEmail())) {
-            user.setEnabled(1);
-            user.setRoles(new HashSet<>(Collections.singletonList(roleRepository.findByName("ROLE_USER"))));
-            userRepository.save(user);
-            return true;
-        }
-        return false;
+    public void saveUser(User user) {
+        user.setEnabled(1);
+        user.setRoles(new HashSet<>(Collections.singletonList(roleRepository.findByName("ROLE_USER"))));
+        userRepository.save(user);
     }
 
     @Override
-    public boolean validateAdmin(User admin) {
-        if (!userRepository.existsByEmail(admin.getEmail())) {
-            admin.setEnabled(1);
-            admin.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName("ROLE_USER"), roleRepository.findByName("ROLE_ADMIN"))));
-            userRepository.save(admin);
-            return true;
-        }
-        return false;
+    public void saveAdmin(User admin) {
+        admin.setEnabled(1);
+        admin.setRoles(new HashSet<>(Arrays.asList(
+                roleRepository.findByName("ROLE_USER"),
+                roleRepository.findByName("ROLE_ADMIN"))));
+        userRepository.save(admin);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 }
 

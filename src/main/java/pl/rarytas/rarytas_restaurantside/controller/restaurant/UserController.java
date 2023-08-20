@@ -21,6 +21,11 @@ public class UserController {
         this.registerService = registerService;
     }
 
+    @GetMapping
+    public String redirectToLogin() {
+        return "redirect:/login";
+    }
+
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("user", new User());
@@ -45,12 +50,8 @@ public class UserController {
             model.addAttribute("passwordsNotMatch", true);
             return "register";
         }
-        if (registerService.validate(user)) {
-            return "success-registration";
-        } else {
-            model.addAttribute("userExists", true);
-            return "register";
-        }
+        registerService.saveUser(user);
+        return "success-registration";
     }
 
     @PostMapping("/registerAdmin")
@@ -62,12 +63,9 @@ public class UserController {
             model.addAttribute("passwordsNotMatch", true);
             return "registerAdmin";
         }
-        if (registerService.validateAdmin(admin)) {
-            return "success-registration";
-        } else {
-            model.addAttribute("userExists", true);
-            return "registerAdmin";
-        }
+        registerService.saveAdmin(admin);
+        return "success-registration";
+
     }
 
     @GetMapping("/login")
