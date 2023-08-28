@@ -1,8 +1,8 @@
 import {renderOrderDetails} from "./render-order-details.js";
 import {clearOrderDetails} from "./render-order-details.js";
 import {fetchOrderByTableNumber} from "./utils.js";
-import {fetchOrders} from "./utils.js";
 import {updateDateTime} from "./utils.js";
+import {fetchOrders} from "./utils.js";
 
 /** ---- ON PAGE LOAD ----- **/
 document.addEventListener('DOMContentLoaded', function () {
@@ -26,28 +26,11 @@ stompClient.connect({}, function () {
 /** ----- END OF WEBSOCKET ----- **/
 
 /** ----- RENDERING ORDERS ----- **/
-export function renderOrders(orders) {
+function renderOrders(orders) {
 
     orders.forEach(function (order) {
 
         if (!order.isResolved && !order.billRequested) {
-            let restaurantTableIcon = document.querySelector(`#r-table-${order.restaurantTable.id}`);
-
-            if(order.restaurantTable.id !== 5 &&
-                order.restaurantTable.id !== 6 &&
-                order.restaurantTable.id !== 11 &&
-                order.restaurantTable.id !== 15) {
-
-                restaurantTableIcon.classList.remove('table-default');
-                restaurantTableIcon.classList.add('table-ordered');
-
-            } else {
-                restaurantTableIcon.classList.remove('s-table-default');
-                restaurantTableIcon.classList.add('s-table-ordered');
-            }
-
-            restaurantTableIcon.classList.add('activated');
-            restaurantTableIcon.firstElementChild.classList.add('activated');
 
             let restaurantTableButton = document.querySelector(`#l-table-${order.restaurantTable.id}`);
             let orangeOrderedMark = document.createElement('div');
@@ -61,24 +44,6 @@ export function renderOrders(orders) {
         }
 
         if (!order.isResolved && order.billRequested) {
-            let restaurantTableIcon = document.querySelector(`#r-table-${order.restaurantTable.id}`);
-
-            if(order.restaurantTable.id !== 5 &&
-                order.restaurantTable.id !== 6 &&
-                order.restaurantTable.id !== 11 &&
-                order.restaurantTable.id !== 15) {
-
-                restaurantTableIcon.classList.remove('table-ordered');
-                restaurantTableIcon.classList.add('table-bill-requested');
-
-            } else {
-                restaurantTableIcon.classList.remove('s-table-ordered');
-                restaurantTableIcon.classList.add('s-table-bill-requested');
-            }
-
-
-            restaurantTableIcon.classList.add('activated');
-            restaurantTableIcon.firstElementChild.classList.add('activated');
 
             let restaurantTableButton = document.querySelector(`#l-table-${order.restaurantTable.id}`);
             let greenBillMark = document.createElement('div');
@@ -104,12 +69,12 @@ document.body.addEventListener('click', function (event) {
 
         let tableNumber;
 
-        if (event.target.id && (event.target.id.startsWith('l-table-') || event.target.id.startsWith('r-table-'))) {
+        if (event.target.id && (event.target.id.startsWith('l-table-'))) {
             tableNumber = parseInt(event.target.id.split('-')[2]);
         } else {
             const classList = event.target.classList;
             for (const className of classList) {
-                if (className.startsWith('l-table-') || className.startsWith('r-table-')) {
+                if (className.startsWith('l-table-')) {
                     tableNumber = parseInt(className.split('-')[2]);
                     break;
                 }

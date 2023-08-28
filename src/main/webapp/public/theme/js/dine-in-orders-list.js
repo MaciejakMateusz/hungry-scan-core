@@ -32,30 +32,3 @@ stompClient.connect({}, function (frame) {
         renderOrdersList(orders);
     });
 });
-
-// const dineInOrdersButton = document.querySelector('#show-dineIn');
-// const takeAwayOrdersButton = document.querySelector('#show-takeAway');
-//
-// dineInOrdersButton.addEventListener('click', function (e) {
-//     e.preventDefault();
-//     const orderRows = document.querySelectorAll('.order-rows');
-//     orderRows.forEach(function (orderRow){
-//         mainTableBody.removeChild(orderRow);
-//     });
-//
-//     fetchDineInOrders().then(function (orders) {
-//         renderOrdersList(orders);
-//     });
-// });
-//
-// takeAwayOrdersButton.addEventListener('click', function (e) {
-//     e.preventDefault();
-//     const orderRows = document.querySelectorAll('.order-rows');
-//     orderRows.forEach(function (orderRow){
-//         mainTableBody.removeChild(orderRow);
-//     });
-//
-//     fetchTakeAwayOrders().then(function (orders) {
-//         renderOrdersList(orders);
-//     });
-// });

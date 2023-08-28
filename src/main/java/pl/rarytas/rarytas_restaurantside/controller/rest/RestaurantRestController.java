@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/restaurants")
 @Slf4j
-@Deprecated
 public class RestaurantRestController {
     private final RestaurantRepository restaurantRepository;
 

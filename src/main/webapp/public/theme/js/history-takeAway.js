@@ -2,21 +2,6 @@ import {renderOrdersList} from "./render-orders-list.js";
 import {updateDateTime} from "./utils.js";
 import {clearOrderDetails, renderOrderDetails} from "./render-order-details.js";
 
-export function fetchTakeAwayOrders() {
-    return fetch(`http://localhost:8082/api/orders/takeAway`)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("Communication error: GET /api/orders/takeAway");
-            }
-        }).then(function (data) {
-            return data;
-        }).catch(function (error) {
-            console.log(error);
-        });
-}
-
 function fetchOrderById(id) {
     return fetch(`http://localhost:8082/api/orders/id/${id}`)
         .then(function (response) {
@@ -32,27 +17,30 @@ function fetchOrderById(id) {
         });
 }
 
-const socket = new WebSocket('ws://localhost:8082/order-websocket');
-const stompClient = Stomp.over(socket);
-stompClient.connect({}, function (frame) {
-    stompClient.subscribe('/topic/takeAway-orders', function (message) {
-        const orders = JSON.parse(message.body);
-        renderOrdersList(orders);
-    });
-});
+function fetchAllResolvedTakeAway() {
+    return fetch(`http://localhost:8082/api/orders/resolved/take-away`)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Communication error: GET /api/orders/resolved");
+            }
+        }).then(function (data) {
+            return data;
+        }).catch(function (error) {
+            console.log(error);
+        });
+}
 
 const ordersListParent = document.querySelector('#orders-list-parent');
-
 document.addEventListener("DOMContentLoaded", function () {
     updateDateTime();
-    fetchTakeAwayOrders().then(function (orders) {
+    fetchAllResolvedTakeAway().then(function (orders) {
 
         renderOrdersList(orders);
         renderOrderDetails(orders[0])
 
-        if (ordersListParent !== null) {
-            ordersListParent.firstElementChild.classList.add('selected-list-element');
-        }
+        ordersListParent.firstElementChild.classList.add('selected-list-element');
     });
 });
 
@@ -84,6 +72,4 @@ const observer = new MutationObserver(function (mutationsList) {
     }
 });
 
-if (ordersListParent !== null) {
-    observer.observe(ordersListParent, {childList: true});
-}
+observer.observe(ordersListParent, { childList: true });

@@ -44,66 +44,40 @@
                 <div class="main-button" id="reservations-button">
                     <span class="black-bold">Rezerwacje</span>
                 </div>
-                <div class="main-button selected-button" id="menu-button">
+                <div class="main-button" id="menu-button">
                     <span class="black-bold">Menu</span>
                 </div>
-                <div class="main-button" id="finalized-orders-button">
+                <div class="main-button selected-button" id="finalized-orders-button">
                     <span class="black-bold">Historia</span>
                 </div>
             </div>
         </div>
 
         <div class="content menu-overflow">
-            <div class="tables-box fit-content" id="tables-box">
-                <div class="container-menu">
-                    <c:forEach items="${categories}" var="category">
-                        <div class="grid-container-category">
-                            <div class="category">
-                                <span>${category.name}</span>
-                            </div>
-                            <div class="menu-items">
-                                <c:forEach items="${category.menuItems}" var="menuItem">
-                                    <div class="menu-item">
-                                        <span class="item-name">${menuItem.name}</span>
-                                        <div class="item-price-label menu-item-price">
-                                            <span>${menuItem.price} zł</span>
-                                        </div>
-                                        <span class="item-description">${menuItem.description}</span>
-                                        <span class="item-id">ID: ${menuItem.id}</span>
-                                    </div>
-                                </c:forEach>
-                            </div>
-                        </div>
-                    </c:forEach>
+            <div class="orders-list-box fit-content">
+                <div class="order-type-buttons">
+                    <div class="dine-in-button order-type-button-selected" id="finalized-dine-in-button">
+                        <span>Na miejscu</span>
+                    </div>
+                    <div class="take-away-button" id="finalized-take-away-button">
+                        <span>Na wynos</span>
+                    </div>
+                </div>
+                <div class="orders-list-head">
+                    <span class="head-order-id">ID</span>
+                    <span class="head-order-number">Nr zamówienia</span>
+                    <span class="head-order-date-time">Godzina i data</span>
+                </div>
+                <div id="orders-list-parent">
                 </div>
             </div>
         </div>
 
         <div class="right-column" id="right-column">
-            <div class="table-button-list-container" id="table-list-container">
-                <div id="l-table-1" class="table-button-list"><span class="l-table-1">Stolik 1</span></div>
-                <div id="l-table-2" class="table-button-list"><span class="l-table-2">Stolik 2</span></div>
-                <div id="l-table-3" class="table-button-list"><span class="l-table-3">Stolik 3</span></div>
-                <div id="l-table-4" class="table-button-list"><span class="l-table-4">Stolik 4</span></div>
-                <div id="l-table-5" class="table-button-list"><span class="l-table-5">Stolik 5</span></div>
-                <div id="l-table-6" class="table-button-list"><span class="l-table-6">Stolik 6</span></div>
-                <div id="l-table-7" class="table-button-list"><span class="l-table-7">Stolik 7</span></div>
-                <div id="l-table-8" class="table-button-list"><span class="l-table-8">Stolik 8</span></div>
-                <div id="l-table-9" class="table-button-list"><span class="l-table-9">Stolik 9</span></div>
-                <div id="l-table-10" class="table-button-list"><span class="l-table-10">Stolik 10</span></div>
-                <div id="l-table-11" class="table-button-list"><span class="l-table-11">Stolik 11</span></div>
-                <div id="l-table-12" class="table-button-list"><span class="l-table-12">Stolik 12</span></div>
-                <div id="l-table-13" class="table-button-list"><span class="l-table-13">Stolik 13</span></div>
-                <div id="l-table-14" class="table-button-list"><span class="l-table-14">Stolik 14</span></div>
-                <div id="l-table-15" class="table-button-list"><span class="l-table-15">Stolik 15</span></div>
-                <div id="l-table-16" class="table-button-list"><span class="l-table-16">Stolik 16</span></div>
-                <div id="l-table-17" class="table-button-list"><span class="l-table-17">Stolik 17</span></div>
-                <div id="l-table-18" class="table-button-list"><span class="l-table-18">Stolik 18</span></div>
-            </div>
-            <div class="order-details-panel d-none" id="order-details-panel">
+            <div class="order-details-panel" id="order-details-panel">
                 <div class="grid-container-order-details">
                     <div class="table-number-section">
-                        <span id="table-number"></span>
+                        <span id="table-number">Na wynos</span>
                         <p class="table-number-section-order-time" id="order-time"></p>
                     </div>
                     <div class="order-details-section no-button" id="order-details-section">
@@ -113,7 +87,7 @@
                         <div id="ordered-total-amount-section">
                             <div class="ordered-total-amount-section">
                                 <div class="total-amount">
-                                    <span>Do zapłaty:</span>
+                                    <span>Zapłacono:</span>
                                 </div>
                                 <div class="total-price">
                                     <span class="total-price-span"></span>
@@ -129,16 +103,16 @@
                                     <span id="p-method"></span>
                                 </div>
                                 <div class="total-amount">
-                                    <span>Do zapłaty:</span>
+                                    <span>Zapłacono:</span>
                                 </div>
                                 <div class="total-price">
                                     <span class="total-price-span"></span>
                                 </div>
-                                <form action="${pageContext.request.contextPath}/restaurant/orders/finalize-dineIn"
+                                <form action="${pageContext.request.contextPath}/restaurant/orders/finalize-takeAway"
                                       method="POST"
                                       class="finalize-button"
                                       id="finalize-button">
-                                    <span>Wystaw rachunek</span>
+                                    <span>Potwierdź odebranie</span>
                                 </form>
                             </div>
                         </div>
@@ -164,9 +138,10 @@
 </div>
 <script src="<c:url value="/webjars/sockjs-client/1.5.1/sockjs.min.js"/>"></script>
 <script src="<c:url value="/webjars/stomp-websocket/2.3.4/stomp.min.js"/>"></script>
-<script type="module" src="${pageContext.request.contextPath}/public/theme/js/menu-websocket.js"></script>
-<script type="module" src="${pageContext.request.contextPath}/public/theme/js/main-menu-buttons-redirects.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/history-dineIn.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/render-orders-list.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/utils.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/main-menu-buttons-redirects.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/take-away-counter.js"></script>
 </body>
 </html>

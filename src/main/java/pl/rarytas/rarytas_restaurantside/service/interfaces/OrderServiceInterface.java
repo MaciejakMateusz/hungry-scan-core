@@ -10,7 +10,11 @@ public interface OrderServiceInterface {
 
     List<Order> findAllTakeAway();
 
-    List<Order> findAllPaidLimit50();
+    List<Order> findAllResolvedLimit50();
+
+    List<Order> findAllResolvedTakeAwayLimit50();
+
+    Optional<Order> findByTableNumber(Integer number);
 
     Optional<Order> findById(Integer id);
 

@@ -17,7 +17,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/items")
-@Deprecated
 public class MenuItemRestController {
 
     private final MenuItemRepository menuItemRepository;

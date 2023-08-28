@@ -16,6 +16,7 @@
 
     <!-- Custom styles for this template-->
     <link href="<c:url value="/public/theme/css/sb-admin-2.css"/>" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&display=swap"/>
 </head>
 <body>
 

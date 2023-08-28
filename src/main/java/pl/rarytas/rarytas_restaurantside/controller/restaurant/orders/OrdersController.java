@@ -17,11 +17,6 @@ public class OrdersController {
         this.orderService = orderService;
     }
 
-    @GetMapping
-    public String dineInOrders() {
-        return "restaurant/orders/dine-in";
-    }
-
     @GetMapping("/take-away")
     public String takeAwayOrders() {
         return "restaurant/orders/take-away";
@@ -29,7 +24,12 @@ public class OrdersController {
 
     @GetMapping("/finalized")
     public String finalizedOrders() {
-        return "restaurant/orders/finalized-orders";
+        return "restaurant/orders/history-dineIn";
+    }
+
+    @GetMapping("/finalized/take-away")
+    public String finalizedTakeAwayOrders() {
+        return "restaurant/orders/history-takeAway";
     }
 
     @PostMapping("/finalize-dineIn")
@@ -37,7 +37,7 @@ public class OrdersController {
                                       @RequestParam boolean paid,
                                       @RequestParam boolean isResolved) {
         orderService.finish(id, paid, isResolved);
-        return "restaurant/orders/dine-in";
+        return "redirect:/restaurant";
     }
 
     @PostMapping("/finalize-takeAway")
@@ -45,12 +45,12 @@ public class OrdersController {
                                         @RequestParam boolean paid,
                                         @RequestParam boolean isResolved) {
         orderService.finishTakeAway(id, paid, isResolved);
-        return "restaurant/orders/take-away";
+        return "redirect:/restaurant/orders/take-away";
     }
 
     @ModelAttribute(name = "orders")
     private List<Order> getOrders() {
-        return orderService.findAllPaidLimit50();
+        return orderService.findAllResolvedLimit50();
         // Wstępne rozwiązanie, do wykonania paginacja z wyszukiwaniem po dacie zamówienia
     }
 

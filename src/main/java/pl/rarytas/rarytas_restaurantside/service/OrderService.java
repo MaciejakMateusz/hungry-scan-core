@@ -35,8 +35,18 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
-    public List<Order> findAllPaidLimit50() {
+    public List<Order> findAllResolvedLimit50() {
         return orderRepository.findAllResolvedLimit50();
+    }
+
+    @Override
+    public List<Order> findAllResolvedTakeAwayLimit50() {
+        return orderRepository.findAllResolvedTakeAwayLimit50();
+    }
+
+    @Override
+    public Optional<Order> findByTableNumber(Integer number) {
+        return orderRepository.findNewestOrderByTableNumber(number);
     }
 
     @Override
@@ -46,6 +56,16 @@ public class OrderService implements OrderServiceInterface {
 
     @Override
     public void save(Order order) {
+
+        if (orderRepository.existsByRestaurantTable(order.getRestaurantTable())) {
+            Order existingOrder = orderRepository
+                    .findNewestOrderByTableNumber(order.getRestaurantTable().getId())
+                    .orElseThrow();
+            if (!existingOrder.isResolved()) {
+                log.warn("Order with given table number already exists");
+                return;
+            }
+        }
         orderRepository.save(order);
         orderRepository.refresh(order);
         if (!order.isForTakeAway()) {
@@ -55,7 +75,8 @@ public class OrderService implements OrderServiceInterface {
 
     @Override
     public void saveTakeAway(Order order) {
-        save(order);
+        orderRepository.save(order);
+        orderRepository.refresh(order);
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
@@ -71,7 +92,7 @@ public class OrderService implements OrderServiceInterface {
         order.setOrderNumber(existingOrder.getOrderNumber());
         order.setRestaurant(existingOrder.getRestaurant());
         order.setRestaurantTable(existingOrder.getRestaurantTable());
-        if (Objects.nonNull(existingOrder.getPaymentMethod())) {
+        if (!"Brak".equals(existingOrder.getPaymentMethod())) {
             order.setPaymentMethod(existingOrder.getPaymentMethod());
         }
         if (Objects.isNull(order.getOrderedItems())) {

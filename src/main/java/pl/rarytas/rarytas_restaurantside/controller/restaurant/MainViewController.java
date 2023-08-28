@@ -1,10 +1,9 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.service.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.OrderService;
@@ -24,23 +23,13 @@ public class MainViewController {
     }
 
     @GetMapping
-    public String mainView(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        model.addAttribute("user", userDetails);
-        return "restaurant/main-view";
+    public String mainView() {
+        return "restaurant/helicopter-view";
     }
 
     @GetMapping("/menu")
     public String menu() {
         return "restaurant/menu/menu";
-    }
-
-
-    @PostMapping
-    public String finalizeMainViewOrder(@RequestParam Integer id,
-                                        @RequestParam boolean paid,
-                                        @RequestParam boolean isResolved) {
-        orderService.finish(id, paid, isResolved);
-        return "restaurant/main-view";
     }
 
 

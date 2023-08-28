@@ -1,74 +1,144 @@
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html lang="pl">
-<!-- Header -->
-<%@ include file="/WEB-INF/views/header.jsp" %>
-<!-- End of Header -->
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="<c:url value="/public/theme/css/global.css"/>" rel="stylesheet" type="text/css">
+    <link href="<c:url value="/public/theme/css/index.css"/>" rel="stylesheet" type="text/css">
+    <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&display=swap"
+    />
+    <title>Restauracja Rarytas</title>
+</head>
 <body>
+<div class="global-container">
+    <div class="global-grid-container">
 
-<div style="display: inline-block">
-    <a href="${pageContext.request.contextPath}/restaurant">
-        <button class="btn-primary">Powrót</button>
-    </a>
+        <div class="date-time">
+            <div class="date-time-container-wrapper">
+                <div class="date-time-container">
+                    <div class="date">
+                        <span id="date"></span>
+                    </div>
+                    <div class="time">
+                        <span id="time"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu">
+            <div class="main-buttons-container">
+                <div class="main-button" id="main-view-button">
+                    <span class="black-bold">Widok sali</span>
+                </div>
+                <div class="main-button selected-button" id="take-away-button">
+                    <span class="black-bold">Na wynos</span>
+                </div>
+                <div class="main-button" id="reservations-button">
+                    <span class="black-bold">Rezerwacje</span>
+                </div>
+                <div class="main-button" id="menu-button">
+                    <span class="black-bold">Menu</span>
+                </div>
+                <div class="main-button" id="finalized-orders-button">
+                    <span class="black-bold">Historia</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content menu-overflow">
+            <div class="orders-list-box fit-content">
+                <div class="orders-list-head">
+                    <span class="head-order-id">ID</span>
+                    <span class="head-order-number">Nr zamówienia</span>
+                    <span class="head-order-date-time">Godzina i data</span>
+                </div>
+                <div id="orders-list-parent">
+                    <%--                <div class="orders-list-table">--%>
+                    <%--                    <span class="order-id">1</span>--%>
+                    <%--                    <span class="order-number">2</span>--%>
+                    <%--                    <span class="order-date-time">26/08/2023 14:49</span>--%>
+                    <%--                </div>--%>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-column" id="right-column">
+            <div class="order-details-panel" id="order-details-panel">
+                <div class="grid-container-order-details">
+                    <div class="table-number-section">
+                        <span id="table-number">Na wynos</span>
+                        <p class="table-number-section-order-time" id="order-time"></p>
+                    </div>
+                    <div class="order-details-section no-button" id="order-details-section">
+                        <div class="ordered-items-section" id="order-details">
+
+                        </div>
+                        <div id="ordered-total-amount-section">
+                            <div class="ordered-total-amount-section">
+                                <div class="total-amount">
+                                    <span>Do zapłaty:</span>
+                                </div>
+                                <div class="total-price">
+                                    <span class="total-price-span"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="bill-requested-finalize-section" class="d-none">
+                            <div class="finalize-order-section">
+                                <div class="payment-method">
+                                    <span>Płatność:</span>
+                                </div>
+                                <div class="method">
+                                    <span id="p-method"></span>
+                                </div>
+                                <div class="total-amount">
+                                    <span>Zapłacono:</span>
+                                </div>
+                                <div class="total-price">
+                                    <span class="total-price-span"></span>
+                                </div>
+                                <form action="${pageContext.request.contextPath}/restaurant/orders/finalize-takeAway"
+                                      method="POST"
+                                      class="finalize-button"
+                                      id="finalize-button">
+                                    <span>Potwierdź odebranie</span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column-info-container">
+                <p class="info-container-text" id="free-tables"></p>
+                <p class="info-container-text" id="occupied-tables"></p>
+                <p class="info-container-text">Zarezerwowane: 0</p>
+                <div class="logout-button" id="logout-button">
+                    <div class="logout-icon"></div>
+                </div>
+                <sec:authorize access="hasRole('ADMIN')">
+                    <div class="cms-button" id="cms-button">
+                        <div class="cms-icon">CMS</div>
+                    </div>
+                </sec:authorize>
+            </div>
+        </div>
+
+    </div>
 </div>
-<div style="display: inline-block">
-    <a href="${pageContext.request.contextPath}/restaurant/orders/finalized">
-        <button class="btn-primary">Sfinalizowane zamówienia</button>
-    </a>
-</div>
-
-
-<h3 style="margin-block: 1rem">Zamówienia:</h3>
-<div id="orders-container">
-    <table class="table" id="dineIn-table">
-        <thead>
-        <tr>
-            <th width="50%" colspan="4" style="text-align: center">
-                <a href="${pageContext.request.contextPath}/restaurant/orders">
-                    <button class="btn-primary" id="show-dineIn">
-                        Zamówienia w restauracji
-                    </button>
-                </a>
-            </th>
-            <th width="50%" colspan="4" style="text-align: center">
-                <a href="${pageContext.request.contextPath}/restaurant/orders/take-away">
-                    <button class="btn-primary" id="show-takeAway">
-                        Zamówienia na wynos
-                    </button>
-                </a>
-            </th>
-        </tr>
-        </thead>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Numer</th>
-            <th>Czas zamówienia</th>
-            <th>Numer stolika</th>
-            <th>Zamówione pozycje</th>
-            <th>Do zapłaty</th>
-            <th>Opłacony</th>
-            <th>Metoda płatności</th>
-            <th>Akcja</th>
-        </tr>
-        </thead>
-        <tbody id="rendered-body">
-
-        </tbody>
-    </table>
-</div>
-
-<div style="padding: 2rem"></div>
-
-<!-- Footer -->
-<%@ include file="/WEB-INF/views/footer.jsp" %>
-<!-- End of Footer -->
-
-<script type="module" src="<c:url value="/webjars/sockjs-client/1.5.1/sockjs.min.js"/>"></script>
-<script type="module" src="<c:url value="/webjars/stomp-websocket/2.3.4/stomp.min.js"/>"></script>
-<script type="module" src="${pageContext.request.contextPath}/public/theme/js/render-orders-list.js"></script>
+<script src="<c:url value="/webjars/sockjs-client/1.5.1/sockjs.min.js"/>"></script>
+<script src="<c:url value="/webjars/stomp-websocket/2.3.4/stomp.min.js"/>"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/take-away-orders-list.js"></script>
-
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/render-orders-list.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/utils.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/main-menu-buttons-redirects.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/take-away-counter.js"></script>
 </body>
 </html>

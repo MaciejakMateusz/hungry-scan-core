@@ -26,12 +26,27 @@ public class OrderRestController {
         return orderService.findAllNotPaid();
     }
 
+    @GetMapping("/resolved")
+    public List<Order> getAllResolvedLimit50() {
+        return orderService.findAllResolvedLimit50();
+    }
+
+    @GetMapping("/resolved/take-away")
+    public List<Order> getAllResolvedTakeAwayLimit50() {
+        return orderService.findAllResolvedTakeAwayLimit50();
+    }
+
     @GetMapping("/takeAway")
     public List<Order> getAllTakeAway() {
         return orderService.findAllTakeAway();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{number}")
+    public Order getByTableNumber(@PathVariable Integer number) {
+        return orderService.findByTableNumber(number).orElseThrow();
+    }
+
+    @GetMapping("/id/{id}")
     public Order getById(@PathVariable Integer id) {
         return orderService.findById(id).orElseThrow();
     }

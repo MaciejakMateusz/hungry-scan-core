@@ -25,7 +25,7 @@ public class OrdersManagementController {
 
     @ModelAttribute(name = "orders")
     private List<Order> getOrders() {
-        return orderService.findAllPaidLimit50();
+        return orderService.findAllResolvedLimit50();
         // Wstępne rozwiązanie, do wykonania paginacja z wyszukiwaniem po dacie zamówienia
     }
 }

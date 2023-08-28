@@ -50,10 +50,12 @@ public class SecurityConfig {
                         .requestMatchers(mvcMatcherBuilder.pattern("/webjars/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/order-websocket/**")).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/demo")).permitAll()
                         .requestMatchers(
                                 mvcMatcherBuilder.pattern("/restaurant"),
                                 mvcMatcherBuilder.pattern("/restaurant/orders/**"),
                                 mvcMatcherBuilder.pattern("/restaurant/menu"),
+                                mvcMatcherBuilder.pattern("/restaurant/bookings"),
                                 mvcMatcherBuilder.pattern("/restaurant/finalize-dineIn"),
                                 mvcMatcherBuilder.pattern("/restaurant/finalize-takeAway")).hasAnyRole("USER", "ADMIN")
                         .requestMatchers(mvcMatcherBuilder.pattern("/restaurant/cms/**")).hasRole("ADMIN")
