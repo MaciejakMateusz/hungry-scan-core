@@ -6,19 +6,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.service.CategoryService;
-import pl.rarytas.rarytas_restaurantside.service.OrderService;
 
 import java.util.List;
 
 @Controller
 @RequestMapping("/restaurant")
 public class MainViewController {
-    private final OrderService orderService;
     private final CategoryService categoryService;
 
-    public MainViewController(OrderService orderService,
-                              CategoryService categoryService) {
-        this.orderService = orderService;
+    public MainViewController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 

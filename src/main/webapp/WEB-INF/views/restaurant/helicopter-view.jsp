@@ -3,19 +3,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html lang="pl">
-<head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link href="<c:url value="/public/theme/css/global.css"/>" rel="stylesheet" type="text/css">
-    <link href="<c:url value="/public/theme/css/index.css"/>" rel="stylesheet" type="text/css">
-    <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&display=swap"
-    />
-    <title>Restauracja Rarytas</title>
-</head>
+<%@ include file="/WEB-INF/views/restaurant/header.jsp" %>
+
 <body>
 <div class="global-container">
     <div class="global-grid-container">
@@ -194,8 +184,8 @@
                 </div>
             </div>
             <div class="right-column-info-container">
-                <p class="info-container-text" id="free-tables"></p>
-                <p class="info-container-text" id="occupied-tables"></p>
+                <p class="info-container-text" id="free-tables">Wolne: 0</p>
+                <p class="info-container-text" id="occupied-tables">Zajęte: 0</p>
                 <p class="info-container-text" id="booked-tables">Zarezerwowane: 0</p>
                 <div class="logout-button" id="logout-button">
                     <div class="logout-icon"></div>
