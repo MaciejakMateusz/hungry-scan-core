@@ -31,6 +31,13 @@ public class OrderRestController {
         return orderService.findAllResolvedLimit50();
     }
 
+    @GetMapping("/finalized/{forTakeAway}/{limit}/{offset}")
+    public List<Order> getFinalizedOrders(@PathVariable boolean forTakeAway,
+                                          @PathVariable Integer limit,
+                                          @PathVariable Integer offset) {
+        return orderService.findAllFinalized(forTakeAway, limit, offset);
+    }
+
     @GetMapping("/resolved/take-away")
     public List<Order> getAllResolvedTakeAwayLimit50() {
         return orderService.findAllResolvedTakeAwayLimit50();

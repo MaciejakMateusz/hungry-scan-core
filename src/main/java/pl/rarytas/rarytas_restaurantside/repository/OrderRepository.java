@@ -26,4 +26,13 @@ public interface OrderRepository extends CustomRepository<Order, Integer> {
 
     boolean existsByRestaurantTable(RestaurantTable restaurantTable);
 
+    @Query(value =
+            "SELECT * FROM rarytas_testing.orders " +
+            "WHERE is_resolved = true " +
+            "AND take_away = :takeAway " +
+            "ORDER BY id " +
+            "LIMIT :limit " +
+            "OFFSET :offset", nativeQuery = true)
+    List<Order> findFinalizedOrders(@Param("takeAway") boolean forTakeAway, @Param("limit") Integer limit, @Param("offset") Integer offset);
+
 }

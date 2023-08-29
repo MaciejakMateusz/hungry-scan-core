@@ -40,6 +40,13 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
+    public List<Order> findAllFinalized(boolean forTakeAway,
+                                        Integer limit,
+                                        Integer offset) {
+        return orderRepository.findFinalizedOrders(forTakeAway, limit, offset);
+    }
+
+    @Override
     public List<Order> findAllResolvedTakeAwayLimit50() {
         return orderRepository.findAllResolvedTakeAwayLimit50();
     }
@@ -137,7 +144,9 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
-    public void finishTakeAway(Integer id, boolean paid, boolean isResolved) {
+    public void finishTakeAway(Integer id,
+                               boolean paid,
+                               boolean isResolved) {
         finish(id, paid, isResolved);
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }

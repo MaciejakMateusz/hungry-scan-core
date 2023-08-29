@@ -12,6 +12,10 @@ public interface OrderServiceInterface {
 
     List<Order> findAllResolvedLimit50();
 
+    List<Order> findAllFinalized(boolean forTakeAway,
+                                 Integer limit,
+                                 Integer offset);
+
     List<Order> findAllResolvedTakeAwayLimit50();
 
     Optional<Order> findByTableNumber(Integer number);
