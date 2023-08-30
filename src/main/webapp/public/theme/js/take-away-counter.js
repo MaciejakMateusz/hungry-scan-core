@@ -1,5 +1,4 @@
-import {fetchTakeAwayOrders} from "./take-away-orders-list.js";
-import {fetchOrders} from "./utils.js";
+import {fetchOrders, fetchTakeAwayOrders} from "./utils.js";
 
 function countTakeAway(orders) {
     if (orders.length !== 0) {

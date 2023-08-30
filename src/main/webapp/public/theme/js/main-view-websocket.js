@@ -1,8 +1,5 @@
-import {renderOrderDetails} from "./render-order-details.js";
-import {clearOrderDetails} from "./render-order-details.js";
-import {fetchOrderByTableNumber} from "./utils.js";
-import {fetchOrders} from "./utils.js";
-import {updateDateTime} from "./utils.js";
+import {renderOrderDetails, clearOrderDetails} from "./render-order-details.js";
+import {fetchOrderByTableNumber, fetchOrders, updateDateTime} from "./utils.js";
 
 /** ---- ON PAGE LOAD ----- **/
 document.addEventListener('DOMContentLoaded', function () {

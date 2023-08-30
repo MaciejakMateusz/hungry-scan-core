@@ -35,8 +35,8 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
-    public List<Order> findAllResolvedLimit50() {
-        return orderRepository.findAllResolvedLimit50();
+    public List<Order> findAllByResolvedIsTrue() {
+        return orderRepository.findAllResolved();
     }
 
     @Override

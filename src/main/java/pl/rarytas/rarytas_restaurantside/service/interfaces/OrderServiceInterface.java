@@ -10,7 +10,7 @@ public interface OrderServiceInterface {
 
     List<Order> findAllTakeAway();
 
-    List<Order> findAllResolvedLimit50();
+    List<Order> findAllByResolvedIsTrue();
 
     List<Order> findAllFinalized(boolean forTakeAway,
                                  Integer limit,

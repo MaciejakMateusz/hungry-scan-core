@@ -60,6 +60,12 @@
                 </div>
                 <div id="orders-list-parent">
                 </div>
+                <div class="pagination-buttons">
+                    <span class="page-text">Strona:</span>
+                    <div class="pagination-button pagination-button-selected">
+                        <span>1</span>
+                    </div>
+                </div>
             </div>
         </div>
 

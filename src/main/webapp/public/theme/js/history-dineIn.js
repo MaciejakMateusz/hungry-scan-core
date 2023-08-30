@@ -1,47 +1,12 @@
-import {renderOrdersList} from "./render-orders-list.js";
-import {updateDateTime} from "./utils.js";
+import {fetchOrderById} from "./utils.js";
 import {clearOrderDetails, renderOrderDetails} from "./render-order-details.js";
-
-function fetchOrderById(id) {
-    return fetch(`http://localhost:8082/api/orders/id/${id}`)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("Communication error: GET /api/orders/id");
-            }
-        }).then(function (data) {
-            return data;
-        }).catch(function (error) {
-            console.log(error);
-        });
-}
-
-function fetchAllResolved() {
-    return fetch(`http://localhost:8082/api/orders/resolved`)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("Communication error: GET /api/orders/resolved");
-            }
-        }).then(function (data) {
-            return data;
-        }).catch(function (error) {
-            console.log(error);
-        });
-}
+import {renderPaginationButtons, renderRecordsPerPage} from "./history-pagination.js";
 
 const ordersListParent = document.querySelector('#orders-list-parent');
+
 document.addEventListener("DOMContentLoaded", function () {
-    updateDateTime();
-    fetchAllResolved().then(function (orders) {
-
-        renderOrdersList(orders);
-        renderOrderDetails(orders[0])
-
-        ordersListParent.firstElementChild.classList.add('selected-list-element');
-    });
+    renderPaginationButtons(false);
+    renderRecordsPerPage(false);
 });
 
 const observer = new MutationObserver(function (mutationsList) {
@@ -49,7 +14,7 @@ const observer = new MutationObserver(function (mutationsList) {
         if (mutation.type === 'childList') {
             mutation.addedNodes.forEach(function (addedNode) {
                 if (addedNode.nodeType === Node.ELEMENT_NODE && addedNode.classList.contains('orders-list-table')) {
-                    addedNode.addEventListener('click', function (e) {
+                    addedNode.addEventListener('click', () => {
 
                         //Remove the class from all elements
                         const orderListTables = document.querySelectorAll('.orders-list-table');
@@ -72,4 +37,4 @@ const observer = new MutationObserver(function (mutationsList) {
     }
 });
 
-observer.observe(ordersListParent, { childList: true });
+observer.observe(ordersListParent, {childList: true});

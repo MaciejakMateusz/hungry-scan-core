@@ -9,6 +9,7 @@ import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.service.OrderService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -27,14 +28,16 @@ public class OrderRestController {
     }
 
     @GetMapping("/resolved")
-    public List<Order> getAllResolvedLimit50() {
-        return orderService.findAllResolvedLimit50();
+    public List<Order> getAllResolved() {
+        return orderService.findAllByResolvedIsTrue();
     }
 
-    @GetMapping("/finalized/{forTakeAway}/{limit}/{offset}")
-    public List<Order> getFinalizedOrders(@PathVariable boolean forTakeAway,
-                                          @PathVariable Integer limit,
-                                          @PathVariable Integer offset) {
+    @PostMapping("/finalized")
+    public List<Order> getFinalizedOrders(@RequestBody Map<String, Object> requestBody) {
+        boolean forTakeAway = (boolean) requestBody.get("forTakeAway");
+        int limit = (int) requestBody.get("limit");
+        int offset = (int) requestBody.get("offset");
+
         return orderService.findAllFinalized(forTakeAway, limit, offset);
     }
 

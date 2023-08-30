@@ -1,11 +1,11 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant.orders;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import pl.rarytas.rarytas_restaurantside.entity.Order;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import pl.rarytas.rarytas_restaurantside.service.OrderService;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/restaurant/orders")
@@ -46,12 +46,6 @@ public class OrdersController {
                                         @RequestParam boolean isResolved) {
         orderService.finishTakeAway(id, paid, isResolved);
         return "redirect:/restaurant/orders/take-away";
-    }
-
-    @ModelAttribute(name = "orders")
-    private List<Order> getOrders() {
-        return orderService.findAllResolvedLimit50();
-        // Wstępne rozwiązanie, do wykonania paginacja z wyszukiwaniem po dacie zamówienia
     }
 
 }

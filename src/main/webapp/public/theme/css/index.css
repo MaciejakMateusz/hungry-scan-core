@@ -122,7 +122,7 @@
 }
 
 .main-button:hover {
-    border-radius: 7px;
+    border-radius: 25px;
     background-color: var(--color-white);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
     z-index: 1;
@@ -131,7 +131,7 @@
 }
 
 .inactive-main-button:hover {
-    border-radius: var(--br-3xs);
+    border-radius: 25px;
     background-color: lightgray;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
     z-index: 1;
@@ -139,7 +139,7 @@
 }
 
 .selected-button {
-    border-radius: 7px;
+    border-radius: 25px;
     background-color: var(--color-white);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
     z-index: 1;
@@ -844,6 +844,7 @@
 }
 
 .orders-list-box {
+    flex: 1;
     position: relative;
     border-radius: 20px;
     background-color: var(--color-white);
@@ -855,12 +856,12 @@
     min-height: 100%;
     overflow-y: auto;
     max-height: 100%;
+    padding-bottom: 5rem;
 }
 
 .orders-list-head {
     background: #D9D9D9;
     width: 95%;
-    height: 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-areas: "head-order-id head-order-number head-order-date-time";
@@ -892,7 +893,6 @@
 
 .orders-list-table {
     width: 95%;
-    height: 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-areas: "order-id order-number order-date-time";
@@ -1002,4 +1002,49 @@
     line-height: 1.8rem;
     font-size: 1rem;
     font-weight: bold;
+}
+
+.orders-history-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.pagination-buttons {
+    position: fixed;
+    bottom: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 15%;
+    width: fit-content;
+    height: 6vh;
+    background: white;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+    border-radius: 15px;
+    gap: 1.5vh;
+    font-size: 0.9rem;
+    padding-inline: 1rem;
+}
+
+.pagination-button {
+    background: whitesmoke;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+    border-radius: 25%;
+    width: 3.5vh;
+    height: 3.5vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.pagination-button:hover {
+    background: linear-gradient(89.58deg, #fcaf38, #fcaf38);
+    cursor: pointer;
+}
+
+.pagination-button-selected {
+    background: linear-gradient(89.58deg, #fcaf38, #fcaf38);
+    cursor: pointer;
 }

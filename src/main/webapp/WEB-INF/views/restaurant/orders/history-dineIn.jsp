@@ -44,21 +44,29 @@
         </div>
 
         <div class="content menu-overflow">
-            <div class="orders-list-box fit-content">
-                <div class="order-type-buttons">
-                    <div class="dine-in-button order-type-button-selected" id="finalized-dine-in-button">
-                        <span>Na miejscu</span>
+            <div class="orders-history-container">
+                <div class="orders-list-box fit-content">
+                    <div class="order-type-buttons">
+                        <div class="dine-in-button order-type-button-selected" id="finalized-dine-in-button">
+                            <span>Na miejscu</span>
+                        </div>
+                        <div class="take-away-button" id="finalized-take-away-button">
+                            <span>Na wynos</span>
+                        </div>
                     </div>
-                    <div class="take-away-button" id="finalized-take-away-button">
-                        <span>Na wynos</span>
+                    <div class="orders-list-head">
+                        <span class="head-order-id">ID</span>
+                        <span class="head-order-number">Nr zamówienia</span>
+                        <span class="head-order-date-time">Godzina i data</span>
                     </div>
-                </div>
-                <div class="orders-list-head">
-                    <span class="head-order-id">ID</span>
-                    <span class="head-order-number">Nr zamówienia</span>
-                    <span class="head-order-date-time">Godzina i data</span>
-                </div>
-                <div id="orders-list-parent">
+                    <div id="orders-list-parent">
+                    </div>
+                    <div class="pagination-buttons">
+                        <span class="page-text">Strona:</span>
+                        <div class="pagination-button pagination-button-selected">
+                            <span>1</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -129,6 +137,7 @@
 <script src="<c:url value="/webjars/sockjs-client/1.5.1/sockjs.min.js"/>"></script>
 <script src="<c:url value="/webjars/stomp-websocket/2.3.4/stomp.min.js"/>"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/history-dineIn.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/history-pagination.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/render-orders-list.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/utils.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/main-menu-buttons-redirects.js"></script>

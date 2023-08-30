@@ -1,40 +1,10 @@
 import {renderOrdersList} from "./render-orders-list.js";
-import {updateDateTime} from "./utils.js";
+import {updateDateTime, fetchTakeAwayOrders, fetchOrderById} from "./utils.js";
 import {clearOrderDetails, renderOrderDetails} from "./render-order-details.js";
-
-export function fetchTakeAwayOrders() {
-    return fetch(`http://localhost:8082/api/orders/takeAway`)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("Communication error: GET /api/orders/takeAway");
-            }
-        }).then(function (data) {
-            return data;
-        }).catch(function (error) {
-            console.log(error);
-        });
-}
-
-function fetchOrderById(id) {
-    return fetch(`http://localhost:8082/api/orders/id/${id}`)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("Communication error: GET /api/orders/id");
-            }
-        }).then(function (data) {
-            return data;
-        }).catch(function (error) {
-            console.log(error);
-        });
-}
 
 const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
-stompClient.connect({}, function (frame) {
+stompClient.connect({},() => {
     stompClient.subscribe('/topic/takeAway-orders', function (message) {
         const orders = JSON.parse(message.body);
         renderOrdersList(orders);
@@ -61,7 +31,7 @@ const observer = new MutationObserver(function (mutationsList) {
         if (mutation.type === 'childList') {
             mutation.addedNodes.forEach(function (addedNode) {
                 if (addedNode.nodeType === Node.ELEMENT_NODE && addedNode.classList.contains('orders-list-table')) {
-                    addedNode.addEventListener('click', function (e) {
+                    addedNode.addEventListener('click', () => {
 
                         //Remove the class from all elements
                         const orderListTables = document.querySelectorAll('.orders-list-table');

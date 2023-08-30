@@ -15,8 +15,8 @@ public interface OrderRepository extends CustomRepository<Order, Integer> {
     @Query(value = "SELECT * FROM rarytas_testing.orders WHERE take_away = true AND is_resolved = false", nativeQuery = true)
     List<Order> findAllTakeAway();
 
-    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_resolved = true LIMIT 50", nativeQuery = true)
-    List<Order> findAllResolvedLimit50();
+    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_resolved = true", nativeQuery = true)
+    List<Order> findAllResolved();
 
     @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_resolved = true AND take_away = true LIMIT 50", nativeQuery = true)
     List<Order> findAllResolvedTakeAwayLimit50();
@@ -28,11 +28,12 @@ public interface OrderRepository extends CustomRepository<Order, Integer> {
 
     @Query(value =
             "SELECT * FROM rarytas_testing.orders " +
-            "WHERE is_resolved = true " +
-            "AND take_away = :takeAway " +
-            "ORDER BY id " +
-            "LIMIT :limit " +
-            "OFFSET :offset", nativeQuery = true)
-    List<Order> findFinalizedOrders(@Param("takeAway") boolean forTakeAway, @Param("limit") Integer limit, @Param("offset") Integer offset);
-
+                    "WHERE is_resolved = true " +
+                    "AND take_away = :forTakeAway " +
+                    "ORDER BY id " +
+                    "LIMIT :limit " +
+                    "OFFSET :offset", nativeQuery = true)
+    List<Order> findFinalizedOrders(@Param("forTakeAway") boolean forTakeAway,
+                                    @Param("limit") Integer limit,
+                                    @Param("offset") Integer offset);
 }
