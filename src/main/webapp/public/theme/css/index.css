@@ -309,7 +309,7 @@
 }
 
 .table-button-list:hover {
-    background: lightgray;
+    background: #F2F2F2;
     opacity: 2;
     cursor: pointer;
 }
@@ -522,11 +522,12 @@
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
     width: 6vh;
     height: 6vh;
+    background: var(--color-white);
 }
 
 .logout-button:hover {
     cursor: pointer;
-    background: ghostwhite;
+    background: #F2F2F2;
 }
 
 .logout-icon {
@@ -547,11 +548,12 @@
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
     width: 6vh;
     height: 6vh;
+    background: var(--color-white);
 }
 
 .cms-button:hover {
     cursor: pointer;
-    background: ghostwhite;
+    background: #F2F2F2;
 }
 
 .cms-icon {
@@ -856,7 +858,7 @@
     min-height: 100%;
     overflow-y: auto;
     max-height: 100%;
-    padding-bottom: 5rem;
+    padding-bottom: 4rem;
     padding-left: 0.9rem;
 }
 
@@ -867,8 +869,9 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-areas: "head-order-id head-order-number head-order-date-time";
     align-items: center;
-    border-radius: 15px;
+    border-radius: 25px;
     font-weight: bold;
+    font-size: 1rem;
     padding-block: 0.7rem;
     position: sticky;
     top: -1rem;
@@ -900,17 +903,19 @@
     align-items: center;
     margin-top: 1.3rem;
     padding-block: 0.7rem;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 .orders-list-table:hover {
-    background: #D9D9D9;
-    border-radius: 15px;
+    background: #F2F2F2;
+    border-radius: 25px;
     cursor: pointer;
 }
 
 .selected-list-element {
-    background: #D9D9D9;
-    border-radius: 15px;
+    background: #F2F2F2;
+    border-radius: 25px;
 }
 
 .order-id {

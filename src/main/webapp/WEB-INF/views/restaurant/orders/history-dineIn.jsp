@@ -53,7 +53,7 @@
                                 <input type="number"
                                        min="1"
                                        id="search-id"
-                                       placeholder="ID zamówienia">
+                                       placeholder="ID">
                             </label>
                             <input type="submit" style="display: none;">
                         </form>
