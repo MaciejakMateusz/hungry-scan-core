@@ -27,14 +27,17 @@ export function renderOrderDetails(order) {
         orderedItemInfo.innerText = `${orderedItem.quantity}x ${orderedItem.menuItem.name}`;
         orderedItemsGroup.appendChild(orderedItemInfo);
 
+        let itemPrice = parseFloat(orderedItem.menuItem.price);
+        let itemQuantity = parseInt(orderedItem.quantity);
+
         let itemPriceInfo = document.createElement('span');
         itemPriceInfo.classList.add('item-price');
-        itemPriceInfo.innerText = `${orderedItem.menuItem.price * orderedItem.quantity} zł`;
+        itemPriceInfo.innerText = `${(itemPrice * itemQuantity)} zł`;
         orderedItemsGroup.appendChild(itemPriceInfo);
 
         orderDetails.appendChild(orderedItemsGroup);
 
-        sum += orderedItem.menuItem.price * orderedItem.quantity;
+        sum += itemPrice * itemQuantity;
     });
 
     if (order.paymentMethod === 'cash') {
@@ -46,7 +49,7 @@ export function renderOrderDetails(order) {
     }
 
     totalPriceSpans.forEach(totalPrice => {
-        totalPrice.innerText = `${sum} zł`
+        totalPrice.innerText = `${sum.toFixed(2)} zł`
     });
 
     const orderDetailsSection = document.querySelector('#order-details-section');
