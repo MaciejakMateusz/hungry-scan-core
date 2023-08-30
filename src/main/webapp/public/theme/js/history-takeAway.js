@@ -1,12 +1,25 @@
 import {fetchOrderById} from "./utils.js";
 import {clearOrderDetails, renderOrderDetails} from "./render-order-details.js";
 import {renderPaginationButtons, renderRecordsPerPage} from "./history-pagination.js";
+import {findOrderByIdAndType, findOrdersByDate} from "./history-filters.js";
 
 const ordersListParent = document.querySelector('#orders-list-parent');
+const idFilterForm = document.querySelector('#id-filter');
+const dateFilterForm = document.querySelector('#date-filter');
 
 document.addEventListener("DOMContentLoaded", function () {
     renderPaginationButtons(true);
     renderRecordsPerPage(true);
+});
+
+idFilterForm.addEventListener('submit', e => {
+    e.preventDefault();
+    findOrderByIdAndType(true);
+});
+
+dateFilterForm.addEventListener('submit', e => {
+    e.preventDefault();
+    findOrdersByDate(true);
 });
 
 const observer = new MutationObserver(function (mutationsList) {

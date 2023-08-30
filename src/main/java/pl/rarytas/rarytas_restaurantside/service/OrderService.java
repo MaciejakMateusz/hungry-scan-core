@@ -47,6 +47,16 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
+    public Optional<Order> findFinalizedById(Integer id, boolean forTakeAway) {
+        return orderRepository.findFinalizedById(id, forTakeAway);
+    }
+
+    @Override
+    public List<Order> findFinalizedByDate(String date, boolean forTakeAway) {
+        return orderRepository.findFinalizedByDate(date, forTakeAway);
+    }
+
+    @Override
     public List<Order> findAllResolvedTakeAwayLimit50() {
         return orderRepository.findAllResolvedTakeAwayLimit50();
     }

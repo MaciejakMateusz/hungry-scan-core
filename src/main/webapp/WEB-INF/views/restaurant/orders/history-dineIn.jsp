@@ -46,6 +46,27 @@
         <div class="content menu-overflow">
             <div class="orders-history-container">
                 <div class="orders-list-box fit-content">
+                    <div class="search-filters-container">
+                        <form class="search-filter"
+                              id="id-filter">
+                            <label for="search-id">
+                                <input type="number"
+                                       min="1"
+                                       id="search-id"
+                                       placeholder="ID zamówienia">
+                            </label>
+                            <input type="submit" style="display: none;">
+                        </form>
+                        <form class="search-filter"
+                              id="date-filter">
+                            <label for="search-date">
+                                <input type="date"
+                                       id="search-date"
+                                       placeholder="Data zamówienia">
+                            </label>
+                            <input type="submit" style="display: none;">
+                        </form>
+                    </div>
                     <div class="order-type-buttons">
                         <div class="dine-in-button order-type-button-selected" id="finalized-dine-in-button">
                             <span>Na miejscu</span>
@@ -138,6 +159,7 @@
 <script src="<c:url value="/webjars/stomp-websocket/2.3.4/stomp.min.js"/>"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/history-dineIn.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/history-pagination.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/history-filters.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/render-orders-list.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/utils.js"></script>
 <script type="module" src="${pageContext.request.contextPath}/public/theme/js/main-menu-buttons-redirects.js"></script>

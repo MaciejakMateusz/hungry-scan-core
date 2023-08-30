@@ -36,4 +36,13 @@ public interface OrderRepository extends CustomRepository<Order, Integer> {
     List<Order> findFinalizedOrders(@Param("forTakeAway") boolean forTakeAway,
                                     @Param("limit") Integer limit,
                                     @Param("offset") Integer offset);
+
+    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE id = :id AND take_away = :forTakeAway", nativeQuery = true)
+    Optional<Order> findFinalizedById(@Param("id") Integer id,
+                                      @Param("forTakeAway") boolean forTakeAway);
+
+    @Query(value = "SELECT o FROM Order o WHERE o.orderTime LIKE %:date AND o.forTakeAway = :forTakeAway")
+    List<Order> findFinalizedByDate(@Param("date") String date,
+                                    @Param("forTakeAway") boolean forTakeAway);
+
 }

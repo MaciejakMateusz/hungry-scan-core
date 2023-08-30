@@ -45,6 +45,27 @@
 
         <div class="content menu-overflow">
             <div class="orders-list-box fit-content">
+                <div class="search-filters-container">
+                    <form class="search-filter"
+                          id="id-filter">
+                        <label for="search-id">
+                            <input type="number"
+                                   min="1"
+                                   id="search-id"
+                                   placeholder="ID zamówienia">
+                        </label>
+                        <input type="submit" style="display: none;">
+                    </form>
+                    <form class="search-filter"
+                          id="date-filter">
+                        <label for="search-date">
+                            <input type="date"
+                                   id="search-date"
+                                   placeholder="Data zamówienia">
+                        </label>
+                        <input type="submit" style="display: none;">
+                    </form>
+                </div>
                 <div class="order-type-buttons">
                     <div class="dine-in-button" id="finalized-dine-in-button">
                         <span>Na miejscu</span>

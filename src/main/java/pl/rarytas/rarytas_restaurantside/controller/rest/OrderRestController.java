@@ -41,6 +41,18 @@ public class OrderRestController {
         return orderService.findAllFinalized(forTakeAway, limit, offset);
     }
 
+    @GetMapping("/finalized/id/{id}/{forTakeAway}")
+    public Order getFinalizedById(@PathVariable Integer id,
+                                  @PathVariable boolean forTakeAway) {
+        return orderService.findFinalizedById(id, forTakeAway).orElseThrow();
+    }
+
+    @GetMapping("/finalized/date/{date}/{forTakeAway}")
+    public List<Order> getFinalizedByDate(@PathVariable String date,
+                                          @PathVariable boolean forTakeAway) {
+        return orderService.findFinalizedByDate(date, forTakeAway);
+    }
+
     @GetMapping("/resolved/take-away")
     public List<Order> getAllResolvedTakeAwayLimit50() {
         return orderService.findAllResolvedTakeAwayLimit50();

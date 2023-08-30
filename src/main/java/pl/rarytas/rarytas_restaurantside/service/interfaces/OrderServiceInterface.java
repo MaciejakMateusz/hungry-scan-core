@@ -12,9 +12,11 @@ public interface OrderServiceInterface {
 
     List<Order> findAllByResolvedIsTrue();
 
-    List<Order> findAllFinalized(boolean forTakeAway,
-                                 Integer limit,
-                                 Integer offset);
+    List<Order> findAllFinalized(boolean forTakeAway, Integer limit, Integer offset);
+
+    Optional<Order> findFinalizedById(Integer id, boolean forTakeAway);
+
+    List<Order> findFinalizedByDate(String date, boolean forTakeAway);
 
     List<Order> findAllResolvedTakeAwayLimit50();
 

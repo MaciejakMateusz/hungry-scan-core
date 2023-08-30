@@ -152,4 +152,34 @@ export function fetchAllResolvedTakeAway() {
         });
 }
 
+export function fetchFinalizedOrderById(id, forTakeAway) {
+    return fetch(`http://localhost:8082/api/orders/finalized/id/${id}/${forTakeAway}`)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Communication error: GET /api/orders/finalized");
+            }
+        }).then(function (data) {
+            return data;
+        }).catch(function (error) {
+            console.log(error);
+        });
+}
+
+export function fetchFinalizedOrdersByDate(date, forTakeAway) {
+    return fetch(`http://localhost:8082/api/orders/finalized/date/${date}/${forTakeAway}`)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Communication error: GET /api/orders/finalized");
+            }
+        }).then(function (data) {
+            return data;
+        }).catch(function (error) {
+            console.log(error);
+        });
+}
+
 /** ----- END OF FETCH FUNCTIONS ----- **/
