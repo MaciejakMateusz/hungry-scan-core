@@ -5,6 +5,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
+import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderServiceInterface;
 
@@ -17,10 +18,12 @@ import java.util.Optional;
 @Slf4j
 public class OrderService implements OrderServiceInterface {
     private final OrderRepository orderRepository;
+    private final WaiterCallService waiterCallService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public OrderService(OrderRepository orderRepository, SimpMessagingTemplate messagingTemplate) {
+    public OrderService(OrderRepository orderRepository, WaiterCallService waiterCallService, SimpMessagingTemplate messagingTemplate) {
         this.orderRepository = orderRepository;
+        this.waiterCallService = waiterCallService;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -161,6 +164,7 @@ public class OrderService implements OrderServiceInterface {
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
+
     private BigDecimal calculateTotalAmount(Order order) {
         BigDecimal sum = BigDecimal.valueOf(0);
         for (OrderedItem orderedItem : order.getOrderedItems()) {
@@ -169,5 +173,16 @@ public class OrderService implements OrderServiceInterface {
             sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
         }
         return sum;
+    }
+
+    @Override
+    public void callWaiter(Order order) {
+        WaiterCall waiterCall = new WaiterCall();
+        waiterCall.setOrder(order);
+        if (!order.isWaiterCalled()) {
+            waiterCall.setResolved(true);
+        }
+        waiterCallService.callWaiter(waiterCall);
+        patch(order);
     }
 }

@@ -1096,3 +1096,68 @@ input:focus {
 input:focus::placeholder {
     color: transparent;
 }
+
+.waiter-call-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.waiter-call-info {
+    position: relative;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 60% 40%;
+    grid-template-areas:
+            "waiter-text"
+            "resolve-call";
+    width: 86%;
+    height: 80%;
+    background: #FFF;
+    border-radius: 8px;
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
+    font-family: var(--font-comfortaa);
+    font-weight: bold;
+}
+
+.waiter-call-icon {
+    position: absolute;
+    right: 85%;
+    margin-top: 0.9rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    background-size: contain;
+    background-image: url(/public/theme/icons/notification-icon.svg);
+}
+
+.waiter-text-area {
+    grid-area: waiter-text;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.resolve-call-button {
+    grid-area: resolve-call;
+    border-radius: 25px;
+    background: linear-gradient(89.58deg, #ff9b00, #fcaf38);
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
+    width: 40%;
+    height: 4vh;
+    display: flex;
+    justify-content: center;
+    justify-self: center;
+    align-self: center;
+    align-items: center;
+    font-weight: bolder;
+    font-size: 1rem;
+    margin-bottom: 1.2vh;
+}
+
+.resolve-call-button:hover {
+    background: linear-gradient(89.58deg, #fcaf38, #fcaf38);
+    cursor: pointer;
+}

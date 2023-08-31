@@ -60,9 +60,9 @@
                     <div id="r-table-3" class="table-icon table-default left-side-3 r-table-3">
                         <span class="table-number r-table-3">3</span>
                     </div>
-                        <div id="r-table-4" class="table-icon table-default left-side-4 r-table-4">
-                            <span class="table-number r-table-4">4</span>
-                        </div>
+                    <div id="r-table-4" class="table-icon table-default left-side-4 r-table-4">
+                        <span class="table-number r-table-4">4</span>
+                    </div>
                     <div id="r-table-5" class="s-table-icon s-table-default left-side-5 r-table-5">
                         <span class="table-number r-table-5">5</span>
                     </div>
@@ -184,17 +184,30 @@
                 </div>
             </div>
             <div class="right-column-info-container">
-                <p class="info-container-text" id="free-tables">Wolne: 0</p>
-                <p class="info-container-text" id="occupied-tables">Zajęte: 0</p>
-                <p class="info-container-text" id="booked-tables">Zarezerwowane: 0</p>
-                <div class="logout-button" id="logout-button">
-                    <div class="logout-icon"></div>
-                </div>
-                <sec:authorize access="hasRole('ADMIN')">
-                    <div class="cms-button" id="cms-button">
-                        <div class="cms-icon">CMS</div>
+                <div id="right-bottom-info-wrapper">
+                    <p class="info-container-text" id="free-tables">Wolne: 0</p>
+                    <p class="info-container-text" id="occupied-tables">Zajęte: 0</p>
+                    <p class="info-container-text" id="booked-tables">Zarezerwowane: 0</p>
+                    <div class="logout-button" id="logout-button">
+                        <div class="logout-icon"></div>
                     </div>
-                </sec:authorize>
+                    <sec:authorize access="hasRole('ADMIN')">
+                        <div class="cms-button" id="cms-button">
+                            <div class="cms-icon">CMS</div>
+                        </div>
+                    </sec:authorize>
+                </div>
+                <div class="waiter-call-wrapper d-none" id="waiter-call-wrapper">
+                    <div class="waiter-call-info">
+                        <span class="waiter-call-icon"></span>
+                        <div class="waiter-text-area">
+                            <span>Oczekuje na kelnera</span>
+                        </div>
+                        <div class="resolve-call-button">
+                            <span>Potwierdź</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

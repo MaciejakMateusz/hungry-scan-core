@@ -35,4 +35,7 @@ public interface OrderServiceInterface {
     void finish(Integer id, boolean paid, boolean isResolved);
 
     void finishTakeAway(Integer id, boolean paid, boolean isResolved);
+
+    void callWaiter(Order order);
+
 }

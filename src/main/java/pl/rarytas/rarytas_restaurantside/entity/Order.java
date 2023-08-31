@@ -59,6 +59,9 @@ public class Order {
     @Column(name = "is_resolved", nullable = false)
     private boolean isResolved = false;
 
+    @Column(name = "waiter-called", nullable = false)
+    private boolean waiterCalled = false;
+
     @Column(name = "order_number")
     private Integer orderNumber;
 
