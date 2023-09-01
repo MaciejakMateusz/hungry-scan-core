@@ -164,6 +164,30 @@ public class OrderService implements OrderServiceInterface {
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
+    @Override
+    public void callWaiter(Order order) {
+        WaiterCall waiterCall = new WaiterCall();
+        waiterCall.setOrder(order);
+        if (!order.isWaiterCalled()) {
+            waiterCall.setResolved(true);
+        }
+        patch(order);
+        waiterCallService.callWaiter(waiterCall);
+    }
+
+    @Override
+    public void resolveWaiterCall(Integer id, boolean waiterCalled) {
+        Order order = new Order();
+        if (orderRepository.existsById(id)) {
+            order = orderRepository.findById(id).orElseThrow();
+            order.setWaiterCalled(waiterCalled);
+        }
+        WaiterCall waiterCall = new WaiterCall();
+        waiterCall.setOrder(order);
+        waiterCall.setResolved(true);
+        orderRepository.saveAndFlush(order);
+        waiterCallService.callWaiter(waiterCall);
+    }
 
     private BigDecimal calculateTotalAmount(Order order) {
         BigDecimal sum = BigDecimal.valueOf(0);
@@ -173,16 +197,5 @@ public class OrderService implements OrderServiceInterface {
             sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
         }
         return sum;
-    }
-
-    @Override
-    public void callWaiter(Order order) {
-        WaiterCall waiterCall = new WaiterCall();
-        waiterCall.setOrder(order);
-        if (!order.isWaiterCalled()) {
-            waiterCall.setResolved(true);
-        }
-        waiterCallService.callWaiter(waiterCall);
-        patch(order);
     }
 }

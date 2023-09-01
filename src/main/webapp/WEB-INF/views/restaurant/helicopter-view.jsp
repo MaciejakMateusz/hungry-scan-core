@@ -197,14 +197,19 @@
                         </div>
                     </sec:authorize>
                 </div>
-                <div class="waiter-call-wrapper d-none" id="waiter-call-wrapper">
-                    <div class="waiter-call-info">
-                        <span class="waiter-call-icon"></span>
-                        <div class="waiter-text-area">
-                            <span>Oczekuje na kelnera</span>
-                        </div>
-                        <div class="resolve-call-button">
-                            <span>Potwierdź</span>
+                <div id="waiter-call-wrapper" class="d-none">
+                    <div class="waiter-call-container">
+                        <div class="waiter-call-info">
+                            <span class="waiter-call-icon"></span>
+                            <div class="waiter-text-area">
+                                <span>Oczekuje na kelnera</span>
+                            </div>
+                            <form action="${pageContext.request.contextPath}/restaurant/orders/resolve-call"
+                                  method="POST"
+                                  class="resolve-call-button"
+                                  id="resolve-call-form">
+                                <span>Potwierdź</span>
+                            </form>
                         </div>
                     </div>
                 </div>

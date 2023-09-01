@@ -33,9 +33,16 @@ function renderOrders(orders) {
         if (!order.isResolved && !order.billRequested) {
 
             let restaurantTableButton = document.querySelector(`#l-table-${order.restaurantTable.id}`);
-            let orangeOrderedMark = document.createElement('div');
-            orangeOrderedMark.classList.add('table-button-ordered');
-            restaurantTableButton.appendChild(orangeOrderedMark);
+            let tableButtonMark = document.createElement('div');
+
+            if(order.waiterCalled) {
+                tableButtonMark.classList.add('table-button-call');
+                restaurantTableButton.appendChild(tableButtonMark);
+            } else {
+                tableButtonMark.classList.add('table-button-ordered');
+                restaurantTableButton.appendChild(tableButtonMark);
+            }
+
             restaurantTableButton.classList.add('activated');
             const tableButtonChildren = Array.from(restaurantTableButton.children);
             tableButtonChildren.forEach(child => {
@@ -58,7 +65,6 @@ function renderOrders(orders) {
 
     });
 }
-
 /** ----- END OF RENDERING ORDERS ----- **/
 
 /** ----- SELECT THE ACTIVE TABLE AND RENDER ORDER DETAILS ----- **/
@@ -95,5 +101,7 @@ document.body.addEventListener('click', function (event) {
 document.querySelector('#tables-box').addEventListener('click', () => {
     document.querySelector('#table-list-container').classList.remove('d-none');
     document.querySelector('#order-details-panel').classList.add('d-none');
+    document.querySelector('#waiter-call-wrapper').classList.add('d-none');
+    document.querySelector('#right-bottom-info-wrapper').classList.remove('d-none');
 });
 /** ----- END OF UNSELECT THE TABLE AND CLEAR RIGHT PANEL ----- **/

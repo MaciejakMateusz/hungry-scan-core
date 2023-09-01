@@ -136,17 +136,35 @@
                 </div>
             </div>
             <div class="right-column-info-container">
-                <p class="info-container-text" id="free-tables">Wolne: 0</p>
-                <p class="info-container-text" id="occupied-tables">Zajęte: 0</p>
-                <p class="info-container-text">Zarezerwowane: 0</p>
-                <div class="logout-button" id="logout-button">
-                    <div class="logout-icon"></div>
-                </div>
-                <sec:authorize access="hasRole('ADMIN')">
-                    <div class="cms-button" id="cms-button">
-                        <div class="cms-icon">CMS</div>
+                <div id="right-bottom-info-wrapper">
+                    <p class="info-container-text" id="free-tables">Wolne: 0</p>
+                    <p class="info-container-text" id="occupied-tables">Zajęte: 0</p>
+                    <p class="info-container-text">Zarezerwowane: 0</p>
+                    <div class="logout-button" id="logout-button">
+                        <div class="logout-icon"></div>
                     </div>
-                </sec:authorize>
+                    <sec:authorize access="hasRole('ADMIN')">
+                        <div class="cms-button" id="cms-button">
+                            <div class="cms-icon">CMS</div>
+                        </div>
+                    </sec:authorize>
+                </div>
+                <div id="waiter-call-wrapper" class="d-none">
+                    <div class="waiter-call-container">
+                        <div class="waiter-call-info">
+                            <span class="waiter-call-icon"></span>
+                            <div class="waiter-text-area">
+                                <span>Oczekuje na kelnera</span>
+                            </div>
+                            <form action="${pageContext.request.contextPath}/restaurant/orders/resolve-call"
+                                  method="POST"
+                                  class="resolve-call-button"
+                                  id="resolve-call-form">
+                                <span>Potwierdź</span>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -4,15 +4,15 @@ const orderDetails = document.querySelector('#order-details');
 const paymentMethod = document.querySelector('#p-method');
 const totalPriceSpans = document.querySelectorAll('.total-price-span');
 const orderedTotalAmountSection = document.querySelector('#ordered-total-amount-section');
-const billRequestedSection = document.querySelector('#bill-requested-finalize-section');        // Selecting the finalize form
+const billRequestedSection = document.querySelector('#bill-requested-finalize-section');
 const finalizeButton = document.querySelector('#finalize-button');
-
+const resolveCallForm = document.querySelector('#resolve-call-form');
 
 
 /** ----- RENDERING ORDER DETAILS ON THE RIGHT PANEL ----- **/
 export function renderOrderDetails(order) {
 
-    if(!order.forTakeAway) {
+    if (!order.forTakeAway) {
         tableNumber.innerText = `Stolik ${order.restaurantTable.id}`;
     }
     orderTime.innerText = `Godzina zamówienia: ${order.orderTime.substring(0, 5)}`;
@@ -52,10 +52,36 @@ export function renderOrderDetails(order) {
         totalPrice.innerText = `${sum.toFixed(2)} zł`
     });
 
+    if (order.waiterCalled) {
+        const rightBottomInfoWrapper = document.querySelector('#right-bottom-info-wrapper');
+        const waiterCallWrapper = document.querySelector('#waiter-call-wrapper');
+
+        rightBottomInfoWrapper.classList.add('d-none');
+        waiterCallWrapper.classList.remove('d-none');
+
+        let idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'id';
+        idInput.value = `${order.id}`;
+        resolveCallForm.appendChild(idInput);
+
+        // Create the hidden input for 'isResolved'
+        let waiterCalledInput = document.createElement('input');
+        waiterCalledInput.type = 'hidden';
+        waiterCalledInput.name = 'waiterCalled';
+        waiterCalledInput.value = 'false';
+        resolveCallForm.appendChild(waiterCalledInput);
+
+        resolveCallForm.addEventListener('click', e => {
+            e.preventDefault();
+            resolveCallForm.submit();
+        });
+    }
+
     const orderDetailsSection = document.querySelector('#order-details-section');
     if (order.billRequested || order.forTakeAway) {
 
-        if(!order.resolved) {
+        if (!order.resolved) {
             orderDetailsSection.classList.remove('no-button');
             orderedTotalAmountSection.classList.add('d-none');
             billRequestedSection.classList.remove('d-none');
@@ -100,7 +126,7 @@ export function renderOrderDetails(order) {
 /** ----- END OF RENDERING ORDER DETAILS ON THE RIGHT PANEL ----- **/
 
 
-/** ----- CLEAR THE RIGHT PANEL TO REPOPULATE IT ----- **/
+/** ----- CLEARING THE RIGHT PANEL----- **/
 export function clearOrderDetails() {
     orderTime.innerText = '';
     orderDetails.innerHTML = ''; // Remove all child elements
