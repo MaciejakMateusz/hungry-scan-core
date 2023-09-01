@@ -34,7 +34,7 @@ public class MenuItemController {
 
     @GetMapping
     public String itemsList() {
-        return "restaurant/cms/items/list";
+        return "restaurant/cms/items/new-list";
     }
 
     @GetMapping("/add")

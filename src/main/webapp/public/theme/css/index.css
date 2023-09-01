@@ -67,6 +67,8 @@
     background-color: var(--color-white);
     box-sizing: border-box;
     max-height: 96%;
+    width: 100%;
+    height: 100%;
 }
 
 .background {
@@ -101,6 +103,11 @@
     color: var(--color-black);
     padding-top: 0.4rem;
     margin-inline: 5rem;
+}
+
+.cms-style {
+    justify-content: center;
+    gap: 5rem;
 }
 
 
@@ -1208,4 +1215,39 @@ input:focus::placeholder {
 .resolve-call-button:hover {
     background: linear-gradient(89.58deg, #fcaf38, #fcaf38);
     cursor: pointer;
+}
+
+
+
+.grid-container-menu-items {
+    display: grid;
+    font-family: var(--font-comfortaa);
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+        "left-side-1 middle-row-1 middle-row-6 right-side-1"
+        "left-side-2 middle-row-2 middle-row-7 right-side-2"
+        "left-side-3 middle-row-3 middle-row-8 right-side-3"
+        "left-side-4 middle-row-4 middle-row-9 right-side-4"
+        "left-side-5 middle-row-5 middle-row-10 right-side-5";
+    gap: 5px;
+    height: 100%;
+    margin-right: -2rem;
+    position: relative;
+    z-index: 0;
+}
+
+.global-cms-grid-container {
+    display: grid;
+    font-family: var(--font-comfortaa);
+    grid-template-columns: 1fr;
+    grid-template-rows: 8% 10% 75% 7%;
+    grid-template-areas:
+        "date-time"
+        "menu"
+        "content"
+        "bottom-buttons";
+    height: 100vh;
+    overflow: hidden;
+    font-size: 2.5vh;
 }

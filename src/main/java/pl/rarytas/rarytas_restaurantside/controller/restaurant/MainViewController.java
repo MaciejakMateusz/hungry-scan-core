@@ -20,14 +20,13 @@ public class MainViewController {
 
     @GetMapping
     public String mainView() {
-        return "restaurant/helicopter-view";
+        return "restaurant/main-view";
     }
 
     @GetMapping("/menu")
     public String menu() {
         return "restaurant/menu/menu";
     }
-
 
     @ModelAttribute("categories")
     private List<Category> getEntireMenu() {

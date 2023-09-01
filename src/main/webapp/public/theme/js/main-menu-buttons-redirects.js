@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (cmsButton !== null) {
         cmsButton.addEventListener('click', function () {
-            window.location.href = "http://localhost:8082/restaurant/cms";
+            window.location.href = "http://localhost:8082/restaurant/cms/items";
         });
     }
 
