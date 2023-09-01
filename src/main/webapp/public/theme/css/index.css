@@ -1036,6 +1036,48 @@
     cursor: pointer;
 }
 
+.cms-menu-category {
+    width: 100%;
+    display: grid;
+    grid-template-rows: 80% 20%;
+    grid-template-areas:
+            "cms-category-description"
+            "cms-category-action-buttons";
+    align-items: center;
+    justify-content: center;
+    margin-inline: 4rem;
+}
+
+.cms-category-description-area {
+    grid-area: cms-category-description;
+    margin-inline: 4rem;
+    text-align: center;
+    font-size: 1rem;
+    margin-top: -2rem;
+}
+
+.cms-category-action-buttons-area {
+    grid-area: cms-category-action-buttons;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "edit-category-cms delete-category-cms";
+    margin-top: 1.5rem;
+    gap: 5%;
+}
+
+.edit-category-cms-area {
+    grid-area: edit-category-cms;
+    width: 50%;
+    display: flex;
+    justify-self: flex-end;}
+
+.delete-category-cms-area {
+    grid-area: delete-category-cms;
+    width: 50%;
+    display: flex;
+    justify-self: flex-start;
+}
+
 .orders-list-box {
     flex: 1;
     position: relative;

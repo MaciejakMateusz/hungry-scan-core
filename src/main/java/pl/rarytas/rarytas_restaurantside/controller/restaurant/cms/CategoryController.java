@@ -25,7 +25,7 @@ public class CategoryController {
 
     @GetMapping
     public String list() {
-        return "restaurant/cms/categories/list";
+        return "restaurant/cms/categories/new-list";
     }
 
     @GetMapping("/add")
