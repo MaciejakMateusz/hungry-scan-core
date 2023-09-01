@@ -10,6 +10,11 @@ const logoutButton = document.querySelector('#logout-button');
 const cmsButton = document.querySelector('#cms-button');
 const finalizedDineInButton = document.querySelector('#finalized-dine-in-button');
 const finalizedTakeAwayButton = document.querySelector('#finalized-take-away-button');
+const addItemButton = document.querySelector('#add-item-button');
+const backButton = document.querySelector('#back-button');
+const cmsItemsManagementButton = document.querySelector('#menu-items-management');
+const cmsCategoryManagementButton = document.querySelector('#categories-management');
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -27,29 +32,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    mainViewButton.addEventListener('click', function () {
-        window.location.href = "http://localhost:8082/restaurant";
-    });
+    if (mainViewButton !== null) {
+        mainViewButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant";
+        });
+    }
 
-    takeAwayButton.addEventListener('click', function () {
-        window.location.href = "http://localhost:8082/restaurant/orders/take-away";
-    });
+    if (takeAwayButton !== null) {
+        takeAwayButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/orders/take-away";
+        });
+    }
 
-    // reservationsButton.addEventListener('click', function () {
-    //     // window.location.href = "http://localhost:8082/restaurant/bookings";
-    // });
+    // if (reservationsButton !== null) {
+    //     reservationsButton.addEventListener('click', function () {
+    //         // window.location.href = "http://localhost:8082/restaurant/bookings";
+    //     });
+    // }
 
-    restaurantMenuButton.addEventListener('click', function () {
-        window.location.href = "http://localhost:8082/restaurant/menu";
-    });
+    if (restaurantMenuButton !== null) {
+        restaurantMenuButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/menu";
+        });
+    }
 
-    finalizedOrdersButton.addEventListener('click', function () {
-        window.location.href = "http://localhost:8082/restaurant/orders/finalized";
-    });
+    if (finalizedOrdersButton !== null) {
+        finalizedOrdersButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/orders/finalized";
+        });
+    }
 
-    logoutButton.addEventListener('click', function () {
-        window.location.href = "http://localhost:8082/restaurant/logout";
-    });
+    if (logoutButton !== null) {
+        logoutButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/logout";
+        });
+    }
 
     if (cmsButton !== null) {
         cmsButton.addEventListener('click', function () {
@@ -68,6 +85,31 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "http://localhost:8082/restaurant/orders/finalized/take-away";
         });
     }
+
+    if (addItemButton !== null) {
+        addItemButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/cms/items/add";
+        });
+    }
+
+    if (backButton !== null) {
+        backButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant";
+        });
+    }
+
+    if (cmsItemsManagementButton !== null) {
+        cmsItemsManagementButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/cms/items";
+        });
+    }
+
+    if (cmsCategoryManagementButton !== null) {
+        cmsCategoryManagementButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/cms/categories";
+        });
+    }
+
 
 });
 /** ----- END OF MAIN MENU BUTTONS REDIRECTS ----- **/
