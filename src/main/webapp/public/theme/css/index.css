@@ -420,6 +420,10 @@
     overflow-y: auto;
 }
 
+.unset-overflow-y {
+    overflow-y: unset;
+}
+
 .right-column {
     position: relative;
     grid-area: right-column;
@@ -824,10 +828,14 @@
     gap: 20px; /* Adjust the gap as needed */
 }
 
+.cms-form {
+    height: 100%;
+    width: 100%;
+}
+
 .grid-container-category {
     display: flex;
     flex-direction: column;
-    /* justify-content: center; */
     width: 98%;
     align-items: center;
     align-self: center;
@@ -1036,6 +1044,21 @@
     cursor: pointer;
 }
 
+.gray-style {
+    background: #F5F5F5;
+    width: 70%;
+    position: relative;
+}
+
+.custom-radio {
+    display: none;
+}
+
+.gray-style:hover {
+    background: #E5E5E5;
+    cursor: pointer;
+}
+
 .cms-menu-category {
     width: 100%;
     display: grid;
@@ -1069,7 +1092,8 @@
     grid-area: edit-category-cms;
     width: 50%;
     display: flex;
-    justify-self: flex-end;}
+    justify-self: flex-end;
+}
 
 .delete-category-cms-area {
     grid-area: delete-category-cms;
@@ -1308,10 +1332,10 @@ input {
     font-family: var(--font-comfortaa);
     font-size: 0.9rem;
     border: none transparent;
-    background: whitesmoke;
-    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
-    border-radius: 5px;
-    text-align: center;
+    height: 3rem;
+    background: #F5F5F5;
+    border-radius: 7px;
+    padding-left: 0.5rem;
 }
 
 input::placeholder {
@@ -1320,7 +1344,6 @@ input::placeholder {
 
 input:focus {
     outline: none;
-    background-color: #fff;
 }
 
 input:focus::placeholder {
@@ -1394,7 +1417,6 @@ input:focus::placeholder {
 }
 
 
-
 .grid-container-menu-items {
     display: grid;
     font-family: var(--font-comfortaa);
@@ -1447,10 +1469,9 @@ input:focus::placeholder {
 
 .add-item-icon {
     position: absolute;
-    left: 2rem;
-    top: 0.2rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    left: 7%;
+    width: 3.2vh;
+    height: 3.2vh;
     background-size: contain;
     background-image: url('/public/theme/icons/add-item-button.svg');
 }
@@ -1464,7 +1485,7 @@ input:focus::placeholder {
     height: 4vh;
     border-radius: 25px;
     background: #FFF;
-    font-size: 1rem;
+    font-size: 2.5vh;
 }
 
 .add-item-button:hover {
@@ -1478,7 +1499,7 @@ input:focus::placeholder {
     justify-content: flex-end;
     align-items: center;
     margin-right: 3rem;
-    font-size: 1rem;
+    font-size: 2.5vh;
 }
 
 .back-button {
@@ -1497,4 +1518,244 @@ input:focus::placeholder {
     height: 2rem;
     background-size: contain;
     background-image: url('/public/theme/icons/back-button.svg');
+}
+
+.add-item-text-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: -0.3rem;
+}
+
+.menu-item-form-area {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 70% 30%;
+    grid-template-areas:
+        "category-input available-buttons"
+        "name-input available-buttons"
+        "description-input available-buttons"
+        "price-input available-buttons"
+        "photo-input available-buttons"
+        "form-action-buttons form-action-buttons";
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+    grid-column-gap: 1.2rem;
+}
+
+.available-buttons-area {
+    grid-area: available-buttons;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1rem;
+    font-weight: bold;
+    gap: 1vh;
+    margin-bottom: 3rem;
+    margin-left: 1rem;
+}
+
+.check-icon {
+    position: absolute;
+    right: 1vh;
+    top: 0.1rem;
+    background-image: url('/public/theme/icons/check-icon.svg');
+    width: 4vh;
+    height: 4vh;
+    background-size: contain;
+    margin-left: 1rem;
+}
+
+.category-input-area {
+    display: grid;
+    grid-area: category-input;
+    grid-template-columns: 15% 85%;
+    grid-template-areas: "cat-input-definition cat-input-field";
+    gap: 1.8rem;
+}
+
+.cat-input-definition-area {
+    grid-area: cat-input-definition;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.cat-input-field-area {
+    grid-area: cat-input-field;
+    text-align: center;
+}
+
+.name-input-area {
+    grid-area: name-input;
+    display: grid;
+    grid-template-columns: 15% 85%;
+    grid-template-areas: "nam-input-definition nam-input-field";
+    gap: 1.8rem;
+    margin-top: -3rem;
+}
+
+.nam-input-definition-area {
+    grid-area: nam-input-definition;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.nam-input-field-area {
+    grid-area: nam-input-field;
+}
+
+.description-input-area {
+    grid-area: description-input;
+    display: grid;
+    grid-template-columns: 15% 85%;
+    grid-template-areas: "des-input-definition des-input-field";
+    gap: 1.8rem;
+    margin-top: -1.5rem;
+}
+
+.des-input-definition-area {
+    grid-area: des-input-definition;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.des-input-field-area {
+    grid-area: des-input-field;
+    height: 7rem;
+}
+
+textarea {
+    outline: none;
+    border: none;
+    border: 10px;
+    background: #F5F5F5;
+    font-family: var(--font-comfortaa);
+    padding: 0.5rem;
+    border-radius: 7px;
+    resize: none;
+}
+
+.price-input-area {
+    grid-area: price-input;
+    display: grid;
+    grid-template-columns: 15% 85%;
+    grid-template-areas: "pri-input-definition pri-input-field";
+    gap: 1.8rem;
+    margin-top: -0.1rem;
+}
+
+.pri-input-definition-area {
+    grid-area: pri-input-definition;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.pri-input-field-area {
+    grid-area: pri-input-field;
+}
+
+.photo-input-area {
+    grid-area: photo-input;
+    display: grid;
+    grid-template-columns: 15% 85%;
+    grid-template-areas: "pho-input-definition pho-input-field";
+    gap: 1.8rem;
+    margin-top: -2rem;
+}
+
+.pho-input-definition-area {
+    grid-area: pho-input-definition;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.pho-input-field-area {
+    grid-area: pho-input-field;
+    padding-top: 0.8rem;
+    background: transparent;
+    font-weight: bold;
+}
+
+.form-action-buttons-area {
+    grid-area: form-action-buttons;
+    display: flex;
+    gap: 5%;
+    margin-inline: 13rem;
+}
+
+select {
+    border-radius: 7px;
+}
+
+/*CUSTOM SELECT FIELD STYLING*/
+.custom-select {
+    position: relative;
+    font-family: var(--font-comfortaa);
+}
+
+.custom-select select {
+    display: none; /*hide original SELECT element:*/
+}
+
+.select-selected {
+    background-color: #F5F5F5;
+    border-radius: 7px;
+}
+
+/*style the arrow inside the select element:*/
+.select-selected:after {
+    position: absolute;
+    content: "";
+    top: 14px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-color: black transparent transparent transparent;
+}
+
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+    border-color: transparent transparent black transparent;
+    top: 7px;
+}
+
+/*style the items (options), including the selected item:*/
+.select-items div,.select-selected {
+    color: black;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+    cursor: pointer;
+    user-select: none;
+    font-size: 2vh;
+}
+
+/*style items (options):*/
+.select-items {
+    position: absolute;
+    background-color: #F5F5F5;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+    display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+    background-color: rgba(0, 0, 0, 0.1);
 }
