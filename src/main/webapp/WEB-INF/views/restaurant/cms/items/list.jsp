@@ -68,9 +68,11 @@
                                             <c:choose>
                                                 <c:when test="${menuItem.available}">
                                                     <span>Dostępne</span>
+                                                    <span class="check-icon available-icon-list-position"></span>
                                                 </c:when>
                                                 <c:when test="${!menuItem.available}">
                                                     <span>Niedostępne</span>
+                                                    <span class="x-icon unavailable-icon-list-position"></span>
                                                 </c:when>
                                             </c:choose>
                                         </div>

@@ -43,7 +43,7 @@
 .date-time-container {
     border-radius: 40px;
     background-color: var(--color-white);
-    width: 95%;
+    width: 96%;
     align-items: center;
     gap: 5rem;
     min-height: 2.5rem;
@@ -102,7 +102,7 @@
     font-size: 1rem;
     color: var(--color-black);
     padding-top: 0.4rem;
-    margin-inline: 5rem;
+    margin-inline: 2rem;
 }
 
 .cms-style {
@@ -943,10 +943,9 @@
         "cms-item-price item-photo";
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    min-height: 11rem;
-    max-height: 11rem;
+    width: 22rem;
+    min-height: 12rem;
+    max-height: 12rem;
     border-radius: 3px;
     box-shadow: -1.31px 1px 15px 0 #D9D9D9,
     2px 0 3px 0 rgba(0, 0, 0, 0.08) inset,
@@ -981,14 +980,12 @@
 .cms-item-photo-area {
     grid-area: item-photo;
     width: 100%;
-    max-height: 95%;
+    max-height: 100%;
 }
 
 .cms-photo-container {
     overflow: hidden;
     margin-left: -1rem;
-    max-height: 90%;
-    display: flex;
 }
 
 .increment-button {
@@ -1000,6 +997,7 @@
 }
 
 .menu-item-available-area {
+    position: relative;
     grid-area: available;
     display: flex;
     align-items: center;
@@ -1021,7 +1019,7 @@
     align-items: center;
     width: 100%;
     min-width: 22vh;
-    height: 5vh;
+    height: 5.5vh;
     border-radius: 25px;
     border: transparent;
     font-size: 0.8rem;
@@ -1089,7 +1087,7 @@
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "edit-category-cms delete-category-cms";
     margin-top: 1.5rem;
-    gap: 5%;
+    gap: 4%;
 }
 
 .edit-category-cms-area {
@@ -1485,10 +1483,11 @@ input:focus::placeholder {
     justify-content: center;
     align-items: center;
     width: 35vh;
-    height: 4vh;
+    height: 5vh;
     border-radius: 25px;
     background: #FFF;
     font-size: 1rem;
+    font-weight: bold;
 }
 
 .add-item-button:hover {
@@ -1919,8 +1918,9 @@ select {
 }
 
 .menu-item-img {
-    max-height: 100%;
-    width: 100%;
+    height: 12rem;
+    margin-left: 1.5rem;
+    margin-top: 0.3rem;
 }
 
 .top-history-functions-container {
@@ -1973,4 +1973,14 @@ select {
 input[type="date"]::-webkit-calendar-picker-indicator {
     position: absolute;
     left: 28%;
+}
+
+.available-icon-list-position {
+    top: -0.4rem;
+    right: 1.2rem;
+}
+
+.unavailable-icon-list-position {
+    top: 0;
+    right: 1rem;
 }
