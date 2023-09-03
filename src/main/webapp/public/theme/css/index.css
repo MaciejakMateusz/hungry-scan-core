@@ -229,7 +229,7 @@
 .table-hovered {
     z-index: -1;
     position: absolute;
-    top: -0.8rem;
+    top: -2vh;
     width: 16vh;
     height: 12vh;
     border-radius: 20px;
@@ -240,7 +240,7 @@
 .table-call-hovered {
     z-index: -1;
     position: absolute;
-    top: -0.6rem;
+    top: -1.4vh;
     width: 16vh;
     height: 12vh;
     border-radius: 20px;
@@ -285,7 +285,7 @@
 .s-table-hovered {
     z-index: -1;
     position: absolute;
-    top: -0.7rem;
+    top: -2vh;
     width: 15vh;
     height: 10vh;
     border-radius: 20px;
@@ -316,7 +316,7 @@
 .s-table-call-hovered {
     z-index: -1;
     position: absolute;
-    top: -0.2rem;
+    top: -0.5vh;
     width: 15vh;
     height: 10vh;
     border-radius: 20px;

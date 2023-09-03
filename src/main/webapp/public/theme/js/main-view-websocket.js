@@ -34,7 +34,7 @@ export function renderOrders(orders) {
             if (order.restaurantTable.id !== 5 &&
                 order.restaurantTable.id !== 6 &&
                 order.restaurantTable.id !== 11 &&
-                order.restaurantTable.id !== 15) {
+                order.restaurantTable.id !== 15) { //basically if the table is not small, perform those actions:
 
                 restaurantTableIcon.classList.remove('table-default');
                 if (order.waiterCalled) {
@@ -43,7 +43,7 @@ export function renderOrders(orders) {
                     restaurantTableIcon.classList.add('table-ordered');
                 }
 
-            } else {
+            } else { //else if the table is small:
                 restaurantTableIcon.classList.remove('s-table-default');
                 if (order.waiterCalled) {
                     restaurantTableIcon.classList.add('s-table-waiter-call');
