@@ -44,47 +44,55 @@
         </div>
 
         <div class="content menu-overflow">
-            <div class="orders-list-box fit-content">
-                <div class="search-filters-container">
-                    <form class="search-filter"
-                          id="id-filter">
-                        <label for="search-id">
-                            <input type="number"
-                                   min="1"
-                                   id="search-id"
-                                   placeholder="ID">
-                        </label>
-                        <input type="submit" style="display: none;">
-                    </form>
-                    <form class="search-filter"
-                          id="date-filter">
-                        <label for="search-date">
-                            <input type="date"
-                                   id="search-date"
-                                   placeholder="Data zamówienia">
-                        </label>
-                        <input type="submit" style="display: none;">
-                    </form>
-                </div>
-                <div class="order-type-buttons">
-                    <div class="dine-in-button" id="finalized-dine-in-button">
-                        <span>Na miejscu</span>
+            <div class="orders-history-container">
+                <div class="top-history-functions-container">
+                    <div class="top-history-functions-grid">
+                        <div class="order-type-buttons history-navigation-area">
+                            <div class="dine-in-button" id="finalized-dine-in-button">
+                                <span>Na miejscu</span>
+                            </div>
+                            <div class="take-away-button order-type-button-selected" id="finalized-take-away-button">
+                                <span>Na wynos</span>
+                            </div>
+                        </div>
+                        <div class="search-filters-container history-filters-area">
+                            <form class="search-filter"
+                                  id="id-filter">
+                                <label for="search-id" class="id-filter">
+                                    <input type="number"
+                                           min="1"
+                                           id="search-id"
+                                           class="id-filter"
+                                           placeholder="ID">
+                                </label>
+                                <input type="submit" style="display: none;">
+                            </form>
+                            <form class="search-filter"
+                                  id="date-filter">
+                                <label for="search-date" class="date-filter">
+                                    <input type="date"
+                                           id="search-date"
+                                           class="date-filter"
+                                           placeholder="Data zamówienia">
+                                </label>
+                                <input type="submit" style="display: none;">
+                            </form>
+                        </div>
                     </div>
-                    <div class="take-away-button order-type-button-selected" id="finalized-take-away-button">
-                        <span>Na wynos</span>
+                </div>
+                <div class="orders-list-box fit-content">
+                    <div class="orders-list-head">
+                        <span class="head-order-id">ID</span>
+                        <span class="head-order-number">Nr zamówienia</span>
+                        <span class="head-order-date-time">Godzina i data</span>
                     </div>
-                </div>
-                <div class="orders-list-head">
-                    <span class="head-order-id">ID</span>
-                    <span class="head-order-number">Nr zamówienia</span>
-                    <span class="head-order-date-time">Godzina i data</span>
-                </div>
-                <div id="orders-list-parent">
-                </div>
-                <div class="pagination-buttons">
-                    <span class="page-text">Strona:</span>
-                    <div class="pagination-button pagination-button-selected">
-                        <span>1</span>
+                    <div id="orders-list-parent">
+                    </div>
+                    <div class="pagination-buttons">
+                        <span class="page-text">Strona:</span>
+                        <div class="pagination-button pagination-button-selected">
+                            <span>1</span>
+                        </div>
                     </div>
                 </div>
             </div>

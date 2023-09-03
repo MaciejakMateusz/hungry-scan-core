@@ -581,7 +581,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    bottom: 0.7em;
+    bottom: 3%;
     right: 1.5em;
     border-radius: 10px;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
@@ -607,7 +607,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    bottom: 3.5em;
+    bottom: 10%;
     right: 1.5em;
     border-radius: 10px;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
@@ -1210,8 +1210,7 @@
     grid-template-areas: "dine-in-button take-away-button";
     font-weight: bold;
     font-size: 1rem;
-    gap: 2.5rem;
-    margin-bottom: 1.5rem;
+    gap: 2rem;
     width: 100%;
 }
 
@@ -1273,7 +1272,8 @@
 .orders-history-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    max-height: 78vh;
+    min-height: 78vh;
 }
 
 .pagination-buttons {
@@ -1317,19 +1317,18 @@
 
 .search-filters-container {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     min-height: 6vh;
-    width: 95%;
-    background: lightgray;
-    border-radius: 15px;
-    margin-bottom: 1rem;
+    width: 100%;
+    gap: 1rem;
 }
 
 .search-filter {
     display: contents;
     margin-left: 2rem;
     font-family: var(--font-comfortaa);
+    width: 100%;
 }
 
 input {
@@ -1581,6 +1580,7 @@ input:focus::placeholder {
     grid-template-columns: 15% 85%;
     grid-template-areas: "cat-input-definition cat-input-field";
     gap: 1.8rem;
+    font-size: 1rem;
 }
 
 .cat-input-definition-area {
@@ -1602,6 +1602,7 @@ input:focus::placeholder {
     grid-template-areas: "nam-input-definition nam-input-field";
     gap: 1.8rem;
     margin-top: -3rem;
+    font-size: 1rem;
 }
 
 .nam-input-definition-area {
@@ -1622,6 +1623,7 @@ input:focus::placeholder {
     grid-template-areas: "des-input-definition des-input-field";
     gap: 1.8rem;
     margin-top: -1.5rem;
+    font-size: 1rem;
 }
 
 .des-input-definition-area {
@@ -1653,6 +1655,7 @@ textarea {
     grid-template-areas: "pri-input-definition pri-input-field";
     gap: 1.8rem;
     margin-top: -0.1rem;
+    font-size: 1rem;
 }
 
 .pri-input-definition-area {
@@ -1673,6 +1676,7 @@ textarea {
     grid-template-areas: "pho-input-definition pho-input-field";
     gap: 1.8rem;
     margin-top: -2rem;
+    font-size: 1rem;
 }
 
 .pho-input-definition-area {
@@ -1734,7 +1738,7 @@ select {
 }
 
 /*style the items (options), including the selected item:*/
-.select-items div,.select-selected {
+.select-items div, .select-selected {
     color: black;
     padding: 8px 16px;
     border: 1px solid transparent;
@@ -1785,6 +1789,7 @@ select {
     justify-self: center;
     justify-content: center;
     margin-bottom: -2rem;
+    font-size: 1rem;
 }
 
 .category-description-input-area {
@@ -1796,6 +1801,7 @@ select {
     width: 75%;
     justify-content: center;
     justify-self: center;
+    font-size: 1rem;
 }
 
 .cat-desc-height {
@@ -1814,6 +1820,7 @@ select {
     width: 100%;
     height: 100%;
     grid-column-gap: 2rem;
+    font-size: 1rem;
 }
 
 .id-delete-area {
@@ -1864,6 +1871,7 @@ select {
     width: 100%;
     height: 100%;
     grid-column-gap: 2rem;
+    font-size: 1rem;
 }
 
 .price-delete-area {
@@ -1902,4 +1910,56 @@ select {
 .menu-item-img {
     max-height: 100%;
     width: 100%;
+}
+
+.top-history-functions-container {
+    border-radius: 20px;
+    background-color: var(--color-white);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: 1rem;
+    margin-bottom: 0.7rem;
+}
+
+.top-history-functions-grid {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+            "history-navigation"
+            "history-filters";
+    width: 100%;
+}
+
+.history-navigation-area {
+    grid-area: history-navigation;
+}
+
+.history-filters-area {
+    grid-area: history-filters;
+}
+
+.id-filter {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 1rem;
+    border-radius: 25px;
+    text-align: center;
+}
+
+.date-filter {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-right: 1rem;
+    border-radius: 25px;
+    text-align: center;
+    position: relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    left: 28%;
 }
