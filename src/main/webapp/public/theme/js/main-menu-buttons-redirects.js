@@ -125,5 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    if (cancelCategoryFormButton !== null) {
+        cancelCategoryFormButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/cms/categories";
+        });
+    }
+
 });
 /** ----- END OF MAIN MENU BUTTONS REDIRECTS ----- **/

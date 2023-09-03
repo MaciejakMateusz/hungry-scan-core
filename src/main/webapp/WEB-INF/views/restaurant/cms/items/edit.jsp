@@ -38,7 +38,7 @@
             <div class="tables-box fit-content unset-overflow-y" id="tables-box">
                 <div class="container-menu cms-form">
                     <div class="grid-container-category cms-form">
-                        <div class="add-item-text-area">
+                        <div class="cms-form-title-area">
                             <span>Edytuj danie</span>
                         </div>
                         <form:form method="POST"
@@ -91,15 +91,14 @@
                             <div class="available-buttons-area">
                                 <span>Dostępność</span>
                                 <label for="available" class="cms-action-button gray-style" id="available-label">
-                                    Dostępny
+                                    Dostępne
                                     <form:radiobutton path="available"
                                                       id="available"
                                                       class="custom-radio"
                                                       value="true"/>
-                                        <%--                                    <span class="check-icon"></span>--%>
                                 </label>
                                 <label for="unavailable" class="cms-action-button gray-style" id="unavailable-label">
-                                    Niedostępny
+                                    Niedostępne
                                     <form:radiobutton path="available"
                                                       id="unavailable"
                                                       class="custom-radio"

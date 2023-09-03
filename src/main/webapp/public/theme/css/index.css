@@ -1520,7 +1520,7 @@ input:focus::placeholder {
     background-image: url('/public/theme/icons/back-button.svg');
 }
 
-.add-item-text-area {
+.cms-form-title-area {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1624,7 +1624,6 @@ input:focus::placeholder {
     grid-area: des-input-definition;
     display: flex;
     justify-content: flex-end;
-    align-items: center;
 }
 
 .des-input-field-area {
@@ -1758,4 +1757,43 @@ select {
 
 .select-items div:hover, .same-as-selected {
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+.category-form-grid {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-areas:
+        "cat-name-input"
+        "cat-description-input"
+        "form-action-buttons";
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+}
+
+.category-name-input-area {
+    grid-area: cat-name-input;
+    display: grid;
+    grid-template-columns: 15% 85%;
+    grid-template-areas: "nam-input-definition nam-input-field";
+    gap: 1.8rem;
+    width: 75%;
+    justify-self: center;
+    justify-content: center;
+    margin-bottom: -2rem;
+}
+
+.category-description-input-area {
+    grid-area: cat-description-input;
+    display: grid;
+    grid-template-columns: 15% 85%;
+    grid-template-areas: "des-input-definition des-input-field";
+    gap: 1.8rem;
+    width: 75%;
+    justify-content: center;
+    justify-self: center;
+}
+
+.cat-desc-height {
+    height: 10rem;
 }
