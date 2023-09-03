@@ -807,7 +807,7 @@
     background: linear-gradient(89.58deg, #ff9b00, #fcaf38);
     box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
     width: 85%;
-    height: 8vh;
+    height: 7vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1488,7 +1488,7 @@ input:focus::placeholder {
     height: 4vh;
     border-radius: 25px;
     background: #FFF;
-    font-size: 2.5vh;
+    font-size: 1rem;
 }
 
 .add-item-button:hover {
@@ -1502,7 +1502,7 @@ input:focus::placeholder {
     justify-content: flex-end;
     align-items: center;
     margin-right: 3rem;
-    font-size: 2.5vh;
+    font-size: 1rem;
 }
 
 .back-button {
@@ -1570,6 +1570,17 @@ input:focus::placeholder {
     background-image: url('/public/theme/icons/check-icon.svg');
     width: 4vh;
     height: 4vh;
+    background-size: contain;
+    margin-left: 1rem;
+}
+
+.x-icon {
+    position: absolute;
+    right: 1.7vh;
+    top: 0.6rem;
+    background-image: url('/public/theme/icons/x-icon.svg');
+    width: 2.1vh;
+    height: 2.1vh;
     background-size: contain;
     margin-left: 1rem;
 }

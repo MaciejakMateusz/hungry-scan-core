@@ -40,11 +40,11 @@ function indicateCheckedRadio() {
     if (unavailableRadio.checked) {
         if (!unavailableLabel.querySelector('.check-icon')) {
             const checkIcon = document.createElement('span');
-            checkIcon.className = 'check-icon';
+            checkIcon.className = 'x-icon';
             unavailableLabel.appendChild(checkIcon);
         }
     } else {
-        const currentCheckedIndicator = unavailableLabel.querySelector('.check-icon');
+        const currentCheckedIndicator = unavailableLabel.querySelector('.x-icon');
         if (currentCheckedIndicator) {
             currentCheckedIndicator.remove();
         }
