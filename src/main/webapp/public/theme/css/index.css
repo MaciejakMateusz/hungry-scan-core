@@ -946,6 +946,7 @@
     width: 100%;
     height: 100%;
     min-height: 11rem;
+    max-height: 11rem;
     border-radius: 3px;
     box-shadow: -1.31px 1px 15px 0 #D9D9D9,
     2px 0 3px 0 rgba(0, 0, 0, 0.08) inset,
@@ -980,12 +981,14 @@
 .cms-item-photo-area {
     grid-area: item-photo;
     width: 100%;
-    height: 95%;
+    max-height: 95%;
 }
 
 .cms-photo-container {
     overflow: hidden;
     margin-left: -1rem;
+    max-height: 90%;
+    display: flex;
 }
 
 .increment-button {
@@ -1844,4 +1847,59 @@ select {
 .description-value-area {
     grid-area: description-value;
     width: 70%;
+}
+
+.delete-menu-item-grid {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 20% 80%;
+    grid-template-areas:
+        "id-delete id-value"
+        "name-delete name-value"
+        "description-delete description-value"
+        "category-delete category-value"
+        "price-delete price-value"
+        "available-delete available-value"
+        "form-action-buttons form-action-buttons";
+    width: 100%;
+    height: 100%;
+    grid-column-gap: 2rem;
+}
+
+.price-delete-area {
+    grid-area: price-delete;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.price-value-area {
+    grid-area: price-value;
+    width: 70%;
+}
+
+.available-delete-area {
+    grid-area: available-delete;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.available-value-area {
+    grid-area: available-value;
+    width: 70%;
+}
+
+.category-delete-area {
+    grid-area: category-delete;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.category-value-area {
+    grid-area: category-value;
+    width: 70%;
+}
+
+.menu-item-img {
+    max-height: 100%;
+    width: 100%;
 }

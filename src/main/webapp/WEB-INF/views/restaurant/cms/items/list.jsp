@@ -56,7 +56,9 @@
                                                 <c:if test="${menuItem.base64Image!=null}">
                                                     <c:if test="${menuItem.image!=null}">
                                                         <div class="cms-photo-container">
-                                                            <img src="data:image/jpeg;base64,${menuItem.base64Image}" alt="${menuItem.name}"/>
+                                                            <img src="data:image/jpeg;base64,${menuItem.base64Image}"
+                                                                 alt="${menuItem.name}"
+                                                                 class="menu-item-img"/>
                                                         </div>
                                                     </c:if>
                                                 </c:if>
