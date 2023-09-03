@@ -1,35 +1,84 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html lang="pl">
-<!-- Header -->
-<%@ include file="/WEB-INF/views/header.jsp" %>
-<!-- End of Header -->
+
+<%@ include file="/WEB-INF/views/restaurant/header.jsp" %>
+
 <body>
+<div class="global-container">
+    <div class="global-cms-grid-container">
 
-<h2>Usuwanie kategorii</h2>
-<h4>Potwierdź usunięcie tej kategorii:</h4>
+        <div class="date-time">
+            <div class="date-time-container-wrapper">
+                <div class="date-time-container">
+                    <div class="date">
+                        <span id="date"></span>
+                    </div>
+                    <div class="time">
+                        <span id="time"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<p>ID: ${category.id}</p>
-<p>Nazwa: ${category.name}</p>
-<c:if test="${category.description!=null}">
-    <p>Opis: ${category.description}</p>
-</c:if>
+        <div class="menu">
+            <div class="main-buttons-container cms-style">
+                <div class="main-button" id="menu-items-management">
+                    <span class="black-bold">Zarządzanie daniami</span>
+                </div>
+                <div class="main-button selected-button" id="categories-management">
+                    <span class="black-bold">Zarządzanie kategoriami</span>
+                </div>
+            </div>
+        </div>
 
-<div>
-    <form:form
-            action="/restaurant/cms/categories/remove"
-            method="post"
-            modelAttribute="category"
-            cssStyle="display: inline-block">
-        <form:hidden path="id"/>
-        <button class="btn-danger">Usuń tą kategorię</button>
-    </form:form>
-    <a href="${pageContext.request.contextPath}/restaurant/cms/categories"><button class="btn-primary">Powrót</button></a>
+        <div class="content cms-content">
+            <div class="tables-box fit-content unset-overflow-y" id="tables-box">
+                <div class="container-menu cms-form">
+                    <div class="cms-form-title-area">
+                        <span>Potwierdź usunięcie tej kategorii</span>
+                    </div>
+                    <div class="delete-category-grid">
+                        <div class="id-delete-area">ID:</div>
+                        <div class="id-value-area">${category.id}</div>
+                        <div class="name-delete-area">Nazwa:</div>
+                        <div class="name-value-area">${category.name}</div>
+                        <div class="description-delete-area">Opis:</div>
+                        <div class="description-value-area">${category.description}</div>
+                        <form:form
+                                action="/restaurant/cms/categories/remove"
+                                method="post"
+                                modelAttribute="category"
+                                cssClass="form-action-buttons-area">
+                            <form:hidden path="id"/>
+
+                            <button type="submit" class="cms-action-button cms-edit">Usuń kategorię</button>
+                            <div class="cms-action-button cms-delete" id="cancel-category-action-button">
+                                Anuluj
+                            </div>
+                        </form:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-buttons-area">
+            <div class="back-to-main-view-area">
+                <div class="back-button" id="back-button">
+                    <span>Powrót do panelu restauracji</span>
+                    <span class="back-icon"></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
-<div style="padding: 2rem"></div>
-<!-- Footer -->
-<%@ include file="/WEB-INF/views/footer.jsp" %>
-<!-- End of Footer -->
+<script src="<c:url value="/webjars/sockjs-client/1.5.1/sockjs.min.js"/>"></script>
+<script src="<c:url value="/webjars/stomp-websocket/2.3.4/stomp.min.js"/>"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/cms.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/main-menu-buttons-redirects.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/public/theme/js/select-input-handling.js"></script>
 </body>
 </html>
