@@ -50,7 +50,6 @@ public class SecurityConfig {
                         .requestMatchers(mvcMatcherBuilder.pattern("/webjars/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/order-websocket/**")).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/demo")).permitAll()
                         .requestMatchers(
                                 mvcMatcherBuilder.pattern("/restaurant"),
                                 mvcMatcherBuilder.pattern("/restaurant/orders/**"),

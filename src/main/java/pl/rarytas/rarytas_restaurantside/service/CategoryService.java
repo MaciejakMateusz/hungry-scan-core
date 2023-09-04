@@ -18,7 +18,6 @@ public class CategoryService implements CategoryServiceInterface {
         this.categoryRepository = categoryRepository;
     }
 
-
     @Override
     public List<Category> findAll() {
         return categoryRepository.findAll();

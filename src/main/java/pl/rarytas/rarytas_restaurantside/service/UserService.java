@@ -8,7 +8,6 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.UserServiceInterface
 @Service
 public class UserService implements UserServiceInterface {
 
-
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -19,6 +18,5 @@ public class UserService implements UserServiceInterface {
     public User findByUsername(String username) {
         return userRepository.findUserByUsername(username);
     }
-
 
 }
