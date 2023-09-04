@@ -57,6 +57,7 @@ export function renderOrders(orders) {
 
             let restaurantTableButton = document.querySelector(`#l-table-${order.restaurantTable.id}`);
             let tableButtonMark = document.createElement('div');
+            tableButtonMark.classList.add(`l-table-${order.restaurantTable.id}`);
 
             if (order.waiterCalled) {
                 tableButtonMark.classList.add('table-button-call');
@@ -97,6 +98,7 @@ export function renderOrders(orders) {
             let restaurantTableButton = document.querySelector(`#l-table-${order.restaurantTable.id}`);
             let greenBillMark = document.createElement('div');
             greenBillMark.classList.add('table-button-bill');
+            greenBillMark.classList.add(`l-table-${order.restaurantTable.id}`);
             restaurantTableButton.appendChild(greenBillMark);
             restaurantTableButton.classList.add('activated');
             const tableButtonChildren = Array.from(restaurantTableButton.children);
