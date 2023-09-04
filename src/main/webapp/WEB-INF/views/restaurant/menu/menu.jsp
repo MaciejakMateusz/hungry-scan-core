@@ -53,14 +53,16 @@
                             </div>
                             <div class="menu-items">
                                 <c:forEach items="${category.menuItems}" var="menuItem">
-                                    <div class="menu-item">
-                                        <span class="item-name">${menuItem.name}</span>
-                                        <div class="item-price-label menu-item-price">
-                                            <span>${menuItem.price} zł</span>
+                                    <c:if test="${menuItem.available}">
+                                        <div class="menu-item">
+                                            <span class="item-name">${menuItem.name}</span>
+                                            <div class="item-price-label menu-item-price">
+                                                <span>${menuItem.price} zł</span>
+                                            </div>
+                                            <span class="item-description">${menuItem.description}</span>
+                                            <span class="item-id">ID: ${menuItem.id}</span>
                                         </div>
-                                        <span class="item-description">${menuItem.description}</span>
-                                        <span class="item-id">ID: ${menuItem.id}</span>
-                                    </div>
+                                    </c:if>
                                 </c:forEach>
                             </div>
                         </div>

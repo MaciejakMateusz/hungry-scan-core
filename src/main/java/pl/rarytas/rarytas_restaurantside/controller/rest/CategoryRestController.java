@@ -26,7 +26,6 @@ public class CategoryRestController {
         this.categoryRepository = categoryRepository;
     }
 
-
     @GetMapping
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();

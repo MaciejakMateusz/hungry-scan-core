@@ -31,16 +31,6 @@ public class OrderedItemRestController {
         return orderedItemRepository.findById(id).orElseThrow();
     }
 
-//    @GetMapping("/order/{id}")
-//    public List<OrderedItem> getByOrderId(@PathVariable Integer id) {
-//        return orderedItemRepository.findByOrderId(id);
-//    }
-
-//    @PostMapping
-//    public void saveItem(@RequestParam List<OrderedItem> orderedItems) {
-//        orderedItemRepository.save(orderedItems);
-//    }
-
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();

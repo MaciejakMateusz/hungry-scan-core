@@ -22,7 +22,6 @@ public class CategoryController {
         this.categoryRepository = categoryRepository;
     }
 
-
     @GetMapping
     public String list() {
         return "restaurant/cms/categories/list";
