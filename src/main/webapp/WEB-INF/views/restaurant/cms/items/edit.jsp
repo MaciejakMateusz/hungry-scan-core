@@ -85,7 +85,7 @@
                                 <label for="imageFile" class="pho-input-definition-area"> Zdjęcie:</label>
                                 <form:input type="file"
                                             path="imageFile"
-                                            accept=".png"
+                                            accept=".png, .jpg"
                                             cssClass="pho-input-field-area"/>
                             </div>
                             <div class="form-action-buttons-area">
