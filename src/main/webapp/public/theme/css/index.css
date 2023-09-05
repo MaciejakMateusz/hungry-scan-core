@@ -1613,6 +1613,7 @@ input:focus::placeholder {
     gap: 1.8rem;
     margin-top: -3rem;
     font-size: 1rem;
+    position: relative;
 }
 
 .nam-input-definition-area {
@@ -1634,6 +1635,7 @@ input:focus::placeholder {
     gap: 1.8rem;
     margin-top: -1.5rem;
     font-size: 1rem;
+    position: relative;
 }
 
 .des-input-definition-area {
@@ -1666,6 +1668,7 @@ textarea {
     gap: 1.8rem;
     margin-top: -0.1rem;
     font-size: 1rem;
+    position: relative;
 }
 
 .pri-input-definition-area {
@@ -1984,3 +1987,24 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     top: 0;
     right: 1rem;
 }
+
+.validation {
+    font-size: .8rem;
+    color: red;
+    height: fit-content;
+    width: fit-content;
+    position: absolute;
+}
+
+.nam-validation-pos {
+    top: 3rem;
+}
+
+.des-validation-pos {
+    top: 7rem;
+}
+
+.pri-validation-pos {
+    top: 3rem;
+}
+

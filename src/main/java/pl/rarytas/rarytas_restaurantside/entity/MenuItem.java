@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -43,13 +43,14 @@ public class MenuItem {
 
     @Column(length = 500)
     @SizeIfNotEmpty
+    @NotBlank
     private String description;
 
     @Column(length = 500)
     private String ingredients;
 
     @Column(nullable = false)
-    @Min(value = 1, message = "Cena musi być większa od 1zł")
+    @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
     @NotNull
     private BigDecimal price;
 

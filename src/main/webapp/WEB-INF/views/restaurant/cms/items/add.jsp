@@ -58,21 +58,29 @@
 
                             <div class="name-input-area">
                                 <label for="name" class="nam-input-definition-area"> Nazwa:</label>
-                                <form:input path="name" cssClass="nam-input-field-area"/>
-                                <form:errors path="name" cssClass="validation"/>
+                                <form:input path="name"
+                                            cssClass="nam-input-field-area"/>
+                                <form:errors path="name"
+                                             cssClass="validation nam-input-field-area nam-validation-pos"/>
                             </div>
+
 
                             <div class="description-input-area">
                                 <label for="description" class="des-input-definition-area"> Opis:</label>
-                                <form:textarea path="description" cssClass="des-input-field-area"/>
-
-                                <form:errors path="description" cssClass="validation"/>
+                                <form:textarea path="description"
+                                               cssClass="des-input-field-area"/>
+                                <form:errors path="description"
+                                             cssClass="validation des-input-field-area des-validation-pos"/>
                             </div>
 
                             <div class="price-input-area">
                                 <label for="price" class="pri-input-definition-area"> Cena:</label>
-                                <form:input path="price" cssClass="pri-input-field-area"/>
-                                <form:errors path="price" cssClass="validation"/>
+                                <form:input type="number"
+                                            step="0.01"
+                                            path="price"
+                                            cssClass="pri-input-field-area"/>
+                                <form:errors path="price"
+                                             cssClass="validation pri-input-field-area pri-validation-pos"/>
                             </div>
 
                             <div class="photo-input-area">
