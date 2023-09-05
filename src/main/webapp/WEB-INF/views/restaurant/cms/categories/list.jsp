@@ -47,19 +47,22 @@
                                     <span>${category.description}</span>
                                 </div>
                                 <div class="cms-category-action-buttons-area">
-                                    <form action="${pageContext.request.contextPath}/restaurant/cms/categories/edit"
-                                          method="POST"
-                                          class="edit-category-cms-area">
-                                        <input type="hidden" name="id" value="${category.id}"/>
-                                        <button type="submit" class="cms-action-button cms-edit">Edytuj kategorię</button>
-                                    </form>
-                                    <form action="${pageContext.request.contextPath}/restaurant/cms/categories/delete"
-                                          method="POST"
-                                          class="delete-category-cms-area">
-                                        <input type="hidden" name="id" value="${category.id}"/>
-                                        <button type="submit" class="cms-action-button cms-delete">Usuń kategorię
-                                        </button>
-                                    </form>
+                                    <div class="cat-action-buttons-pill">
+                                        <form action="${pageContext.request.contextPath}/restaurant/cms/categories/delete"
+                                              method="POST">
+                                            <input type="hidden" name="id" value="${category.id}"/>
+                                            <button type="submit" class="button-reset-style">
+                                                <span class="edit-icon"></span>
+                                            </button>
+                                        </form>
+                                        <form action="${pageContext.request.contextPath}/restaurant/cms/categories/edit"
+                                              method="POST">
+                                            <input type="hidden" name="id" value="${category.id}"/>
+                                            <button type="submit" class="button-reset-style">
+                                                <span class="trash-icon"></span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>

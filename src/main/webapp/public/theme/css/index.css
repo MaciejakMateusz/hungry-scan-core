@@ -851,7 +851,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 1rem 1rem 2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
     font-size: 1rem;
     font-weight: bold;
 }
@@ -1150,11 +1151,12 @@
 
 .cms-category-action-buttons-area {
     grid-area: cms-category-action-buttons;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "edit-category-cms delete-category-cms";
-    margin-top: 1.5rem;
+    display: flex;
     gap: 4%;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
 }
 
 .edit-category-cms-area {
@@ -2096,4 +2098,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .unavailable-icon-position {
     position: absolute;
     right: 0.5rem;
+}
+
+.cat-action-buttons-pill {
+    width: 10%;
+    height: 5vh;
+    border-radius: 25px;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
 }
