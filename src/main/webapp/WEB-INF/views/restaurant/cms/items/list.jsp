@@ -57,6 +57,7 @@
                                                     <div class="cms-photo-container">
                                                         <img src="data:image/jpeg;base64,${menuItem.base64Image}"
                                                              alt="${menuItem.name}"
+                                                             loading="lazy"
                                                              class="menu-item-img"/>
                                                     </div>
                                                 </c:if>

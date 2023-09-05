@@ -128,7 +128,6 @@ public class OrderService implements OrderServiceInterface {
 
         if (!order.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
-            messagingTemplate.convertAndSend("/topic/dineIn-orders", findAllNotPaid());
         }
     }
 
@@ -152,7 +151,6 @@ public class OrderService implements OrderServiceInterface {
         orderRepository.saveAndFlush(existingOrder);
         if (!existingOrder.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
-            messagingTemplate.convertAndSend("/topic/dineIn-orders", findAllNotPaid());
         }
     }
 

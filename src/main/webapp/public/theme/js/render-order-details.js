@@ -8,9 +8,25 @@ const billRequestedSection = document.querySelector('#bill-requested-finalize-se
 const finalizeButton = document.querySelector('#finalize-button');
 const resolveCallForm = document.querySelector('#resolve-call-form');
 
-
 /** ----- RENDERING ORDER DETAILS ON THE RIGHT PANEL ----- **/
 export function renderOrderDetails(order) {
+
+    const orderIdContainer = document.createElement('div');
+    orderIdContainer.classList.add('ordered-items-group');
+
+    let orderIdDefinition = document.createElement('span');
+    orderIdDefinition.classList.add('item-info');
+    orderIdDefinition.classList.add('order-details-id');
+    orderIdDefinition.innerText = `ID zamówienia:`;
+    orderIdContainer.appendChild(orderIdDefinition);
+
+    let orderIdValue = document.createElement('span');
+    orderIdValue.classList.add('item-price');
+    orderIdValue.classList.add('order-details-id');
+    orderIdValue.innerText = order.id;
+    orderIdContainer.appendChild(orderIdValue);
+
+    orderDetails.appendChild(orderIdContainer);
 
     if (!order.forTakeAway) {
         tableNumber.innerText = `Stolik ${order.restaurantTable.id}`;

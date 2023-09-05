@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.service.OrderService;
-import pl.rarytas.rarytas_restaurantside.service.WaiterCallService;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,7 @@ import java.util.Map;
 public class OrderRestController {
     private final OrderService orderService;
 
-    public OrderRestController(OrderService orderService, WaiterCallService waiterCallService) {
+    public OrderRestController(OrderService orderService) {
         this.orderService = orderService;
     }
 
