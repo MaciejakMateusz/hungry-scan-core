@@ -53,14 +53,12 @@
                                                 <span>${menuItem.price} zł</span>
                                             </div>
                                             <div class="cms-item-photo-area">
-                                                <c:if test="${menuItem.base64Image!=null}">
-                                                    <c:if test="${menuItem.image!=null}">
-                                                        <div class="cms-photo-container">
-                                                            <img src="data:image/jpeg;base64,${menuItem.base64Image}"
-                                                                 alt="${menuItem.name}"
-                                                                 class="menu-item-img"/>
-                                                        </div>
-                                                    </c:if>
+                                                <c:if test="${menuItem.image!=null && menuItem.base64Image!=''}">
+                                                    <div class="cms-photo-container">
+                                                        <img src="data:image/jpeg;base64,${menuItem.base64Image}"
+                                                             alt="${menuItem.name}"
+                                                             class="menu-item-img"/>
+                                                    </div>
                                                 </c:if>
                                             </div>
                                         </div>
@@ -81,13 +79,15 @@
                                                   method="POST"
                                                   style="display: inline-block">
                                                 <input type="hidden" name="id" value="${menuItem.id}"/>
-                                                <button type="submit" class="cms-action-button cms-edit">Edytuj danie</button>
+                                                <button type="submit" class="cms-action-button cms-edit">Edytuj danie
+                                                </button>
                                             </form>
                                             <form action="${pageContext.request.contextPath}/restaurant/cms/items/delete"
                                                   method="POST"
                                                   style="display: inline-block">
                                                 <input type="hidden" name="id" value="${menuItem.id}"/>
-                                                <button type="submit" class="cms-action-button cms-delete">Usuń danie</button>
+                                                <button type="submit" class="cms-action-button cms-delete">Usuń danie
+                                                </button>
                                             </form>
                                         </div>
                                     </div>

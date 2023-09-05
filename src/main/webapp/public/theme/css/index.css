@@ -1803,6 +1803,7 @@ select {
     justify-content: center;
     margin-bottom: -2rem;
     font-size: 1rem;
+    position: relative;
 }
 
 .category-description-input-area {
@@ -1815,6 +1816,7 @@ select {
     justify-content: center;
     justify-self: center;
     font-size: 1rem;
+    position: relative;
 }
 
 .cat-desc-height {
@@ -2008,3 +2010,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     top: 3rem;
 }
 
+.cat-des-validation-pos {
+    top: 10.1rem;
+}

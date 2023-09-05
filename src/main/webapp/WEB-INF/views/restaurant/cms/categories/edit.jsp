@@ -49,14 +49,18 @@
                             <form:hidden path="created"/>
                             <div class="category-name-input-area">
                                 <label for="name" class="nam-input-definition-area"> Nazwa:</label>
-                                <form:input path="name" cssClass="nam-input-field-area"/>
-                                <form:errors path="name" cssClass="validation"/>
+                                <form:input path="name"
+                                            cssClass="nam-input-field-area"/>
+                                <form:errors path="name"
+                                             cssClass="validation nam-input-field-area nam-validation-pos"/>
                             </div>
 
                             <div class="category-description-input-area">
                                 <label for="description" class="des-input-definition-area"> Opis(opcjonalnie):</label>
-                                <form:textarea path="description" cssClass="des-input-field-area cat-desc-height"/>
-                                <form:errors path="description" cssClass="validation"/>
+                                <form:textarea path="description"
+                                               cssClass="des-input-field-area cat-desc-height"/>
+                                <form:errors path="description"
+                                             cssClass="validation des-input-field-area cat-des-validation-pos"/>
                             </div>
                             <div class="form-action-buttons-area">
                                 <button type="submit" class="cms-action-button cms-edit">Zapisz</button>
