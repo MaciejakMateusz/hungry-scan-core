@@ -416,7 +416,6 @@
 .fit-content {
     min-height: 100%;
     max-height: 100%;
-    padding-bottom: 2rem;
     overflow-y: auto;
 }
 
@@ -553,7 +552,7 @@
     font-family: var(--font-comfortaa);
     color: #000;
     font-weight: bolder;
-    margin-inline: 0.5rem;
+    margin-inline: 1rem;
 }
 
 .right-column-info-container {
@@ -825,11 +824,14 @@
 .container-menu {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Adjust the gap as needed */
+    gap: 20px;
+    overflow-x: hidden;
+    padding-bottom: 2rem;
 }
 
 .cms-form {
     height: 100%;
+    max-height: 97%;
     width: 100%;
 }
 
@@ -845,11 +847,11 @@
     width: 100%;
     height: 5vh;
     border-radius: 20px;
-    background: lightgray;
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 1rem;
+    margin: 1rem 1rem 2rem;
     font-size: 1rem;
     font-weight: bold;
 }
@@ -863,9 +865,11 @@
 
 .cms-menu-items {
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    grid-row-gap: 2rem;
+    grid-column-gap: 0;
     width: 100%;
+    margin-top: 1rem;
 }
 
 .menu-item {
@@ -923,13 +927,61 @@
 }
 
 .cms-menu-item {
-    width: 100%;
+    width: fit-content;
     display: grid;
-    grid-template-columns: 40% 20% 40%;
-    grid-template-areas: "menu-item available action-buttons";
+    grid-template-columns: 22rem 5rem;
+    grid-template-areas: "menu-item action-buttons";
+    align-items: center;
+    justify-self: center;
+}
+
+.cms-edit-item-pills {
+    grid-area: action-buttons;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin-left: 1rem;
+    gap: 1rem;
+}
+
+.cms-available-icon-container {
+    display: flex;
     align-items: center;
     justify-content: center;
-    margin-inline: 4rem;
+    border-radius: 50%;
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
+    width: 1.8rem;
+    height: 1.8rem;
+    position: relative;
+}
+
+.cms-action-buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 5.2rem;
+    width: 1.8rem;
+    border-radius: 25px;
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
+}
+
+.edit-icon {
+    background-image: url('/public/theme/icons/edit-icon.svg');
+    width: 2rem;
+    height: 2rem;
+    background-size: contain;
+    display: block;
+}
+
+.trash-icon {
+    background-image: url('/public/theme/icons/trash-icon.svg');
+    width: 2rem;
+    height: 2rem;
+    background-size: contain;
+    display: block;
 }
 
 .menu-item-area-cms {
@@ -1025,6 +1077,21 @@
     font-size: 0.8rem;
     font-weight: bold;
     font-family: var(--font-comfortaa);
+}
+
+.reset-margin-block {
+    margin-block: 0;
+}
+
+.button-reset-style {
+    outline: none;
+    border: none;
+    background: transparent;
+    width: fit-content;
+}
+
+.button-reset-style:hover {
+    cursor: pointer;
 }
 
 .cms-edit {
@@ -1465,12 +1532,12 @@ input:focus::placeholder {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin-left: 3rem;
+    margin-left: 1.8rem;
 }
 
 .add-item-icon {
     position: absolute;
-    left: 7%;
+    right: 80%;
     width: 3.2vh;
     height: 3.2vh;
     background-size: contain;
@@ -1482,7 +1549,7 @@ input:focus::placeholder {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 35vh;
+    width: 50%;
     height: 5vh;
     border-radius: 25px;
     background: #FFF;
@@ -1500,8 +1567,9 @@ input:focus::placeholder {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-right: 3rem;
+    margin-right: 1.8rem;
     font-size: 1rem;
+    font-weight: bold;
 }
 
 .back-button {
@@ -1563,25 +1631,17 @@ input:focus::placeholder {
 }
 
 .check-icon {
-    position: absolute;
-    right: 1vh;
-    top: 0.1rem;
     background-image: url('/public/theme/icons/check-icon.svg');
     width: 4vh;
     height: 4vh;
     background-size: contain;
-    margin-left: 1rem;
 }
 
 .x-icon {
-    position: absolute;
-    right: 1.7vh;
-    top: 1.6vh;
     background-image: url('/public/theme/icons/x-icon.svg');
     width: 2.1vh;
     height: 2.1vh;
     background-size: contain;
-    margin-left: 1rem;
 }
 
 .category-input-area {
@@ -1980,16 +2040,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     left: 28%;
 }
 
-.available-icon-list-position {
-    top: -0.4rem;
-    right: 1.2rem;
-}
-
-.unavailable-icon-list-position {
-    top: 0;
-    right: 1rem;
-}
-
 .validation {
     font-size: .8rem;
     color: red;
@@ -2012,4 +2062,38 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .cat-des-validation-pos {
     top: 10.1rem;
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    background-color: white;
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
+    text-align: center;
+    font-size: 0.8rem;
+    width: fit-content;
+    white-space: nowrap;
+    border-radius: 25px;
+    padding: 0.8vh 0.5rem;
+    position: absolute;
+    z-index: 99;
+    bottom: 2.2rem;
+    left: -3rem;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+.available-icon-position {
+    position: absolute;
+    right: 0.3rem;
+}
+
+.unavailable-icon-position {
+    position: absolute;
+    right: 0.5rem;
 }

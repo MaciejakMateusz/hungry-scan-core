@@ -62,33 +62,37 @@
                                                 </c:if>
                                             </div>
                                         </div>
-                                        <div class="menu-item-available-area">
-                                            <c:choose>
-                                                <c:when test="${menuItem.available}">
-                                                    <span>Dostępne</span>
-                                                    <span class="check-icon available-icon-list-position"></span>
-                                                </c:when>
-                                                <c:when test="${!menuItem.available}">
-                                                    <span>Niedostępne</span>
-                                                    <span class="x-icon unavailable-icon-list-position"></span>
-                                                </c:when>
-                                            </c:choose>
-                                        </div>
-                                        <div class="menu-item-action-buttons-area">
-                                            <form action="${pageContext.request.contextPath}/restaurant/cms/items/edit"
-                                                  method="POST"
-                                                  style="display: inline-block">
-                                                <input type="hidden" name="id" value="${menuItem.id}"/>
-                                                <button type="submit" class="cms-action-button cms-edit">Edytuj danie
-                                                </button>
-                                            </form>
-                                            <form action="${pageContext.request.contextPath}/restaurant/cms/items/delete"
-                                                  method="POST"
-                                                  style="display: inline-block">
-                                                <input type="hidden" name="id" value="${menuItem.id}"/>
-                                                <button type="submit" class="cms-action-button cms-delete">Usuń danie
-                                                </button>
-                                            </form>
+                                        <div class="cms-edit-item-pills">
+                                            <div class="cms-available-icon-container tooltip">
+                                                <c:choose>
+                                                    <c:when test="${menuItem.available}">
+                                                        <span class="check-icon"></span>
+                                                        <span class="tooltip-text">Danie dostępne</span>
+                                                    </c:when>
+                                                    <c:when test="${!menuItem.available}">
+                                                        <span class="x-icon"></span>
+                                                        <span class="tooltip-text">Danie niedostępne</span>
+                                                    </c:when>
+                                                </c:choose>
+                                            </div>
+                                            <div class="cms-action-buttons-container">
+                                                <form action="${pageContext.request.contextPath}/restaurant/cms/items/edit"
+                                                      method="POST"
+                                                      class="reset-margin-block">
+                                                    <input type="hidden" name="id" value="${menuItem.id}"/>
+                                                    <button type="submit" class="button-reset-style">
+                                                        <span class="edit-icon"></span>
+                                                    </button>
+                                                </form>
+                                                <form action="${pageContext.request.contextPath}/restaurant/cms/items/delete"
+                                                      method="POST"
+                                                      class="reset-margin-block">
+                                                    <input type="hidden" name="id" value="${menuItem.id}"/>
+                                                    <button type="submit" class="button-reset-style">
+                                                        <span class="trash-icon"></span>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </c:forEach>

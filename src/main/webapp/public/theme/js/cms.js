@@ -29,7 +29,8 @@ function indicateCheckedRadio() {
         if (availableRadio.checked) {
             if (!availableLabel.querySelector('.check-icon')) {
                 const checkIcon = document.createElement('span');
-                checkIcon.className = 'check-icon';
+                checkIcon.classList.add('check-icon');
+                checkIcon.classList.add('available-icon-position');
                 availableLabel.appendChild(checkIcon);
             }
         } else {
@@ -41,9 +42,10 @@ function indicateCheckedRadio() {
 
         if (unavailableRadio.checked) {
             if (!unavailableLabel.querySelector('.check-icon')) {
-                const checkIcon = document.createElement('span');
-                checkIcon.className = 'x-icon';
-                unavailableLabel.appendChild(checkIcon);
+                const xIcon = document.createElement('span');
+                xIcon.classList.add('x-icon');
+                xIcon.classList.add('unavailable-icon-position');
+                unavailableLabel.appendChild(xIcon);
             }
         } else {
             const currentCheckedIndicator = unavailableLabel.querySelector('.x-icon');

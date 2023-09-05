@@ -74,7 +74,7 @@
                             </div>
 
                             <div class="price-input-area">
-                                <label for="price" class="pri-input-definition-area"> Cena:</label>
+                                <label for="price" class="pri-input-definition-area">Cena:</label>
                                 <form:input type="number"
                                             step="0.01"
                                             path="price"
