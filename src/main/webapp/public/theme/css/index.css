@@ -219,10 +219,12 @@
     margin-left: 2rem;
     justify-content: center;
     color: #FFF;
+    transition: 0.2s ease-out;
 }
 
 .table-default {
     background-image: url('/public/theme/icons/tables/table-default.svg');
+    transition: 0.4s ease-out;
 }
 
 .table-selected,
@@ -234,6 +236,7 @@
     height: 12vh;
     border-radius: 20px;
     background: rgba(237, 236, 236);
+    transition: 0.2s ease-in;
 }
 
 .table-call-selected,
@@ -245,14 +248,17 @@
     height: 12vh;
     border-radius: 20px;
     background: rgba(237, 236, 236);
+    transition: 0.2s ease-out;
 }
 
 .table-ordered {
     background-image: url('/public/theme/icons/tables/table-ordered.svg');
+    transition: 0.4s ease-out;
 }
 
 .table-bill-requested {
     background-image: url('/public/theme/icons/tables/table-bill.svg');
+    transition: 0.4s ease-out;
 }
 
 .table-waiter-call {
@@ -261,6 +267,7 @@
     height: 8.5vh;
     margin-block: 0;
     margin-top: 0.7rem;
+    transition: 0.4s ease-out;
 }
 
 .table-waiter-call span {
@@ -279,6 +286,7 @@
     margin-left: 2rem;
     justify-content: center;
     color: #FFF;
+    transition: 0.2s ease-out;
 }
 
 .s-table-selected,
@@ -294,14 +302,17 @@
 
 .s-table-default {
     background-image: url('/public/theme/icons/tables/s-table-default.svg');
+    transition: 0.4s ease-out;
 }
 
 .s-table-ordered {
     background-image: url('/public/theme/icons/tables/s-table-ordered.svg');
+    transition: 0.4s ease-out;
 }
 
 .s-table-bill-requested {
     background-image: url('/public/theme/icons/tables/s-table-bill.svg');
+    transition: 0.4s ease-out;
 }
 
 .s-table-waiter-call {
@@ -310,6 +321,7 @@
     height: 3.3rem;
     width: 4.7rem;
     margin-top: 0.5rem;
+    transition: 0.4s ease-out;
 }
 
 .s-table-call-selected,
@@ -320,7 +332,8 @@
     width: 15vh;
     height: 10vh;
     border-radius: 20px;
-    background: rgba(237, 236, 236)
+    background: rgba(237, 236, 236);
+    transition: 0.2s ease-out;
 }
 
 .s-table-waiter-call span {
@@ -348,12 +361,14 @@
     justify-content: center;
     font-weight: bold;
     margin-block: 0.5vh;
+    transition: 0.2s ease-out;
 }
 
 .table-button-list:hover {
     background: #F2F2F2;
     opacity: 2;
     cursor: pointer;
+    transition: 0.2s ease-out;
 }
 
 .table-button-ordered {
@@ -363,6 +378,7 @@
     height: 1.2em;
     background-size: contain;
     background-image: url('/public/theme/icons/orange-ball-icon.svg');
+    transition: 0.4s ease-out;
 }
 
 .table-button-bill {
@@ -372,6 +388,7 @@
     height: 1.2em;
     background-size: contain;
     background-image: url('/public/theme/icons/green-ball-icon.svg');
+    transition: 0.4s ease-out;
 }
 
 .table-button-call {
@@ -384,6 +401,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: 0.4s ease-out;
 }
 
 .table-button-call span {
@@ -587,11 +605,13 @@
     width: 6vh;
     height: 6vh;
     background: var(--color-white);
+    transition: 0.2s ease-out;
 }
 
 .logout-button:hover {
     cursor: pointer;
     background: #F2F2F2;
+    transition: 0.2s ease-out;
 }
 
 .logout-icon {
@@ -613,20 +633,23 @@
     width: 6vh;
     height: 6vh;
     background: var(--color-white);
+    transition: 0.2s ease-out;
 }
 
 .cms-button:hover {
     cursor: pointer;
     background: #F2F2F2;
+    transition: 0.2s ease-out;
 }
 
 .cms-icon {
     margin-right: 2px;
-    font-size: 0.9rem;
+    font-size: 2vh;
     font-weight: 700;
     color: orange;
     text-shadow: 1px 0 1px orange, 0 0 1px orange;
     letter-spacing: -1px;
+    transition: 0.2s ease-out;
 }
 
 .d-none {
@@ -662,7 +685,7 @@
     font-size: 1.8vh;
     display: flex;
     position: absolute;
-    top: 5rem;
+    top: 11vh;
     font-weight: normal;
 }
 
@@ -977,6 +1000,13 @@
     height: 2rem;
     background-size: contain;
     display: block;
+    transition: 0.1s ease-in;
+}
+
+.edit-icon:hover {
+    width: 2.2rem;
+    height: 2.2rem;
+    transition: 0.1s ease-in;
 }
 
 .trash-icon {
@@ -985,6 +1015,13 @@
     height: 2rem;
     background-size: contain;
     display: block;
+    transition: 0.1s ease-in;
+}
+
+.trash-icon:hover {
+    width: 2.2rem;
+    height: 2.2rem;
+    transition: 0.1s ease-out;
 }
 
 .menu-item-area-cms {
@@ -1235,6 +1272,7 @@
     padding-block: 0.7rem;
     font-size: 1rem;
     font-weight: 500;
+    transition: 0.2s ease-out;
 }
 
 .orders-list-table:hover {

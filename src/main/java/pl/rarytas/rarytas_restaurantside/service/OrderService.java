@@ -102,24 +102,30 @@ public class OrderService implements OrderServiceInterface {
 
     @Override
     public void patch(Order order) {
+
         Order existingOrder = orderRepository
                 .findById(order.getId())
                 .orElseThrow();
+
         if (existingOrder.isResolved()) {
             return;
         }
+
         order.setOrderTime(existingOrder.getOrderTime());
         order.setOrderNumber(existingOrder.getOrderNumber());
         order.setRestaurant(existingOrder.getRestaurant());
         order.setRestaurantTable(existingOrder.getRestaurantTable());
-        if (!"Brak".equals(existingOrder.getPaymentMethod())) {
+
+        if("Brak".equals(order.getPaymentMethod()) || Objects.isNull(order.getPaymentMethod())) {
             order.setPaymentMethod(existingOrder.getPaymentMethod());
         }
+
         if (Objects.isNull(order.getOrderedItems())) {
             order.setOrderedItems(existingOrder.getOrderedItems());
         } else {
             existingOrder.getOrderedItems().addAll(order.getOrderedItems());
         }
+
         if (!order.isBillRequested()) {
             order.setBillRequested(existingOrder.isBillRequested());
         }
