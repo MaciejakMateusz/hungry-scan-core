@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Restauracja Rarytas</title>
 
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/public/theme/icons/favicon/favicon-32.png">
     <link href="<c:url value="/public/theme/css/global.css"/>" rel="stylesheet" type="text/css">
     <link href="<c:url value="/public/theme/css/index.css"/>" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&display=swap"/>
