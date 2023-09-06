@@ -101,6 +101,10 @@ export function renderOrderDetails(order) {
     const orderDetailsSection = document.querySelector('#order-details-section');
     if (order.billRequested || order.forTakeAway) {
 
+        if(order.forTakeAway) {
+            tableNumber.innerText = 'Na wynos';
+        }
+
         if (!order.resolved) {
             orderDetailsSection.classList.remove('no-button');
             orderedTotalAmountSection.classList.add('d-none');

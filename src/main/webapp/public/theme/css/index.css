@@ -1290,6 +1290,7 @@
     grid-area: order-id;
     display: flex;
     justify-content: center;
+    transition: 0.5s ease-in;
 }
 
 .order-number {
