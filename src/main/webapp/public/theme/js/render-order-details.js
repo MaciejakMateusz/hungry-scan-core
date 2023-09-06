@@ -11,6 +11,10 @@ const resolveCallForm = document.querySelector('#resolve-call-form');
 /** ----- RENDERING ORDER DETAILS ON THE RIGHT PANEL ----- **/
 export function renderOrderDetails(order) {
 
+    if(order === null) {
+        return
+    }
+
     const orderIdContainer = document.createElement('div');
     orderIdContainer.classList.add('ordered-items-group');
 
@@ -144,6 +148,7 @@ export function renderOrderDetails(order) {
 
 /** ----- CLEARING THE RIGHT PANEL----- **/
 export function clearOrderDetails() {
+    tableNumber.innerText = '';
     orderTime.innerText = '';
     orderDetails.innerHTML = ''; // Remove all child elements
 

@@ -11,6 +11,19 @@ export function renderOrdersList(orders) {
         mainTableBody.removeChild(orderRow);
     });
 
+    if(orders === null || orders.length === 0 || orders[0] === undefined) {
+
+        const orderRow = document.createElement('div');
+        orderRow.classList.add('orders-list-table');
+
+        const orderNumberSpan = document.createElement('span');
+        orderNumberSpan.classList.add('order-number');
+        orderNumberSpan.innerText = 'Brak wyników';
+        orderRow.appendChild(orderNumberSpan);
+        mainTableBody.appendChild(orderRow);
+        return;
+    }
+
     orders.forEach(order => {
 
         const orderRow = document.createElement('div');

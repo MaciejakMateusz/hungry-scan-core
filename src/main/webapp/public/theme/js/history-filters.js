@@ -16,9 +16,7 @@ export function findOrderByIdAndType(isForTakeAway) {
 
         fetchFinalizedOrderById(idValue, isForTakeAway).then(order => {
             let collection = [order];
-            if (collection[0] !== undefined) {
-                renderOrdersList(collection);
-            }
+            renderOrdersList(collection);
         });
     }
 }

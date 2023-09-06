@@ -87,6 +87,7 @@
                         <span class="head-order-date-time">Godzina i data</span>
                     </div>
                     <div id="orders-list-parent">
+                        <%--JavaScript rendered content --%>
                     </div>
                     <div class="pagination-buttons">
                         <span class="page-text">Strona:</span>
@@ -102,12 +103,12 @@
             <div class="order-details-panel" id="order-details-panel">
                 <div class="grid-container-order-details">
                     <div class="table-number-section">
-                        <span id="table-number">Na wynos</span>
+                        <span id="table-number"></span>
                         <p class="table-number-section-order-time" id="order-time"></p>
                     </div>
                     <div class="order-details-section no-button" id="order-details-section">
                         <div class="ordered-items-section" id="order-details">
-
+                            <%--JavaScript rendered content --%>
                         </div>
                         <div id="ordered-total-amount-section">
                             <div class="ordered-total-amount-section">

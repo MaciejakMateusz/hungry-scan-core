@@ -30,8 +30,8 @@ export function renderPaginationButtons(isForTakeAway) {
     fetchAllResolved().then(orders => {
 
         let totalOrders = 0;
-        orders.forEach(() => {
-            if (!isForTakeAway) {
+        orders.forEach((order) => {
+            if (order.forTakeAway === isForTakeAway) {
                 totalOrders++;
             }
         });
