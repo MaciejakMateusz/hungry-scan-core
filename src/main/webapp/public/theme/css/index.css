@@ -902,7 +902,7 @@
     width: 100%;
     height: 8rem;
     border-radius: 10px;
-    background: #F9F9F9;
+    background: #FFF;
     display: grid;
     grid-template-columns: 75% 25%;
     grid-template-rows: 1fr 1fr;
@@ -1272,7 +1272,6 @@
     padding-block: 0.7rem;
     font-size: 1rem;
     font-weight: 500;
-    transition: 0.2s ease-out;
 }
 
 .orders-list-table:hover {
@@ -2067,6 +2066,7 @@ select {
     margin-left: 1rem;
     border-radius: 25px;
     text-align: center;
+    position: relative;
 }
 
 .date-filter {
@@ -2077,6 +2077,23 @@ select {
     border-radius: 25px;
     text-align: center;
     position: relative;
+}
+
+.search-icon {
+    background-image: url('/public/theme/icons/search-icon.svg');
+    width: 2.3vh;
+    height: 3vh;
+    background-size: contain;
+    position: absolute;
+    top: 25%;
+}
+
+.icon-date {
+    left: 8%;
+}
+
+.icon-id {
+    right: 83%;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
