@@ -978,8 +978,8 @@
     justify-content: center;
     border-radius: 50%;
     box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
-    width: 1.8rem;
-    height: 1.8rem;
+    width: 2.5rem;
+    height: 2.5rem;
     position: relative;
 }
 
@@ -988,39 +988,39 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    height: 5.2rem;
-    width: 1.8rem;
+    height: 6rem;
+    width: 2.5rem;
     border-radius: 25px;
     box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
 }
 
 .edit-icon {
     background-image: url('/public/theme/icons/edit-icon.svg');
-    width: 2rem;
-    height: 2rem;
+    width: 4.5vh;
+    height: 4.5vh;
     background-size: contain;
     display: block;
     transition: 0.1s ease-in;
 }
 
 .edit-icon:hover {
-    width: 2.2rem;
-    height: 2.2rem;
+    width: 5.5vh;
+    height: 5.5vh;
     transition: 0.1s ease-in;
 }
 
 .trash-icon {
     background-image: url('/public/theme/icons/trash-icon.svg');
-    width: 2rem;
-    height: 2rem;
+    width: 4.5vh;
+    height: 4.5vh;
     background-size: contain;
     display: block;
     transition: 0.1s ease-in;
 }
 
 .trash-icon:hover {
-    width: 2.2rem;
-    height: 2.2rem;
+    width: 5.5vh;
+    height: 5.5vh;
     transition: 0.1s ease-out;
 }
 
@@ -1675,8 +1675,8 @@ input:focus::placeholder {
 
 .check-icon {
     background-image: url('/public/theme/icons/check-icon.svg');
-    width: 4vh;
-    height: 4vh;
+    width: 4.5vh;
+    height: 4.5vh;
     background-size: contain;
 }
 
@@ -2123,8 +2123,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding: 0.8vh 0.5rem;
     position: absolute;
     z-index: 99;
-    bottom: 2.2rem;
-    left: -3rem;
+    bottom: 6vh;
+    left: -85%;
 }
 
 .tooltip:hover .tooltip-text {
@@ -2142,11 +2142,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .cat-action-buttons-pill {
-    width: 10%;
-    height: 5vh;
+    width: 13%;
+    height: 6vh;
     border-radius: 25px;
     display: flex;
     justify-content: space-around;
+    align-items: center;
     box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
 }
 

@@ -48,15 +48,17 @@
                                 </div>
                                 <div class="cms-category-action-buttons-area">
                                     <div class="cat-action-buttons-pill">
-                                        <form action="${pageContext.request.contextPath}/restaurant/cms/categories/delete"
-                                              method="POST">
+                                        <form action="${pageContext.request.contextPath}/restaurant/cms/categories/edit"
+                                              method="POST"
+                                              class="reset-margin-block">
                                             <input type="hidden" name="id" value="${category.id}"/>
                                             <button type="submit" class="button-reset-style">
                                                 <span class="edit-icon"></span>
                                             </button>
                                         </form>
-                                        <form action="${pageContext.request.contextPath}/restaurant/cms/categories/edit"
-                                              method="POST">
+                                        <form action="${pageContext.request.contextPath}/restaurant/cms/categories/delete"
+                                              method="POST"
+                                              class="reset-margin-block">
                                             <input type="hidden" name="id" value="${category.id}"/>
                                             <button type="submit" class="button-reset-style">
                                                 <span class="trash-icon"></span>

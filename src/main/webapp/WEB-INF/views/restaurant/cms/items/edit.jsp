@@ -76,7 +76,9 @@
 
                             <div class="price-input-area">
                                 <label for="price" class="pri-input-definition-area"> Cena:</label>
-                                <form:input path="price"
+                                <form:input type="number"
+                                            step="0.01"
+                                            path="price"
                                             cssClass="pri-input-field-area"/>
                                 <form:errors path="price"
                                              cssClass="validation pri-input-field-area pri-validation-pos"/>                            </div>
