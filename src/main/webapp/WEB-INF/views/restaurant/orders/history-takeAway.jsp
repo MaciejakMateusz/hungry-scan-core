@@ -105,6 +105,7 @@
                 <div class="grid-container-order-details">
                     <div class="table-number-section">
                         <span id="table-number">Na wynos</span>
+                        <p class="table-number-section-order-id" id="order-id"></p>
                         <p class="table-number-section-order-time" id="order-time"></p>
                     </div>
                     <div class="order-details-section no-button" id="order-details-section">

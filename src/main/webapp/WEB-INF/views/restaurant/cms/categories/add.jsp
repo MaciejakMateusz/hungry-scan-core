@@ -50,6 +50,7 @@
                             <div class="category-name-input-area">
                                 <label for="name" class="nam-input-definition-area"> Nazwa:</label>
                                 <form:input path="name"
+                                            maxlength="100"
                                             cssClass="nam-input-field-area"/>
                                 <form:errors path="name"
                                              cssClass="validation nam-input-field-area nam-validation-pos"/>
@@ -58,6 +59,7 @@
                             <div class="category-description-input-area">
                                 <label for="description" class="des-input-definition-area"> Opis(opcjonalnie):</label>
                                 <form:textarea path="description"
+                                               maxlength="400"
                                                cssClass="des-input-field-area cat-desc-height"/>
                                 <form:errors path="description"
                                              cssClass="validation des-input-field-area cat-des-validation-pos"/>

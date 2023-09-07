@@ -24,6 +24,7 @@ public class Category {
     private String name;
 
     @SizeIfNotEmpty
+    @Column(length = 400)
     private String description;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)

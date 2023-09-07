@@ -57,7 +57,7 @@
                                         <div class="menu-item">
                                             <span class="item-name">${menuItem.name}</span>
                                             <div class="item-price-label menu-item-price">
-                                                <span>${menuItem.price} zł</span>
+                                                <span class="contain-item-price">${menuItem.price} zł</span>
                                             </div>
                                             <span class="item-description">${menuItem.description}</span>
                                             <span class="item-id">ID: ${menuItem.id}</span>
@@ -96,6 +96,7 @@
                 <div class="grid-container-order-details">
                     <div class="table-number-section">
                         <span id="table-number"></span>
+                        <p class="table-number-section-order-id" id="order-id"></p>
                         <p class="table-number-section-order-time" id="order-time"></p>
                     </div>
                     <div class="order-details-section no-button" id="order-details-section">

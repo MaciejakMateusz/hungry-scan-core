@@ -140,9 +140,10 @@
 
 .inactive-main-button:hover {
     border-radius: 25px;
-    background-color: lightgray;
+    background-color: var(--color-white);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
     z-index: 1;
+    height: 1.5rem;
     cursor: pointer;
 }
 
@@ -587,6 +588,7 @@
     font-size: 0.8em;
     font-weight: bold;
     margin-left: 2em;
+    width: 55%;
 }
 
 #right-bottom-info-wrapper {
@@ -681,11 +683,19 @@
     position: relative;
 }
 
+.table-number-section-order-id {
+    font-size: 1.8vh;
+    display: flex;
+    position: absolute;
+    top: 6vh;
+    font-weight: normal;
+}
+
 .table-number-section-order-time {
     font-size: 1.8vh;
     display: flex;
     position: absolute;
-    top: 11vh;
+    top: 10.5vh;
     font-weight: normal;
 }
 
@@ -721,9 +731,10 @@
 
 .ordered-items-group {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "item-info item-price";
+    grid-template-columns: 10% 65% 25%;
+    grid-template-areas: "item-quantity item-info item-price";
     align-items: flex-end;
+    margin-block: 1.7rem;
 }
 
 .payment-method-section {
@@ -733,28 +744,30 @@
     display: flex;
 }
 
+.item-quantity {
+    grid-area: item-quantity;
+    display: flex;
+    align-self: flex-start;
+    margin-left: 0.3rem;
+    font-size: 2vh;
+}
+
 .item-info {
     grid-area: item-info;
     display: flex;
-    flex-direction: column;
-    justify-content: left;
-    margin-left: 2vh;
+    margin-left: 0.2rem;
     font-size: 2vh;
-    align-items: flex-start;
-    gap: 2vh;
-    margin-top: 1rem;
+    align-self: flex-start;
 }
 
 .item-price {
     grid-area: item-price;
     display: flex;
-    justify-content: right;
-    margin-right: 3vh;
+    margin-right: 0.3rem;
     flex-direction: column;
     font-size: 2vh;
-    align-items: flex-end;
-    gap: 2vh;
-    margin-top: 1rem;
+    align-self: flex-start;
+    justify-self: flex-end;
 }
 
 .ordered-total-amount-section {
@@ -812,6 +825,7 @@
     font-weight: bolder;
     margin-left: 1.5rem;
     font-size: 2vh;
+    white-space: nowrap;
 }
 
 .total-price {
@@ -855,8 +869,9 @@
 
 .cms-form {
     height: 100%;
-    max-height: 97%;
+    max-height: 95%;
     width: 100%;
+    padding-bottom: 0;
 }
 
 .grid-container-category {
@@ -929,10 +944,16 @@
     align-items: center;
     margin-right: 1rem;
     height: 2rem;
+    width: fit-content;
     background: linear-gradient(89.58deg, #ff9b00, #fcaf38);
     border-radius: 25px;
     font-weight: bold;
     font-size: 0.9rem;
+}
+
+.contain-item-price {
+    margin-inline: 0.4rem;
+    white-space: nowrap;
 }
 
 .item-description {
@@ -1051,12 +1072,17 @@
     font-weight: bold;
     margin-left: 1.5rem;
     margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .cms-item-description-area {
     grid-area: cms-item-description;
     font-size: 0.7rem;
     margin-left: 1.5rem;
+    max-height: 4rem;
+    overflow-y: auto;
+    display: flex;
+    align-items: flex-start;
 }
 
 .cms-item-price-area {
@@ -1176,7 +1202,6 @@
             "cms-category-action-buttons";
     align-items: center;
     justify-content: center;
-    margin-inline: 4rem;
 }
 
 .cms-category-description-area {
@@ -1191,7 +1216,6 @@
 .cms-category-action-buttons-area {
     grid-area: cms-category-action-buttons;
     display: flex;
-    gap: 4%;
     align-items: center;
     justify-content: center;
     margin-top: 2rem;
@@ -1272,6 +1296,7 @@
     padding-block: 0.7rem;
     font-size: 1rem;
     font-weight: 500;
+    transition: 0.2s ease-out;
 }
 
 .orders-list-table:hover {
@@ -1580,7 +1605,7 @@ input:focus::placeholder {
 
 .add-item-icon {
     position: absolute;
-    right: 80%;
+    right: 85%;
     width: 3.2vh;
     height: 3.2vh;
     background-size: contain;
@@ -1656,7 +1681,7 @@ input:focus::placeholder {
         "form-action-buttons form-action-buttons";
     align-items: center;
     justify-content: flex-start;
-    height: 100%;
+    height: 95%;
     grid-column-gap: 1.2rem;
 }
 
@@ -1667,7 +1692,6 @@ input:focus::placeholder {
     align-items: center;
     flex-direction: column;
     font-size: 1rem;
-    font-weight: bold;
     gap: 1vh;
     margin-bottom: 3rem;
     margin-left: 1rem;
@@ -1843,7 +1867,7 @@ select {
     right: 10px;
     width: 0;
     height: 0;
-    border: 6px solid transparent;
+    border: 6px solid;
     border-color: black transparent transparent transparent;
 }
 
@@ -1857,8 +1881,6 @@ select {
 .select-items div, .select-selected {
     color: black;
     padding: 8px 16px;
-    border: 1px solid transparent;
-    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
     cursor: pointer;
     user-select: none;
     font-size: 2vh;
@@ -1971,6 +1993,7 @@ select {
 
 .description-value-area {
     grid-area: description-value;
+    overflow-y: auto;
     width: 70%;
 }
 
@@ -2142,7 +2165,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     position: absolute;
     z-index: 99;
     bottom: 6vh;
-    left: -85%;
+    left: -5rem;
 }
 
 .tooltip:hover .tooltip-text {

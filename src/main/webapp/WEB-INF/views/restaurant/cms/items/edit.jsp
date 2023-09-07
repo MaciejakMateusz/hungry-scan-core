@@ -61,6 +61,7 @@
                             <div class="name-input-area">
                                 <label for="name" class="nam-input-definition-area"> Nazwa:</label>
                                 <form:input path="name"
+                                            maxlength="200"
                                             cssClass="nam-input-field-area"/>
                                 <form:errors path="name"
                                              cssClass="validation nam-input-field-area nam-validation-pos"/>
@@ -69,6 +70,7 @@
                             <div class="description-input-area">
                                 <label for="description" class="des-input-definition-area"> Opis:</label>
                                 <form:textarea path="description"
+                                               maxlength="500"
                                                cssClass="des-input-field-area"/>
                                 <form:errors path="description"
                                              cssClass="validation des-input-field-area des-validation-pos"/>
@@ -79,6 +81,7 @@
                                 <form:input type="number"
                                             step="0.01"
                                             path="price"
+                                            max="10000"
                                             cssClass="pri-input-field-area"/>
                                 <form:errors path="price"
                                              cssClass="validation pri-input-field-area pri-validation-pos"/>                            </div>
@@ -95,7 +98,7 @@
                                 <div class="cms-action-button cms-delete" id="cancel-item-action-button">Anuluj</div>
                             </div>
                             <div class="available-buttons-area">
-                                <span>Dostępność</span>
+                                <span>Dostępność:</span>
                                 <label for="available" class="cms-action-button gray-style" id="available-label">
                                     Dostępne
                                     <form:radiobutton path="available"

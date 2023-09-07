@@ -1,5 +1,6 @@
 const tableNumber = document.querySelector('#table-number');
 const orderTime = document.querySelector('#order-time');
+const orderId = document.querySelector('#order-id');
 const orderDetails = document.querySelector('#order-details');
 const paymentMethod = document.querySelector('#p-method');
 const totalPriceSpans = document.querySelectorAll('.total-price-span');
@@ -15,26 +16,10 @@ export function renderOrderDetails(order) {
         return
     }
 
-    const orderIdContainer = document.createElement('div');
-    orderIdContainer.classList.add('ordered-items-group');
-
-    let orderIdDefinition = document.createElement('span');
-    orderIdDefinition.classList.add('item-info');
-    orderIdDefinition.classList.add('order-details-id');
-    orderIdDefinition.innerText = `ID zamówienia:`;
-    orderIdContainer.appendChild(orderIdDefinition);
-
-    let orderIdValue = document.createElement('span');
-    orderIdValue.classList.add('item-price');
-    orderIdValue.classList.add('order-details-id');
-    orderIdValue.innerText = order.id;
-    orderIdContainer.appendChild(orderIdValue);
-
-    orderDetails.appendChild(orderIdContainer);
-
     if (!order.forTakeAway) {
         tableNumber.innerText = `Stolik ${order.restaurantTable.id}`;
     }
+    orderId.innerText = `ID zamówienia: ${order.id}`;
     orderTime.innerText = `Godzina zamówienia: ${order.orderTime.substring(0, 5)}`;
 
     let sum = 0;
@@ -42,9 +27,14 @@ export function renderOrderDetails(order) {
         const orderedItemsGroup = document.createElement('div');
         orderedItemsGroup.classList.add('ordered-items-group');
 
+        let orderedItemQuantity = document.createElement('span');
+        orderedItemQuantity.classList.add('item-quantity');
+        orderedItemQuantity.innerText = `${orderedItem.quantity}x`;
+        orderedItemsGroup.appendChild(orderedItemQuantity);
+
         let orderedItemInfo = document.createElement('span');
         orderedItemInfo.classList.add('item-info');
-        orderedItemInfo.innerText = `${orderedItem.quantity}x ${orderedItem.menuItem.name}`;
+        orderedItemInfo.innerText = `${orderedItem.menuItem.name}`;
         orderedItemsGroup.appendChild(orderedItemInfo);
 
         let itemPrice = parseFloat(orderedItem.menuItem.price);

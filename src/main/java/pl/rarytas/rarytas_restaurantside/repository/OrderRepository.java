@@ -12,10 +12,10 @@ public interface OrderRepository extends CustomRepository<Order, Integer> {
     @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_paid = false AND take_away = false AND is_resolved = false", nativeQuery = true)
     List<Order> findAllNotPaid();
 
-    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE take_away = true AND is_resolved = false", nativeQuery = true)
+    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE take_away = true AND is_resolved = false ORDER BY id DESC", nativeQuery = true)
     List<Order> findAllTakeAway();
 
-    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_resolved = true", nativeQuery = true)
+    @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_resolved = true ORDER BY id DESC", nativeQuery = true)
     List<Order> findAllResolved();
 
     @Query(value = "SELECT * FROM rarytas_testing.orders WHERE is_resolved = true AND take_away = true LIMIT 50", nativeQuery = true)
@@ -30,7 +30,7 @@ public interface OrderRepository extends CustomRepository<Order, Integer> {
             "SELECT * FROM rarytas_testing.orders " +
                     "WHERE is_resolved = true " +
                     "AND take_away = :forTakeAway " +
-                    "ORDER BY id " +
+                    "ORDER BY id DESC " +
                     "LIMIT :limit " +
                     "OFFSET :offset", nativeQuery = true)
     List<Order> findFinalizedOrders(@Param("forTakeAway") boolean forTakeAway,
