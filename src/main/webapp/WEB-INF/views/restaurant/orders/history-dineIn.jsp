@@ -64,9 +64,9 @@
                                            id="search-id"
                                            class="id-filter"
                                            placeholder="ID">
-                                    <span class="search-icon icon-id"></span>
+                                    <span class="search-icon icon-id" id="trigger-id-filter"></span>
                                 </label>
-                                <input type="submit" style="display: none;">
+                                <input type="submit" style="display: none;" id="id-filter-button">
                             </form>
                             <form class="search-filter"
                                   id="date-filter">
@@ -75,9 +75,9 @@
                                            id="search-date"
                                            class="date-filter"
                                            placeholder="Data zamówienia">
-                                    <span class="search-icon icon-date"></span>
+                                    <span class="search-icon icon-date" id="trigger-date-filter"></span>
                                 </label>
-                                <input type="submit" style="display: none;">
+                                <input type="submit" style="display: none;" id="date-filter-button">
                             </form>
                         </div>
                     </div>
