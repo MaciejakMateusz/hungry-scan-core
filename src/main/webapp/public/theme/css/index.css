@@ -114,6 +114,7 @@
 .main-button {
     display: flex;
     padding: var(--padding-3xs);
+    border-radius: 25px;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
@@ -134,8 +135,8 @@
     background-color: var(--color-white);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
     z-index: 1;
-    height: 1.5rem;
     cursor: pointer;
+    transition: all 0.4s ease-out;
 }
 
 .selected-button {
@@ -143,7 +144,6 @@
     background-color: var(--color-white);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
     z-index: 1;
-    height: 1.5rem;
 }
 
 .bar-element {
@@ -978,7 +978,7 @@
 .cms-menu-item {
     width: fit-content;
     display: grid;
-    grid-template-columns: 22rem 5rem;
+    grid-template-columns: auto auto;
     grid-template-areas: "menu-item action-buttons";
     align-items: center;
     justify-self: center;
@@ -2139,7 +2139,9 @@ input[type="number"]:focus::placeholder {
 
 input[type="date"]::-webkit-calendar-picker-indicator {
     position: absolute;
-    left: 28%;
+    right:33%;
+    font-size: 7rem;
+    background: transparent;
 }
 
 .validation {
@@ -2182,8 +2184,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding: 0.8vh 0.5rem;
     position: absolute;
     z-index: 99;
-    bottom: 6vh;
-    left: -5rem;
+    bottom: 0.5rem;
+    right: 3rem;
 }
 
 .tooltip:hover .tooltip-text {
