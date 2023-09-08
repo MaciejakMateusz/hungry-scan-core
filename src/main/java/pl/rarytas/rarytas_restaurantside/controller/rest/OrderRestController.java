@@ -44,7 +44,11 @@ public class OrderRestController {
     @GetMapping("/finalized/id/{id}/{forTakeAway}")
     public Order getFinalizedById(@PathVariable Integer id,
                                   @PathVariable boolean forTakeAway) {
-        return orderService.findFinalizedById(id, forTakeAway).orElseThrow();
+        if (orderService.existsByIdAndForTakeAwayAndResolved(id, forTakeAway)) {
+            return orderService.findFinalizedById(id, forTakeAway).orElseThrow();
+        } else {
+            return null;
+        }
     }
 
     @GetMapping("/finalized/date/{date}/{forTakeAway}")

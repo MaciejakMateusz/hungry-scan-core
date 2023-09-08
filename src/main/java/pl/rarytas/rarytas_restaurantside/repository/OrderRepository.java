@@ -45,4 +45,9 @@ public interface OrderRepository extends CustomRepository<Order, Integer> {
     List<Order> findFinalizedByDate(@Param("date") String date,
                                     @Param("forTakeAway") boolean forTakeAway);
 
+
+    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM Order e WHERE e.id = :id AND e.forTakeAway = :forTakeAway AND e.isResolved = :isResolved")
+    boolean existsByIdForTakeWayIsResolved(@Param("id") Integer id,
+                                           @Param("forTakeAway") boolean forTakeAway,
+                                           @Param("isResolved") boolean isResolved);
 }

@@ -5,16 +5,30 @@ import {findOrderByIdAndType, findOrdersByDate} from "./history-filters.js";
 
 const ordersListParent = document.querySelector('#orders-list-parent');
 const idFilterForm = document.querySelector('#id-filter');
+const idFilterButton = document.querySelector('#id-filter-button');
 const dateFilterForm = document.querySelector('#date-filter');
+const dateFilterButton = document.querySelector('#date-filter-button');
+const idSearchTrigger = document.querySelector('#trigger-id-filter');
+const dateSearchTrigger = document.querySelector('#trigger-date-filter');
 
 document.addEventListener("DOMContentLoaded", function () {
     renderPaginationButtons(true);
     renderRecordsPerPage(true);
 });
 
+idSearchTrigger.addEventListener('click', e => {
+    e.preventDefault();
+    idFilterButton.click();
+});
+
 idFilterForm.addEventListener('submit', e => {
     e.preventDefault();
     findOrderByIdAndType(true);
+});
+
+dateSearchTrigger.addEventListener('click', e => {
+    e.preventDefault();
+    dateFilterButton.click();
 });
 
 dateFilterForm.addEventListener('submit', e => {

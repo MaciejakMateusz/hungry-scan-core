@@ -193,6 +193,11 @@ public class OrderService implements OrderServiceInterface {
         waiterCallService.callWaiter(waiterCall);
     }
 
+    @Override
+    public boolean existsByIdAndForTakeAwayAndResolved(Integer id, boolean forTakeAway) {
+        return orderRepository.existsByIdForTakeWayIsResolved(id, forTakeAway, true);
+    }
+
     private BigDecimal calculateTotalAmount(Order order) {
         BigDecimal sum = BigDecimal.valueOf(0);
         for (OrderedItem orderedItem : order.getOrderedItems()) {

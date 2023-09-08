@@ -39,4 +39,6 @@ public interface OrderServiceInterface {
     void callWaiter(Order order);
 
     void resolveWaiterCall(Integer id, boolean waiterCalled);
+
+    boolean existsByIdAndForTakeAwayAndResolved(Integer id, boolean forTakeAway);
 }
