@@ -35,6 +35,9 @@
                                                 class="form-control form-control-user"
                                                 placeholder="Wpisz login administratora..."/>
                                         <form:errors path="username" cssClass="validation"/>
+                                        <c:if test="${usernameExists==true}">
+                                            <p class="validation">Użytkownik o podanym loginie już istnieje</p>
+                                        </c:if>
                                     </div>
                                     <div class="form-group">
                                         <form:input
@@ -44,8 +47,8 @@
                                                 aria-describedby="emailHelp"
                                                 placeholder="Wpisz email..."/>
                                         <form:errors path="email" cssClass="validation"/>
-                                        <c:if test="${userExists==true}">
-                                            <p class="validation">Użytkownik z podanym adresem email już istnieje.</p>
+                                        <c:if test="${emailExists==true}">
+                                            <p class="validation">Użytkownik o podanym adresie email już istnieje</p>
                                         </c:if>
                                     </div>
                                     <div class="form-group">
@@ -61,7 +64,7 @@
                                                 class="form-control form-control-user"
                                                 placeholder="Powtórz hasło..."/>
                                         <c:if test="${passwordsNotMatch==true}">
-                                            <p class="validation">Hasła nie są identyczne.</p>
+                                            <p class="validation">Hasła nie są identyczne</p>
                                         </c:if>
                                     </div>
                                     <button

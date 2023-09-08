@@ -24,13 +24,11 @@ public class User {
     @Column(nullable = false, unique = true, length = 60)
     @NotBlank
     @Username
-    @UsernameExists
     private String username;
 
     @Column(length = 100, nullable = false, unique = true)
     @NotBlank
     @Email
-    @EmailExists
     private String email;
 
     @Column(nullable = false)

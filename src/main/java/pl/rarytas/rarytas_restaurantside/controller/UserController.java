@@ -45,8 +45,13 @@ public class UserController {
     public String register(@Valid User user, BindingResult br, Model model) {
         if (br.hasErrors()) {
             return "register";
-        }
-        if (!user.getPassword().equals(user.getRepeatedPassword())) {
+        } else if (registerService.existsByUsername(user.getUsername())) {
+            model.addAttribute("usernameExists", true);
+            return "register";
+        } else if (registerService.existsByEmail(user.getEmail())) {
+            model.addAttribute("emailExists", true);
+            return "register";
+        } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
             model.addAttribute("passwordsNotMatch", true);
             return "register";
         }
@@ -58,14 +63,19 @@ public class UserController {
     public String registerAdmin(@Valid User admin, BindingResult br, Model model) {
         if (br.hasErrors()) {
             return "registerAdmin";
-        }
-        if (!admin.getPassword().equals(admin.getRepeatedPassword())) {
+        } else if (registerService.existsByUsername(admin.getUsername())) {
+            model.addAttribute("usernameExists", true);
+            return "registerAdmin";
+
+        } else if (registerService.existsByEmail(admin.getEmail())) {
+            model.addAttribute("emailExists", true);
+            return "registerAdmin";
+        } else if (!admin.getPassword().equals(admin.getRepeatedPassword())) {
             model.addAttribute("passwordsNotMatch", true);
             return "registerAdmin";
         }
         registerService.saveAdmin(admin);
         return "success-registration";
-
     }
 
     @GetMapping("/login")

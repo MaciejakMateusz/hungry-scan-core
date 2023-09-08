@@ -35,6 +35,9 @@
                                                 class="form-control form-control-user"
                                                 placeholder="Wpisz nazwę użytkownika..."/>
                                         <form:errors path="username" cssClass="validation"/>
+                                        <c:if test="${usernameExists==true}">
+                                            <p class="validation">Użytkownik o podanym loginie już istnieje</p>
+                                        </c:if>
                                     </div>
                                     <div class="form-group">
                                         <form:input
@@ -43,6 +46,9 @@
                                                 class="form-control form-control-user"
                                                 aria-describedby="emailHelp"
                                                 placeholder="Wpisz email..."/>
+                                        <c:if test="${emailExists==true}">
+                                            <p class="validation">Użytkownik o podanym adresie email już istnieje</p>
+                                        </c:if>
                                         <form:errors path="email" cssClass="validation"/>
                                     </div>
                                     <div class="form-group">
@@ -59,7 +65,7 @@
                                                 class="form-control form-control-user"
                                                 placeholder="Powtórz hasło..."/>
                                         <c:if test="${passwordsNotMatch==true}">
-                                            <p class="validation">Hasła nie są identyczne.</p>
+                                            <p class="validation">Hasła nie są identyczne</p>
                                         </c:if>
                                     </div>
                                     <button
