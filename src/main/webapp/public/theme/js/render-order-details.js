@@ -143,6 +143,7 @@ export function renderOrderDetails(order) {
 /** ----- CLEARING THE RIGHT PANEL----- **/
 export function clearOrderDetails() {
     tableNumber.innerText = '';
+    orderId.innerText = '';
     orderTime.innerText = '';
     orderDetails.innerHTML = ''; // Remove all child elements
 
@@ -165,5 +166,4 @@ export function clearOrderDetails() {
     orderedTotalAmountSection.classList.remove('d-none');
     billRequestedSection.classList.add('d-none');
 }
-
 /** ----- END OF CLEARING THE RIGHT PANEL ----- **/

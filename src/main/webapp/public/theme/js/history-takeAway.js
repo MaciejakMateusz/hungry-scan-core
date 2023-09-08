@@ -29,6 +29,10 @@ const observer = new MutationObserver(function (mutationsList) {
                 if (addedNode.nodeType === Node.ELEMENT_NODE && addedNode.classList.contains('orders-list-table')) {
                     addedNode.addEventListener('click', () => {
 
+                        if(addedNode.firstElementChild.innerText === 'Brak wyników') {
+                            return;
+                        }
+
                         //Remove the class from all elements
                         const orderListTables = document.querySelectorAll('.orders-list-table');
                         orderListTables.forEach(element => {
