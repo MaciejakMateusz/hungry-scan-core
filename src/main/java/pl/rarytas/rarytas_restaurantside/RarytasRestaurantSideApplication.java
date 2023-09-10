@@ -11,6 +11,8 @@ import pl.rarytas.rarytas_restaurantside.repository.CustomRepositoryImpl;
 @EnableJpaRepositories(repositoryBaseClass = CustomRepositoryImpl.class)
 public class RarytasRestaurantSideApplication extends SpringBootServletInitializer {
 
+
+
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         return builder.sources(RarytasRestaurantSideApplication.class);

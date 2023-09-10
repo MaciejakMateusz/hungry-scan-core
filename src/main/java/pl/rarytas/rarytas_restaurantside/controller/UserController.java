@@ -1,6 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,16 +10,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.service.RegisterService;
+import pl.rarytas.rarytas_restaurantside.utility.TokenGenerator;
 
 
 @Controller
+@Slf4j
 public class UserController {
 
     private final RegisterService registerService;
+    private final TokenGenerator tokenGenerator;
 
     public UserController(
-            RegisterService registerService) {
+            RegisterService registerService, TokenGenerator tokenGenerator) {
         this.registerService = registerService;
+        this.tokenGenerator = tokenGenerator;
     }
 
     @GetMapping
@@ -81,6 +86,7 @@ public class UserController {
     @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("user", new User());
+        log.info(tokenGenerator.generateToken(1, 1));
         return "login";
     }
 
