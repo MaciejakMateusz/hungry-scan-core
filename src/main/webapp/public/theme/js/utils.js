@@ -20,8 +20,10 @@ setInterval(updateDateTime, 1000);
 
 
 /** ----- FETCH FUNCTIONS ----- **/
+const apiHost = 'http://localhost:8082/api'
+
 export function fetchOrders() {
-    return fetch(`http://localhost:8082/api/orders`)
+    return fetch(`${apiHost}/orders`)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -36,7 +38,7 @@ export function fetchOrders() {
 }
 
 export function fetchOrderByTableNumber(id) {
-    return fetch(`http://localhost:8082/api/orders/${id}`)
+    return fetch(`${apiHost}/orders/${id}`)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -57,7 +59,7 @@ export function fetchFinalizedOrders(forTakeAway, limit, offset) {
         offset: offset
     });
 
-    return fetch('http://localhost:8082/api/orders/finalized', {
+    return fetch(`${apiHost}/orders/finalized`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -77,7 +79,7 @@ export function fetchFinalizedOrders(forTakeAway, limit, offset) {
 }
 
 export function fetchAllResolved() {
-    return fetch(`http://localhost:8082/api/orders/resolved`)
+    return fetch(`${apiHost}/orders/resolved`)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -92,7 +94,7 @@ export function fetchAllResolved() {
 }
 
 export function fetchOrderById(id) {
-    return fetch(`http://localhost:8082/api/orders/id/${id}`)
+    return fetch(`${apiHost}/orders/id/${id}`)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -107,7 +109,7 @@ export function fetchOrderById(id) {
 }
 
 export function fetchTakeAwayOrders() {
-    return fetch(`http://localhost:8082/api/orders/takeAway`)
+    return fetch(`${apiHost}/orders/takeAway`)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -122,7 +124,7 @@ export function fetchTakeAwayOrders() {
 }
 
 export function fetchDineInOrders() {
-    return fetch(`http://localhost:8082/api/orders`)
+    return fetch(`${apiHost}/orders`)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -137,7 +139,7 @@ export function fetchDineInOrders() {
 }
 
 export function fetchFinalizedOrderById(id, forTakeAway) {
-    return fetch(`http://localhost:8082/api/orders/finalized/id/${id}/${forTakeAway}`)
+    return fetch(`${apiHost}/orders/finalized/id/${id}/${forTakeAway}`)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -152,7 +154,7 @@ export function fetchFinalizedOrderById(id, forTakeAway) {
 }
 
 export function fetchFinalizedOrdersByDate(date, forTakeAway) {
-    return fetch(`http://localhost:8082/api/orders/finalized/date/${date}/${forTakeAway}`)
+    return fetch(`${apiHost}/orders/finalized/date/${date}/${forTakeAway}`)
         .then(response => {
             if (response.ok) {
                 return response.json();

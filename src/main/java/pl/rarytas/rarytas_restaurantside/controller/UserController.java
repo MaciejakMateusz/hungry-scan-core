@@ -86,7 +86,6 @@ public class UserController {
     @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("user", new User());
-        log.info(tokenGenerator.generateToken(1, 1));
         return "login";
     }
 
