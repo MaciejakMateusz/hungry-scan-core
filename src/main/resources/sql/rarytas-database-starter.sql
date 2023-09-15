@@ -126,5 +126,3 @@ create table role
 
 INSERT INTO rarytas_DB.role (id, name) VALUES (1, 'ROLE_USER');
 INSERT INTO rarytas_DB.role (id, name) VALUES (2, 'ROLE_ADMIN');
-
-
