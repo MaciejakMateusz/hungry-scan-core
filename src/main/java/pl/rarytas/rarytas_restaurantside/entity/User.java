@@ -15,6 +15,7 @@ import java.util.Set;
 @Slf4j
 @Getter
 @Setter
+@Table(name = "users")
 public class User {
 
     @Id
