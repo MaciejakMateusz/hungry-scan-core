@@ -47,7 +47,7 @@ class CategoryRestControllerTest {
 
     @Test
     @Order(1)
-    public void getCategoryTest1() throws Exception {
+    public void shouldGetSpecificJsonFormat() throws Exception {
         String expectedCategoryJson = "{\"id\":1,\"name\":\"Przystawki\","
                 + "\"description\":\"Rozpocznij swoją kulinarną podróż od pysznych przystawek, "
                 + "które skradną Twoje podniebienie. Wybierz spośród aromatycznych krewetek marynowanych w cytrynie, "
@@ -59,18 +59,18 @@ class CategoryRestControllerTest {
 
     @Test
     @Order(2)
-    public void getCategoryTest2() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/categories/1")).andReturn();
-        String actualCategoryJson = result.getResponse().getContentAsString();
-        // assertTrue(actualCategoryJson.contains("Przystawki"));
-        Category category = jsonSerializer.fromJson(actualCategoryJson, Category.class);
+    public void shouldGetCategoryFromDatabase() {
+        Category category = categoryService.findById(1).orElse(new Category());
         assertEquals("Przystawki", category.getName());
     }
 
     @Test
     @Order(3)
-    public void getCategoryTest3() {
-        Category category = categoryService.findById(1).orElseThrow();
+    public void shouldGetCategoryFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/categories/1")).andReturn();
+        String actualCategoryJson = result.getResponse().getContentAsString();
+        // assertTrue(actualCategoryJson.contains("Przystawki"));
+        Category category = jsonSerializer.fromJson(actualCategoryJson, Category.class);
         assertEquals("Przystawki", category.getName());
     }
 
