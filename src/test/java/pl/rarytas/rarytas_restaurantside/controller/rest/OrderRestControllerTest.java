@@ -69,4 +69,13 @@ class OrderRestControllerTest {
         String actualOrderJson = result.getResponse().getContentAsString();
         assertFalse(actualOrderJson.contains("\"resolved\":false"));
     }
+
+    @Test
+    public void shouldGetFinalizedDineInByIdFromDb() {
+        Order order = orderService.findFinalizedById(3, false).orElse(new Order());
+
+        assertTrue(order.isPaid());
+        assertTrue(order.isResolved());
+        assertFalse(order.isForTakeAway());
+    }
 }
