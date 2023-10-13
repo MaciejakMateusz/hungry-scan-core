@@ -1,6 +1,9 @@
 package pl.rarytas.rarytas_restaurantside.controller.rest;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -9,10 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderServiceInterface;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -31,22 +36,17 @@ class OrderRestControllerTest {
     private OrderServiceInterface orderService;
 
     @Test
-    @Order(1)
     public void shouldGetAllNotPaidFromDB() {
-        List<pl.rarytas.rarytas_restaurantside.entity.Order> orders = orderService.findAllNotPaid();
+        List<Order> orders = orderService.findAllNotPaid();
 
-        boolean isPaid = false;
-        for (pl.rarytas.rarytas_restaurantside.entity.Order order : orders) {
-            if (order.isPaid()) {
-                isPaid = true;
-                break;
-            }
-        }
-        assertFalse(isPaid);
+        //checking if orders list does not contain order that is paid
+        assertFalse(orders.stream().anyMatch(Order::isPaid));
+
+        //data-h2.sql file contain only 3 order inserts that are not paid
+        assertEquals(3, orders.size());
     }
 
     @Test
-    @Order(2)
     public void shouldGetAllNotPaidFromEndpoint() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/orders")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
