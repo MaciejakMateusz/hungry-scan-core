@@ -17,8 +17,7 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderServiceInterfac
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
@@ -51,5 +50,16 @@ class OrderRestControllerTest {
         MvcResult result = mockMvc.perform(get("/api/orders")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
         assertFalse(actualOrderJson.contains("\"paid\":true"));
+    }
+
+    @Test
+    public void shouldGetAllResolvedFromDB() {
+        List<Order> orders = orderService.findAllByResolvedIsTrue();
+
+        //checking if orders list contain only resolved orders
+        assertTrue(orders.stream().allMatch(Order::isResolved));
+
+        //data-h2.sql file contain only 2 order inserts that are resolved
+        assertEquals(2, orders.size());
     }
 }
