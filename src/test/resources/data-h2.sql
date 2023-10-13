@@ -137,6 +137,17 @@ INSERT INTO orders (bill_requested,
                     `waiter_called`,
                     restaurant_id,
                     table_id) VALUES (false, false, false, 5, NOW(), false, null, 120, true, 1, 1);
+INSERT INTO orders (bill_requested,
+                    take_away,
+                    is_resolved,
+                    order_number,
+                    order_time,
+                    is_paid,
+                    payment_method,
+                    total_amount,
+                    `waiter_called`,
+                    restaurant_id,
+                    table_id) VALUES (false, true, false, 6, NOW(), true, 'online', 120, true, 1, 19);
 
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (1, 1);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (2, 2);
