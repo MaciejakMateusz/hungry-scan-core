@@ -8,11 +8,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderServiceInterface;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -30,7 +32,7 @@ class OrderRestControllerTest {
 
     @Test
     @Order(1)
-    public void shouldGetAllNotPaid() {
+    public void shouldGetAllNotPaidFromDB() {
         List<pl.rarytas.rarytas_restaurantside.entity.Order> orders = orderService.findAllNotPaid();
 
         boolean isPaid = false;
@@ -41,5 +43,13 @@ class OrderRestControllerTest {
             }
         }
         assertFalse(isPaid);
+    }
+
+    @Test
+    @Order(2)
+    public void shouldGetAllNotPaidFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/orders")).andReturn();
+        String actualOrderJson = result.getResponse().getContentAsString();
+        assertFalse(actualOrderJson.contains("\"paid\":true"));
     }
 }
