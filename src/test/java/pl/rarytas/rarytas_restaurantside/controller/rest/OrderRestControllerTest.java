@@ -78,4 +78,13 @@ class OrderRestControllerTest {
         assertTrue(order.isResolved());
         assertFalse(order.isForTakeAway());
     }
+
+    @Test
+    public void shouldGetFinalizedDineInByIdFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/orders/finalized/id/3/false")).andReturn();
+        String actualOrderJson = result.getResponse().getContentAsString();
+        assertFalse(actualOrderJson.contains("\"resolved\":false"));
+        assertFalse(actualOrderJson.contains("\"paid\":false"));
+        assertFalse(actualOrderJson.contains("\"forTakeAway\":true"));
+    }
 }
