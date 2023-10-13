@@ -62,4 +62,11 @@ class OrderRestControllerTest {
         //data-h2.sql file contain only 2 order inserts that are resolved
         assertEquals(2, orders.size());
     }
+
+    @Test
+    public void shouldGetAllResolvedFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/orders/resolved")).andReturn();
+        String actualOrderJson = result.getResponse().getContentAsString();
+        assertFalse(actualOrderJson.contains("\"resolved\":false"));
+    }
 }
