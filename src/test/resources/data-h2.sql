@@ -79,7 +79,7 @@ INSERT INTO role (id, name) VALUES (2, 'ROLE_ADMIN');
 INSERT INTO ordered_items (quantity, menu_item_id) VALUES (2, 3);
 INSERT INTO ordered_items (quantity, menu_item_id) VALUES (2, 3);
 INSERT INTO ordered_items (quantity, menu_item_id) VALUES (2, 3);
-INSERT INTO ordered_items (quantity, menu_item_id) VALUES (2, 3);
+INSERT INTO ordered_items (quantity, menu_item_id) VALUES (3, 2);
 INSERT INTO ordered_items (quantity, menu_item_id) VALUES (2, 3);
 
 INSERT INTO orders (bill_requested,
@@ -92,7 +92,7 @@ INSERT INTO orders (bill_requested,
                     total_amount,
                     `waiter_called`,
                     restaurant_id,
-                    table_id) VALUES (false, false, false, 1, NOW(), false, null, 120, false, 1, 1);
+                    table_id) VALUES (false, false, false, 1, NOW(), false, null, null, false, 1, 1);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -103,7 +103,7 @@ INSERT INTO orders (bill_requested,
                     total_amount,
                     `waiter_called`,
                     restaurant_id,
-                    table_id) VALUES (true, false, false, 2, NOW(), false, 'cash', 120, false, 1, 2);
+                    table_id) VALUES (true, false, false, 2, NOW(), false, 'cash', null, false, 1, 2);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -114,7 +114,7 @@ INSERT INTO orders (bill_requested,
                     total_amount,
                     `waiter_called`,
                     restaurant_id,
-                    table_id) VALUES (true, false, true, 3, NOW(), true, 'card', 120, false, 1, 3);
+                    table_id) VALUES (true, false, true, 3, NOW(), true, 'card', null, false, 1, 3);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -125,7 +125,7 @@ INSERT INTO orders (bill_requested,
                     total_amount,
                     `waiter_called`,
                     restaurant_id,
-                    table_id) VALUES (true, false, true, 4, NOW(), true, 'card', 100, false, 1, 4);
+                    table_id) VALUES (true, false, true, 4, NOW(), true, 'card', null, false, 1, 4);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -136,7 +136,7 @@ INSERT INTO orders (bill_requested,
                     total_amount,
                     `waiter_called`,
                     restaurant_id,
-                    table_id) VALUES (false, false, false, 5, NOW(), false, null, 120, true, 1, 5);
+                    table_id) VALUES (false, false, false, 5, NOW(), false, null, null, true, 1, 5);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -147,7 +147,7 @@ INSERT INTO orders (bill_requested,
                     total_amount,
                     `waiter_called`,
                     restaurant_id,
-                    table_id) VALUES (false, true, false, 6, NOW(), true, 'online', 120, true, 1, 19);
+                    table_id) VALUES (false, true, false, 6, NOW(), true, 'online', null, true, 1, 19);
 
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (1, 1);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (2, 2);

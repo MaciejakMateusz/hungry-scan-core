@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderServiceInterface;
 
+import java.math.RoundingMode;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,5 +118,19 @@ class OrderRestControllerTest {
         MvcResult result = mockMvc.perform(get("/api/orders/2")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
         assertTrue(actualOrderJson.contains("\"paymentMethod\":\"cash\""));
+    }
+
+    @Test
+    public void shouldGetByIdFromDB() {
+        Order order = orderService.findById(4).orElse(new Order());
+        //only order with ID 4 has total amount = 73.50
+        assertEquals("73.50", order.getTotalAmount().setScale(2, RoundingMode.HALF_UP).toString());
+    }
+
+    @Test
+    public void shouldGetByIdFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/orders/id/4")).andReturn();
+        String actualOrderJson = result.getResponse().getContentAsString();
+        assertTrue(actualOrderJson.contains("\"totalAmount\":73.50"));
     }
 }
