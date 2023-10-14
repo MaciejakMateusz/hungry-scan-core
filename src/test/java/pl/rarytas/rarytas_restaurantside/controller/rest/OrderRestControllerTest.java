@@ -104,4 +104,18 @@ class OrderRestControllerTest {
         assertFalse(actualOrderJson.contains("\"paymentMethod\":\"card\""));
         assertFalse(actualOrderJson.contains("\"paymentMethod\":\"cash\""));
     }
+
+    @Test
+    public void shouldGetByTableNumberFromDB() {
+        Order order = orderService.findByTableNumber(2).orElse(new Order());
+        //only table number 2 has cash payment method
+        assertEquals("cash", order.getPaymentMethod());
+    }
+
+    @Test
+    public void shouldGetByTableNumberFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/orders/2")).andReturn();
+        String actualOrderJson = result.getResponse().getContentAsString();
+        assertTrue(actualOrderJson.contains("\"paymentMethod\":\"cash\""));
+    }
 }
