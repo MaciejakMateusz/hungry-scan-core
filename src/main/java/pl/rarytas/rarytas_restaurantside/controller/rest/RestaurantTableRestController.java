@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
-import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
+import pl.rarytas.rarytas_restaurantside.service.RestaurantTableService;
 
 import java.util.List;
 
@@ -14,20 +14,21 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/restaurantTables")
 public class RestaurantTableRestController {
-    private final RestaurantTableRepository restaurantTableRepository;
 
-    public RestaurantTableRestController(RestaurantTableRepository restaurantTableRepository) {
-        this.restaurantTableRepository = restaurantTableRepository;
+    private final RestaurantTableService restaurantTableService;
+
+    public RestaurantTableRestController(RestaurantTableService restaurantTableService) {
+        this.restaurantTableService = restaurantTableService;
     }
 
     @GetMapping
     public List<RestaurantTable> getAll() {
-        return restaurantTableRepository.findAll();
+        return restaurantTableService.findAll();
     }
 
     @GetMapping("/{id}")
     public RestaurantTable getById(@PathVariable Integer id) {
-        return restaurantTableRepository.findById(id).orElseThrow();
+        return restaurantTableService.findById(id).orElseThrow();
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

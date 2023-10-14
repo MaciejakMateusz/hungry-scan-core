@@ -48,10 +48,8 @@ INSERT INTO menu_items (id, name, category_id, description, ingredients, price, 
 INSERT INTO menu_items (id, name, category_id, description, ingredients, price, is_available, created, updated) VALUES (39, 'Piwo rzemieślnicze IPA', 8, 'Zrównoważone piwo rzemieślnicze typu IPA.', 'Jęczmień, chmiele, woda', 12.50, 1, '2023-08-02 04:24:42', null);
 INSERT INTO menu_items (id, name, category_id, description, ingredients, price, is_available, created, updated) VALUES (40, 'Herbata zielona', 8, 'Zdrowa herbata zielona, lekko zaparzona.', 'Liście herbaty zielonej',7.25, 1, '2023-08-02 04:25:04', null);
 
-
 INSERT INTO restaurants (address, name) VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name) VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
-
 
 INSERT INTO restaurant_tables (id) VALUES (1);
 INSERT INTO restaurant_tables (id) VALUES (2);
