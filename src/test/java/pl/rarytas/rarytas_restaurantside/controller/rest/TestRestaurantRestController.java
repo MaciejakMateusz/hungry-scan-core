@@ -18,6 +18,7 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantServiceInt
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
@@ -45,5 +46,18 @@ public class TestRestaurantRestController {
         String actualRestaurantJson = result.getResponse().getContentAsString();
         assertEquals("[{\"id\":1,\"name\":\"Rarytas\",\"address\":\"ul. GÅ\u0082Ã³wna 123, Miastowo, WojewÃ³dztwo, 54321\"},{\"id\":2,\"name\":\"Wykwintna Bistro\",\"address\":\"ul. DÄ\u0099bowa 456, Miasteczko, Wiejskie, 98765\"}]",
                 actualRestaurantJson);
+    }
+
+    @Test
+    public void shouldGetByIdFromDB() {
+        Restaurant restaurant = restaurantService.findById(1).orElse(new Restaurant());
+        assertEquals("Rarytas", restaurant.getName());
+    }
+
+    @Test
+    public void shouldGetByIdFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/restaurants/2")).andReturn();
+        String actualRestaurantJson = result.getResponse().getContentAsString();
+        assertTrue(actualRestaurantJson.contains("\"name\":\"Wykwintna Bistro\""));
     }
 }
