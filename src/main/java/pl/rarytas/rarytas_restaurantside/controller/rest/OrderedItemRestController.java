@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
-import pl.rarytas.rarytas_restaurantside.repository.OrderedItemRepository;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemService;
 
 import java.util.List;
 
@@ -15,20 +15,21 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/orderedItems")
 public class OrderedItemRestController {
-    private final OrderedItemRepository orderedItemRepository;
 
-    public OrderedItemRestController(OrderedItemRepository orderedItemRepository) {
-        this.orderedItemRepository = orderedItemRepository;
+    private final OrderedItemService orderedItemService;
+    public OrderedItemRestController(OrderedItemService orderedItemService) {
+        this.orderedItemService = orderedItemService;
     }
+
 
     @GetMapping
     public List<OrderedItem> getAll() {
-        return orderedItemRepository.findAll();
+        return orderedItemService.findAll();
     }
 
     @GetMapping("/{id}")
     public OrderedItem getById(@PathVariable Integer id) {
-        return orderedItemRepository.findById(id).orElseThrow();
+        return orderedItemService.findById(id).orElseThrow();
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
