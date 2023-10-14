@@ -18,6 +18,7 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableServi
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestRestaurantTableRestController {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -45,5 +47,18 @@ public class TestRestaurantTableRestController {
         String actualTableJson = result.getResponse().getContentAsString();
         assertEquals("[{\"id\":1,\"customerName\":null},{\"id\":2,\"customerName\":null},{\"id\":3,\"customerName\":null},{\"id\":4,\"customerName\":null},{\"id\":5,\"customerName\":null},{\"id\":6,\"customerName\":null},{\"id\":7,\"customerName\":null},{\"id\":8,\"customerName\":null},{\"id\":9,\"customerName\":null},{\"id\":10,\"customerName\":null},{\"id\":11,\"customerName\":null},{\"id\":12,\"customerName\":null},{\"id\":13,\"customerName\":null},{\"id\":14,\"customerName\":null},{\"id\":15,\"customerName\":null},{\"id\":16,\"customerName\":null},{\"id\":17,\"customerName\":null},{\"id\":18,\"customerName\":null},{\"id\":19,\"customerName\":null}]",
                 actualTableJson);
+    }
+
+    @Test
+    public void shouldGetByIdFromDB() {
+        RestaurantTable table = restaurantTableService.findById(5).orElse(new RestaurantTable());
+        assertEquals(5, table.getId());
+    }
+
+    @Test
+    public void shouldGetByIdFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/restaurantTables/5")).andReturn();
+        String actualTableJson = result.getResponse().getContentAsString();
+        assertTrue(actualTableJson.contains("\"id\":5"));
     }
 }
