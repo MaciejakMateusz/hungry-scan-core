@@ -8,6 +8,8 @@ import pl.rarytas.rarytas_restaurantside.repository.MenuItemRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemServiceInterface;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -33,5 +35,15 @@ public class MenuItemService implements MenuItemServiceInterface {
             menuItem.setImage(file.getBytes());
         }
         menuItemRepository.save(menuItem);
+    }
+
+    @Override
+    public List<MenuItem> findAll() {
+        return menuItemRepository.findAll();
+    }
+
+    @Override
+    public Optional<MenuItem> findById(Integer id) {
+        return menuItemRepository.findById(id);
     }
 }
