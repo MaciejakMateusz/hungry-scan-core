@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
-import pl.rarytas.rarytas_restaurantside.repository.MenuItemRepository;
+import pl.rarytas.rarytas_restaurantside.service.MenuItemService;
 
 import java.util.List;
 
@@ -19,20 +19,20 @@ import java.util.List;
 @RequestMapping("/api/items")
 public class MenuItemRestController {
 
-    private final MenuItemRepository menuItemRepository;
+    private final MenuItemService menuItemService;
 
-    public MenuItemRestController(MenuItemRepository menuItemRepository) {
-        this.menuItemRepository = menuItemRepository;
+    public MenuItemRestController(MenuItemService menuItemService) {
+        this.menuItemService = menuItemService;
     }
 
     @GetMapping
     public List<MenuItem> getAllItems() {
-        return menuItemRepository.findAll();
+        return menuItemService.findAll();
     }
 
     @GetMapping("/{id}")
     public MenuItem getItem(@PathVariable Integer id) {
-        return menuItemRepository.findById(id).orElseThrow();
+        return menuItemService.findById(id).orElseThrow();
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

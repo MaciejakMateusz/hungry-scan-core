@@ -16,6 +16,7 @@ import java.util.Map;
 @RequestMapping("/api/orders")
 @CrossOrigin(origins = "http://localhost:8080")
 public class OrderRestController {
+
     private final OrderService orderService;
 
     public OrderRestController(OrderService orderService) {
