@@ -21,7 +21,6 @@ public class OrderedItemRestController {
         this.orderedItemService = orderedItemService;
     }
 
-
     @GetMapping
     public List<OrderedItem> getAll() {
         return orderedItemService.findAll();
