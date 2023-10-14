@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @TestPropertySource(locations = "classpath:test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class OrderRestControllerTest {
+class TestOrderRestController {
 
     @Autowired
     private MockMvc mockMvc;
