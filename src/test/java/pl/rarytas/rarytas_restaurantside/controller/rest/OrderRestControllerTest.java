@@ -71,7 +71,7 @@ class OrderRestControllerTest {
     }
 
     @Test
-    public void shouldGetFinalizedDineInByIdFromDb() {
+    public void shouldGetFinalizedDineInByIdFromDB() {
         Order order = orderService.findFinalizedById(3, false).orElse(new Order());
 
         assertTrue(order.isPaid());
@@ -86,5 +86,22 @@ class OrderRestControllerTest {
         assertFalse(actualOrderJson.contains("\"resolved\":false"));
         assertFalse(actualOrderJson.contains("\"paid\":false"));
         assertFalse(actualOrderJson.contains("\"forTakeAway\":true"));
+    }
+
+    @Test
+    public void shouldGetAllForTakeAwayFromDB() {
+        List<Order> orders = orderService.findAllTakeAway();
+        assertEquals(1, orders.size());
+    }
+
+    @Test
+    public void shouldGetAllForTakeAwayFromEndpoint() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/orders/takeAway")).andReturn();
+        String actualOrderJson = result.getResponse().getContentAsString();
+        assertFalse(actualOrderJson.contains("\"forTakeAway\":false"));
+        assertTrue(actualOrderJson.contains("\"paymentMethod\":\"online\""));
+        assertFalse(actualOrderJson.contains("\"paymentMethod\":\"null\""));
+        assertFalse(actualOrderJson.contains("\"paymentMethod\":\"card\""));
+        assertFalse(actualOrderJson.contains("\"paymentMethod\":\"cash\""));
     }
 }
