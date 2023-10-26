@@ -35,6 +35,8 @@ class CategoryServiceTest {
     }
 
     @Test
-    void findById() {
+    void shouldFindById() {
+        Category category = categoryRepository.findById(1).orElse(new Category());
+        assertEquals("Przystawki", category.getName());
     }
 }
