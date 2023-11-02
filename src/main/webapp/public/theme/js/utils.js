@@ -30,11 +30,9 @@ export function fetchOrders() {
             } else {
                 throw new Error("Communication error: GET /api/orders");
             }
-        }).then(data => {
-            return data;
-        }).catch(error => {
-            console.log(error);
-        });
+        })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 export function fetchOrderByTableNumber(id) {
@@ -45,11 +43,9 @@ export function fetchOrderByTableNumber(id) {
             } else {
                 throw new Error("Communication error: GET /api/orders");
             }
-        }).then(data => {
-            return data;
-        }).catch(error => {
-            console.log(error);
-        });
+        })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 export function fetchFinalizedOrders(forTakeAway, limit, offset) {
@@ -65,17 +61,16 @@ export function fetchFinalizedOrders(forTakeAway, limit, offset) {
             'Content-Type': 'application/json'
         },
         body: requestBody
-    }).then(response => {
+    })
+        .then(response => {
         if (response.ok) {
             return response.json();
         } else {
             throw new Error('Communication error: POST /api/orders/finalized');
         }
-    }).then(data => {
-        return data;
-    }).catch(error => {
-        console.log(error);
-    });
+    })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 export function fetchAllResolved() {
@@ -86,11 +81,9 @@ export function fetchAllResolved() {
             } else {
                 throw new Error("Communication error: GET /api/orders/resolved");
             }
-        }).then(data => {
-            return data;
-        }).catch(error => {
-            console.log(error);
-        });
+        })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 export function fetchOrderById(id) {
@@ -101,11 +94,9 @@ export function fetchOrderById(id) {
             } else {
                 throw new Error("Communication error: GET /api/orders/id");
             }
-        }).then(data => {
-            return data;
-        }).catch(error => {
-            console.log(error);
-        });
+        })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 export function fetchTakeAwayOrders() {
@@ -116,11 +107,9 @@ export function fetchTakeAwayOrders() {
             } else {
                 throw new Error("Communication error: GET /api/orders/takeAway");
             }
-        }).then(data => {
-            return data;
-        }).catch(error => {
-            console.log(error);
-        });
+        })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 export function fetchDineInOrders() {
@@ -131,11 +120,9 @@ export function fetchDineInOrders() {
             } else {
                 throw new Error("Communication error: GET /api/orders");
             }
-        }).then(data => {
-            return data;
-        }).catch(error => {
-            console.log(error);
-        });
+        })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 export function fetchFinalizedOrderById(id, forTakeAway) {
@@ -146,11 +133,9 @@ export function fetchFinalizedOrderById(id, forTakeAway) {
             } else {
                 throw new Error("Communication error: GET /api/orders/finalized");
             }
-        }).then(data => {
-            return data;
-        }).catch(error => {
-            console.log(error);
-        });
+        })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 export function fetchFinalizedOrdersByDate(date, forTakeAway) {
@@ -161,11 +146,9 @@ export function fetchFinalizedOrdersByDate(date, forTakeAway) {
             } else {
                 throw new Error("Communication error: GET /api/orders/finalized");
             }
-        }).then(data => {
-            return data;
-        }).catch(error => {
-            console.log(error);
-        });
+        })
+        .then(data => data)
+        .catch(error => console.log(error))
 }
 
 /** ----- END OF FETCH FUNCTIONS ----- **/
