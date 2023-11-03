@@ -15,7 +15,7 @@ const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
 
 stompClient.connect({}, function () {
-    stompClient.subscribe('/topic/restaurant-order', function (message) {
+    stompClient.subscribe('/topic/restaurant-order', message => {
         const orders = JSON.parse(message.body);
         renderOrders(orders);
     });
@@ -26,7 +26,7 @@ stompClient.connect({}, function () {
 /** ----- RENDERING ORDERS ----- **/
 export function renderOrders(orders) {
 
-    orders.forEach(function (order) {
+    orders.forEach(order => {
 
         if (!order.isResolved && !order.billRequested) {
             let restaurantTableIcon = document.querySelector(`#r-table-${order.restaurantTable.id}`);
@@ -113,7 +113,7 @@ export function renderOrders(orders) {
 /** ----- END OF RENDERING ORDERS ----- **/
 
 /** ----- SELECT THE ACTIVE TABLE AND RENDER ORDER DETAILS ----- **/
-document.body.addEventListener('click', function (event) {
+document.body.addEventListener('click', event => {
 
     if (event.target.classList.contains('activated')) {
         document.querySelector('#table-list-container').classList.add('d-none');

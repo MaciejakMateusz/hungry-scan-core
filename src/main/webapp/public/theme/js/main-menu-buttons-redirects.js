@@ -21,7 +21,7 @@ const cancelCategoryFormButton = document.querySelector('#cancel-category-action
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    menuButtons.forEach(function (menuButton) {
+    menuButtons.forEach(menuButton => {
         if (!menuButton.classList.contains('inactive-main-button')) {
             menuButton.addEventListener('click', function (e) {
                 e.preventDefault()

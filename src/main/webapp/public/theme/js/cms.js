@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 const customRadios = document.querySelectorAll('.custom-radio');
 
 /** ---- RADIO BUTTONS HANDLER ----- **/
-customRadios.forEach((radio) => {
+customRadios.forEach(radio => {
     radio.addEventListener('click', () => {
         radio.checked = true;
         indicateCheckedRadio();

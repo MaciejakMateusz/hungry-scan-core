@@ -11,7 +11,7 @@ const dateFilterButton = document.querySelector('#date-filter-button');
 const idSearchTrigger = document.querySelector('#trigger-id-filter');
 const dateSearchTrigger = document.querySelector('#trigger-date-filter');
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     renderPaginationButtons(false);
     renderRecordsPerPage(false);
 });
@@ -36,7 +36,7 @@ dateFilterForm.addEventListener('submit', e => {
     findOrdersByDate(false);
 });
 
-const observer = new MutationObserver(function (mutationsList) {
+const observer = new MutationObserver(mutationsList => {
     for (const mutation of mutationsList) {
         if (mutation.type === 'childList') {
             mutation.addedNodes.forEach(function (addedNode) {
@@ -49,9 +49,7 @@ const observer = new MutationObserver(function (mutationsList) {
 
                         //Remove the class from all elements
                         const orderListTables = document.querySelectorAll('.orders-list-table');
-                        orderListTables.forEach(element => {
-                            element.classList.remove('selected-list-element');
-                        });
+                        orderListTables.forEach(element => element.classList.remove('selected-list-element'));
 
                         //Add the class to the clicked element
                         addedNode.classList.add('selected-list-element');

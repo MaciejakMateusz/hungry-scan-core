@@ -4,11 +4,8 @@ import {fetchDineInOrders} from "./utils.js";
 const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
 
-document.addEventListener("DOMContentLoaded", function () {
-    fetchDineInOrders().then(function (orders) {
-        renderOrdersList(orders);
-    });
-});
+document.addEventListener("DOMContentLoaded", () =>
+    fetchDineInOrders().then(orders => renderOrdersList(orders)));
 
 stompClient.connect({}, function (frame) {
     console.log('Connected: ' + frame);
