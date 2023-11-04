@@ -5,7 +5,7 @@ import {clearOrderDetails, renderOrderDetails} from "./render-order-details.js";
 const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
 stompClient.connect({},() => {
-    stompClient.subscribe('/topic/takeAway-orders', function (message) {
+    stompClient.subscribe('/topic/takeAway-orders', message => {
         const orders = JSON.parse(message.body);
         renderOrdersList(orders);
     });
@@ -13,9 +13,9 @@ stompClient.connect({},() => {
 
 const ordersListParent = document.querySelector('#orders-list-parent');
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     updateDateTime();
-    fetchTakeAwayOrders().then(function (orders) {
+    fetchTakeAwayOrders().then(orders => {
 
         renderOrdersList(orders);
         renderOrderDetails(orders[0])
@@ -35,9 +35,8 @@ const observer = new MutationObserver(function (mutationsList) {
 
                         //Remove the class from all elements
                         const orderListTables = document.querySelectorAll('.orders-list-table');
-                        orderListTables.forEach(element => {
-                            element.classList.remove('selected-list-element');
-                        });
+                        orderListTables.forEach(element =>
+                            element.classList.remove('selected-list-element'));
 
                         //Add the class to the clicked element
                         addedNode.classList.add('selected-list-element');
