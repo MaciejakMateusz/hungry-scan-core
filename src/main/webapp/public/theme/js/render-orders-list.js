@@ -7,9 +7,7 @@ export function renderOrdersList(orders) {
     }
 
     const orderRows = document.querySelectorAll('.orders-list-table');
-    orderRows.forEach(function (orderRow) {
-        mainTableBody.removeChild(orderRow);
-    });
+    orderRows.forEach(orderRow => mainTableBody.removeChild(orderRow));
 
     if(orders === null || orders.length === 0 || orders[0] === undefined) {
 
