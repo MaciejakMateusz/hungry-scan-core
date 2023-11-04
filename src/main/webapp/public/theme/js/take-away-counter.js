@@ -12,29 +12,24 @@ function countTakeAway(orders) {
 }
 
 function renderTakeAwayCounterBadge() {
-    fetchTakeAwayOrders().then(orders => {
-        countTakeAway(orders);
-    });
+    fetchTakeAwayOrders().then(orders => countTakeAway(orders));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     renderTakeAwayCounterBadge();
-
-    fetchOrders().then(orders => {
-        countOccupiedTables(orders);
-    });
+    fetchOrders().then(orders => countOccupiedTables(orders));
 });
 
 /** ----- WEBSOCKET ----- **/
 const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
 
-stompClient.connect({}, function () {
-    stompClient.subscribe('/topic/takeAway-orders', function (message) {
+stompClient.connect({},  () => {
+    stompClient.subscribe('/topic/takeAway-orders', message => {
         const orders = JSON.parse(message.body);
         countTakeAway(orders);
     });
-    stompClient.subscribe('/topic/restaurant-order', function (message) {
+    stompClient.subscribe('/topic/restaurant-order',  message => {
         const orders = JSON.parse(message.body);
         countOccupiedTables(orders);
     });

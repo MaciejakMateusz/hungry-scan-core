@@ -19,7 +19,7 @@ for (i = 0; i < l; i++) {
     /* Create a default option (for the selected item): */
     c = document.createElement("DIV");
     c.innerHTML = selElmnt.options[0].innerHTML; // Use the first option
-    c.addEventListener("click", function (e) {
+    c.addEventListener("click", function () {
         var y, k, s, h, sl, yl;
         s = this.parentNode.parentNode.getElementsByTagName("select")[0];
         sl = s.length;
