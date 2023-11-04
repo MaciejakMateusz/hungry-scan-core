@@ -2,11 +2,9 @@ import {clearOrderDetails, renderOrderDetails} from "./render-order-details.js";
 import {fetchOrderByTableNumber, fetchOrders, updateDateTime} from "./utils.js";
 
 /** ---- ON PAGE LOAD ----- **/
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     updateDateTime();
-    fetchOrders().then(function (orders) {
-        renderOrders(orders);
-    });
+    fetchOrders().then(orders => renderOrders(orders));
 });
 /** ---- END OF ON PAGE LOAD ----- **/
 
@@ -14,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
 const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
 
-stompClient.connect({}, function () {
+stompClient.connect({},  () => {
     stompClient.subscribe('/topic/restaurant-order', message => {
         const orders = JSON.parse(message.body);
         renderOrders(orders);
