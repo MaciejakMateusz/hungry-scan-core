@@ -58,9 +58,8 @@ export function renderOrderDetails(order) {
         paymentMethod.innerText = 'Online';
     }
 
-    totalPriceSpans.forEach(totalPrice => {
-        totalPrice.innerText = `${sum.toFixed(2)} zł`
-    });
+    totalPriceSpans.forEach(totalPrice =>
+        totalPrice.innerText = `${sum.toFixed(2)} zł`);
 
     if (order.waiterCalled) {
         const rightBottomInfoWrapper = document.querySelector('#right-bottom-info-wrapper');
@@ -148,13 +147,11 @@ export function clearOrderDetails() {
     orderDetails.innerHTML = ''; // Remove all child elements
 
     const orderedItemsGroups = document.querySelectorAll('.ordered-items-group');
-    orderedItemsGroups.forEach(group => {
-        group.remove();
-    });
+    orderedItemsGroups.forEach(group =>
+        group.remove());
 
-    totalPriceSpans.forEach(totalPrice => {
-        totalPrice.innerText = '0 zł'; // Reset total prices
-    });
+    totalPriceSpans.forEach(totalPrice =>
+        totalPrice.innerText = '0 zł'); // Reset total prices
 
     const finalizeFormChildren = Array.from(finalizeButton.children);
     finalizeFormChildren.forEach(child => {
