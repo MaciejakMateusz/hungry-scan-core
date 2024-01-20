@@ -4,6 +4,9 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
+import pl.rarytas.rarytas_restaurantside.utility.PaymentMethodEnum;
+
+import java.util.Arrays;
 
 @Slf4j
 public class PaymentMethodValidator implements ConstraintValidator<PaymentMethod, String> {
@@ -13,13 +16,16 @@ public class PaymentMethodValidator implements ConstraintValidator<PaymentMethod
         if (value == null || value.isBlank() || "Brak".equals(value)) {
             return true;
         }
-        boolean isValidPaymentMethod = false;
 
-        switch (value) {
-            case "card", "cash", "online" -> isValidPaymentMethod = true;
-            default -> log.error("Invalid payment method chosen");
+        if (!isValidPaymentMethod(value)) {
+            log.error("Invalid payment method chosen");
         }
 
-        return isValidPaymentMethod;
+        return isValidPaymentMethod(value);
+    }
+
+    private static boolean isValidPaymentMethod(String value) {
+        return Arrays.stream(PaymentMethodEnum.values())
+                .anyMatch(paymentMethod -> paymentMethod.getMethodName().equalsIgnoreCase(value));
     }
 }
