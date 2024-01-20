@@ -76,21 +76,27 @@ public class OrderService implements OrderServiceInterface {
 
     @Override
     public void save(Order order) {
-
-        if (orderRepository.existsByRestaurantTable(order.getRestaurantTable())) {
-            Order existingOrder = orderRepository
-                    .findNewestOrderByTableNumber(order.getRestaurantTable().getId())
-                    .orElseThrow();
-            if (!existingOrder.isResolved()) {
-                log.warn("Order with given table number already exists");
-                return;
-            }
+        if (orderExistsForGivenTable(order)) {
+            return;
         }
         orderRepository.save(order);
         orderRepository.refresh(order);
         if (!order.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
         }
+    }
+
+    private boolean orderExistsForGivenTable(Order order) {
+        if (orderRepository.existsByRestaurantTable(order.getRestaurantTable())) {
+            Order existingOrder = orderRepository
+                    .findNewestOrderByTableNumber(order.getRestaurantTable().getId())
+                    .orElseThrow();
+            if (!existingOrder.isResolved()) {
+                log.warn("Order with given table number already exists");
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -111,12 +117,21 @@ public class OrderService implements OrderServiceInterface {
             return;
         }
 
+        setOrderData(order, existingOrder);
+        orderRepository.saveAndFlush(order);
+
+        if (!order.isForTakeAway()) {
+            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+        }
+    }
+
+    private static void setOrderData(Order order, Order existingOrder) {
         order.setOrderTime(existingOrder.getOrderTime());
         order.setOrderNumber(existingOrder.getOrderNumber());
         order.setRestaurant(existingOrder.getRestaurant());
         order.setRestaurantTable(existingOrder.getRestaurantTable());
 
-        if("Brak".equals(order.getPaymentMethod()) || Objects.isNull(order.getPaymentMethod())) {
+        if ("Brak".equals(order.getPaymentMethod()) || Objects.isNull(order.getPaymentMethod())) {
             order.setPaymentMethod(existingOrder.getPaymentMethod());
         }
 
@@ -128,12 +143,6 @@ public class OrderService implements OrderServiceInterface {
 
         if (!order.isBillRequested()) {
             order.setBillRequested(existingOrder.isBillRequested());
-        }
-
-        orderRepository.saveAndFlush(order);
-
-        if (!order.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
         }
     }
 

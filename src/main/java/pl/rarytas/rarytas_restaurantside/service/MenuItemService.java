@@ -28,13 +28,17 @@ public class MenuItemService implements MenuItemServiceInterface {
             return;
         }
 
+        setImageFile(menuItem, file);
+        menuItemRepository.save(menuItem);
+    }
+
+    private void setImageFile(MenuItem menuItem, MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             MenuItem existingItem = menuItemRepository.findById(menuItem.getId()).orElseThrow();
             menuItem.setImage(existingItem.getImage());
         } else {
             menuItem.setImage(file.getBytes());
         }
-        menuItemRepository.save(menuItem);
     }
 
     @Override
