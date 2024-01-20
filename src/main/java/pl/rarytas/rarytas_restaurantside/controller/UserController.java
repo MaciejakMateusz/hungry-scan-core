@@ -2,6 +2,7 @@ package pl.rarytas.rarytas_restaurantside.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.service.RegisterService;
 import pl.rarytas.rarytas_restaurantside.utility.TokenGenerator;
+import java.util.Objects;
 
 
 @Controller
@@ -19,11 +21,13 @@ public class UserController {
 
     private final RegisterService registerService;
     private final TokenGenerator tokenGenerator;
+    private final Environment environment;
 
     public UserController(
-            RegisterService registerService, TokenGenerator tokenGenerator) {
+            RegisterService registerService, TokenGenerator tokenGenerator, Environment environment) {
         this.registerService = registerService;
         this.tokenGenerator = tokenGenerator;
+        this.environment = environment;
     }
 
     @GetMapping
@@ -38,9 +42,9 @@ public class UserController {
     }
 
     @GetMapping("/register/{code}")
-    public String adminRegister(Model model, @PathVariable Integer code) {
+    public String adminRegister(Model model, @PathVariable String code) {
         model.addAttribute("user", new User());
-        if (code == 667560608) {
+        if (Objects.equals(code, environment.getProperty("DATASOURCE_ADMIN-CODE"))) {
             return "registerAdmin";
         }
         return "redirect:/register";
