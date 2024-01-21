@@ -33,7 +33,7 @@ public class EmailService implements EmailServiceInterface {
     public void contactForm(String from, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
-        message.setTo("applicationcharity@gmail.com");
+        message.setTo("restauracjararytas@gmail.com");
         message.setSubject(subject);
         message.setText(text);
         emailSender.send(message);
@@ -43,9 +43,9 @@ public class EmailService implements EmailServiceInterface {
     public void passwordRecovery(String to) {
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@charityapp.pl");
+        message.setFrom("noreply@restauracjararytas.pl");
         message.setTo(to);
-        message.setSubject("Charity - jednorazowy link do zmiany hasła");
+        message.setSubject("Restauracja Rarytas - jednorazowy link do zmiany hasła");
 
         User user = userService.findByUsername(to);
         user.setToken(UUID.randomUUID().toString());
@@ -61,9 +61,9 @@ public class EmailService implements EmailServiceInterface {
     public void activateAccount(String to) {
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@charityapp.pl");
+        message.setFrom("noreply@restauracjararytas.pl");
         message.setTo(to);
-        message.setSubject("Charity - link aktywacyjny do konta");
+        message.setSubject("Restauracja Rarytas - link aktywacyjny do konta");
 
         User user = userService.findByUsername(to);
         user.setToken(UUID.randomUUID().toString());
