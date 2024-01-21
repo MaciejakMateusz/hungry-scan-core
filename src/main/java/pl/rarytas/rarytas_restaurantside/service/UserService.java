@@ -19,4 +19,9 @@ public class UserService implements UserServiceInterface {
         return userRepository.findUserByUsername(username);
     }
 
+    @Override
+    public void update(User user) {
+        userRepository.save(user);
+    }
+
 }

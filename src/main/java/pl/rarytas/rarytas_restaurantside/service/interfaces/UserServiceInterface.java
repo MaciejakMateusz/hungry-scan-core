@@ -6,4 +6,6 @@ public interface UserServiceInterface {
 
     User findByUsername(String email);
 
+    void update(User user);
+
 }
