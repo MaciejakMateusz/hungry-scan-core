@@ -40,6 +40,9 @@ public class User {
     @Transient
     private String repeatedPassword;
 
+    @Column(length = 36)
+    private String token;
+
     private LocalDateTime created;
     private LocalDateTime updated;
 
