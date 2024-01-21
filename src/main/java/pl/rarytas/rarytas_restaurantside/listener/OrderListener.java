@@ -27,6 +27,13 @@ public class OrderListener {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
         String nowString = dtf.format(LocalDateTime.now());
         LocalDateTime now = LocalDateTime.now();
+        setLastOrderDate(now);
+        order.setOrderTime(nowString);
+        orderCounter++;
+        order.setOrderNumber(orderCounter);
+    }
+
+    private void setLastOrderDate(LocalDateTime now) {
         if (lastOrderDate == null || now.toLocalDate().isAfter(lastOrderDate)) {
             LocalTime noon = LocalTime.of(12, 0); // 12:00 pm
             if (now.toLocalTime().isAfter(noon)) {
@@ -34,9 +41,6 @@ public class OrderListener {
             }
             lastOrderDate = now.toLocalDate();
         }
-        order.setOrderTime(nowString);
-        orderCounter++;
-        order.setOrderNumber(orderCounter);
     }
 
     @PostPersist
