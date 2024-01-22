@@ -207,6 +207,11 @@ public class OrderService implements OrderServiceInterface {
         return orderRepository.existsByIdForTakeWayIsResolved(id, forTakeAway, true);
     }
 
+    @Override
+    public void delete(Order order) {
+        orderRepository.delete(order);
+    }
+
     private BigDecimal calculateTotalAmount(Order order) {
         BigDecimal sum = BigDecimal.valueOf(0);
         for (OrderedItem orderedItem : order.getOrderedItems()) {

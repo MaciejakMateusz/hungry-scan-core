@@ -41,4 +41,6 @@ public interface OrderServiceInterface {
     void resolveWaiterCall(Integer id, boolean waiterCalled);
 
     boolean existsByIdAndForTakeAwayAndResolved(Integer id, boolean forTakeAway);
+
+    void delete(Order order);
 }

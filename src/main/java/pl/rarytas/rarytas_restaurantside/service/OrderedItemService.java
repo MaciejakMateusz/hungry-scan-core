@@ -27,4 +27,9 @@ public class OrderedItemService implements OrderedItemServiceInterface {
     public Optional<OrderedItem> findById(Integer id) {
         return orderedItemRepository.findById(id);
     }
+
+    @Override
+    public void delete(OrderedItem orderedItem) {
+        orderedItemRepository.delete(orderedItem);
+    }
 }
