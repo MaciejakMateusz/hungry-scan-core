@@ -13,7 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class TestRestaurantRestController {
     private MockMvc mockMvc;
 
     @Autowired
-    private RestaurantServiceInterface restaurantService;
+    private RestaurantService restaurantService;
 
     @Test
     public void shouldGetAllFromDB() {

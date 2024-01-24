@@ -4,17 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.repository.OrderedItemRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemService;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
-public class OrderedItemService implements OrderedItemServiceInterface {
+public class OrderedItemServiceImpl implements OrderedItemService {
     private final OrderedItemRepository orderedItemRepository;
 
-    public OrderedItemService(OrderedItemRepository orderedItemRepository) {
+    public OrderedItemServiceImpl(OrderedItemRepository orderedItemRepository) {
         this.orderedItemRepository = orderedItemRepository;
     }
 

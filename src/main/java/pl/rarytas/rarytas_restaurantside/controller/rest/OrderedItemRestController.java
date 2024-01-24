@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
-import pl.rarytas.rarytas_restaurantside.service.OrderedItemService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemService;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ import java.util.List;
 public class OrderedItemRestController {
 
     private final OrderedItemService orderedItemService;
+
     public OrderedItemRestController(OrderedItemService orderedItemService) {
         this.orderedItemService = orderedItemService;
     }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.repository.MenuItemRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,10 +13,11 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class MenuItemService implements MenuItemServiceInterface {
+public class MenuItemServiceImpl implements MenuItemService {
+
     private final MenuItemRepository menuItemRepository;
 
-    public MenuItemService(MenuItemRepository menuItemRepository) {
+    public MenuItemServiceImpl(MenuItemRepository menuItemRepository) {
         this.menuItemRepository = menuItemRepository;
     }
 
@@ -49,5 +50,10 @@ public class MenuItemService implements MenuItemServiceInterface {
     @Override
     public Optional<MenuItem> findById(Integer id) {
         return menuItemRepository.findById(id);
+    }
+
+    @Override
+    public void delete(MenuItem menuItem) {
+        menuItemRepository.delete(menuItem);
     }
 }

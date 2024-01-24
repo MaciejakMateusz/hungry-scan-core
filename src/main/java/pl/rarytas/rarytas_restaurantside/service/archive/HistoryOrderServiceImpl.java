@@ -5,17 +5,17 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryOrderRepository;
-import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Slf4j
-public class HistoryOrderService implements HistoryOrderServiceInterface {
+public class HistoryOrderServiceImpl implements HistoryOrderService {
     private final HistoryOrderRepository historyOrderRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public HistoryOrderService(HistoryOrderRepository historyOrderRepository, SimpMessagingTemplate messagingTemplate) {
+    public HistoryOrderServiceImpl(HistoryOrderRepository historyOrderRepository, SimpMessagingTemplate messagingTemplate) {
         this.historyOrderRepository = historyOrderRepository;
         this.messagingTemplate = messagingTemplate;
     }

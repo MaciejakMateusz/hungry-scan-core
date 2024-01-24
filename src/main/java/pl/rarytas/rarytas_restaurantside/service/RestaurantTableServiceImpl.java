@@ -3,18 +3,18 @@ package pl.rarytas.rarytas_restaurantside.service;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
 import java.util.List;
 import java.util.Optional;
 
 
 @Service
-public class RestaurantTableService implements RestaurantTableServiceInterface {
+public class RestaurantTableServiceImpl implements RestaurantTableService {
 
     private final RestaurantTableRepository restaurantTableRepository;
 
-    public RestaurantTableService(RestaurantTableRepository restaurantTableRepository) {
+    public RestaurantTableServiceImpl(RestaurantTableRepository restaurantTableRepository) {
         this.restaurantTableRepository = restaurantTableRepository;
     }
 

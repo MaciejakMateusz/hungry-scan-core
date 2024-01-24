@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import pl.rarytas.rarytas_restaurantside.entity.User;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.EmailServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.EmailService;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -17,16 +17,16 @@ import java.util.UUID;
 @Component
 @Getter
 @Setter
-public class EmailService implements EmailServiceInterface {
+public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender emailSender;
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private static final String LOCAL_HOST = "http://localhost:8080/";
 
-    public EmailService(JavaMailSender emailSender,
-                        UserService userService) {
+    public EmailServiceImpl(JavaMailSender emailSender,
+                            UserServiceImpl userServiceImpl) {
         this.emailSender = emailSender;
-        this.userService = userService;
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Override
@@ -47,9 +47,9 @@ public class EmailService implements EmailServiceInterface {
         message.setTo(to);
         message.setSubject("Restauracja Rarytas - jednorazowy link do zmiany hasła");
 
-        User user = userService.findByUsername(to);
+        User user = userServiceImpl.findByUsername(to);
         user.setToken(UUID.randomUUID().toString());
-        userService.update(user);
+        userServiceImpl.update(user);
 
         String link = determineBaseUrl() + "/login/" + user.getToken();
         message.setText("Twój link do zmiany hasła: " + link);
@@ -65,9 +65,9 @@ public class EmailService implements EmailServiceInterface {
         message.setTo(to);
         message.setSubject("Restauracja Rarytas - link aktywacyjny do konta");
 
-        User user = userService.findByUsername(to);
+        User user = userServiceImpl.findByUsername(to);
         user.setToken(UUID.randomUUID().toString());
-        userService.update(user);
+        userServiceImpl.update(user);
 
         String link = determineBaseUrl() + "/register/" + user.getToken();
         message.setText("Kliknij w ten link, aby aktywować swoje konto: " + link);

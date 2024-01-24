@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.repository.RoleRepository;
 import pl.rarytas.rarytas_restaurantside.repository.UserRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RegisterServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.RegisterService;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,13 +13,13 @@ import java.util.HashSet;
 
 @Service
 @Slf4j
-public class RegisterService implements RegisterServiceInterface {
+public class RegisterServiceImpl implements RegisterService {
 
     private final UserRepository userRepository;
 
     private final RoleRepository roleRepository;
 
-    public RegisterService(UserRepository userRepository, RoleRepository roleRepository) {
+    public RegisterServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
     }

@@ -4,24 +4,24 @@ import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrderedItem;
-import pl.rarytas.rarytas_restaurantside.service.archive.HistoryOrderService;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.DataTransferServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.archive.HistoryOrderServiceImpl;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.DataTransferService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class DataTransferService implements DataTransferServiceInterface {
+public class DataTransferServiceImpl implements DataTransferService {
 
-    private final HistoryOrderService historyOrderService;
+    private final HistoryOrderServiceImpl historyOrderServiceImpl;
 
-    public DataTransferService(HistoryOrderService historyOrderService) {
-        this.historyOrderService = historyOrderService;
+    public DataTransferServiceImpl(HistoryOrderServiceImpl historyOrderServiceImpl) {
+        this.historyOrderServiceImpl = historyOrderServiceImpl;
     }
 
     public void archiveOrder(Order order) {
         HistoryOrder historyOrder = transferOrderDataToHistory(order);
-        historyOrderService.save(historyOrder);
+        historyOrderServiceImpl.save(historyOrder);
     }
 
     private HistoryOrder transferOrderDataToHistory(Order order) {

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
-import pl.rarytas.rarytas_restaurantside.repository.CategoryRepository;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 
 import java.util.List;
 
@@ -20,20 +20,21 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:8080")
 public class CategoryRestController {
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    public CategoryRestController(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    public CategoryRestController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
+
 
     @GetMapping
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        return categoryService.findAll();
     }
 
     @GetMapping("/{id}")
     public Category getCategory(@PathVariable Integer id) {
-        return categoryRepository.findById(id).orElseThrow();
+        return categoryService.findById(id).orElseThrow();
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

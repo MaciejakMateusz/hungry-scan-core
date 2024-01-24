@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
-import pl.rarytas.rarytas_restaurantside.repository.CategoryRepository;
-import pl.rarytas.rarytas_restaurantside.repository.MenuItemRepository;
-import pl.rarytas.rarytas_restaurantside.service.MenuItemService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,17 +19,14 @@ import java.util.List;
 @Controller
 @RequestMapping("/restaurant/cms/items")
 public class MenuItemController {
-    private final MenuItemRepository menuItemRepository;
-    private final CategoryRepository categoryRepository;
 
     private final MenuItemService menuItemService;
+    private final CategoryService categoryService;
 
-    public MenuItemController(MenuItemRepository menuItemRepository, CategoryRepository categoryRepository, MenuItemService menuItemService) {
-        this.menuItemRepository = menuItemRepository;
-        this.categoryRepository = categoryRepository;
+    public MenuItemController(MenuItemService menuItemService, CategoryService categoryService) {
         this.menuItemService = menuItemService;
+        this.categoryService = categoryService;
     }
-
 
     @GetMapping
     public String itemsList() {
@@ -57,7 +53,7 @@ public class MenuItemController {
     @PostMapping("/edit")
     public String updateItem(Model model,
                              @RequestParam Integer id) {
-        model.addAttribute("menuItem", menuItemRepository.findById(id).orElseThrow());
+        model.addAttribute("menuItem", menuItemService.findById(id).orElseThrow());
         return "restaurant/cms/items/edit";
     }
 
@@ -75,23 +71,23 @@ public class MenuItemController {
     @PostMapping("/delete")
     public String deleteItem(Model model,
                              @RequestParam Integer id) {
-        model.addAttribute("menuItem", menuItemRepository.findById(id).orElseThrow());
+        model.addAttribute("menuItem", menuItemService.findById(id).orElseThrow());
         return "restaurant/cms/items/delete";
     }
 
     @PostMapping("/remove")
     public String deleteItem(@ModelAttribute MenuItem menuItem) {
-        menuItemRepository.delete(menuItem);
+        menuItemService.delete(menuItem);
         return "redirect:/restaurant/cms/items";
     }
 
     @ModelAttribute("menuItems")
     private List<MenuItem> getAllItems() {
-        return menuItemRepository.findAll();
+        return menuItemService.findAll();
     }
 
     @ModelAttribute("categories")
     private List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        return categoryService.findAll();
     }
 }

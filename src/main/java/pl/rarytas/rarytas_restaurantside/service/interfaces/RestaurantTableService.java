@@ -5,7 +5,7 @@ import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import java.util.List;
 import java.util.Optional;
 
-public interface RestaurantTableServiceInterface {
+public interface RestaurantTableService {
     List<RestaurantTable> findAll();
     Optional<RestaurantTable> findById(Integer id);
 }

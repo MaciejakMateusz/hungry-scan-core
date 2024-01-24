@@ -5,7 +5,7 @@ import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 import java.util.List;
 import java.util.Optional;
 
-public interface HistoryOrderServiceInterface {
+public interface HistoryOrderService {
     List<HistoryOrder> findAllNotPaid();
 
     List<HistoryOrder> findAllTakeAway();

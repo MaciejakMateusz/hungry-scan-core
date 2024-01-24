@@ -13,7 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 import java.math.RoundingMode;
 import java.util.List;
@@ -33,7 +33,7 @@ class TestOrderRestController {
     private MockMvc mockMvc;
 
     @Autowired
-    private OrderServiceInterface orderService;
+    private OrderService orderService;
 
     @Test
     public void shouldGetAllNotPaidFromDB() {

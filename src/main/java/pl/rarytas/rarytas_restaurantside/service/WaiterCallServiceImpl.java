@@ -4,15 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.repository.WaiterCallRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
 
 @Service
 @Slf4j
-public class WaiterCallService implements WaiterCallServiceInterface {
+public class WaiterCallServiceImpl implements WaiterCallService {
 
     private final WaiterCallRepository waiterCallRepository;
 
-    public WaiterCallService(WaiterCallRepository waiterCallRepository) {
+    public WaiterCallServiceImpl(WaiterCallRepository waiterCallRepository) {
         this.waiterCallRepository = waiterCallRepository;
     }
 

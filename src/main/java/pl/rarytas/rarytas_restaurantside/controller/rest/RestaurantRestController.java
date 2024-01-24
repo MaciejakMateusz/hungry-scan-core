@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
-import pl.rarytas.rarytas_restaurantside.service.RestaurantService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 
 import java.util.List;
 
@@ -19,7 +19,6 @@ public class RestaurantRestController {
     public RestaurantRestController(RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
     }
-
 
     @GetMapping
     public List<Restaurant> getAll() {

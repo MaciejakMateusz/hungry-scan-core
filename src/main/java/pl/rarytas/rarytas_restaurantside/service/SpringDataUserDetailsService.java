@@ -14,15 +14,15 @@ import java.util.Set;
 @Service
 public class SpringDataUserDetailsService implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
-    public SpringDataUserDetailsService(UserService userService) {
-        this.userService = userService;
+    public SpringDataUserDetailsService(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userService.findByUsername(username);
+        User user = userServiceImpl.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }

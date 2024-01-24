@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
-import pl.rarytas.rarytas_restaurantside.repository.CategoryRepository;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 
 import java.util.List;
 
@@ -16,10 +16,11 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/restaurant/cms/categories")
 public class CategoryController {
-    private final CategoryRepository categoryRepository;
 
-    public CategoryController(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @GetMapping
@@ -38,14 +39,14 @@ public class CategoryController {
         if (br.hasErrors()) {
             return "restaurant/cms/categories/add";
         }
-        categoryRepository.save(category);
+        categoryService.save(category);
         return "redirect:/restaurant/cms/categories";
     }
 
     @PostMapping("/edit")
     public String updateItem(Model model,
                              @RequestParam Integer id) {
-        model.addAttribute("category", categoryRepository.findById(id).orElseThrow());
+        model.addAttribute("category", categoryService.findById(id).orElseThrow());
         return "restaurant/cms/categories/edit";
     }
 
@@ -55,25 +56,25 @@ public class CategoryController {
         if (br.hasErrors()) {
             return "restaurant/cms/categories/edit";
         }
-        categoryRepository.save(category);
+        categoryService.save(category);
         return "redirect:/restaurant/cms/categories";
     }
 
     @PostMapping("/delete")
     public String deleteItem(Model model,
                              @RequestParam Integer id) {
-        model.addAttribute("category", categoryRepository.findById(id).orElseThrow());
+        model.addAttribute("category", categoryService.findById(id).orElseThrow());
         return "restaurant/cms/categories/delete";
     }
 
     @PostMapping("/remove")
     public String deleteItem(@ModelAttribute Category category) {
-        categoryRepository.delete(category);
+        categoryService.delete(category);
         return "redirect:/restaurant/cms/categories";
     }
 
     @ModelAttribute("categories")
     private List<Category> getCategories() {
-        return categoryRepository.findAll();
+        return categoryService.findAll();
     }
 }

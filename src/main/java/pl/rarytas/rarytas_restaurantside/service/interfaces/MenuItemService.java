@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-public interface MenuItemServiceInterface {
+public interface MenuItemService {
     void save(MenuItem menuItem, MultipartFile file) throws IOException;
 
     List<MenuItem> findAll();
 
     Optional<MenuItem> findById(Integer id);
+
+    void delete(MenuItem menuItem);
 }

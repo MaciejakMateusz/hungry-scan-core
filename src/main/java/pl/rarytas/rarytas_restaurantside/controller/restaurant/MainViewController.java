@@ -5,13 +5,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
-import pl.rarytas.rarytas_restaurantside.service.CategoryService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 
 import java.util.List;
 
 @Controller
 @RequestMapping("/restaurant")
 public class MainViewController {
+
     private final CategoryService categoryService;
 
     public MainViewController(CategoryService categoryService) {

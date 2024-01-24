@@ -10,7 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ class TestCategoryRestController {
     private MockMvc mockMvc;
 
     @Autowired
-    private CategoryServiceInterface categoryService;
+    private CategoryService categoryService;
 
 //    private static final Gson jsonSerializer = new GsonBuilder().registerTypeAdapter(LocalDateTime.class,
 //            (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {

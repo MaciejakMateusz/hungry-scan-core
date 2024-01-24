@@ -7,7 +7,7 @@ import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderServiceInterface;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,20 +16,20 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class OrderService implements OrderServiceInterface {
+public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
-    private final WaiterCallService waiterCallService;
+    private final WaiterCallServiceImpl waiterCallServiceImpl;
     private final SimpMessagingTemplate messagingTemplate;
-    private final DataTransferService dataTransferService;
+    private final DataTransferServiceImpl dataTransferServiceImpl;
 
-    public OrderService(OrderRepository orderRepository,
-                        WaiterCallService waiterCallService,
-                        SimpMessagingTemplate messagingTemplate,
-                        DataTransferService dataTransferService) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            WaiterCallServiceImpl waiterCallServiceImpl,
+                            SimpMessagingTemplate messagingTemplate,
+                            DataTransferServiceImpl dataTransferServiceImpl) {
         this.orderRepository = orderRepository;
-        this.waiterCallService = waiterCallService;
+        this.waiterCallServiceImpl = waiterCallServiceImpl;
         this.messagingTemplate = messagingTemplate;
-        this.dataTransferService = dataTransferService;
+        this.dataTransferServiceImpl = dataTransferServiceImpl;
     }
 
     @Override
@@ -169,7 +169,7 @@ public class OrderService implements OrderServiceInterface {
             existingOrder.setBillRequested(true);
         }
         orderRepository.saveAndFlush(existingOrder);
-        dataTransferService.archiveOrder(existingOrder);
+        dataTransferServiceImpl.archiveOrder(existingOrder);
         if (!existingOrder.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
         }
@@ -192,7 +192,7 @@ public class OrderService implements OrderServiceInterface {
             waiterCall.setResolved(true);
         }
         patch(order);
-        waiterCallService.callWaiter(waiterCall);
+        waiterCallServiceImpl.callWaiter(waiterCall);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class OrderService implements OrderServiceInterface {
         waiterCall.setOrder(order);
         waiterCall.setResolved(true);
         orderRepository.saveAndFlush(order);
-        waiterCallService.callWaiter(waiterCall);
+        waiterCallServiceImpl.callWaiter(waiterCall);
     }
 
     @Override

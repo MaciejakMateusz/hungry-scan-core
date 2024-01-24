@@ -2,7 +2,7 @@ package pl.rarytas.rarytas_restaurantside.service.interfaces;
 
 import pl.rarytas.rarytas_restaurantside.entity.User;
 
-public interface RegisterServiceInterface {
+public interface RegisterService {
     void saveUser(User user);
 
     void saveAdmin(User user);

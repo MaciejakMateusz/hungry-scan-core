@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import pl.rarytas.rarytas_restaurantside.entity.User;
-import pl.rarytas.rarytas_restaurantside.service.RegisterService;
-import pl.rarytas.rarytas_restaurantside.utility.TokenGenerator;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.RegisterService;
 import java.util.Objects;
 
 
@@ -20,13 +19,10 @@ import java.util.Objects;
 public class UserController {
 
     private final RegisterService registerService;
-    private final TokenGenerator tokenGenerator;
     private final Environment environment;
 
-    public UserController(
-            RegisterService registerService, TokenGenerator tokenGenerator, Environment environment) {
+    public UserController(RegisterService registerService, Environment environment) {
         this.registerService = registerService;
-        this.tokenGenerator = tokenGenerator;
         this.environment = environment;
     }
 

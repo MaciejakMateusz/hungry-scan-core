@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.service.OrderService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 import java.util.List;
 import java.util.Map;
