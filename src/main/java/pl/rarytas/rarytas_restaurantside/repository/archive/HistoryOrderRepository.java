@@ -1,5 +1,6 @@
-package pl.rarytas.rarytas_restaurantside.repository;
+package pl.rarytas.rarytas_restaurantside.repository.archive;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
@@ -8,7 +9,7 @@ import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 import java.util.List;
 import java.util.Optional;
 
-public interface HistoryOrderRepository extends CustomRepository<HistoryOrder, Long> {
+public interface HistoryOrderRepository extends JpaRepository<HistoryOrder, Long> {
     @Query(value = "SELECT o FROM HistoryOrder o WHERE o.paid = false AND o.forTakeAway = false AND o.isResolved = false")
     List<HistoryOrder> findAllNotPaid();
 
