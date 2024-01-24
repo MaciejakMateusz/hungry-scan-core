@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.service.interfaces;
+package pl.rarytas.rarytas_restaurantside.service.archive.interfaces;
 
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 

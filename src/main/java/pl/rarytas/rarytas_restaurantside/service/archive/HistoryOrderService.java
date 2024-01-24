@@ -1,14 +1,11 @@
-package pl.rarytas.rarytas_restaurantside.service;
+package pl.rarytas.rarytas_restaurantside.service.archive;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
-import pl.rarytas.rarytas_restaurantside.repository.HistoryOrderRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.HistoryOrderServiceInterface;
-
-import java.math.BigDecimal;
+import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryOrderRepository;
+import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderServiceInterface;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +73,6 @@ public class HistoryOrderService implements HistoryOrderServiceInterface {
             return;
         }
         historyOrderRepository.save(historyOrder);
-        historyOrderRepository.refresh(historyOrder);
         if (!historyOrder.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
         }
@@ -98,22 +94,11 @@ public class HistoryOrderService implements HistoryOrderServiceInterface {
     @Override
     public void saveTakeAway(HistoryOrder historyOrder) {
         historyOrderRepository.save(historyOrder);
-        historyOrderRepository.refresh(historyOrder);
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
     @Override
     public boolean existsByIdAndForTakeAwayAndResolved(Long id, boolean forTakeAway) {
         return historyOrderRepository.existsByIdForTakeWayIsResolved(id, forTakeAway, true);
-    }
-
-    private BigDecimal calculateTotalAmount(HistoryOrder historyOrder) {
-        BigDecimal sum = BigDecimal.valueOf(0);
-        for (OrderedItem orderedItem : historyOrder.getOrderedItems()) {
-            BigDecimal itemPrice = orderedItem.getMenuItem().getPrice();
-            int quantity = orderedItem.getQuantity();
-            sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
-        }
-        return sum;
     }
 }
