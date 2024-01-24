@@ -18,8 +18,7 @@ import java.io.Serializable;
 public class HistoryOrderedItem implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
@@ -29,5 +28,4 @@ public class HistoryOrderedItem implements Serializable {
     @Min(value = 1, message = "Ilość musi wynosić minimum 1")
     @NotNull
     private Integer quantity;
-
 }

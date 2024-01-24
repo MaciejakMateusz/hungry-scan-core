@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
-import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 
@@ -21,7 +20,6 @@ import java.util.List;
 public class HistoryOrder {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JoinColumn(name = "table_id", referencedColumnName = "id")
@@ -39,7 +37,7 @@ public class HistoryOrder {
     private String orderTime;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<OrderedItem> orderedItems;
+    private List<HistoryOrderedItem> historyOrderedItems;
 
     @Column(name = "payment_method")
     @PaymentMethod
@@ -73,10 +71,11 @@ public class HistoryOrder {
                 ", restaurantTable=" + restaurantTable +
                 ", restaurant=" + restaurant +
                 ", orderTime=" + orderTime +
-                ", orderedItems=" + orderedItems +
+                ", orderedItems=" + historyOrderedItems +
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", totalAmount=" + totalAmount +
                 ", isPaid=" + paid +
                 '}';
     }
+
 }
