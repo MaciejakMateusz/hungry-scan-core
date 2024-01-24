@@ -20,11 +20,16 @@ public class OrderService implements OrderServiceInterface {
     private final OrderRepository orderRepository;
     private final WaiterCallService waiterCallService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final DataTransferService dataTransferService;
 
-    public OrderService(OrderRepository orderRepository, WaiterCallService waiterCallService, SimpMessagingTemplate messagingTemplate) {
+    public OrderService(OrderRepository orderRepository,
+                        WaiterCallService waiterCallService,
+                        SimpMessagingTemplate messagingTemplate,
+                        DataTransferService dataTransferService) {
         this.orderRepository = orderRepository;
         this.waiterCallService = waiterCallService;
         this.messagingTemplate = messagingTemplate;
+        this.dataTransferService = dataTransferService;
     }
 
     @Override
@@ -164,9 +169,11 @@ public class OrderService implements OrderServiceInterface {
             existingOrder.setBillRequested(true);
         }
         orderRepository.saveAndFlush(existingOrder);
+        dataTransferService.archiveOrder(existingOrder);
         if (!existingOrder.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
         }
+        delete(existingOrder);
     }
 
     @Override
