@@ -48,25 +48,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findAllFinalized(boolean forTakeAway,
-                                        Integer limit,
-                                        Integer offset) {
-        return orderRepository.findFinalizedOrders(forTakeAway, limit, offset);
-    }
-
-    @Override
     public Optional<Order> findFinalizedById(Integer id, boolean forTakeAway) {
         return orderRepository.findFinalizedById(id, forTakeAway);
-    }
-
-    @Override
-    public List<Order> findFinalizedByDate(String date, boolean forTakeAway) {
-        return orderRepository.findFinalizedByDate(date, forTakeAway);
-    }
-
-    @Override
-    public List<Order> findAllResolvedTakeAwayLimit50() {
-        return orderRepository.findAllResolvedTakeAwayLimit50();
     }
 
     @Override
@@ -188,30 +171,23 @@ public class OrderServiceImpl implements OrderService {
     public void callWaiter(Order order) {
         WaiterCall waiterCall = new WaiterCall();
         waiterCall.setOrder(order);
-        if (!order.isWaiterCalled()) {
-            waiterCall.setResolved(true);
-        }
+        order.setWaiterCalled(true);
         patch(order);
-        waiterCallServiceImpl.callWaiter(waiterCall);
+        waiterCallServiceImpl.save(waiterCall);
     }
 
     @Override
-    public void resolveWaiterCall(Integer id, boolean waiterCalled) {
+    public void resolveWaiterCall(Integer id) {
         Order order = new Order();
         if (orderRepository.existsById(id)) {
             order = orderRepository.findById(id).orElseThrow();
-            order.setWaiterCalled(waiterCalled);
+            order.setWaiterCalled(false);
         }
-        WaiterCall waiterCall = new WaiterCall();
+        WaiterCall waiterCall = waiterCallServiceImpl.findByOrderAndResolved(order, false).orElseThrow();
         waiterCall.setOrder(order);
         waiterCall.setResolved(true);
         orderRepository.saveAndFlush(order);
-        waiterCallServiceImpl.callWaiter(waiterCall);
-    }
-
-    @Override
-    public boolean existsByIdAndForTakeAwayAndResolved(Integer id, boolean forTakeAway) {
-        return orderRepository.existsByIdForTakeWayIsResolved(id, forTakeAway, true);
+        waiterCallServiceImpl.save(waiterCall);
     }
 
     @Override
