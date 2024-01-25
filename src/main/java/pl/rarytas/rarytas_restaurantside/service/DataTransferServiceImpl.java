@@ -21,7 +21,9 @@ public class DataTransferServiceImpl implements DataTransferService {
     private final WaiterCallService waiterCallService;
     private final HistoryWaiterCallService historyWaiterCallService;
 
-    public DataTransferServiceImpl(HistoryOrderService historyOrderService, WaiterCallService waiterCallService, HistoryWaiterCallService historyWaiterCallService) {
+    public DataTransferServiceImpl(HistoryOrderService historyOrderService,
+                                   WaiterCallService waiterCallService,
+                                   HistoryWaiterCallService historyWaiterCallService) {
         this.historyOrderService = historyOrderService;
         this.waiterCallService = waiterCallService;
         this.historyWaiterCallService = historyWaiterCallService;
@@ -30,8 +32,7 @@ public class DataTransferServiceImpl implements DataTransferService {
     public void archiveOrder(Order order) {
         HistoryOrder historyOrder = transferOrderDataToHistory(order);
         historyOrderService.save(historyOrder);
-
-        transferWaiterCallDataToHistory(order);
+        transferWaiterCallDataToHistory(order, historyOrder);
     }
 
     private HistoryOrder transferOrderDataToHistory(Order order) {
@@ -63,19 +64,21 @@ public class DataTransferServiceImpl implements DataTransferService {
         return historyOrder;
     }
 
-    private void transferWaiterCallDataToHistory(Order order) {
+    private void transferWaiterCallDataToHistory(Order order, HistoryOrder historyOrder) {
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(order);
         HistoryWaiterCall historyWaiterCall = new HistoryWaiterCall();
 
-        waiterCalls.forEach(waiterCall -> {
-            historyWaiterCall.setId(Long.valueOf(waiterCall.getId()));
-            historyWaiterCall.setCallTime(waiterCall.getCallTime());
-            historyWaiterCall.setResolvedTime(waiterCall.getResolvedTime());
-            historyWaiterCall.setResolved(waiterCall.isResolved());
-            historyWaiterCall.setOrder(waiterCall.getOrder());
+        if(!waiterCalls.isEmpty()) {
+            waiterCalls.forEach(waiterCall -> {
+                historyWaiterCall.setId(Long.valueOf(waiterCall.getId()));
+                historyWaiterCall.setCallTime(waiterCall.getCallTime());
+                historyWaiterCall.setResolvedTime(waiterCall.getResolvedTime());
+                historyWaiterCall.setResolved(waiterCall.isResolved());
+                historyWaiterCall.setHistoryOrder(historyOrder);
 
-            historyWaiterCallService.save(historyWaiterCall);
-            waiterCallService.delete(waiterCall);
-        });
+                historyWaiterCallService.save(historyWaiterCall);
+                waiterCallService.delete(waiterCall);
+            });
+        }
     }
 }
