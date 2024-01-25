@@ -2,10 +2,14 @@ package pl.rarytas.rarytas_restaurantside.service;
 
 import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrderedItem;
-import pl.rarytas.rarytas_restaurantside.service.archive.HistoryOrderServiceImpl;
+import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryWaiterCall;
+import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
+import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryWaiterCallService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.DataTransferService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,15 +17,22 @@ import java.util.List;
 @Component
 public class DataTransferServiceImpl implements DataTransferService {
 
-    private final HistoryOrderServiceImpl historyOrderServiceImpl;
+    private final HistoryOrderService historyOrderService;
+    private final WaiterCallService waiterCallService;
+    private final HistoryWaiterCallService historyWaiterCallService;
 
-    public DataTransferServiceImpl(HistoryOrderServiceImpl historyOrderServiceImpl) {
-        this.historyOrderServiceImpl = historyOrderServiceImpl;
+    public DataTransferServiceImpl(HistoryOrderService historyOrderService, WaiterCallService waiterCallService, HistoryWaiterCallService historyWaiterCallService) {
+        this.historyOrderService = historyOrderService;
+        this.waiterCallService = waiterCallService;
+        this.historyWaiterCallService = historyWaiterCallService;
     }
 
     public void archiveOrder(Order order) {
         HistoryOrder historyOrder = transferOrderDataToHistory(order);
-        historyOrderServiceImpl.save(historyOrder);
+        historyOrderService.save(historyOrder);
+
+        HistoryWaiterCall historyWaiterCall = transferWaiterCallDataToHistory(order);
+        historyWaiterCallService.save(historyWaiterCall);
     }
 
     private HistoryOrder transferOrderDataToHistory(Order order) {
@@ -51,5 +62,19 @@ public class DataTransferServiceImpl implements DataTransferService {
         historyOrder.setWaiterCalled(order.isWaiterCalled());
 
         return historyOrder;
+    }
+
+    private HistoryWaiterCall transferWaiterCallDataToHistory(Order order) {
+        WaiterCall waiterCall = waiterCallService.findByOrder(order).orElseThrow();
+        HistoryWaiterCall historyWaiterCall = new HistoryWaiterCall();
+
+        historyWaiterCall.setId(Long.valueOf(waiterCall.getId()));
+        historyWaiterCall.setCallTime(waiterCall.getCallTime());
+        historyWaiterCall.setResolved(waiterCall.isResolved());
+        historyWaiterCall.setOrder(waiterCall.getOrder());
+
+        waiterCallService.delete(waiterCall);
+
+        return historyWaiterCall;
     }
 }
