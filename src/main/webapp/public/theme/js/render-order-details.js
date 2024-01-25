@@ -74,13 +74,6 @@ export function renderOrderDetails(order) {
         idInput.value = `${order.id}`;
         resolveCallForm.appendChild(idInput);
 
-        // Create the hidden input for 'isResolved'
-        let waiterCalledInput = document.createElement('input');
-        waiterCalledInput.type = 'hidden';
-        waiterCalledInput.name = 'waiterCalled';
-        waiterCalledInput.value = 'false';
-        resolveCallForm.appendChild(waiterCalledInput);
-
         resolveCallForm.addEventListener('click', e => {
             e.preventDefault();
             resolveCallForm.submit();

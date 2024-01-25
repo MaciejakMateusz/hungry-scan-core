@@ -49,9 +49,8 @@ public class OrdersController {
     }
 
     @PostMapping("/resolve-call")
-    public String resolveWaiterCall(@RequestParam Integer id,
-                                    @RequestParam boolean waiterCalled) {
-        orderService.resolveWaiterCall(id, waiterCalled);
+    public String resolveWaiterCall(@RequestParam Integer id) {
+        orderService.resolveWaiterCall(id);
         return "redirect:/restaurant";
     }
 
