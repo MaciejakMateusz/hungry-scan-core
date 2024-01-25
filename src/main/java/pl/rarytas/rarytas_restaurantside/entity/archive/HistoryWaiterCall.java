@@ -23,6 +23,9 @@ public class HistoryWaiterCall {
     @Column(name = "call_time", nullable = false)
     private LocalDateTime callTime;
 
+    @Column(name = "resolved_time", nullable = false)
+    private LocalDateTime resolvedTime;
+
     @Column(name = "is_resolved", nullable = false)
     private boolean isResolved = false;
 
