@@ -38,7 +38,7 @@ public interface OrderService {
 
     void callWaiter(Order order);
 
-    void resolveWaiterCall(Integer id, boolean waiterCalled);
+    void resolveWaiterCall(Integer id);
 
     boolean existsByIdAndForTakeAwayAndResolved(Integer id, boolean forTakeAway);
 
