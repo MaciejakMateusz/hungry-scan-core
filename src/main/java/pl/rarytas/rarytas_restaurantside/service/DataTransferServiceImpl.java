@@ -31,8 +31,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         HistoryOrder historyOrder = transferOrderDataToHistory(order);
         historyOrderService.save(historyOrder);
 
-        HistoryWaiterCall historyWaiterCall = transferWaiterCallDataToHistory(order);
-        historyWaiterCallService.save(historyWaiterCall);
+        transferWaiterCallDataToHistory(order);
     }
 
     private HistoryOrder transferOrderDataToHistory(Order order) {
@@ -64,17 +63,19 @@ public class DataTransferServiceImpl implements DataTransferService {
         return historyOrder;
     }
 
-    private HistoryWaiterCall transferWaiterCallDataToHistory(Order order) {
-        WaiterCall waiterCall = waiterCallService.findByOrder(order).orElseThrow();
+    private void transferWaiterCallDataToHistory(Order order) {
+        List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(order);
         HistoryWaiterCall historyWaiterCall = new HistoryWaiterCall();
 
-        historyWaiterCall.setId(Long.valueOf(waiterCall.getId()));
-        historyWaiterCall.setCallTime(waiterCall.getCallTime());
-        historyWaiterCall.setResolved(waiterCall.isResolved());
-        historyWaiterCall.setOrder(waiterCall.getOrder());
+        waiterCalls.forEach(waiterCall -> {
+            historyWaiterCall.setId(Long.valueOf(waiterCall.getId()));
+            historyWaiterCall.setCallTime(waiterCall.getCallTime());
+            historyWaiterCall.setResolvedTime(waiterCall.getResolvedTime());
+            historyWaiterCall.setResolved(waiterCall.isResolved());
+            historyWaiterCall.setOrder(waiterCall.getOrder());
 
-        waiterCallService.delete(waiterCall);
-
-        return historyWaiterCall;
+            historyWaiterCallService.save(historyWaiterCall);
+            waiterCallService.delete(waiterCall);
+        });
     }
 }
