@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 import java.util.List;
@@ -18,9 +20,11 @@ import java.util.Map;
 public class OrderRestController {
 
     private final OrderService orderService;
+    private final HistoryOrderService historyOrderService;
 
-    public OrderRestController(OrderService orderService) {
+    public OrderRestController(OrderService orderService, HistoryOrderService historyOrderService) {
         this.orderService = orderService;
+        this.historyOrderService = historyOrderService;
     }
 
     @GetMapping
@@ -29,38 +33,38 @@ public class OrderRestController {
     }
 
     @GetMapping("/resolved")
-    public List<Order> getAllResolved() {
-        return orderService.findAllByResolvedIsTrue();
+    public List<HistoryOrder> getAllResolved() {
+        return historyOrderService.findAllByResolvedIsTrue();
     }
 
     @PostMapping("/finalized")
-    public List<Order> getFinalizedOrders(@RequestBody Map<String, Object> requestBody) {
+    public List<HistoryOrder> getFinalizedOrders(@RequestBody Map<String, Object> requestBody) {
         boolean forTakeAway = (boolean) requestBody.get("forTakeAway");
         int limit = (int) requestBody.get("limit");
         int offset = (int) requestBody.get("offset");
 
-        return orderService.findAllFinalized(forTakeAway, limit, offset);
+        return historyOrderService.findAllFinalized(forTakeAway, limit, offset);
     }
 
     @GetMapping("/finalized/id/{id}/{forTakeAway}")
-    public Order getFinalizedById(@PathVariable Integer id,
+    public HistoryOrder getFinalizedById(@PathVariable Long id,
                                   @PathVariable boolean forTakeAway) {
-        if (orderService.existsByIdAndForTakeAwayAndResolved(id, forTakeAway)) {
-            return orderService.findFinalizedById(id, forTakeAway).orElseThrow();
+        if (historyOrderService.existsByIdAndForTakeAwayAndResolved(id, forTakeAway)) {
+            return historyOrderService.findFinalizedById(id, forTakeAway).orElseThrow();
         } else {
             return null;
         }
     }
 
     @GetMapping("/finalized/date/{date}/{forTakeAway}")
-    public List<Order> getFinalizedByDate(@PathVariable String date,
+    public List<HistoryOrder> getFinalizedByDate(@PathVariable String date,
                                           @PathVariable boolean forTakeAway) {
-        return orderService.findFinalizedByDate(date, forTakeAway);
+        return historyOrderService.findFinalizedByDate(date, forTakeAway);
     }
 
     @GetMapping("/resolved/take-away")
-    public List<Order> getAllResolvedTakeAwayLimit50() {
-        return orderService.findAllResolvedTakeAwayLimit50();
+    public List<HistoryOrder> getAllResolvedTakeAwayLimit50() {
+        return historyOrderService.findAllResolvedTakeAwayLimit50();
     }
 
     @GetMapping("/takeAway")
