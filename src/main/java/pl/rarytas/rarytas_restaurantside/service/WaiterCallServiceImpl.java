@@ -6,6 +6,7 @@ import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.repository.WaiterCallRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,13 +20,18 @@ public class WaiterCallServiceImpl implements WaiterCallService {
     }
 
     @Override
-    public void callWaiter(WaiterCall waiterCall) {
+    public void save(WaiterCall waiterCall) {
         waiterCallRepository.save(waiterCall);
     }
 
     @Override
-    public Optional<WaiterCall> findByOrder(Order order) {
-        return waiterCallRepository.findByOrder(order);
+    public Optional<WaiterCall> findByOrderAndResolved(Order order, boolean isResolved) {
+        return waiterCallRepository.findByOrderAndResolved(order, isResolved);
+    }
+
+    @Override
+    public List<WaiterCall> findAllByOrder(Order order) {
+        return waiterCallRepository.findAllByOrder(order);
     }
 
     @Override
