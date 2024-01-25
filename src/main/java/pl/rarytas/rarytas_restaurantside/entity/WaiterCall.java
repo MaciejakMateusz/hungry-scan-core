@@ -23,7 +23,7 @@ public class WaiterCall {
     @Column(name = "call_time", nullable = false)
     private LocalDateTime callTime;
 
-    @Column(name = "resolved_time", nullable = false)
+    @Column(name = "resolved_time")
     private LocalDateTime resolvedTime;
 
     @Column(name = "is_resolved", nullable = false)
