@@ -23,11 +23,19 @@ public class WaiterCall {
     @Column(name = "call_time", nullable = false)
     private LocalDateTime callTime;
 
+    @Column(name = "resolved_time", nullable = false)
+    private LocalDateTime resolvedTime;
+
     @Column(name = "is_resolved", nullable = false)
     private boolean isResolved = false;
 
     @PrePersist
     private void prePersist() {
         this.callTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        this.resolvedTime = LocalDateTime.now();
     }
 }
