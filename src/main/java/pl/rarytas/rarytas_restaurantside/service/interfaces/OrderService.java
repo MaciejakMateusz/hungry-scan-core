@@ -12,13 +12,7 @@ public interface OrderService {
 
     List<Order> findAllByResolvedIsTrue();
 
-    List<Order> findAllFinalized(boolean forTakeAway, Integer limit, Integer offset);
-
     Optional<Order> findFinalizedById(Integer id, boolean forTakeAway);
-
-    List<Order> findFinalizedByDate(String date, boolean forTakeAway);
-
-    List<Order> findAllResolvedTakeAwayLimit50();
 
     Optional<Order> findByTableNumber(Integer number);
 
@@ -39,8 +33,6 @@ public interface OrderService {
     void callWaiter(Order order);
 
     void resolveWaiterCall(Integer id);
-
-    boolean existsByIdAndForTakeAwayAndResolved(Integer id, boolean forTakeAway);
 
     void delete(Order order);
 }
