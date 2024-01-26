@@ -97,6 +97,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void patch(Order order) {
 
+        if(!orderRepository.existsById(order.getId())){
+            log.warn("Order with ID = " + order.getId() + " doesn't exist.");
+            return;
+        }
+
         Order existingOrder = orderRepository
                 .findById(order.getId())
                 .orElseThrow();
