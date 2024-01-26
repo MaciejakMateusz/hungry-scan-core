@@ -13,7 +13,7 @@ const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
 
 stompClient.connect({},  () => {
-    stompClient.subscribe('/topic/restaurant-order', message => {
+    stompClient.subscribe('/topic/restaurant-orders', message => {
         const orders = JSON.parse(message.body);
         renderOrders(orders);
     });
@@ -32,7 +32,7 @@ export function renderOrders(orders) {
             if (order.restaurantTable.id !== 5 &&
                 order.restaurantTable.id !== 6 &&
                 order.restaurantTable.id !== 11 &&
-                order.restaurantTable.id !== 15) { //basically if the table is not small, perform those actions:
+                order.restaurantTable.id !== 15) {
 
                 restaurantTableIcon.classList.remove('table-default');
                 if (order.waiterCalled) {
@@ -41,7 +41,7 @@ export function renderOrders(orders) {
                     restaurantTableIcon.classList.add('table-ordered');
                 }
 
-            } else { //else if the table is small:
+            } else {
                 restaurantTableIcon.classList.remove('s-table-default');
                 if (order.waiterCalled) {
                     restaurantTableIcon.classList.add('s-table-waiter-call');

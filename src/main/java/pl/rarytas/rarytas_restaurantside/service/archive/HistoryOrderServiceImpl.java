@@ -74,7 +74,7 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
         }
         historyOrderRepository.save(historyOrder);
         if (!historyOrder.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
         }
     }
 

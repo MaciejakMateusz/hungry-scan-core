@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         orderRepository.refresh(order);
         if (!order.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
         }
     }
 
@@ -114,7 +114,8 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(order);
 
         if (!order.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+            messagingTemplate.convertAndSend("/topic/restaurant-order", order);
+            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
         }
     }
 
@@ -159,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(existingOrder);
         dataTransferServiceImpl.archiveOrder(existingOrder);
         if (!existingOrder.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-order", findAllNotPaid());
+            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
         }
         delete(existingOrder);
     }

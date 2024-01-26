@@ -29,7 +29,7 @@ stompClient.connect({},  () => {
         const orders = JSON.parse(message.body);
         countTakeAway(orders);
     });
-    stompClient.subscribe('/topic/restaurant-order',  message => {
+    stompClient.subscribe('/topic/restaurant-orders',  message => {
         const orders = JSON.parse(message.body);
         countOccupiedTables(orders);
     });

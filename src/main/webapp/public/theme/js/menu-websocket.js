@@ -18,7 +18,7 @@ const socket = new WebSocket('ws://localhost:8082/order-websocket');
 const stompClient = Stomp.over(socket);
 
 stompClient.connect({}, function () {
-    stompClient.subscribe('/topic/restaurant-order', function (message) {
+    stompClient.subscribe('/topic/restaurant-orders', function (message) {
         const orders = JSON.parse(message.body);
         renderOrders(orders);
     });

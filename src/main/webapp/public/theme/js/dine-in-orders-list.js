@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () =>
 
 stompClient.connect({}, function (frame) {
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/restaurant-order', function (message) {
+    stompClient.subscribe('/topic/restaurant-orders', function (message) {
         const orders = JSON.parse(message.body);
         renderOrdersList(orders);
     });

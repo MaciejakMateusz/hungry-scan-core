@@ -9,8 +9,23 @@ const billRequestedSection = document.querySelector('#bill-requested-finalize-se
 const finalizeButton = document.querySelector('#finalize-button');
 const resolveCallForm = document.querySelector('#resolve-call-form');
 
+/** ----- WEBSOCKET ----- **/
+const socket = new WebSocket('ws://localhost:8082/order-websocket');
+const stompClient = Stomp.over(socket);
+
+stompClient.connect({},  () => {
+    stompClient.subscribe('/topic/restaurant-order', message => {
+        const order = JSON.parse(message.body);
+        renderOrderDetails(order);
+    });
+});
+
+/** ----- END OF WEBSOCKET ----- **/
+
 /** ----- RENDERING ORDER DETAILS ON THE RIGHT PANEL ----- **/
 export function renderOrderDetails(order) {
+
+    clearOrderDetails();
 
     if(order === null) {
         return
