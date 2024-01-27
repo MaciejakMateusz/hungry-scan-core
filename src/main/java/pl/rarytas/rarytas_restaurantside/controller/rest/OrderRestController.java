@@ -91,13 +91,9 @@ public class OrderRestController {
         orderService.save(order);
     }
 
-    @PatchMapping
-    public void updateOrder(@RequestBody Order order) {
-        if (order.isForTakeAway()) {
-            orderService.patchTakeAway(order);
-            return;
-        }
-        orderService.patch(order);
+    @PatchMapping("/request-bill")
+    public void requestBill(@RequestBody Order order) {
+        orderService.requestBill(order);
     }
 
     @PatchMapping("/call-waiter")
