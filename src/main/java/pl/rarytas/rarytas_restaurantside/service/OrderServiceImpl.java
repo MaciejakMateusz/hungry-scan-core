@@ -148,9 +148,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void finish(Integer id, boolean paid, boolean isResolved) {
+
+        if(!orderRepository.existsById(id)) {
+            log.warn("Order with ID = " + id + " doesn't exist.");
+            return;
+        }
+
         Order existingOrder = orderRepository
                 .findById(id)
                 .orElseThrow();
+
+        if(existingOrder.isWaiterCalled()) {
+            log.warn("Order with ID = " + id + " has active waiter call - it can't be finalized");
+            return;
+        }
+
         existingOrder.setPaid(paid);
         existingOrder.setResolved(isResolved);
         existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
@@ -175,10 +187,20 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void callWaiter(Order order) {
+        if(!orderRepository.existsById(order.getId())) {
+            log.warn("Order with ID = " + order.getId() + " doesn't exist.");
+            return;
+        }
+
+        Order exsitingOrder = orderRepository.findById(order.getId()).orElseThrow();
+        exsitingOrder.setWaiterCalled(true);
+        if(exsitingOrder.isBillRequested()) {
+            log.warn("Order with ID = " + exsitingOrder.getId() + " has requested a bill and waiter can't be called.");
+            return;
+        }
         WaiterCall waiterCall = new WaiterCall();
-        waiterCall.setOrder(order);
-        order.setWaiterCalled(true);
-        patch(order);
+        waiterCall.setOrder(exsitingOrder);
+        patch(exsitingOrder);
         waiterCallServiceImpl.save(waiterCall);
     }
 
