@@ -11,7 +11,6 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -110,7 +109,6 @@ public class OrderServiceImpl implements OrderService {
             return;
         }
 
-        setOrderData(order, existingOrder);
         orderRepository.saveAndFlush(order);
 
         if (!order.isForTakeAway()) {
@@ -118,36 +116,39 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private static void setOrderData(Order order, Order existingOrder) {
-        order.setOrderTime(existingOrder.getOrderTime());
-        order.setOrderNumber(existingOrder.getOrderNumber());
-        order.setRestaurant(existingOrder.getRestaurant());
-        order.setRestaurantTable(existingOrder.getRestaurantTable());
-
-        if ("Brak".equals(order.getPaymentMethod()) || Objects.isNull(order.getPaymentMethod())) {
-            order.setPaymentMethod(existingOrder.getPaymentMethod());
-        }
-
-        if (Objects.isNull(order.getOrderedItems())) {
-            order.setOrderedItems(existingOrder.getOrderedItems());
-        } else {
-            existingOrder.getOrderedItems().addAll(order.getOrderedItems());
-        }
-
-        if (!order.isBillRequested()) {
-            order.setBillRequested(existingOrder.isBillRequested());
-        }
-    }
 
     @Override
     public void patchTakeAway(Order order) {
-        patch(order);
+        if(!orderRepository.existsById(order.getId())) {
+            log.warn("Order with ID = " + order.getId() + " doesn't exist.");
+            return;
+        }
+        Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
+        orderRepository.saveAndFlush(existingOrder);
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
     @Override
-    public void finish(Integer id, boolean paid, boolean isResolved) {
+    public void requestBill(Order order) {
+        if(!orderRepository.existsById(order.getId())) {
+            log.warn("Order with ID = " + order.getId() + " doesn't exist.");
+            return;
+        }
+        Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
+        if(existingOrder.isWaiterCalled()) {
+            log.warn("Order with ID = " + existingOrder.getId() + " has active waiter call - bill can't be requested");
+            return;
+        }
+        existingOrder.setBillRequested(true);
+        existingOrder.setPaymentMethod(order.getPaymentMethod());
+        orderRepository.saveAndFlush(existingOrder);
+        if (!order.isForTakeAway()) {
+            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
+        }
+    }
 
+    @Override
+    public void finish(Integer id, boolean paid, boolean isResolved) {
         if(!orderRepository.existsById(id)) {
             log.warn("Order with ID = " + id + " doesn't exist.");
             return;
@@ -191,16 +192,20 @@ public class OrderServiceImpl implements OrderService {
             return;
         }
 
-        Order exsitingOrder = orderRepository.findById(order.getId()).orElseThrow();
-        exsitingOrder.setWaiterCalled(true);
-        if(exsitingOrder.isBillRequested()) {
-            log.warn("Order with ID = " + exsitingOrder.getId() + " has requested a bill and waiter can't be called.");
+        Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
+        if(existingOrder.isBillRequested()) {
+            log.warn("Order with ID = " + existingOrder.getId() + " has requested a bill and waiter can't be called.");
+            return;
+        } else if (existingOrder.isWaiterCalled()) {
+            log.warn("Order with ID = " + existingOrder.getId() + " has already called a waiter.");
             return;
         }
+        existingOrder.setWaiterCalled(true);
         WaiterCall waiterCall = new WaiterCall();
-        waiterCall.setOrder(exsitingOrder);
-        patch(exsitingOrder);
+        waiterCall.setOrder(existingOrder);
+        orderRepository.saveAndFlush(existingOrder);
         waiterCallServiceImpl.save(waiterCall);
+        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
     }
 
     @Override
