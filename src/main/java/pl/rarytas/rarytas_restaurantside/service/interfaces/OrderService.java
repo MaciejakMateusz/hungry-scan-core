@@ -22,10 +22,6 @@ public interface OrderService {
 
     void saveTakeAway(Order order);
 
-    void patch(Order order);
-
-    void patchTakeAway(Order order);
-
     void requestBill(Order order);
 
     void finish(Integer id, boolean paid, boolean isResolved);

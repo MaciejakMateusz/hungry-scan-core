@@ -94,41 +94,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void patch(Order order) {
-
-        if(!orderRepository.existsById(order.getId())){
-            log.warn("Order with ID = " + order.getId() + " doesn't exist.");
-            return;
-        }
-
-        Order existingOrder = orderRepository
-                .findById(order.getId())
-                .orElseThrow();
-
-        if (existingOrder.isResolved()) {
-            return;
-        }
-
-        orderRepository.saveAndFlush(order);
-
-        if (!order.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
-        }
-    }
-
-
-    @Override
-    public void patchTakeAway(Order order) {
-        if(!orderRepository.existsById(order.getId())) {
-            log.warn("Order with ID = " + order.getId() + " doesn't exist.");
-            return;
-        }
-        Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
-        orderRepository.saveAndFlush(existingOrder);
-        messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
-    }
-
-    @Override
     public void requestBill(Order order) {
         if(!orderRepository.existsById(order.getId())) {
             log.warn("Order with ID = " + order.getId() + " doesn't exist.");
