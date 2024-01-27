@@ -114,7 +114,6 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(order);
 
         if (!order.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-order", order);
             messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
         }
     }
