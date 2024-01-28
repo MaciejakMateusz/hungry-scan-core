@@ -30,7 +30,7 @@ public class TestPasswordValidator {
     public void shouldApprove() {
         String password = "Example123!";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertTrue(matcher.matches(), "The password '" + password + "' should be approved, but it was not.");
+        assertTrue(matcher.matches(), assertTrueMessage(password));
     }
 
     @Test
@@ -47,37 +47,37 @@ public class TestPasswordValidator {
         String password9 = "!!!!!!!!!";
 
         Matcher matcher = PASSWORD_REGEX.matcher(password1);
-        assertFalse(matcher.matches(), "The password '" + password1 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password1));
         matcher = PASSWORD_REGEX.matcher(password2);
-        assertFalse(matcher.matches(), "The password '" + password2 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password2));
         matcher = PASSWORD_REGEX.matcher(password3);
-        assertFalse(matcher.matches(), "The password '" + password3 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password3));
         matcher = PASSWORD_REGEX.matcher(password4);
-        assertFalse(matcher.matches(), "The password '" + password4 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password4));
         matcher = PASSWORD_REGEX.matcher(password5);
-        assertFalse(matcher.matches(), "The password '" + password5 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password5));
         matcher = PASSWORD_REGEX.matcher(password6);
-        assertFalse(matcher.matches(), "The password '" + password6 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password6));
         matcher = PASSWORD_REGEX.matcher(password7);
-        assertFalse(matcher.matches(), "The password '" + password7 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password7));
         matcher = PASSWORD_REGEX.matcher(password8);
-        assertFalse(matcher.matches(), "The password '" + password8 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password8));
         matcher = PASSWORD_REGEX.matcher(password9);
-        assertFalse(matcher.matches(), "The password '" + password9 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password9));
     }
 
     @Test
     public void shouldApproveMinimumLength() {
         String password = "Min1!";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertTrue(matcher.matches(), "The password '" + password + "' should be approved, but it was not.");
+        assertTrue(matcher.matches(), assertTrueMessage(password));
     }
 
     @Test
     public void shouldApproveMaximumLength() {
         String password = "Aa1!Bb2@C3dDeE4fFgG5hHiI6jJkKlLmMnNoO7pPqQrRsStTuUvVwWxXyYzZ";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertTrue(matcher.matches(), "The password '" + password + "' should be approved, but it was not.");
+        assertTrue(matcher.matches(), assertTrueMessage(password));
     }
 
     @Test
@@ -85,22 +85,30 @@ public class TestPasswordValidator {
         String password1 = "Mi1!";
         String password2 = "Aa1!Bb2@C3dDeE4fFgG5hHiI6jJkKlLmMnNoO7pPqQrRsStTuUvVwWxXyYzZ!";
         Matcher matcher = PASSWORD_REGEX.matcher(password1);
-        assertFalse(matcher.matches(), "The password '" + password1 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password1));
         matcher = PASSWORD_REGEX.matcher(password2);
-        assertFalse(matcher.matches(), "The password '" + password2 + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password2));
     }
 
     @Test
     public void shouldNotApproveEmpty() {
         String password = "";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertFalse(matcher.matches(), "The password '" + password + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password));
     }
 
     @Test
     public void shouldNotApproveContainingSpaces() {
         String password = "Example 123!";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertFalse(matcher.matches(), "The password '" + password + "' was expected to be rejected, but it was approved.");
+        assertFalse(matcher.matches(), assertFalseMessage(password));
+    }
+
+    private String assertFalseMessage(String input) {
+        return "The password '" + input + "' was expected to be rejected, but it was approved.";
+    }
+
+    private String assertTrueMessage(String input) {
+        return "The password '" + input + "' should be approved, but it was not.";
     }
 }
