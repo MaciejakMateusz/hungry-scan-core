@@ -75,6 +75,20 @@ public class TestEmailValidator {
         assertFalse(matcher.matches(), assertFalseMessage(email));
     }
 
+    @Test
+    public void shouldNotApproveSpaceCharacterInLocal() {
+        String email = "example @example.com";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertFalse(matcher.matches(), assertFalseMessage(email));
+    }
+
+    @Test
+    public void shouldNotApproveSpaceCharacterInDomain() {
+        String email = "example@ex ample.com";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertFalse(matcher.matches(), assertFalseMessage(email));
+    }
+
     private String assertFalseMessage(String input) {
         return "The email '" + input + "' was expected to be rejected, but it was approved.";
     }
