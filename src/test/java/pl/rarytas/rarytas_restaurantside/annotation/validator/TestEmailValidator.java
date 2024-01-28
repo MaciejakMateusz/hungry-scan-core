@@ -13,8 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -28,13 +27,14 @@ public class TestEmailValidator {
             Pattern.compile("^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.([a-zA-Z]{2,})$");
 
     @Test
-    public void shouldApproveEmail() {
-        Matcher matcher = EMAIL_REGEX.matcher("example@example.com");
-        assertTrue(matcher.matches());
+    public void shouldApprove() {
+        String email = "example@example.com";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertTrue(matcher.matches(), assertTrueMessage(email));
     }
 
     @Test
-    public void shouldNotApproveEmail() {
+    public void shouldNotApprove() {
 
         String email1 = "example@example.";
         String email2 = "example@example";
@@ -43,14 +43,43 @@ public class TestEmailValidator {
         String email5 = "example@example,com";
 
         Matcher matcher = EMAIL_REGEX.matcher(email1);
-        assertFalse(matcher.matches());
+        assertFalse(matcher.matches(), assertFalseMessage(email1));
         matcher = EMAIL_REGEX.matcher(email2);
-        assertFalse(matcher.matches());
+        assertFalse(matcher.matches(), assertFalseMessage(email2));
         matcher = EMAIL_REGEX.matcher(email3);
-        assertFalse(matcher.matches());
+        assertFalse(matcher.matches(), assertFalseMessage(email3));
         matcher = EMAIL_REGEX.matcher(email4);
-        assertFalse(matcher.matches());
+        assertFalse(matcher.matches(), assertFalseMessage(email4));
         matcher = EMAIL_REGEX.matcher(email5);
-        assertFalse(matcher.matches());
+        assertFalse(matcher.matches(), assertFalseMessage(email5));
+    }
+
+    @Test
+    public void shouldNotApproveEmpty() {
+        String email = "";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertFalse(matcher.matches(), assertFalseMessage(email));
+    }
+
+    @Test
+    public void shouldApproveLocalSingleCharacter() {
+        String email = "a@example.com";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertTrue(matcher.matches(), assertTrueMessage(email));
+    }
+
+    @Test
+    public void shouldNotApproveDomainSingleCharacters() {
+        String email = "example@a.c";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertFalse(matcher.matches(), assertFalseMessage(email));
+    }
+
+    private String assertFalseMessage(String input) {
+        return "The email '" + input + "' was expected to be rejected, but it was approved.";
+    }
+
+    private String assertTrueMessage(String input) {
+        return "The email '" + input + "' should be approved, but it was not.";
     }
 }
