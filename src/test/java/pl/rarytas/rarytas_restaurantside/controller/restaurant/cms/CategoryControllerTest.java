@@ -78,7 +78,7 @@ class CategoryControllerTest {
 
     @Test
     @Order(3)
-    public void shouldUpdateExisting() {
+    public void shouldUpdate() {
         Category existingCategory = categoryService.findById(9).orElse(new Category());
         existingCategory.setName("Testowe jedzenie");
         categoryService.save(existingCategory);
@@ -88,7 +88,7 @@ class CategoryControllerTest {
 
     @Test
     @Order(4)
-    public void shouldDeleteCategory() {
+    public void shouldDelete() {
         Category category = categoryService.findById(9).orElseThrow();
         categoryService.delete(category);
         assertThrows(NoSuchElementException.class, () -> categoryService.findById(9).orElseThrow());
@@ -96,7 +96,7 @@ class CategoryControllerTest {
 
     @Test
     @Order(5)
-    public void shouldNotDeleteCategory() {
+    public void shouldNotDelete() {
         Category category = categoryService.findById(1).orElseThrow();
         assertThrows(DataIntegrityViolationException.class, () -> categoryService.delete(category));
     }
