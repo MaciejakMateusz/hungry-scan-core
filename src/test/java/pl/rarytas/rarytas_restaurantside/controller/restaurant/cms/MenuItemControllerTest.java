@@ -209,7 +209,7 @@ class MenuItemControllerTest {
 
     @Test
     public void shouldNotInsertNew() {
-        MenuItem menuItem = createMenuItem("Burger", 2, "Z mięsem wegańskim", "Bułka, mięso sojowe, sałata, ogórek konserwowy, chrzan żurawinowy", BigDecimal.valueOf(20.00));;
+        MenuItem menuItem = createMenuItem("Cheeseburger", 3, "Z mięsem wegańskim.", "Bułka, mięso sojowe, sałata, ogórek konserwowy, chrzan żurawinowy.", BigDecimal.valueOf(21.00));
 
         menuItem.setName("");
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem, null));
