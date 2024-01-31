@@ -37,7 +37,7 @@ public class MenuItemServiceImplTest {
     @Test
     @Order(1)
     public void shouldReturnAll() {
-        assertEquals(40, getMenuItems().size(), assertEqualsMessage(3, getMenuItems().size()));
+        assertEquals(40, getMenuItems().size());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class MenuItemServiceImplTest {
         MenuItem newMenuItem = createMenuItem("Burger", 2, "Z mięsem wegańskim", "Bułka, mięso sojowe, sałata, ogórek konserwowy, chrzan żurawinowy", BigDecimal.valueOf(20.00));
         menuItemService.save(newMenuItem, null);
         MenuItem menuItem = menuItemService.findById(newMenuItem.getId()).orElse(new MenuItem());
-        assertEquals(newMenuItem.getId(), menuItem.getId(), assertEqualsMessage(newMenuItem.getId(), menuItem.getId()));
+        assertEquals(newMenuItem.getId(), menuItem.getId());
     }
 
     @Test
@@ -80,14 +80,14 @@ public class MenuItemServiceImplTest {
         existingMenuItem.setName("Burger wege");
         menuItemService.save(existingMenuItem, null);
         MenuItem updatedMenuItem = menuItemService.findById(41).orElse(new MenuItem());
-        assertEquals("Burger wege", updatedMenuItem.getName(), assertEqualsMessage(updatedMenuItem.getName()));
+        assertEquals("Burger wege", updatedMenuItem.getName());
     }
 
     @Test
     @Order(4)
     public void shouldDelete() {
         MenuItem menuItem = menuItemService.findById(41).orElseThrow();
-        assertEquals("Burger wege", menuItem.getName(), assertEqualsMessage(menuItem.getName()));
+        assertEquals("Burger wege", menuItem.getName());
         menuItemService.delete(menuItem);
         assertThrows(NoSuchElementException.class, () -> menuItemService.findById(41).orElseThrow());
     }
@@ -108,13 +108,5 @@ public class MenuItemServiceImplTest {
         menuItem.setIngredients(ingredients);
         menuItem.setPrice(price);
         return menuItem;
-    }
-
-    private String assertEqualsMessage(String input) {
-        return "Result expected was " + "Burger wege" + " but got " + input;
-    }
-
-    private String assertEqualsMessage(int expectedOutput, int input) {
-        return "Result expected was " + expectedOutput + " but got " + input;
     }
 }

@@ -11,7 +11,8 @@ import org.springframework.test.context.TestPropertySource;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,19 +35,19 @@ class UsernameValidatorTest {
         String username7 = "_____";
 
         Matcher matcher = USERNAME_REGEX.matcher(username1);
-        assertTrue(matcher.matches(), assertTrueMessage(username1));
+        assertTrue(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username2);
-        assertTrue(matcher.matches(), assertTrueMessage(username2));
+        assertTrue(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username3);
-        assertTrue(matcher.matches(), assertTrueMessage(username3));
+        assertTrue(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username4);
-        assertTrue(matcher.matches(), assertTrueMessage(username4));
+        assertTrue(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username5);
-        assertTrue(matcher.matches(), assertTrueMessage(username5));
+        assertTrue(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username6);
-        assertTrue(matcher.matches(), assertTrueMessage(username6));
+        assertTrue(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username7);
-        assertTrue(matcher.matches(), assertTrueMessage(username7));
+        assertTrue(matcher.matches());
     }
 
     @Test
@@ -55,11 +56,11 @@ class UsernameValidatorTest {
         String username2 = "user?";
         String username3 = ";'][qew";
         Matcher matcher = USERNAME_REGEX.matcher(username1);
-        assertFalse(matcher.matches(), assertFalseMessage(username1));
+        assertFalse(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username2);
-        assertFalse(matcher.matches(), assertFalseMessage(username2));
+        assertFalse(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username3);
-        assertFalse(matcher.matches(), assertFalseMessage(username3));
+        assertFalse(matcher.matches());
     }
 
     @Test
@@ -69,41 +70,33 @@ class UsernameValidatorTest {
         String username3 = " user";
         String username4 = " ";
         Matcher matcher = USERNAME_REGEX.matcher(username1);
-        assertFalse(matcher.matches(), assertFalseMessage(username1));
+        assertFalse(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username2);
-        assertFalse(matcher.matches(), assertFalseMessage(username2));
+        assertFalse(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username3);
-        assertFalse(matcher.matches(), assertFalseMessage(username3));
+        assertFalse(matcher.matches());
         matcher = USERNAME_REGEX.matcher(username4);
-        assertFalse(matcher.matches(), assertFalseMessage(username4));
+        assertFalse(matcher.matches());
     }
 
     @Test
     public void shouldNotApproveEmpty() {
         String username = "";
         Matcher matcher = USERNAME_REGEX.matcher(username);
-        assertFalse(matcher.matches(), assertFalseMessage(username));
+        assertFalse(matcher.matches());
     }
 
     @Test
     public void shouldApproveMinimumLength() {
         String username = "use";
         Matcher matcher = USERNAME_REGEX.matcher(username);
-        assertTrue(matcher.matches(), assertTrueMessage(username));
+        assertTrue(matcher.matches());
     }
 
     @Test
     public void shouldApproveMaximumLength() {
         String username = "userUserUserUserUser";
         Matcher matcher = USERNAME_REGEX.matcher(username);
-        assertTrue(matcher.matches(), assertTrueMessage(username));
-    }
-
-    private String assertFalseMessage(String input) {
-        return "The username '" + input + "' was expected to be rejected, but it was approved.";
-    }
-
-    private String assertTrueMessage(String input) {
-        return "The username '" + input + "' should be approved, but it was not.";
+        assertTrue(matcher.matches());
     }
 }

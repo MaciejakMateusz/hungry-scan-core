@@ -7,9 +7,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -25,7 +28,7 @@ public class TestPasswordValidator {
     public void shouldApprove() {
         String password = "Example123!";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertTrue(matcher.matches(), assertTrueMessage(password));
+        assertTrue(matcher.matches());
     }
 
     @Test
@@ -42,37 +45,37 @@ public class TestPasswordValidator {
         String password9 = "!!!!!!!!!";
 
         Matcher matcher = PASSWORD_REGEX.matcher(password1);
-        assertFalse(matcher.matches(), assertFalseMessage(password1));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password2);
-        assertFalse(matcher.matches(), assertFalseMessage(password2));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password3);
-        assertFalse(matcher.matches(), assertFalseMessage(password3));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password4);
-        assertFalse(matcher.matches(), assertFalseMessage(password4));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password5);
-        assertFalse(matcher.matches(), assertFalseMessage(password5));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password6);
-        assertFalse(matcher.matches(), assertFalseMessage(password6));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password7);
-        assertFalse(matcher.matches(), assertFalseMessage(password7));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password8);
-        assertFalse(matcher.matches(), assertFalseMessage(password8));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password9);
-        assertFalse(matcher.matches(), assertFalseMessage(password9));
+        assertFalse(matcher.matches());
     }
 
     @Test
     public void shouldApproveMinimumLength() {
         String password = "Min1!";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertTrue(matcher.matches(), assertTrueMessage(password));
+        assertTrue(matcher.matches());
     }
 
     @Test
     public void shouldApproveMaximumLength() {
         String password = "Aa1!Bb2@C3dDeE4fFgG5hHiI6jJkKlLmMnNoO7pPqQrRsStTuUvVwWxXyYzZ";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertTrue(matcher.matches(), assertTrueMessage(password));
+        assertTrue(matcher.matches());
     }
 
     @Test
@@ -80,30 +83,22 @@ public class TestPasswordValidator {
         String password1 = "Mi1!";
         String password2 = "Aa1!Bb2@C3dDeE4fFgG5hHiI6jJkKlLmMnNoO7pPqQrRsStTuUvVwWxXyYzZ!";
         Matcher matcher = PASSWORD_REGEX.matcher(password1);
-        assertFalse(matcher.matches(), assertFalseMessage(password1));
+        assertFalse(matcher.matches());
         matcher = PASSWORD_REGEX.matcher(password2);
-        assertFalse(matcher.matches(), assertFalseMessage(password2));
+        assertFalse(matcher.matches());
     }
 
     @Test
     public void shouldNotApproveEmpty() {
         String password = "";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertFalse(matcher.matches(), assertFalseMessage(password));
+        assertFalse(matcher.matches());
     }
 
     @Test
     public void shouldNotApproveContainingSpaces() {
         String password = "Example 123!";
         Matcher matcher = PASSWORD_REGEX.matcher(password);
-        assertFalse(matcher.matches(), assertFalseMessage(password));
-    }
-
-    private String assertFalseMessage(String input) {
-        return "The password '" + input + "' was expected to be rejected, but it was approved.";
-    }
-
-    private String assertTrueMessage(String input) {
-        return "The password '" + input + "' should be approved, but it was not.";
+        assertFalse(matcher.matches());
     }
 }

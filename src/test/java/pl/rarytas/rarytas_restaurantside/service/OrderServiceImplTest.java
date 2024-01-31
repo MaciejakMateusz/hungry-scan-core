@@ -49,23 +49,23 @@ class OrderServiceImplTest {
 
     @Test
     void shouldFindAllNotPaid() {
-        assertEquals(3, orderService.findAllNotPaid().size(), assertEqualsMessage(3, orderService.findAllNotPaid().size()));
+        assertEquals(3, orderService.findAllNotPaid().size());
     }
 
     @Test
     void shouldFindAllTakeAway() {
-        assertEquals(1, orderService.findAllTakeAway().size(), assertEqualsMessage(1, orderService.findAllTakeAway().size()));
+        assertEquals(1, orderService.findAllTakeAway().size());
     }
 
     @Test
     void shouldFindAllByResolvedIsTrue() {
-        assertEquals(2, orderService.findAllByResolvedIsTrue().size(), assertEqualsMessage(2, orderService.findAllByResolvedIsTrue().size()));
+        assertEquals(2, orderService.findAllByResolvedIsTrue().size());
     }
 
     @Test
     void shouldFindFinalizedById() {
         Order order = orderService.findFinalizedById(3, false).orElse(new Order());
-        assertEquals(BigDecimal.valueOf(44).setScale(2, RoundingMode.HALF_UP), order.getTotalAmount(), assertEqualsMessage("44.0", order.getTotalAmount().toString()));
+        assertEquals(BigDecimal.valueOf(44).setScale(2, RoundingMode.HALF_UP), order.getTotalAmount());
     }
 
     @Test
@@ -78,7 +78,7 @@ class OrderServiceImplTest {
     void shouldFindByTableNumber() {
         Order order = orderService.findByTableNumber(5).orElse(new Order());
         int orderNumber = order.getOrderNumber();
-        assertEquals(421, orderNumber, assertEqualsMessage("421", String.valueOf(orderNumber)));
+        assertEquals(421, orderNumber);
     }
 
     @Test
@@ -90,7 +90,7 @@ class OrderServiceImplTest {
     void shouldFindById() {
         Order order = orderService.findById(2).orElse(new Order());
         int orderNumber = order.getOrderNumber();
-        assertEquals(322, orderNumber, assertEqualsMessage("322", String.valueOf(orderNumber)));
+        assertEquals(322, orderNumber);
     }
 
     @Test
@@ -111,7 +111,7 @@ class OrderServiceImplTest {
         orderService.save(order);
 
         Order foundOrder = orderService.findById(7).orElse(new Order());
-        assertEquals(7, foundOrder.getRestaurantTable().getId(), assertEqualsMessage(7, foundOrder.getRestaurantTable().getId()));
+        assertEquals(7, foundOrder.getRestaurantTable().getId());
     }
 
     @Test
@@ -129,7 +129,7 @@ class OrderServiceImplTest {
     void shouldRequestBill() throws LocalizedException {
         Order activeOrder = orderService.findById(1).orElse(new Order());
         Integer tableNumber = activeOrder.getRestaurantTable().getId();
-        assertEquals(1, tableNumber, assertEqualsMessage(1, tableNumber));
+        assertEquals(1, tableNumber);
 
         activeOrder.setPaymentMethod(String.valueOf(PaymentMethodEnum.CARD));
         orderService.requestBill(activeOrder);
@@ -211,13 +211,5 @@ class OrderServiceImplTest {
         order.setRestaurant(restaurantService.findById(restaurantId).orElseThrow());
         order.setRestaurantTable(restaurantTableService.findById(tableId).orElseThrow());
         return order;
-    }
-
-    private String assertEqualsMessage(String expectedOutput, String input) {
-        return "Result expected was " + expectedOutput + " but got " + input;
-    }
-
-    private String assertEqualsMessage(int expectedOutput, int input) {
-        return "Result expected was " + expectedOutput + " but got " + input;
     }
 }

@@ -41,7 +41,7 @@ class CategoryControllerTest {
                 createCategory("Wegetariańskie", "Odkryj różnorodność wegetariańskich smaków."),
                 createCategory("Dla dzieci", "Zaspokój apetyt najmłodszych przyjemnymi dla podniebienia daniami."),
                 createCategory("Napoje", "Uzupełnij swoje doznania smakowe pysznymi napojami."));
-        assertEquals(categories.toString(), getCategories().toString(), assertEqualsMessage(categories.toString(), getCategories().toString()));
+        assertEquals(categories.toString(), getCategories().toString());
     }
 
     @Test
@@ -50,7 +50,7 @@ class CategoryControllerTest {
         Category newCategory = createCategory("Tajskie", "Ostre, orientalne posiłki prosto z dalekiego kraju");
         categoryService.save(newCategory);
         Category category = categoryService.findById(newCategory.getId()).orElse(new Category());
-        assertEquals(newCategory.getId(), category.getId(), assertEqualsMessage(newCategory.getId(), category.getId()));
+        assertEquals(newCategory.getId(), category.getId());
     }
 
     @Test
@@ -83,7 +83,7 @@ class CategoryControllerTest {
         existingCategory.setName("Testowe jedzenie");
         categoryService.save(existingCategory);
         Category updatedCategory = categoryService.findById(9).orElse(new Category());
-        assertEquals("Testowe jedzenie", updatedCategory.getName(), assertEqualsMessage("Testowe jedzenie", updatedCategory.getName()));
+        assertEquals("Testowe jedzenie", updatedCategory.getName());
     }
 
     @Test
@@ -110,13 +110,5 @@ class CategoryControllerTest {
         category.setName(name);
         category.setDescription(description);
         return category;
-    }
-
-    private String assertEqualsMessage(String expectedOutput, String input) {
-        return "Result expected was " + expectedOutput + " but got " + input;
-    }
-
-    private String assertEqualsMessage(int expectedOutput, int input) {
-        return "Result expected was " + expectedOutput + " but got " + input;
     }
 }
