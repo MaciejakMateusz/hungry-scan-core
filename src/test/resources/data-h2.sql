@@ -79,6 +79,7 @@ INSERT INTO ordered_items (quantity, menu_item_id) VALUES (2, 3);
 INSERT INTO ordered_items (quantity, menu_item_id) VALUES (2, 3);
 INSERT INTO ordered_items (quantity, menu_item_id) VALUES (3, 2);
 INSERT INTO ordered_items (quantity, menu_item_id) VALUES (2, 3);
+INSERT INTO ordered_items (quantity, menu_item_id) VALUES (4, 5);
 
 INSERT INTO orders (bill_requested,
                     take_away,
