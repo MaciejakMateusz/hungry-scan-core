@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
@@ -83,7 +84,7 @@ public class OrderRestController {
     }
 
     @PostMapping
-    public void saveOrder(@RequestBody Order order) {
+    public void saveOrder(@RequestBody Order order) throws LocalizedException {
         if (order.isForTakeAway()) {
             orderService.saveTakeAway(order);
             return;
@@ -92,12 +93,12 @@ public class OrderRestController {
     }
 
     @PatchMapping("/request-bill")
-    public void requestBill(@RequestBody Order order) {
+    public void requestBill(@RequestBody Order order) throws LocalizedException {
         orderService.requestBill(order);
     }
 
     @PatchMapping("/call-waiter")
-    public void callWaiter(@RequestBody Order order) {
+    public void callWaiter(@RequestBody Order order) throws LocalizedException {
         orderService.callWaiter(order);
     }
 
