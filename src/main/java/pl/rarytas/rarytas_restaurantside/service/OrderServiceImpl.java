@@ -109,12 +109,12 @@ public class OrderServiceImpl implements OrderService {
         if(existingOrder.isWaiterCalled()) {
             throw new LocalizedException(String.format(messageSource.getMessage(
                     "error.orderService.general.waiterCalled",
-                    null, LocaleContextHolder.getLocale()), order.getId()));
+                    null, LocaleContextHolder.getLocale()), existingOrder.getId()));
         }
         existingOrder.setBillRequested(true);
         existingOrder.setPaymentMethod(order.getPaymentMethod());
         orderRepository.saveAndFlush(existingOrder);
-        if (!order.isForTakeAway()) {
+        if (!existingOrder.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
         }
     }
