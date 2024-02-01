@@ -35,7 +35,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     private void setImageFile(MenuItem menuItem, MultipartFile file) throws IOException {
-        if(Objects.isNull(file)) {
+        if (Objects.isNull(file)) {
             menuItem.setImage(null);
             return;
         }

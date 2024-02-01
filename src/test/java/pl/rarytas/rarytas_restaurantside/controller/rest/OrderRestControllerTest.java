@@ -122,7 +122,7 @@ class OrderRestControllerTest {
 
     @Test
     public void shouldGetByIdFromDB() {
-        Order order = orderService.findById(4).orElse(new Order());
+        Order order = (Order) orderService.findById(4).orElseThrow();
         //only order with ID 4 has total amount = 73.50
         assertEquals("73.50", order.getTotalAmount().setScale(2, RoundingMode.HALF_UP).toString());
     }

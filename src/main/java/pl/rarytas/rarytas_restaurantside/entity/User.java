@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import pl.rarytas.rarytas_restaurantside.annotation.*;
+import pl.rarytas.rarytas_restaurantside.annotation.Email;
+import pl.rarytas.rarytas_restaurantside.annotation.Password;
+import pl.rarytas.rarytas_restaurantside.annotation.Username;
 
 import java.time.LocalDateTime;
 import java.util.Set;

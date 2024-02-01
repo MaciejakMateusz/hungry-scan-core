@@ -39,7 +39,7 @@ class DataTransferServiceImplTest {
     @Test
     @Transactional
     void shouldArchiveOrder() {
-        Order existingOrder = orderService.findById(4).orElse(new Order());
+        Order existingOrder = (Order) orderService.findById(4).orElseThrow();
         dataTransferService.archiveOrder(existingOrder);
         HistoryOrder historyOrder = historyOrderService.findById(4L).orElse(new HistoryOrder());
         assertEquals("card", historyOrder.getPaymentMethod());

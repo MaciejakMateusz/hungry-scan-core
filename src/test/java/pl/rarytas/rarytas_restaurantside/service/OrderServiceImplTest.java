@@ -13,6 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
+import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
@@ -88,7 +89,7 @@ class OrderServiceImplTest {
 
     @Test
     void shouldFindById() {
-        Order order = orderService.findById(2).orElse(new Order());
+        Order order = (Order) orderService.findById(2).orElseThrow();
         int orderNumber = order.getOrderNumber();
         assertEquals(322, orderNumber);
     }
@@ -101,8 +102,8 @@ class OrderServiceImplTest {
     @Test
     @Transactional
     void shouldSave() throws LocalizedException {
-        Order order = orderService.findById(7).orElse(new Order());
-        assertNull(order.getOrderNumber(), "Value should be null, but was " + order.getOrderNumber());
+        Order order = (Order) orderService.findById(7).orElse(null);
+        assertNull(order);
 
         order = createOrder(
                 2,
@@ -110,7 +111,7 @@ class OrderServiceImplTest {
 
         orderService.save(order);
 
-        Order foundOrder = orderService.findById(7).orElse(new Order());
+        Order foundOrder = (Order) orderService.findById(7).orElseThrow();
         assertEquals(7, foundOrder.getRestaurantTable().getId());
     }
 
@@ -127,14 +128,14 @@ class OrderServiceImplTest {
     @Test
     @Transactional
     void shouldRequestBill() throws LocalizedException {
-        Order activeOrder = orderService.findById(1).orElse(new Order());
+        Order activeOrder = (Order) orderService.findById(1).orElseThrow();
         Integer tableNumber = activeOrder.getRestaurantTable().getId();
         assertEquals(1, tableNumber);
 
         activeOrder.setPaymentMethod(String.valueOf(PaymentMethodEnum.CARD));
         orderService.requestBill(activeOrder);
 
-        activeOrder = orderService.findById(1).orElse(new Order());
+        activeOrder = (Order) orderService.findById(1).orElseThrow();
         assertTrue(activeOrder.isBillRequested(), "The value should be true, but was false");
     }
 
@@ -154,11 +155,11 @@ class OrderServiceImplTest {
     @Test
     @Transactional
     void shouldFinishAndArchive() throws LocalizedException {
-        Order existingOrder = orderService.findById(2).orElse(new Order());
+        Order existingOrder = (Order) orderService.findById(2).orElseThrow();
         assertTrue(existingOrder.isBillRequested());
 
         orderService.finish(2, true, true);
-        assertThrows(NoSuchElementException.class, () -> orderService.findById(2).orElseThrow());
+        assertEquals(HistoryOrder.class, orderService.findById(2).orElseThrow().getClass());
     }
 
     @Test
@@ -169,7 +170,7 @@ class OrderServiceImplTest {
     @Test
     @org.junit.jupiter.api.Order(1)
     void shouldCallWaiter() throws LocalizedException {
-        Order existingOrder = orderService.findById(1).orElse(new Order());
+        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
         assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime());
 
         orderService.callWaiter(existingOrder);
@@ -181,7 +182,7 @@ class OrderServiceImplTest {
     @org.junit.jupiter.api.Order(2)
     void shouldResolveWaiterCall() throws LocalizedException {
         orderService.resolveWaiterCall(1);
-        Order existingOrder = orderService.findById(1).orElse(new Order());
+        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
 
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
         waiterCalls.forEach(waiterCall -> assertTrue(waiterCall.isResolved()));
@@ -190,7 +191,7 @@ class OrderServiceImplTest {
     @Test
     @Transactional
     void shouldDelete() {
-        Order existingOrder = orderService.findById(1).orElseThrow();
+        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
         assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime());
         orderService.delete(existingOrder);
         assertThrows(NoSuchElementException.class, () -> orderService.findById(1).orElseThrow());

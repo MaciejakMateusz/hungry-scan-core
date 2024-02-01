@@ -1,6 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.controller.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -39,17 +42,16 @@ public class OrderRestController {
     }
 
     @PostMapping("/finalized")
-    public List<HistoryOrder> getFinalizedOrders(@RequestBody Map<String, Object> requestBody) {
-        boolean forTakeAway = (boolean) requestBody.get("forTakeAway");
-        int limit = (int) requestBody.get("limit");
-        int offset = (int) requestBody.get("offset");
-
-        return historyOrderService.findAllFinalized(forTakeAway, limit, offset);
+    public Page<HistoryOrder> getFinalizedOrders(@RequestBody Map<String, Object> requestBody) {
+        boolean isForTakeAway = (boolean) requestBody.get("forTakeAway");
+        int pageNumber = (int) requestBody.get("limit");
+        int pageSize = (int) requestBody.get("offset");
+        return historyOrderService.findAllFinalized(isForTakeAway, PageRequest.of(pageNumber, pageSize));
     }
 
     @GetMapping("/finalized/id/{id}/{forTakeAway}")
     public HistoryOrder getFinalizedById(@PathVariable Long id,
-                                  @PathVariable boolean forTakeAway) {
+                                         @PathVariable boolean forTakeAway) {
         if (historyOrderService.existsByIdAndForTakeAwayAndResolved(id, forTakeAway)) {
             return historyOrderService.findFinalizedById(id, forTakeAway).orElseThrow();
         } else {
@@ -59,7 +61,7 @@ public class OrderRestController {
 
     @GetMapping("/finalized/date/{date}/{forTakeAway}")
     public List<HistoryOrder> getFinalizedByDate(@PathVariable String date,
-                                          @PathVariable boolean forTakeAway) {
+                                                 @PathVariable boolean forTakeAway) {
         return historyOrderService.findFinalizedByDate(date, forTakeAway);
     }
 
@@ -79,8 +81,9 @@ public class OrderRestController {
     }
 
     @GetMapping("/id/{id}")
-    public Order getById(@PathVariable Integer id) {
-        return orderService.findById(id).orElseThrow();
+    public ResponseEntity<?> getById(@PathVariable Integer id) {
+        Optional<?> result = orderService.findById(id);
+        return result.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
