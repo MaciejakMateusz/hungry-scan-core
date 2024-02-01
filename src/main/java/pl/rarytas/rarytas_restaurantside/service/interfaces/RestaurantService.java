@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface RestaurantService {
     List<Restaurant> findAll();
+
     Optional<Restaurant> findById(Integer id);
 }

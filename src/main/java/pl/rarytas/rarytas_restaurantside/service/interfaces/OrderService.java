@@ -17,7 +17,7 @@ public interface OrderService {
 
     Optional<Order> findByTableNumber(Integer number);
 
-    Optional<Order> findById(Integer id);
+    Optional<?> findById(Integer id);
 
     void save(Order order) throws LocalizedException;
 

@@ -16,6 +16,7 @@ import java.util.List;
 public class RestaurantRestController {
 
     private final RestaurantService restaurantService;
+
     public RestaurantRestController(RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
     }

@@ -10,6 +10,7 @@ import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
+import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryOrderRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 import java.math.BigDecimal;
@@ -24,16 +25,18 @@ public class OrderServiceImpl implements OrderService {
     private final SimpMessagingTemplate messagingTemplate;
     private final DataTransferServiceImpl dataTransferServiceImpl;
     private final MessageSource messageSource;
+    private final HistoryOrderRepository historyOrderRepository;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             WaiterCallServiceImpl waiterCallServiceImpl,
                             SimpMessagingTemplate messagingTemplate,
-                            DataTransferServiceImpl dataTransferServiceImpl, MessageSource messageSource) {
+                            DataTransferServiceImpl dataTransferServiceImpl, MessageSource messageSource, HistoryOrderRepository historyOrderRepository) {
         this.orderRepository = orderRepository;
         this.waiterCallServiceImpl = waiterCallServiceImpl;
         this.messagingTemplate = messagingTemplate;
         this.dataTransferServiceImpl = dataTransferServiceImpl;
         this.messageSource = messageSource;
+        this.historyOrderRepository = historyOrderRepository;
     }
 
     @Override
@@ -62,8 +65,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<Order> findById(Integer id) {
-        return orderRepository.findById(id);
+    public Optional<?> findById(Integer id) {
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isPresent()) {
+            return order;
+        } else {
+            return historyOrderRepository.findById(Long.valueOf(id));
+        }
     }
 
     @Override
@@ -100,13 +108,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void requestBill(Order order) throws LocalizedException {
-        if(!orderRepository.existsById(order.getId())) {
+        if (!orderRepository.existsById(order.getId())) {
             throw new LocalizedException(String.format(messageSource.getMessage(
                     "error.orderService.general.orderNotfound",
                     null, LocaleContextHolder.getLocale()), order.getId()));
         }
         Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
-        if(existingOrder.isWaiterCalled()) {
+        if (existingOrder.isWaiterCalled()) {
             throw new LocalizedException(String.format(messageSource.getMessage(
                     "error.orderService.general.waiterCalled",
                     null, LocaleContextHolder.getLocale()), existingOrder.getId()));
@@ -121,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void finish(Integer id, boolean paid, boolean isResolved) throws LocalizedException {
-        if(!orderRepository.existsById(id)) {
+        if (!orderRepository.existsById(id)) {
             throw new LocalizedException(String.format(messageSource.getMessage(
                     "error.orderService.general.orderNotfound",
                     null, LocaleContextHolder.getLocale()), id));
@@ -131,7 +139,7 @@ public class OrderServiceImpl implements OrderService {
                 .findById(id)
                 .orElseThrow();
 
-        if(existingOrder.isWaiterCalled()) {
+        if (existingOrder.isWaiterCalled()) {
             throw new LocalizedException(String.format(messageSource.getMessage(
                     "error.orderService.general.waiterCalled",
                     null, LocaleContextHolder.getLocale()), id));
@@ -161,14 +169,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void callWaiter(Order order) throws LocalizedException {
-        if(!orderRepository.existsById(order.getId())) {
+        if (!orderRepository.existsById(order.getId())) {
             throw new LocalizedException(String.format(messageSource.getMessage(
                     "error.orderService.general.orderNotfound",
                     null, LocaleContextHolder.getLocale()), order.getId()));
         }
 
         Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
-        if(existingOrder.isBillRequested()) {
+        if (existingOrder.isBillRequested()) {
             throw new LocalizedException(String.format(messageSource.getMessage(
                     "error.orderService.general.billRequested",
                     null, LocaleContextHolder.getLocale()), order.getId()));
