@@ -9,6 +9,7 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -34,6 +35,10 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     private void setImageFile(MenuItem menuItem, MultipartFile file) throws IOException {
+        if(Objects.isNull(file)) {
+            menuItem.setImage(null);
+            return;
+        }
         if (file.isEmpty()) {
             MenuItem existingItem = menuItemRepository.findById(menuItem.getId()).orElseThrow();
             menuItem.setImage(existingItem.getImage());

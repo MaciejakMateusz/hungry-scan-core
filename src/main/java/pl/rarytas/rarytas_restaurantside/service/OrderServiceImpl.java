@@ -1,11 +1,14 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
@@ -20,15 +23,17 @@ public class OrderServiceImpl implements OrderService {
     private final WaiterCallServiceImpl waiterCallServiceImpl;
     private final SimpMessagingTemplate messagingTemplate;
     private final DataTransferServiceImpl dataTransferServiceImpl;
+    private final MessageSource messageSource;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             WaiterCallServiceImpl waiterCallServiceImpl,
                             SimpMessagingTemplate messagingTemplate,
-                            DataTransferServiceImpl dataTransferServiceImpl) {
+                            DataTransferServiceImpl dataTransferServiceImpl, MessageSource messageSource) {
         this.orderRepository = orderRepository;
         this.waiterCallServiceImpl = waiterCallServiceImpl;
         this.messagingTemplate = messagingTemplate;
         this.dataTransferServiceImpl = dataTransferServiceImpl;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -62,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void save(Order order) {
+    public void save(Order order) throws LocalizedException {
         if (orderExistsForGivenTable(order)) {
             return;
         }
@@ -73,14 +78,14 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private boolean orderExistsForGivenTable(Order order) {
+    private boolean orderExistsForGivenTable(Order order) throws LocalizedException {
         if (orderRepository.existsByRestaurantTable(order.getRestaurantTable())) {
-            Order existingOrder = orderRepository
-                    .findNewestOrderByTableNumber(order.getRestaurantTable().getId())
-                    .orElseThrow();
+            Integer tableNumber = order.getRestaurantTable().getId();
+            Order existingOrder = orderRepository.findNewestOrderByTableNumber(tableNumber).orElseThrow();
             if (!existingOrder.isResolved()) {
-                log.warn("Order with given table number already exists");
-                return true;
+                throw new LocalizedException(String.format(messageSource.getMessage(
+                        "error.orderService.general.orderExistsForTable",
+                        null, LocaleContextHolder.getLocale()), order.getId()));
             }
         }
         return false;
@@ -94,29 +99,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void requestBill(Order order) {
+    public void requestBill(Order order) throws LocalizedException {
         if(!orderRepository.existsById(order.getId())) {
-            log.warn("Order with ID = " + order.getId() + " doesn't exist.");
-            return;
+            throw new LocalizedException(String.format(messageSource.getMessage(
+                    "error.orderService.general.orderNotfound",
+                    null, LocaleContextHolder.getLocale()), order.getId()));
         }
         Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
         if(existingOrder.isWaiterCalled()) {
-            log.warn("Order with ID = " + existingOrder.getId() + " has active waiter call - bill can't be requested");
-            return;
+            throw new LocalizedException(String.format(messageSource.getMessage(
+                    "error.orderService.general.waiterCalled",
+                    null, LocaleContextHolder.getLocale()), existingOrder.getId()));
         }
         existingOrder.setBillRequested(true);
         existingOrder.setPaymentMethod(order.getPaymentMethod());
         orderRepository.saveAndFlush(existingOrder);
-        if (!order.isForTakeAway()) {
+        if (!existingOrder.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
         }
     }
 
     @Override
-    public void finish(Integer id, boolean paid, boolean isResolved) {
+    public void finish(Integer id, boolean paid, boolean isResolved) throws LocalizedException {
         if(!orderRepository.existsById(id)) {
-            log.warn("Order with ID = " + id + " doesn't exist.");
-            return;
+            throw new LocalizedException(String.format(messageSource.getMessage(
+                    "error.orderService.general.orderNotfound",
+                    null, LocaleContextHolder.getLocale()), id));
         }
 
         Order existingOrder = orderRepository
@@ -124,8 +132,9 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow();
 
         if(existingOrder.isWaiterCalled()) {
-            log.warn("Order with ID = " + id + " has active waiter call - it can't be finalized");
-            return;
+            throw new LocalizedException(String.format(messageSource.getMessage(
+                    "error.orderService.general.waiterCalled",
+                    null, LocaleContextHolder.getLocale()), id));
         }
 
         existingOrder.setPaid(paid);
@@ -145,25 +154,28 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void finishTakeAway(Integer id,
                                boolean paid,
-                               boolean isResolved) {
+                               boolean isResolved) throws LocalizedException {
         finish(id, paid, isResolved);
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
     @Override
-    public void callWaiter(Order order) {
+    public void callWaiter(Order order) throws LocalizedException {
         if(!orderRepository.existsById(order.getId())) {
-            log.warn("Order with ID = " + order.getId() + " doesn't exist.");
-            return;
+            throw new LocalizedException(String.format(messageSource.getMessage(
+                    "error.orderService.general.orderNotfound",
+                    null, LocaleContextHolder.getLocale()), order.getId()));
         }
 
         Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
         if(existingOrder.isBillRequested()) {
-            log.warn("Order with ID = " + existingOrder.getId() + " has requested a bill and waiter can't be called.");
-            return;
+            throw new LocalizedException(String.format(messageSource.getMessage(
+                    "error.orderService.general.billRequested",
+                    null, LocaleContextHolder.getLocale()), order.getId()));
         } else if (existingOrder.isWaiterCalled()) {
-            log.warn("Order with ID = " + existingOrder.getId() + " has already called a waiter.");
-            return;
+            throw new LocalizedException(String.format(messageSource.getMessage(
+                    "error.orderService.general.waiterCalled",
+                    null, LocaleContextHolder.getLocale()), order.getId()));
         }
         existingOrder.setWaiterCalled(true);
         WaiterCall waiterCall = new WaiterCall();
@@ -174,12 +186,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void resolveWaiterCall(Integer id) {
-        Order order = new Order();
-        if (orderRepository.existsById(id)) {
-            order = orderRepository.findById(id).orElseThrow();
-            order.setWaiterCalled(false);
+    public void resolveWaiterCall(Integer id) throws LocalizedException {
+        if (!orderRepository.existsById(id)) {
+            throw new LocalizedException(String.format(messageSource.getMessage(
+                    "error.orderService.general.orderNotfound",
+                    null, LocaleContextHolder.getLocale()), id));
         }
+        Order order = orderRepository.findById(id).orElseThrow();
+        order.setWaiterCalled(false);
         WaiterCall waiterCall = waiterCallServiceImpl.findByOrderAndResolved(order, false).orElseThrow();
         waiterCall.setOrder(order);
         waiterCall.setResolved(true);

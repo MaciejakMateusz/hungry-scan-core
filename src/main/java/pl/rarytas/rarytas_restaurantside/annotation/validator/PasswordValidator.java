@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class PasswordValidator implements ConstraintValidator<Password, String> {
 
     private static final Pattern PASSWORD_REGEX =
-            Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{5,60}$");
+            Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s])(?!.*\\s).{5,60}$");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {

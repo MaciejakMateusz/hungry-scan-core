@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 @Controller
@@ -35,7 +36,7 @@ public class OrdersController {
     @PostMapping("/finalize-dineIn")
     public String finalizeDineInOrder(@RequestParam Integer id,
                                       @RequestParam boolean paid,
-                                      @RequestParam boolean isResolved) {
+                                      @RequestParam boolean isResolved) throws LocalizedException {
         orderService.finish(id, paid, isResolved);
         return "redirect:/restaurant";
     }
@@ -43,13 +44,13 @@ public class OrdersController {
     @PostMapping("/finalize-takeAway")
     public String finalizeTakeAwayOrder(@RequestParam Integer id,
                                         @RequestParam boolean paid,
-                                        @RequestParam boolean isResolved) {
+                                        @RequestParam boolean isResolved) throws LocalizedException {
         orderService.finishTakeAway(id, paid, isResolved);
         return "redirect:/restaurant/orders/take-away";
     }
 
     @PostMapping("/resolve-call")
-    public String resolveWaiterCall(@RequestParam Integer id) {
+    public String resolveWaiterCall(@RequestParam Integer id) throws LocalizedException {
         orderService.resolveWaiterCall(id);
         return "redirect:/restaurant";
     }

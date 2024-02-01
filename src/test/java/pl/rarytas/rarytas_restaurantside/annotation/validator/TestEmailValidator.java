@@ -1,9 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.annotation.validator;
 
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,20 +19,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestEmailValidator {
 
     private static final Pattern EMAIL_REGEX =
             Pattern.compile("^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.([a-zA-Z]{2,})$");
 
     @Test
-    public void shouldApproveEmail() {
-        Matcher matcher = EMAIL_REGEX.matcher("example@example.com");
+    public void shouldApprove() {
+        String email = "example@example.com";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
         assertTrue(matcher.matches());
     }
 
     @Test
-    public void shouldNotApproveEmail() {
+    public void shouldNotApprove() {
 
         String email1 = "example@example.";
         String email2 = "example@example";
@@ -51,6 +49,41 @@ public class TestEmailValidator {
         matcher = EMAIL_REGEX.matcher(email4);
         assertFalse(matcher.matches());
         matcher = EMAIL_REGEX.matcher(email5);
+        assertFalse(matcher.matches());
+    }
+
+    @Test
+    public void shouldNotApproveEmpty() {
+        String email = "";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertFalse(matcher.matches());
+    }
+
+    @Test
+    public void shouldApproveLocalSingleCharacter() {
+        String email = "a@example.com";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertTrue(matcher.matches());
+    }
+
+    @Test
+    public void shouldNotApproveDomainSingleCharacters() {
+        String email = "example@a.c";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertFalse(matcher.matches());
+    }
+
+    @Test
+    public void shouldNotApproveSpaceCharacterInLocal() {
+        String email = "example @example.com";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
+        assertFalse(matcher.matches());
+    }
+
+    @Test
+    public void shouldNotApproveSpaceCharacterInDomain() {
+        String email = "example@ex ample.com";
+        Matcher matcher = EMAIL_REGEX.matcher(email);
         assertFalse(matcher.matches());
     }
 }
