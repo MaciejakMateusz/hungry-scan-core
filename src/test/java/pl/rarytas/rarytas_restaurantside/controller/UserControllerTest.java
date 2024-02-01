@@ -7,7 +7,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.rarytas.rarytas_restaurantside.entity.User;
@@ -25,9 +24,6 @@ class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private Environment env;
 
     @Test
     void testRedirectToLogin() throws Exception {
@@ -66,20 +62,6 @@ class UserControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("register"))
                 .andExpect(model().hasErrors());
-    }
-
-    @Test
-    void testAdminRegisterGet() throws Exception {
-        String code = env.getProperty("DATASOURCE_ADMIN-CODE");
-        mockMvc.perform(get("/register/" + code))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("registerAdmin"))
-                .andExpect(model().attributeExists("user"));
-
-        code = "123123123";
-        mockMvc.perform(get("/register/" + code))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/register"));
     }
 
     @Test

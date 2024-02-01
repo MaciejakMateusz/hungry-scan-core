@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TestCategoryRestController {
+class CategoryRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,16 +43,14 @@ class TestCategoryRestController {
     @Test
     @Order(1)
     public void shouldGetSpecificJsonFormat() throws Exception {
-        String expectedCategoryJson = "{\"id\":1,\"name\":\"Przystawki\","
-                + "\"description\":\"Rozpocznij swoją kulinarną podróż od pysznych przystawek, "
-                + "które skradną Twoje podniebienie. Wybierz spośród aromatycznych krewetek marynowanych w cytrynie, "
-                + "wyrafinowanego carpaccio z polędwicy wołowej lub chrupiących nachos z soczystym sosem serowym.\","
-                + "\"menuItems\":[{\"id\":1,\"name\":\"Krewetki marynowane w cytrynie\",\"description\":\"Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.\",\"ingredients\":\"Krewetki, cytryna, oliwa z oliwek, czosnek, przyprawy\",\"price\":19.99,\"created\":\"2023-08-02 04:05:13\",\"updated\":null,\"base64Image\":\"empty\",\"available\":true},"
-                + "{\"id\":2,\"name\":\"Carpaccio z polędwicy wołowej\",\"description\":\"Cienko pokrojona polędwica wołowa podana z rukolą, parmezanem i kaparami.\",\"ingredients\":\"Polędwica wołowa, rukola, parmezan, kapary, oliwa z oliwek\",\"price\":24.50,\"created\":\"2023-08-02 04:06:03\",\"updated\":null,\"base64Image\":\"empty\",\"available\":true},"
-                + "{\"id\":3,\"name\":\"Krewetki w tempurze\",\"description\":\"Delikatne krewetki w cieście tempura, podawane z sosem słodko-kwaśnym\",\"ingredients\":\"Krewetki, mąka, jajko, olej roślinny, sos słodko-kwaśny\",\"price\":22.00,\"created\":\"2023-08-02 04:06:24\",\"updated\":null,\"base64Image\":\"empty\",\"available\":true},"
-                + "{\"id\":4,\"name\":\"Roladki z bakłażana z feta i suszonymi pomidorami\",\"description\":\"Bakłażany zawijane w roladki z feta i suszonymi pomidorami, pieczone w piecu.\",\"ingredients\":\"Bakłażan, ser feta, suszone pomidory, oliwa z oliwek\",\"price\":18.75,\"created\":\"2023-08-02 04:06:47\",\"updated\":null,\"base64Image\":\"empty\",\"available\":true},"
-                + "{\"id\":5,\"name\":\"Nachos z sosem serowym\",\"description\":\"Chrupiące nachos z sosem serowym, podane z guacamole i pikantnym sosem salsa.\",\"ingredients\":\"Nachos, ser, śmietana, awokado, pomidory, cebula, papryczki chili\",\"price\":16.99,\"created\":\"2023-08-02 04:07:09\",\"updated\":null,\"base64Image\":\"empty\",\"available\":true}],\"created\":null,\"updated\":null}";
-
+        String expectedCategoryJson =
+                "{\"id\":1,\"name\":\"Przystawki\",\"description\":\"Rozpocznij swoją kulinarną podróż od pysznych przystawek, które skradną Twoje podniebienie. Wybierz spośród aromatycznych krewetek marynowanych w cytrynie, wyrafinowanego carpaccio z polędwicy wołowej lub chrupiących nachos z soczystym sosem serowym.\"," +
+                "\"menuItems\":[" +
+                        "{\"id\":1,\"name\":\"Krewetki marynowane w cytrynie\",\"description\":\"Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.\",\"ingredients\":\"Krewetki, cytryna, oliwa z oliwek, czosnek, przyprawy\",\"price\":19.99,\"created\":null,\"updated\":null,\"base64Image\":\"empty\",\"available\":true}," +
+                        "{\"id\":2,\"name\":\"Carpaccio z polędwicy wołowej\",\"description\":\"Cienko pokrojona polędwica wołowa podana z rukolą, parmezanem i kaparami.\",\"ingredients\":\"Polędwica wołowa, rukola, parmezan, kapary, oliwa z oliwek\",\"price\":24.50,\"created\":null,\"updated\":null,\"base64Image\":\"empty\",\"available\":true}," +
+                        "{\"id\":3,\"name\":\"Krewetki w tempurze\",\"description\":\"Delikatne krewetki w cieście tempura, podawane z sosem słodko-kwaśnym\",\"ingredients\":\"Krewetki, mąka, jajko, olej roślinny, sos słodko-kwaśny\",\"price\":22.00,\"created\":null,\"updated\":null,\"base64Image\":\"empty\",\"available\":true}," +
+                        "{\"id\":4,\"name\":\"Roladki z bakłażana z feta i suszonymi pomidorami\",\"description\":\"Bakłażany zawijane w roladki z feta i suszonymi pomidorami, pieczone w piecu.\",\"ingredients\":\"Bakłażan, ser feta, suszone pomidory, oliwa z oliwek\",\"price\":18.75,\"created\":null,\"updated\":null,\"base64Image\":\"empty\",\"available\":true}," +
+                        "{\"id\":5,\"name\":\"Nachos z sosem serowym\",\"description\":\"Chrupiące nachos z sosem serowym, podane z guacamole i pikantnym sosem salsa.\",\"ingredients\":\"Nachos, ser, śmietana, awokado, pomidory, cebula, papryczki chili\",\"price\":16.99,\"created\":null,\"updated\":null,\"base64Image\":\"empty\",\"available\":true}],\"created\":null,\"updated\":null}";
         mockMvc.perform(get("/api/categories/1")).andDo(print()).andExpect(content().json(expectedCategoryJson));
     }
 

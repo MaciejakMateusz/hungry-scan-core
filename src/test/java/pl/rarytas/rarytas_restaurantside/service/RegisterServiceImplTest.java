@@ -64,8 +64,8 @@ class RegisterServiceImplTest {
 
     private User createCorrectUser() {
         User user = new User();
-        user.setEmail("example@example.com");
-        user.setUsername("exampleUser");
+        user.setEmail("example2@example.com");
+        user.setUsername("exampleUser2");
         user.setPassword("Example123!");
         user.setRepeatedPassword("Example123!");
         return user;
@@ -73,8 +73,8 @@ class RegisterServiceImplTest {
 
     private User createCorrectAdmin() {
         User user = new User();
-        user.setEmail("admin@admino.com");
-        user.setUsername("exampleAdmin");
+        user.setEmail("admin2@admino.com");
+        user.setUsername("exampleAdmin2");
         user.setPassword("Example123!");
         user.setRepeatedPassword("Example123!");
         return user;

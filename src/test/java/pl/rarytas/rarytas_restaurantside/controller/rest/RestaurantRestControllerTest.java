@@ -12,8 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
+import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 
 import java.util.List;
 
@@ -27,38 +27,37 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TestRestaurantTableRestController {
-
+public class RestaurantRestControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private RestaurantTableService restaurantTableService;
+    private RestaurantService restaurantService;
 
     @Test
     public void shouldGetAllFromDB() {
-        List<RestaurantTable> tables = restaurantTableService.findAll();
-        assertEquals(19, tables.size());
+        List<Restaurant> restaurants = restaurantService.findAll();
+        assertEquals(2, restaurants.size());
     }
 
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/restaurantTables")).andReturn();
-        String actualTableJson = result.getResponse().getContentAsString();
-        assertEquals("[{\"id\":1,\"customerName\":null},{\"id\":2,\"customerName\":null},{\"id\":3,\"customerName\":null},{\"id\":4,\"customerName\":null},{\"id\":5,\"customerName\":null},{\"id\":6,\"customerName\":null},{\"id\":7,\"customerName\":null},{\"id\":8,\"customerName\":null},{\"id\":9,\"customerName\":null},{\"id\":10,\"customerName\":null},{\"id\":11,\"customerName\":null},{\"id\":12,\"customerName\":null},{\"id\":13,\"customerName\":null},{\"id\":14,\"customerName\":null},{\"id\":15,\"customerName\":null},{\"id\":16,\"customerName\":null},{\"id\":17,\"customerName\":null},{\"id\":18,\"customerName\":null},{\"id\":19,\"customerName\":null}]",
-                actualTableJson);
+        MvcResult result = mockMvc.perform(get("/api/restaurants")).andReturn();
+        String actualRestaurantJson = result.getResponse().getContentAsString();
+        assertEquals("[{\"id\":1,\"name\":\"Rarytas\",\"address\":\"ul. GÅ\u0082Ã³wna 123, Miastowo, WojewÃ³dztwo, 54321\"},{\"id\":2,\"name\":\"Wykwintna Bistro\",\"address\":\"ul. DÄ\u0099bowa 456, Miasteczko, Wiejskie, 98765\"}]",
+                actualRestaurantJson);
     }
 
     @Test
     public void shouldGetByIdFromDB() {
-        RestaurantTable table = restaurantTableService.findById(5).orElse(new RestaurantTable());
-        assertEquals(5, table.getId());
+        Restaurant restaurant = restaurantService.findById(1).orElse(new Restaurant());
+        assertEquals("Rarytas", restaurant.getName());
     }
 
     @Test
     public void shouldGetByIdFromEndpoint() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/restaurantTables/5")).andReturn();
-        String actualTableJson = result.getResponse().getContentAsString();
-        assertTrue(actualTableJson.contains("\"id\":5"));
+        MvcResult result = mockMvc.perform(get("/api/restaurants/2")).andReturn();
+        String actualRestaurantJson = result.getResponse().getContentAsString();
+        assertTrue(actualRestaurantJson.contains("\"name\":\"Wykwintna Bistro\""));
     }
 }
