@@ -9,4 +9,8 @@ public interface RestaurantService {
     List<Restaurant> findAll();
 
     Optional<Restaurant> findById(Integer id);
+
+    void save(Restaurant restaurant);
+
+    void delete(Restaurant restaurant);
 }

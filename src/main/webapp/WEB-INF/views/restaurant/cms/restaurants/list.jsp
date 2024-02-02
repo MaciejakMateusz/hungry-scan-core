@@ -28,10 +28,10 @@
                 <div class="main-button" id="menu-items-management">
                     <span class="black-bold">Zarządzanie daniami</span>
                 </div>
-                <div class="main-button selected-button" id="categories-management">
+                <div class="main-button" id="categories-management">
                     <span class="black-bold">Zarządzanie kategoriami</span>
                 </div>
-                <div class="main-button" id="restaurants-management">
+                <div class="main-button selected-button" id="restaurants-management">
                     <span class="black-bold">Zarządzanie restauracjami</span>
                 </div>
             </div>
@@ -40,29 +40,29 @@
         <div class="content cms-content">
             <div class="tables-box fit-content" id="tables-box">
                 <div class="container-menu">
-                    <c:forEach items="${categories}" var="category">
+                    <c:forEach items="${restaurants}" var="restaurant">
                         <div class="grid-container-category">
                             <div class="category">
-                                <span>${category.name}</span>
+                                <span>${restaurant.name}</span>
                             </div>
                             <div class="cms-menu-category">
                                 <div class="cms-category-description-area">
-                                    <span>${category.description}</span>
+                                    <span>${restaurant.address}</span>
                                 </div>
                                 <div class="cms-category-action-buttons-area">
                                     <div class="cat-action-buttons-pill">
-                                        <form action="${pageContext.request.contextPath}/restaurant/cms/categories/edit"
+                                        <form action="${pageContext.request.contextPath}/restaurant/cms/restaurants/edit"
                                               method="POST"
                                               class="reset-margin-block">
-                                            <input type="hidden" name="id" value="${category.id}"/>
+                                            <input type="hidden" name="id" value="${restaurant.id}"/>
                                             <button type="submit" class="button-reset-style">
                                                 <span class="edit-icon"></span>
                                             </button>
                                         </form>
-                                        <form action="${pageContext.request.contextPath}/restaurant/cms/categories/delete"
+                                        <form action="${pageContext.request.contextPath}/restaurant/cms/restaurants/delete"
                                               method="POST"
                                               class="reset-margin-block">
-                                            <input type="hidden" name="id" value="${category.id}"/>
+                                            <input type="hidden" name="id" value="${restaurant.id}"/>
                                             <button type="submit" class="button-reset-style">
                                                 <span class="trash-icon"></span>
                                             </button>
@@ -78,9 +78,9 @@
 
         <div class="bottom-buttons-area">
             <div class="add-item-area">
-                <div class="add-item-button" id="add-category-button">
+                <div class="add-item-button" id="add-restaurant-button">
                     <div class="add-item-icon"></div>
-                    <span>Nowa kategoria</span>
+                    <span>Nowa restauracja</span>
                 </div>
             </div>
             <div class="back-to-main-view-area">

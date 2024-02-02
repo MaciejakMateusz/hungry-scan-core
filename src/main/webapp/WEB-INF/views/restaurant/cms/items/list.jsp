@@ -31,6 +31,9 @@
                 <div class="main-button" id="categories-management">
                     <span class="black-bold">Zarządzanie kategoriami</span>
                 </div>
+                <div class="main-button" id="restaurants-management">
+                    <span class="black-bold">Zarządzanie restauracjami</span>
+                </div>
             </div>
         </div>
 

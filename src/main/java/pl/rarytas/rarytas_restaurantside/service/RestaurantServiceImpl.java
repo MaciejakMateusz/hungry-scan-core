@@ -25,4 +25,14 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Optional<Restaurant> findById(Integer id) {
         return restaurantRepository.findById(id);
     }
+
+    @Override
+    public void save(Restaurant restaurant) {
+        restaurantRepository.save(restaurant);
+    }
+
+    @Override
+    public void delete(Restaurant restaurant) {
+        restaurantRepository.delete(restaurant);
+    }
 }
