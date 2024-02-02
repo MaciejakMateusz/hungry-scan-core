@@ -78,9 +78,9 @@
 
         <div class="bottom-buttons-area">
             <div class="add-item-area">
-                <div class="add-item-button" id="add-category-button">
+                <div class="add-item-button" id="add-restaurant-button">
                     <div class="add-item-icon"></div>
-                    <span>Nowa kategoria</span>
+                    <span>Nowa restauracja</span>
                 </div>
             </div>
             <div class="back-to-main-view-area">

@@ -38,7 +38,7 @@ public class RestaurantController {
     public String addRestaurant(@Valid Restaurant restaurant,
                                 BindingResult br) {
         if (br.hasErrors()) {
-            return "restaurant/cms/items/add";
+            return "restaurant/cms/restaurants/add";
         }
         restaurantService.save(restaurant);
         return "redirect:/restaurant/cms/restaurants";
