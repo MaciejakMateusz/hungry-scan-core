@@ -14,6 +14,7 @@ const addItemButton = document.querySelector('#add-item-button');
 const backButton = document.querySelector('#back-button');
 const cmsItemsManagementButton = document.querySelector('#menu-items-management');
 const cmsCategoryManagementButton = document.querySelector('#categories-management');
+const cmsRestaurantManagementButton = document.querySelector('#restaurants-management');
 const addCategoryButton = document.querySelector('#add-category-button');
 const cancelItemFormButton = document.querySelector('#cancel-item-action-button');
 const cancelCategoryFormButton = document.querySelector('#cancel-category-action-button');
@@ -110,6 +111,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (cmsCategoryManagementButton !== null) {
         cmsCategoryManagementButton.addEventListener('click', function () {
             window.location.href = "http://localhost:8082/restaurant/cms/categories";
+        });
+    }
+
+    if (cmsRestaurantManagementButton !== null) {
+        cmsRestaurantManagementButton.addEventListener('click', function () {
+            window.location.href = "http://localhost:8082/restaurant/cms/restaurants";
         });
     }
 
