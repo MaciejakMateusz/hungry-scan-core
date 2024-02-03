@@ -56,8 +56,9 @@ public class SecurityConfig {
                                 mvcMatcherBuilder.pattern("/restaurant/menu"),
                                 mvcMatcherBuilder.pattern("/restaurant/bookings"),
                                 mvcMatcherBuilder.pattern("/restaurant/finalize-dineIn"),
-                                mvcMatcherBuilder.pattern("/restaurant/finalize-takeAway")).hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(mvcMatcherBuilder.pattern("/restaurant/cms/**")).hasRole("ADMIN")
+                                mvcMatcherBuilder.pattern("/restaurant/finalize-takeAway")).hasAnyRole("WAITER", "COOK", "MANAGER", "ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/restaurant/cms/**")).hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/admin/**")).hasRole("ADMIN")
                         .requestMatchers(mvcMatcherBuilder.pattern("/register/**"))
                         .access(new WebExpressionAuthorizationManager("isAnonymous()"))
                         .anyRequest().anonymous()
