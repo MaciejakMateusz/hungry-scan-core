@@ -26,14 +26,12 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Override
     public void saveUser(User user) {
-        user.setEnabled(1);
         user.setRoles(new HashSet<>(Collections.singletonList(roleRepository.findByName("ROLE_USER"))));
         userRepository.save(user);
     }
 
     @Override
     public void saveAdmin(User admin) {
-        admin.setEnabled(1);
         admin.setRoles(new HashSet<>(Arrays.asList(
                 roleRepository.findByName("ROLE_USER"),
                 roleRepository.findByName("ROLE_ADMIN"))));
