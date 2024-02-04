@@ -23,26 +23,44 @@
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center"
-           href="${pageContext.request.contextPath}/admin/dashboard">
-            <div class="sidebar-brand-text mx-3">Zalogowany jako <sec:authentication
-                    property="principal.username"/></div>
-        </a>
+        <li>
+            <a class="sidebar-brand d-flex align-items-center justify-content-center"
+               href="${pageContext.request.contextPath}/admin/users">
+                <div class="sidebar-brand-text mx-3">Panel administracji</div>
+            </a>
+        </li>
+
         <!-- Divider -->
         <!-- Nav Item - Dashboard -->
         <li class="nav-item active">
             <hr class="sidebar-divider my-0">
             <hr class="sidebar-divider">
             <a type="s" class="nav-link" href="${pageContext.request.contextPath}/admin/users">
-                <p style=" font-size: 1.2rem">Lista użytkowników</p>
+                <p class="side-panel-font">Wszyscy użytkownicy</p>
+            </a>
+            <hr class="sidebar-divider">
+            <a type="s" class="nav-link" href="${pageContext.request.contextPath}/admin/users/waiters">
+                <p class="side-panel-font">Kelnerzy</p>
+            </a>
+            <hr class="sidebar-divider">
+            <a type="s" class="nav-link" href="${pageContext.request.contextPath}/admin/users/cooks">
+                <p class="side-panel-font">Kucharze</p>
+            </a>
+            <hr class="sidebar-divider">
+            <a type="s" class="nav-link" href="${pageContext.request.contextPath}/admin/users/managers">
+                <p class="side-panel-font">Menadżerowie</p>
+            </a>
+            <hr class="sidebar-divider">
+            <a type="s" class="nav-link" href="${pageContext.request.contextPath}/admin/users/admins">
+                <p class="side-panel-font">Administratorzy</p>
             </a>
             <hr class="sidebar-divider">
             <a type="s" class="nav-link" href="${pageContext.request.contextPath}/restaurant">
-                <p style="font-size: 1.2rem">Wyjdź z panelu</p>
+                <p class="side-panel-font">Wyjdź z panelu</p>
             </a>
             <hr class="sidebar-divider">
             <a type="s" class="nav-link" href="${pageContext.request.contextPath}/restaurant/logout">
-                <p style="font-size: 1.2rem">Wyloguj się</p>
+                <p class="side-panel-font">Wyloguj się</p>
             </a>
         </li>
         <!-- Divider -->

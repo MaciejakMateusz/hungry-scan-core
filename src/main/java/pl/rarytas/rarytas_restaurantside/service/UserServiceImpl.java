@@ -7,6 +7,8 @@ import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.repository.UserRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -49,5 +51,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public List<User> findAllByRole(String roleName) {
+        return userRepository.findByRole(roleName);
     }
 }

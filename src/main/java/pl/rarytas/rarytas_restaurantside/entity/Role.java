@@ -16,4 +16,9 @@ public class Role {
     private int id;
     private String name;
     private String displayedName;
+
+    @Override
+    public String toString() {
+        return displayedName;
+    }
 }
