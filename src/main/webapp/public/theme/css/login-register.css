@@ -1987,3 +1987,8 @@ a {
     width: 100%;
     padding-block: .5rem
 }
+
+.error-message {
+    color: tomato;
+    text-align: center;
+}
