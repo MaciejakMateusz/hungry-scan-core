@@ -11039,9 +11039,7 @@ a:focus {
 
     .sidebar .nav-item .nav-link {
         display: block;
-        width: 100%;
         text-align: left;
-        padding: 1rem;
         width: 14rem;
     }
 
@@ -11856,4 +11854,8 @@ button-list:focus {
 
 .roles-checkboxes {
     display: grid;
+}
+
+.side-panel-font {
+    font-size: 1rem;
 }

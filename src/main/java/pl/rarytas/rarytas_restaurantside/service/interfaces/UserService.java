@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 
+import java.util.List;
+
 public interface UserService {
 
     User findByUsername(String email);
@@ -19,4 +21,6 @@ public interface UserService {
     void delete(User user);
 
     boolean existsByEmail(String email);
+
+    List<User> findAllByRole(String roleName);
 }
