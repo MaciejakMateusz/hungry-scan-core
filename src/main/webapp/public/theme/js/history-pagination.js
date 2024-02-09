@@ -7,18 +7,15 @@ const ordersListParent = document.querySelector('#orders-list-parent');
 export function renderRecordsPerPage(isForTakeAway) {
     updateDateTime();
 
-    let forTakeAway = isForTakeAway;
-    const recordsPerPage = 20;
-
     let selectedPaginationButton = document.querySelector('.pagination-button-selected');
     let pageNumber = parseInt(selectedPaginationButton.firstElementChild.innerText);
-    let offset = (pageNumber - 1) * 20;
 
-    fetchFinalizedOrders(forTakeAway, recordsPerPage, offset).then(orders => {
+
+    fetchFinalizedOrders(isForTakeAway, pageNumber - 1, 20).then(orders => {
 
         clearOrderDetails();
-        renderOrdersList(orders);
-        renderOrderDetails(orders[0])
+        renderOrdersList(orders.content);
+        renderOrderDetails(orders.content[0])
 
         ordersListParent.firstElementChild.classList.add('selected-list-element');
     });
@@ -48,21 +45,20 @@ export function renderPaginationButtons(isForTakeAway) {
             paginationButton.appendChild(pageNumber);
 
             paginationButtonsDiv.appendChild(paginationButton);
+        }
+        const pageNumberButtons = document.querySelectorAll('.pagination-button');
 
-            const pageNumberButtons = document.querySelectorAll('.pagination-button');
+        if (pageNumberButtons !== null) {
+            pageNumberButtons.forEach(pageButton => {
+                pageButton.addEventListener('click', () => {
 
-            if (pageNumberButtons !== null) {
-                pageNumberButtons.forEach(pageButton => {
-                    pageButton.addEventListener('click', () => {
+                    let selectedPaginationButton = document.querySelector('.pagination-button-selected');
+                    selectedPaginationButton.classList.remove('pagination-button-selected');
 
-                        let selectedPaginationButton = document.querySelector('.pagination-button-selected');
-                        selectedPaginationButton.classList.remove('pagination-button-selected');
-
-                        pageButton.classList.add('pagination-button-selected');
-                        renderRecordsPerPage(isForTakeAway);
-                    });
+                    pageButton.classList.add('pagination-button-selected');
+                    renderRecordsPerPage(isForTakeAway);
                 });
-            }
+            });
         }
     });
 }

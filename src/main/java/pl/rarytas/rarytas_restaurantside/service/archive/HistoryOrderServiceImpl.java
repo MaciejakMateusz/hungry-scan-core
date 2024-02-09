@@ -1,11 +1,14 @@
 package pl.rarytas.rarytas_restaurantside.service.archive;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryOrderRepository;
 import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -26,20 +29,14 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
     }
 
     @Override
-    public List<HistoryOrder> findAllTakeAway() {
-        return historyOrderRepository.findAllTakeAway();
-    }
-
-    @Override
     public List<HistoryOrder> findAllByResolvedIsTrue() {
         return historyOrderRepository.findAllResolved();
     }
 
     @Override
-    public List<HistoryOrder> findAllFinalized(boolean forTakeAway,
-                                               Integer limit,
-                                               Integer offset) {
-        return historyOrderRepository.findFinalizedOrders(forTakeAway, limit, offset);
+    public Page<HistoryOrder> findAllFinalized(boolean isForTakeAway,
+                                               Pageable pageable) {
+        return historyOrderRepository.findAllByForTakeAway(isForTakeAway, pageable);
     }
 
     @Override
@@ -55,11 +52,6 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
     @Override
     public List<HistoryOrder> findAllResolvedTakeAwayLimit50() {
         return historyOrderRepository.findAllResolvedTakeAwayLimit50();
-    }
-
-    @Override
-    public Optional<HistoryOrder> findByTableNumber(Integer number) {
-        return historyOrderRepository.findNewestOrderByTableNumber(number);
     }
 
     @Override
@@ -89,12 +81,6 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
             }
         }
         return false;
-    }
-
-    @Override
-    public void saveTakeAway(HistoryOrder historyOrder) {
-        historyOrderRepository.save(historyOrder);
-        messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 
     @Override

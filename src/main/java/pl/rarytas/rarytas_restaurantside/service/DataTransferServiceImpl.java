@@ -68,7 +68,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(order);
         HistoryWaiterCall historyWaiterCall = new HistoryWaiterCall();
 
-        if(!waiterCalls.isEmpty()) {
+        if (!waiterCalls.isEmpty()) {
             waiterCalls.forEach(waiterCall -> {
                 historyWaiterCall.setId(Long.valueOf(waiterCall.getId()));
                 historyWaiterCall.setCallTime(waiterCall.getCallTime());

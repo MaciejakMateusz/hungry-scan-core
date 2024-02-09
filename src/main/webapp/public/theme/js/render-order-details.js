@@ -14,8 +14,8 @@ export function renderOrderDetails(order) {
 
     clearOrderDetails();
 
-    if(order === null) {
-        return
+    if(order === null || order === undefined) {
+        return;
     }
 
     if (!order.forTakeAway) {
@@ -25,7 +25,8 @@ export function renderOrderDetails(order) {
     orderTime.innerText = `Godzina zamówienia: ${order.orderTime.substring(0, 5)}`;
 
     let sum = 0;
-    order.orderedItems.forEach(orderedItem => {
+    const itemsList = order.historyOrderedItems || order.orderedItems;
+    itemsList.forEach(orderedItem => {
         const orderedItemsGroup = document.createElement('div');
         orderedItemsGroup.classList.add('ordered-items-group');
 

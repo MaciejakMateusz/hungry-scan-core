@@ -11,6 +11,7 @@ import org.springframework.security.web.access.expression.WebExpressionAuthoriza
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import pl.rarytas.rarytas_restaurantside.utility.LoginSuccessHandler;
 
 import java.util.List;
 
@@ -56,8 +57,9 @@ public class SecurityConfig {
                                 mvcMatcherBuilder.pattern("/restaurant/menu"),
                                 mvcMatcherBuilder.pattern("/restaurant/bookings"),
                                 mvcMatcherBuilder.pattern("/restaurant/finalize-dineIn"),
-                                mvcMatcherBuilder.pattern("/restaurant/finalize-takeAway")).hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(mvcMatcherBuilder.pattern("/restaurant/cms/**")).hasRole("ADMIN")
+                                mvcMatcherBuilder.pattern("/restaurant/finalize-takeAway")).hasAnyRole("WAITER", "COOK", "MANAGER", "ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/restaurant/cms/**")).hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/admin/**")).hasRole("ADMIN")
                         .requestMatchers(mvcMatcherBuilder.pattern("/register/**"))
                         .access(new WebExpressionAuthorizationManager("isAnonymous()"))
                         .anyRequest().anonymous()
@@ -66,6 +68,7 @@ public class SecurityConfig {
         http.formLogin(login ->
                 login.loginPage("/login")
                         .defaultSuccessUrl("/restaurant")
+                        .successHandler(new LoginSuccessHandler())
                         .permitAll()
         );
 

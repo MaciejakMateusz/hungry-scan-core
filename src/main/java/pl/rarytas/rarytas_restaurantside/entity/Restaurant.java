@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "restaurants")
-@ToString
 public class Restaurant {
 
     @Id
@@ -23,5 +23,23 @@ public class Restaurant {
 
     @Column(length = 300)
     private String address;
+
+    private LocalDateTime created;
+    private LocalDateTime updated;
+
+    @PrePersist
+    private void prePersist() {
+        this.created = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        this.updated = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return name + ", " + address;
+    }
 
 }

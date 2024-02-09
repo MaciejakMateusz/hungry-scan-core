@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface RestaurantTableService {
     List<RestaurantTable> findAll();
+
     Optional<RestaurantTable> findById(Integer id);
 }
