@@ -15,6 +15,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class HistoryOrderServiceImpl implements HistoryOrderService {
+
     private final HistoryOrderRepository historyOrderRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -33,6 +34,10 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
         return historyOrderRepository.findAllResolved();
     }
 
+    @Override
+    public Long countResolved() {
+        return historyOrderRepository.count();
+    }
     @Override
     public Page<HistoryOrder> findAllFinalized(boolean isForTakeAway,
                                                Pageable pageable) {
