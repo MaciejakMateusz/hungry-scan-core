@@ -12,7 +12,7 @@ const idSearchTrigger = document.querySelector('#trigger-id-filter');
 const dateSearchTrigger = document.querySelector('#trigger-date-filter');
 
 document.addEventListener("DOMContentLoaded", () => {
-    renderPaginationButtons(false);
+    renderPaginationButtons(false).catch(error => console.log(error));
     renderRecordsPerPage(false);
 });
 

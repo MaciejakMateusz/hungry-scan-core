@@ -1,5 +1,5 @@
 import {clearOrderDetails, renderOrderDetails} from "./render-order-details.js";
-import {fetchOrderByTableNumber, fetchOrders, updateDateTime} from "./utils.js";
+import {fetchOrderByTableNumber, fetchOrders, tablesBoxOnClick, updateDateTime} from "./utils.js";
 
 /** ---- ON PAGE LOAD ----- **/
 document.addEventListener('DOMContentLoaded', () => {
@@ -142,12 +142,7 @@ document.body.addEventListener('click', event => {
 /** ----- END ----- **/
 
 /** ----- UNSELECT THE TABLE AND CLEAR RIGHT PANEL ----- **/
-document.querySelector('#tables-box').addEventListener('click', () => {
-    document.querySelector('#table-list-container').classList.remove('d-none');
-    document.querySelector('#order-details-panel').classList.add('d-none');
-    document.querySelector('#waiter-call-wrapper').classList.add('d-none');
-    document.querySelector('#right-bottom-info-wrapper').classList.remove('d-none');
-});
+tablesBoxOnClick();
 /** ----- END OF UNSELECT THE TABLE AND CLEAR RIGHT PANEL ----- **/
 
 /** ----- HOVER EVENT LISTENERS FOR TABLES ----- **/
