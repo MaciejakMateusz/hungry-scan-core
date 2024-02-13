@@ -20,11 +20,9 @@ import java.util.Objects;
 public class UserController {
 
     private final RegisterService registerService;
-    private final Environment environment;
 
-    public UserController(RegisterService registerService, Environment environment) {
+    public UserController(RegisterService registerService) {
         this.registerService = registerService;
-        this.environment = environment;
     }
 
     @GetMapping
