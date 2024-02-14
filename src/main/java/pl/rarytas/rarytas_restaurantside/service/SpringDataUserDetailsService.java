@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.User;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,23 +15,22 @@ import java.util.Set;
 @Service
 public class SpringDataUserDetailsService implements UserDetailsService {
 
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
 
-    public SpringDataUserDetailsService(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+    public SpringDataUserDetailsService(UserServiceImpl userService) {
+        this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userServiceImpl.findByUsername(username);
+        User user = userService.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        user.getRoles().forEach(r ->
-                grantedAuthorities.add(new SimpleGrantedAuthority(r.getName())));
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(), user.getPassword(), grantedAuthorities);
+        user.getRoles().forEach(role ->
+                grantedAuthorities.add(new SimpleGrantedAuthority(role.getName())));
+        return new CustomUserDetails(user);
     }
 
 }

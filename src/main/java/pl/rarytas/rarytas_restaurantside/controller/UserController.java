@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RegisterService;
 
@@ -17,12 +18,16 @@ import java.util.Objects;
 
 @Controller
 @Slf4j
+@RequestMapping("/deprecated")
+@Deprecated
 public class UserController {
 
     private final RegisterService registerService;
+    private final Environment environment;
 
-    public UserController(RegisterService registerService) {
+    public UserController(RegisterService registerService, Environment environment) {
         this.registerService = registerService;
+        this.environment = environment;
     }
 
     @GetMapping

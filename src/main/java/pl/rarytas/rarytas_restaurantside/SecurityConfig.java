@@ -8,6 +8,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,7 +49,7 @@ public class SecurityConfig {
                         .Builder(handlerMappingIntrospector);
 
 
-        http.csrf(Customizer.withDefaults())
+        http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.cors(c -> c.configurationSource(req -> {
@@ -67,6 +68,7 @@ public class SecurityConfig {
                         .requestMatchers(mvcMatcherBuilder.pattern("/public/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/webjars/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/rrs/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/order-websocket/**")).permitAll()
                         .requestMatchers(
                                 mvcMatcherBuilder.pattern("/restaurant"),
