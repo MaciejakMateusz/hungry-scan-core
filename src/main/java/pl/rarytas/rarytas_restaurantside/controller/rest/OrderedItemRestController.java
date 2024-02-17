@@ -1,10 +1,10 @@
 package pl.rarytas.rarytas_restaurantside.controller.rest;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemService;
@@ -12,8 +12,9 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemService;
 import java.util.List;
 
 @RestController
-@Slf4j
 @RequestMapping("/api/orderedItems")
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
+@PreAuthorize("isAuthenticated()")
 public class OrderedItemRestController {
 
     private final OrderedItemService orderedItemService;

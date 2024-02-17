@@ -3,6 +3,7 @@ package pl.rarytas.rarytas_restaurantside.controller.rest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
@@ -17,6 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/items")
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
+@PreAuthorize("isAuthenticated()")
 public class MenuItemRestController {
 
     private final MenuItemService menuItemService;

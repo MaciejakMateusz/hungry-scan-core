@@ -1,9 +1,9 @@
 package pl.rarytas.rarytas_restaurantside.controller.rest;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
@@ -11,8 +11,9 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableServi
 import java.util.List;
 
 @RestController
-@Slf4j
 @RequestMapping("/api/restaurantTables")
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
+@PreAuthorize("isAuthenticated()")
 public class RestaurantTableRestController {
 
     private final RestaurantTableService restaurantTableService;

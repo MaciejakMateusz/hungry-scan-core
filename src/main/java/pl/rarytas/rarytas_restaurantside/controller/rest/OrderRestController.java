@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
@@ -20,7 +21,8 @@ import java.util.Optional;
 @RestController
 @Slf4j
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
+@PreAuthorize("isAuthenticated()")
 public class OrderRestController {
 
     private final OrderService orderService;

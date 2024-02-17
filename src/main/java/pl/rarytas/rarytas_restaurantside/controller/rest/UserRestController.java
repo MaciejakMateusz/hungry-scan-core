@@ -1,7 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.controller.rest;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +16,6 @@ import pl.rarytas.rarytas_restaurantside.service.JwtService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RegisterService;
 
 @RestController
-@Slf4j
 @RequestMapping("/rrs")
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserRestController {
