@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.service.interfaces;
+package pl.rarytas.rarytas_restaurantside.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -10,15 +10,16 @@ import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.enums.DayPart;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.BookingRepository;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
-public class BookingServiceImpl implements BookingService{
+public class BookingServiceImpl implements BookingService {
 
     private final RestaurantService restaurantService;
     private final BookingRepository bookingRepository;
@@ -59,8 +60,9 @@ public class BookingServiceImpl implements BookingService{
     }
 
     private DayPart computeDayPart(LocalTime time) throws LocalizedException {
-        Integer restaurantId = Integer.valueOf(Objects.requireNonNull(environment.getProperty("RESTAURANT_ID")));
-        Restaurant restaurant = restaurantService.findById(restaurantId).orElseThrow();
+        String restaurantId = environment.getProperty("RESTAURANT_ID");
+        assert restaurantId != null;
+        Restaurant restaurant = restaurantService.findById(Integer.valueOf(restaurantId)).orElseThrow();
 
         LocalTime firstHalfStart = restaurant.getOpening();
         LocalTime firstHalfEnd = computeAvgTime(restaurant.getOpening(), restaurant.getClosing());

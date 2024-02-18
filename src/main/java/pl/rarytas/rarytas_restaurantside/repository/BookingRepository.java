@@ -13,4 +13,5 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findAllByWeek(@Param("year") int year, @Param("week") int week);
 
     List<Booking> findAllByDate(LocalDate date);
+
 }
