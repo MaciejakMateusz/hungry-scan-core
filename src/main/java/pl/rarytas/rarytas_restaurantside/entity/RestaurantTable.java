@@ -4,15 +4,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "restaurant_tables")
 @ToString
+@EqualsAndHashCode
+@Table(name = "restaurant_tables")
+@Entity
 public class RestaurantTable {
 
     @Id

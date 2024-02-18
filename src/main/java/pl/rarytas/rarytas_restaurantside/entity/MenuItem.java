@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,12 +21,13 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Objects;
 
+@Slf4j
 @Getter
 @Setter
-@Entity
 @ToString
+@EqualsAndHashCode
 @Table(name = "menu_items")
-@Slf4j
+@Entity
 public class MenuItem {
 
     @Id

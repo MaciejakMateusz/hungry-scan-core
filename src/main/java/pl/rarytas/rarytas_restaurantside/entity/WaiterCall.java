@@ -1,6 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,8 +9,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity
+@EqualsAndHashCode
 @Table(name = "waiter_calls")
+@Entity
 public class WaiterCall {
 
     @Id
