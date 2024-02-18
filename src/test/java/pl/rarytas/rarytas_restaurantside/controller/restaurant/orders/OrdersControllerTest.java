@@ -34,6 +34,7 @@ public class OrdersControllerTest {
     private OrderService mockOrderService;
 
     @Test
+    @WithMockUser(roles = "WAITER")
     public void testTakeAwayOrders() throws Exception {
         mockMvc.perform(get("/restaurant/orders/take-away"))
                 .andExpect(status().isOk())
@@ -41,6 +42,7 @@ public class OrdersControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "WAITER")
     void testFinalizedOrders() throws Exception {
         mockMvc.perform(get("/restaurant/orders/finalized"))
                 .andExpect(status().isOk())
@@ -48,6 +50,7 @@ public class OrdersControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "WAITER")
     void testFinalizedTakeAwayOrders() throws Exception {
         mockMvc.perform(get("/restaurant/orders/finalized/take-away"))
                 .andExpect(status().isOk())
@@ -55,6 +58,7 @@ public class OrdersControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "WAITER")
     void testFinalizeDineInOrder() throws Exception {
         mockMvc.perform(post("/restaurant/orders/finalize-dineIn")
                         .param("id", "1")
@@ -67,6 +71,7 @@ public class OrdersControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "WAITER")
     void testFinalizeTakeAwayOrder() throws Exception {
         mockMvc.perform(post("/restaurant/orders/finalize-takeAway")
                         .param("id", "1")
@@ -79,6 +84,7 @@ public class OrdersControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "WAITER")
     void testResolveWaiterCall() throws Exception {
         mockMvc.perform(post("/restaurant/orders/resolve-call")
                         .param("id", "1"))
@@ -86,5 +92,26 @@ public class OrdersControllerTest {
                 .andExpect(redirectedUrl("/restaurant"));
 
         verify(mockOrderService, times(1)).resolveWaiterCall(1);
+    }
+
+    @Test
+    void shouldThrow403() throws Exception {
+        mockMvc.perform(get("/restaurant/orders/take-away"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/restaurant/orders/finalized"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/restaurant/orders/finalized/take-away"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/restaurant/orders/finalize-dineIn"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/restaurant/orders/finalize-takeAway"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/restaurant/orders/resolve-call"))
+                .andExpect(status().isForbidden());
     }
 }

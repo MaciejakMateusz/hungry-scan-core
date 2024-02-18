@@ -27,16 +27,27 @@ class MainViewControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void mainView() throws Exception {
+    @WithMockUser(roles = "WAITER")
+    void mainViewTest() throws Exception {
         mockMvc.perform(get("/restaurant"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/main-view"));
     }
 
     @Test
-    void menu() throws Exception {
+    @WithMockUser(roles = "WAITER")
+    void menuTest() throws Exception {
         mockMvc.perform(get("/restaurant/menu"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/menu/menu"));
+    }
+
+    @Test
+    void shouldThrow403() throws Exception {
+        mockMvc.perform(get("/restaurant"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/restaurant/menu"))
+                .andExpect(status().isForbidden());
     }
 }

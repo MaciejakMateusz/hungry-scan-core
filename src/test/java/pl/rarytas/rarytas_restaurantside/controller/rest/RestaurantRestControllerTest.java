@@ -44,7 +44,7 @@ public class RestaurantRestControllerTest {
     public void shouldGetAllFromEndpoint() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/restaurants")).andReturn();
         String actualRestaurantJson = result.getResponse().getContentAsString();
-        assertEquals("[{\"id\":1,\"name\":\"Rarytas\",\"address\":\"ul. GÅ\u0082Ã³wna 123, Miastowo, WojewÃ³dztwo, 54321\"},{\"id\":2,\"name\":\"Wykwintna Bistro\",\"address\":\"ul. DÄ\u0099bowa 456, Miasteczko, Wiejskie, 98765\"}]",
+        assertEquals("[{\"id\":1,\"name\":\"Rarytas\",\"address\":\"ul. GÅ\u0082Ã³wna 123, Miastowo, WojewÃ³dztwo, 54321\",\"created\":null,\"updated\":null},{\"id\":2,\"name\":\"Wykwintna Bistro\",\"address\":\"ul. DÄ\u0099bowa 456, Miasteczko, Wiejskie, 98765\",\"created\":null,\"updated\":null}]",
                 actualRestaurantJson);
     }
 
