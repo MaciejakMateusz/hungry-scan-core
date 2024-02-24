@@ -1,6 +1,6 @@
 import {renderOrderDetails} from "./render-order-details.js";
 import {clearOrderDetails} from "./render-order-details.js";
-import {fetchOrderByTableNumber, tablesBoxOnClick} from "./utils.js";
+import {fetchOrderByTableNumber} from "./utils.js";
 import {updateDateTime} from "./utils.js";
 import {fetchOrders} from "./utils.js";
 
@@ -100,5 +100,10 @@ document.body.addEventListener('click', function (event) {
 /** ----- END ----- **/
 
 /** ----- UNSELECT THE TABLE AND CLEAR RIGHT PANEL ----- **/
-tablesBoxOnClick()
+document.querySelector('#tables-box').addEventListener('click', () => {
+    document.querySelector('#table-list-container').classList.remove('d-none');
+    document.querySelector('#order-details-panel').classList.add('d-none');
+    document.querySelector('#waiter-call-wrapper').classList.add('d-none');
+    document.querySelector('#right-bottom-info-wrapper').classList.remove('d-none');
+});
 /** ----- END OF UNSELECT THE TABLE AND CLEAR RIGHT PANEL ----- **/

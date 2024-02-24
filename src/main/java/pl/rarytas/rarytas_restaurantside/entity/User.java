@@ -2,7 +2,6 @@ package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +14,11 @@ import pl.rarytas.rarytas_restaurantside.annotation.Username;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@Entity
 @Slf4j
 @Getter
 @Setter
-@EqualsAndHashCode
 @Table(name = "users")
-@Entity
 public class User {
 
     @Id

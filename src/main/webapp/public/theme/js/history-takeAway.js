@@ -12,7 +12,7 @@ const idSearchTrigger = document.querySelector('#trigger-id-filter');
 const dateSearchTrigger = document.querySelector('#trigger-date-filter');
 
 document.addEventListener("DOMContentLoaded", function () {
-    renderPaginationButtons(true).catch(error => console.log(error));
+    renderPaginationButtons(true);
     renderRecordsPerPage(true);
 });
 
@@ -43,7 +43,7 @@ const observer = new MutationObserver(function (mutationsList) {
                 if (addedNode.nodeType === Node.ELEMENT_NODE && addedNode.classList.contains('orders-list-table')) {
                     addedNode.addEventListener('click', () => {
 
-                        if (addedNode.firstElementChild.innerText === 'Brak wyników') {
+                        if(addedNode.firstElementChild.innerText === 'Brak wyników') {
                             return;
                         }
 

@@ -2,7 +2,6 @@ package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
@@ -12,9 +11,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode
-@Table(name = "categories")
 @Entity
+@Table(name = "categories")
 public class Category {
 
     @Id

@@ -18,15 +18,6 @@ setInterval(updateDateTime, 1000);
 
 /** ----- END OF DATE & TIME UPDATES ----- **/
 
-export function tablesBoxOnClick() {
-    document.querySelector('#tables-box').addEventListener('click', () => {
-        document.querySelector('#table-list-container').classList.remove('d-none');
-        document.querySelector('#order-details-panel').classList.add('d-none');
-        document.querySelector('#waiter-call-wrapper').classList.add('d-none');
-        document.querySelector('#right-bottom-info-wrapper').classList.remove('d-none');
-    });
-}
-
 
 /** ----- FETCH FUNCTIONS ----- **/
 const apiHost = 'http://localhost:8082/api'
@@ -89,19 +80,6 @@ export function fetchAllResolved() {
                 return response.json();
             } else {
                 throw new Error("Communication error: GET /api/orders/resolved");
-            }
-        })
-        .then(data => data)
-        .catch(error => console.log(error))
-}
-
-export function fetchNumberOfResolvedOrders() {
-    return fetch(`${apiHost}/orders/numberResolved`)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("Communication error: GET /api/orders/numberResolved");
             }
         })
         .then(data => data)

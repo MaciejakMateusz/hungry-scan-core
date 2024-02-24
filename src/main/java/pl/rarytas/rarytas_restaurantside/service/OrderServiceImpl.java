@@ -23,14 +23,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final WaiterCallServiceImpl waiterCallServiceImpl;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ArchiveDataServiceImpl dataTransferServiceImpl;
+    private final DataTransferServiceImpl dataTransferServiceImpl;
     private final MessageSource messageSource;
     private final HistoryOrderRepository historyOrderRepository;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             WaiterCallServiceImpl waiterCallServiceImpl,
                             SimpMessagingTemplate messagingTemplate,
-                            ArchiveDataServiceImpl dataTransferServiceImpl, MessageSource messageSource, HistoryOrderRepository historyOrderRepository) {
+                            DataTransferServiceImpl dataTransferServiceImpl, MessageSource messageSource, HistoryOrderRepository historyOrderRepository) {
         this.orderRepository = orderRepository;
         this.waiterCallServiceImpl = waiterCallServiceImpl;
         this.messagingTemplate = messagingTemplate;
