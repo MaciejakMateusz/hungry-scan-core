@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import pl.rarytas.rarytas_restaurantside.enums.Language;
 
 import java.time.LocalTime;
 
@@ -15,20 +16,24 @@ public class Settings {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
     @OneToOne
-    Restaurant restaurant;
+    private Restaurant restaurant;
 
     @NotNull
     @Column(nullable = false)
-    LocalTime openingTime;
+    private LocalTime openingTime;
 
     @NotNull
     @Column(nullable = false)
-    LocalTime closingTime;
+    private LocalTime closingTime;
 
     @NotNull
     @Column(nullable = false)
-    LocalTime bookingDuration;
+    private LocalTime bookingDuration;
+
+    @NotNull
+    @Column(nullable = false)
+    private Language language = Language.PL;
 }
