@@ -31,7 +31,7 @@ public class Settings {
 
     @NotNull
     @Column(nullable = false)
-    private LocalTime bookingDuration;
+    private Long bookingDuration;
 
     @NotNull
     @Column(nullable = false)

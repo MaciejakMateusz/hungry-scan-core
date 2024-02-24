@@ -1,12 +1,11 @@
 package pl.rarytas.rarytas_restaurantside.utility;
 
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
-import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.entity.Settings;
 import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.SettingsService;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -14,14 +13,16 @@ import java.util.Set;
 @Component
 public class BookingValidator {
 
-    private final RestaurantService restaurantService;
     private final RestaurantTableRepository restaurantTableRepository;
-    private final Environment environment;
+    private final SettingsService settingsService;
 
-    public BookingValidator(RestaurantService restaurantService, RestaurantTableRepository restaurantTableRepository, Environment environment) {
-        this.restaurantService = restaurantService;
+    public BookingValidator(RestaurantTableRepository restaurantTableRepository, SettingsService settingsService) {
         this.restaurantTableRepository = restaurantTableRepository;
-        this.environment = environment;
+        this.settingsService = settingsService;
+    }
+
+    private Settings getSettings() {
+        return settingsService.findByRestaurant().orElseThrow();
     }
 
     public boolean isValidBooking(Booking booking) {
@@ -41,7 +42,7 @@ public class BookingValidator {
                     existingBooking.getTime(),
                     existingBooking.getExpirationTime());
             boolean bookingIntersects = DateTimeHelper.timesIntersect(
-                    booking.getTime(),
+                    booking.getTime().plusHours(getSettings().getBookingDuration()),
                     existingBooking.getTime(),
                     existingBooking.getExpirationTime());
             boolean bookingTimesCollide = isInBookingTimeRange || bookingIntersects;
@@ -54,9 +55,7 @@ public class BookingValidator {
     }
 
     private boolean isWithinOpeningHours(Booking booking) {
-        String restaurantId = environment.getProperty("RESTAURANT_ID");
-        assert restaurantId != null;
-        Restaurant restaurant = restaurantService.findById(Integer.valueOf(restaurantId)).orElseThrow();
-        return booking.getTime().isAfter(restaurant.getOpening()) && booking.getTime().isBefore(restaurant.getClosing());
+        return booking.getTime().isAfter(getSettings().getOpeningTime()) &&
+                booking.getTime().isBefore(getSettings().getClosingTime());
     }
 }
