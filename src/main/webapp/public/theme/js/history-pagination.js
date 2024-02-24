@@ -1,4 +1,4 @@
-import {fetchAllResolved, fetchFinalizedOrders, updateDateTime} from "./utils.js";
+import {fetchFinalizedOrders, fetchNumberOfResolvedOrders, updateDateTime} from "./utils.js";
 import {clearOrderDetails, renderOrderDetails} from "./render-order-details.js";
 import {renderOrdersList} from "./render-orders-list.js";
 
@@ -21,44 +21,35 @@ export function renderRecordsPerPage(isForTakeAway) {
     });
 }
 
-export function renderPaginationButtons(isForTakeAway) {
+export async function renderPaginationButtons(isForTakeAway) {
     const recordsPerPage = 20;
 
-    fetchAllResolved().then(orders => {
+    let totalOrders = await fetchNumberOfResolvedOrders();
+    const numberOfPages = Math.ceil(totalOrders / recordsPerPage);
 
-        let totalOrders = 0;
-        orders.forEach((order) => {
-            if (order.forTakeAway === isForTakeAway) {
-                totalOrders++;
-            }
-        });
+    const paginationButtonsDiv = document.querySelector('.pagination-buttons');
 
-        const numberOfPages = Math.ceil(totalOrders / recordsPerPage);
+    for (let i = 2; i <= numberOfPages; i++) {
+        let paginationButton = document.createElement('div');
+        paginationButton.classList.add('pagination-button');
+        let pageNumber = document.createElement('span');
+        pageNumber.innerText = i.toString();
+        paginationButton.appendChild(pageNumber);
 
-        const paginationButtonsDiv = document.querySelector('.pagination-buttons');
+        paginationButtonsDiv.appendChild(paginationButton);
+    }
+    const pageNumberButtons = document.querySelectorAll('.pagination-button');
 
-        for (let i = 2; i <= numberOfPages; i++) {
-            let paginationButton = document.createElement('div');
-            paginationButton.classList.add('pagination-button');
-            let pageNumber = document.createElement('span');
-            pageNumber.innerText = i.toString();
-            paginationButton.appendChild(pageNumber);
+    if (pageNumberButtons !== null) {
+        pageNumberButtons.forEach(pageButton => {
+            pageButton.addEventListener('click', () => {
 
-            paginationButtonsDiv.appendChild(paginationButton);
-        }
-        const pageNumberButtons = document.querySelectorAll('.pagination-button');
+                let selectedPaginationButton = document.querySelector('.pagination-button-selected');
+                selectedPaginationButton.classList.remove('pagination-button-selected');
 
-        if (pageNumberButtons !== null) {
-            pageNumberButtons.forEach(pageButton => {
-                pageButton.addEventListener('click', () => {
-
-                    let selectedPaginationButton = document.querySelector('.pagination-button-selected');
-                    selectedPaginationButton.classList.remove('pagination-button-selected');
-
-                    pageButton.classList.add('pagination-button-selected');
-                    renderRecordsPerPage(isForTakeAway);
-                });
+                pageButton.classList.add('pagination-button-selected');
+                renderRecordsPerPage(isForTakeAway);
             });
-        }
-    });
+        });
+    }
 }

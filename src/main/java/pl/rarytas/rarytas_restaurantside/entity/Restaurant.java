@@ -1,16 +1,21 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
-@Entity
+@EqualsAndHashCode
 @Table(name = "restaurants")
+@Entity
 public class Restaurant {
 
     @Id
@@ -26,6 +31,19 @@ public class Restaurant {
 
     private LocalDateTime created;
     private LocalDateTime updated;
+
+    @Min(1)
+    @NotNull
+    @Column(nullable = false)
+    private short capacity;
+
+    @NotNull
+    @Column(nullable = false)
+    private LocalTime opening;
+
+    @NotNull
+    @Column(nullable = false)
+    private LocalTime closing;
 
     @PrePersist
     private void prePersist() {

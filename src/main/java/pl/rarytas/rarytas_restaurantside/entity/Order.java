@@ -2,9 +2,9 @@ package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.listener.OrderListener;
 
@@ -13,10 +13,10 @@ import java.util.List;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "orders")
+@EqualsAndHashCode
 @EntityListeners(value = OrderListener.class)
-@Slf4j
+@Table(name = "orders")
+@Entity
 public class Order {
 
     @Id
