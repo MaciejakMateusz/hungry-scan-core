@@ -41,11 +41,6 @@ public class OrderRestController {
         return historyOrderService.findAllByResolvedIsTrue();
     }
 
-    @GetMapping("/numberResolved")
-    public Long countAllResolved() {
-        return historyOrderService.countResolved();
-    }
-
     @PostMapping("/finalized")
     public Page<HistoryOrder> getFinalizedOrders(@RequestBody Map<String, Object> requestBody) {
         boolean isForTakeAway = (boolean) requestBody.get("forTakeAway");

@@ -1,15 +1,13 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode
-@Table(name = "qr_scans")
 @Entity
+@Table(name = "qr_scans")
 public class QrScan {
 
     @Id
