@@ -23,31 +23,33 @@ public class BookingValidator {
 
     public boolean isValidBooking(Booking booking) {
         return DateTimeHelper.isNotInPast(LocalDateTime.of(booking.getDate(), booking.getTime())) &&
-                !collidesWithExistingBooking(booking) &&
+                !hasBookingCollision(booking) &&
                 isWithinOpeningHours(booking);
     }
 
-    private boolean collidesWithExistingBooking(Booking booking) {
-        boolean bookingCollision = false;
+    private boolean hasBookingCollision(Booking booking) {
         RestaurantTable restaurantTable = restaurantTableRepository.findById(booking.getTableId()).orElseThrow();
         Set<Booking> existingBookings = restaurantTable.getBookings();
-        for (Booking existingBooking : existingBookings) {
-            boolean isOnExistingBookingDay = existingBooking.getDate().equals(booking.getDate());
-            boolean isInBookingTimeRange = DateTimeHelper.isInTimeRange(
-                    booking.getTime(),
-                    existingBooking.getTime(),
-                    existingBooking.getExpirationTime());
-            boolean bookingIntersects = DateTimeHelper.timesIntersect(
-                    booking.getTime().plusHours(getSettings().getBookingDuration()),
-                    existingBooking.getTime(),
-                    existingBooking.getExpirationTime());
-            boolean bookingTimesCollide = isInBookingTimeRange || bookingIntersects;
-            if (isOnExistingBookingDay && bookingTimesCollide) {
-                bookingCollision = true;
-                break;
-            }
-        }
-        return bookingCollision;
+
+        return existingBookings.stream()
+                .anyMatch(existingBooking -> existingBooking.getDate().equals(booking.getDate()) &&
+                        (existingBooking.getTime().equals(booking.getTime()) ||
+                                isInBookingTimeRange(booking, existingBooking) ||
+                                bookingIntersects(booking, existingBooking)));
+    }
+
+    private boolean isInBookingTimeRange(Booking booking, Booking existingBooking) {
+        return DateTimeHelper.isInTimeRange(
+                booking.getTime(),
+                existingBooking.getTime(),
+                existingBooking.getExpirationTime());
+    }
+
+    private boolean bookingIntersects(Booking booking, Booking existingBooking) {
+        return DateTimeHelper.doTimeRangesOverlap(
+                booking.getTime().plusHours(getSettings().getBookingDuration()),
+                existingBooking.getTime(),
+                existingBooking.getExpirationTime());
     }
 
     private boolean isWithinOpeningHours(Booking booking) {

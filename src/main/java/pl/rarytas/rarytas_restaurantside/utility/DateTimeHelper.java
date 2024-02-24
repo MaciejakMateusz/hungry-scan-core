@@ -14,7 +14,7 @@ public class DateTimeHelper {
         return localDateTime.isAfter(LocalDateTime.now());
     }
 
-    public static boolean timesIntersect(LocalTime candidateExpirationTime, LocalTime existingTime, LocalTime existingExpirationTime) {
+    public static boolean doTimeRangesOverlap(LocalTime candidateExpirationTime, LocalTime existingTime, LocalTime existingExpirationTime) {
         return candidateExpirationTime.isBefore(existingExpirationTime) && candidateExpirationTime.isAfter(existingTime);
     }
 }
