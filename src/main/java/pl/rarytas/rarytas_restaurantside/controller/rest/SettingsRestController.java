@@ -30,7 +30,7 @@ public class SettingsRestController {
 
     @GetMapping
     public Settings getSettings() {
-        return settingsService.findByRestaurant().orElseThrow();
+        return settingsService.getSettings();
     }
 
     @PatchMapping

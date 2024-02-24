@@ -21,10 +21,6 @@ public class BookingValidator {
         this.settingsService = settingsService;
     }
 
-    private Settings getSettings() {
-        return settingsService.findByRestaurant().orElseThrow();
-    }
-
     public boolean isValidBooking(Booking booking) {
         return DateTimeHelper.isNotInPast(LocalDateTime.of(booking.getDate(), booking.getTime())) &&
                 !collidesWithExistingBooking(booking) &&
@@ -57,5 +53,9 @@ public class BookingValidator {
     private boolean isWithinOpeningHours(Booking booking) {
         return booking.getTime().isAfter(getSettings().getOpeningTime()) &&
                 booking.getTime().isBefore(getSettings().getClosingTime());
+    }
+
+    private Settings getSettings() {
+        return settingsService.getSettings();
     }
 }
