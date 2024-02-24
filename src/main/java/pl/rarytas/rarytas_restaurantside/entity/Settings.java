@@ -18,9 +18,6 @@ public class Settings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
-    private Restaurant restaurant;
-
     @NotNull
     @Column(nullable = false)
     private LocalTime openingTime;
@@ -36,4 +33,8 @@ public class Settings {
     @NotNull
     @Column(nullable = false)
     private Language language = Language.PL;
+
+    @NotNull
+    @Column(nullable = false)
+    private Short capacity;
 }
