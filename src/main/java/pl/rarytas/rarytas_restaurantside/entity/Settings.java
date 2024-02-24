@@ -17,6 +17,9 @@ public class Settings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
+    @OneToOne
+    Restaurant restaurant;
+
     @NotNull
     @Column(nullable = false)
     LocalTime openingTime;
