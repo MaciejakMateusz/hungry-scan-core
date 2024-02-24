@@ -1,5 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.utility;
 
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -13,8 +14,7 @@ public class DateTimeHelper {
         return localDateTime.isAfter(LocalDateTime.now());
     }
 
-    public static boolean timesIntersect(LocalTime candidateTime, LocalTime existingTime, LocalTime existingExpirationTime) {
-        LocalTime candidateExpirationTime = candidateTime.plusHours(3L);
+    public static boolean doTimeRangesOverlap(LocalTime candidateExpirationTime, LocalTime existingTime, LocalTime existingExpirationTime) {
         return candidateExpirationTime.isBefore(existingExpirationTime) && candidateExpirationTime.isAfter(existingTime);
     }
 }
