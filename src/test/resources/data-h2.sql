@@ -48,8 +48,8 @@ INSERT INTO menu_items (name, category_id, description, ingredients, price, is_a
 INSERT INTO menu_items (name, category_id, description, ingredients, price, is_available, created, updated) VALUES ('Piwo rzemieślnicze IPA', 8, 'Zrównoważone piwo rzemieślnicze typu IPA.', 'Jęczmień, chmiele, woda', 12.50, 1, null, null);
 INSERT INTO menu_items (name, category_id, description, ingredients, price, is_available, created, updated) VALUES ('Herbata zielona', 8, 'Zdrowa herbata zielona, lekko zaparzona.', 'Liście herbaty zielonej',7.25, 1, null, null);
 
-INSERT INTO restaurants (address, name) VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
-INSERT INTO restaurants (address, name) VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
+INSERT INTO restaurants (address, name, capacity, opening, closing) VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', 120, '8:00', '22:00');
+INSERT INTO restaurants (address, name, capacity, opening, closing) VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', 100, '8:00', '22:00');
 
 INSERT INTO restaurant_tables (id) VALUES (1);
 INSERT INTO restaurant_tables (id) VALUES (2);
@@ -153,3 +153,6 @@ INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (2, 2);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (3, 3);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (4, 4);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (5, 5);
+
+INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, table_id, time) VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', 5, '16:00:00');
+INSERT INTO restaurant_tables_bookings (restaurant_table_id, bookings_id) VALUES (5, 1);
