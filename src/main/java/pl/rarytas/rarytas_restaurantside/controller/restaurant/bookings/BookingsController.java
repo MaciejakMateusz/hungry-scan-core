@@ -14,8 +14,8 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/restaurant/bookings")
@@ -35,7 +35,7 @@ public class BookingsController {
 
     @PostMapping
     public String save(@Valid Booking booking, BindingResult br, Model model) throws LocalizedException {
-        if(br.hasErrors()) {
+        if (br.hasErrors()) {
             return "restaurant/bookings/bookings";
         }
         bookingService.save(booking);
@@ -44,7 +44,7 @@ public class BookingsController {
     }
 
     @ModelAttribute("weeklyBookings")
-    private List<Booking> getWeeklyBookings() {
+    private Set<Booking> getWeeklyBookings() {
         int year = LocalDate.now().getYear();
         int week = LocalDate.now().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
         return bookingService.findAllByWeek(year, week);

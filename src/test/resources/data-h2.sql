@@ -153,3 +153,6 @@ INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (2, 2);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (3, 3);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (4, 4);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id) VALUES (5, 5);
+
+INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, table_id, time) VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', 5, '16:00:00');
+INSERT INTO restaurant_tables_bookings (restaurant_table_id, bookings_id) VALUES (5, 1);

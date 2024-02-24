@@ -8,34 +8,35 @@ import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryWaiterCall;
 import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryWaiterCallService;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.DataTransferService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.ArchiveDataService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class DataTransferServiceImpl implements DataTransferService {
+public class ArchiveDataServiceImpl implements ArchiveDataService {
 
     private final HistoryOrderService historyOrderService;
     private final WaiterCallService waiterCallService;
     private final HistoryWaiterCallService historyWaiterCallService;
 
-    public DataTransferServiceImpl(HistoryOrderService historyOrderService,
-                                   WaiterCallService waiterCallService,
-                                   HistoryWaiterCallService historyWaiterCallService) {
+    public ArchiveDataServiceImpl(HistoryOrderService historyOrderService,
+                                  WaiterCallService waiterCallService,
+                                  HistoryWaiterCallService historyWaiterCallService) {
         this.historyOrderService = historyOrderService;
         this.waiterCallService = waiterCallService;
         this.historyWaiterCallService = historyWaiterCallService;
     }
 
+    @Override
     public void archiveOrder(Order order) {
-        HistoryOrder historyOrder = transferOrderDataToHistory(order);
+        HistoryOrder historyOrder = mapOrderToHistoryOrder(order);
         historyOrderService.save(historyOrder);
         transferWaiterCallDataToHistory(order, historyOrder);
     }
 
-    private HistoryOrder transferOrderDataToHistory(Order order) {
+    private HistoryOrder mapOrderToHistoryOrder(Order order) {
         HistoryOrder historyOrder = new HistoryOrder();
 
         List<HistoryOrderedItem> transferredItems = new ArrayList<>();

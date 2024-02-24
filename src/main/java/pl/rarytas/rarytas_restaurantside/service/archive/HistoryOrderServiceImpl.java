@@ -38,6 +38,7 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
     public Long countResolved() {
         return historyOrderRepository.count();
     }
+
     @Override
     public Page<HistoryOrder> findAllFinalized(boolean isForTakeAway,
                                                Pageable pageable) {

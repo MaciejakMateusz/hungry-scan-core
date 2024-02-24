@@ -3,6 +3,7 @@ package pl.rarytas.rarytas_restaurantside.listener;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,11 @@ import pl.rarytas.rarytas_restaurantside.entity.Booking;
 @Getter
 @Setter
 public class BookingListener {
+
+    @PrePersist
+    public void prePersist(final Booking booking) {
+        booking.setExpirationTime(booking.getTime().plusHours(3L));
+    }
 
     @PostPersist
     public void postPersist(final Booking booking) {
@@ -32,4 +38,5 @@ public class BookingListener {
     public void postRemove(final Booking booking) {
         log.info("Removed booking with ID: " + booking.getId());
     }
+
 }

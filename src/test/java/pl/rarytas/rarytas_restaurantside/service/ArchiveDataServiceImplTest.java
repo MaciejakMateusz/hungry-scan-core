@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.DataTransferService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.ArchiveDataService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DataTransferServiceImplTest {
+class ArchiveDataServiceImplTest {
 
     @Autowired
-    private DataTransferService dataTransferService;
+    private ArchiveDataService archiveDataService;
 
     @Autowired
     private OrderService orderService;
@@ -40,7 +40,7 @@ class DataTransferServiceImplTest {
     @Transactional
     void shouldArchiveOrder() {
         Order existingOrder = (Order) orderService.findById(4).orElseThrow();
-        dataTransferService.archiveOrder(existingOrder);
+        archiveDataService.archiveOrder(existingOrder);
         HistoryOrder historyOrder = historyOrderService.findById(4L).orElse(new HistoryOrder());
         assertEquals("card", historyOrder.getPaymentMethod());
     }

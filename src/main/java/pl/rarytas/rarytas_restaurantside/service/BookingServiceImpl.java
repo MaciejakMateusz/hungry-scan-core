@@ -3,87 +3,62 @@ package pl.rarytas.rarytas_restaurantside.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
-import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
-import pl.rarytas.rarytas_restaurantside.enums.DayPart;
+import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.BookingRepository;
+import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
+import pl.rarytas.rarytas_restaurantside.utility.BookingValidator;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class BookingServiceImpl implements BookingService {
 
-    private final RestaurantService restaurantService;
     private final BookingRepository bookingRepository;
-    private final Environment environment;
+    private final RestaurantTableRepository restaurantTableRepository;
+    private final BookingValidator bookingValidator;
     private final MessageSource messageSource;
 
-    public BookingServiceImpl(RestaurantService restaurantService, BookingRepository bookingRepository, Environment environment, MessageSource messageSource) {
-        this.restaurantService = restaurantService;
+    public BookingServiceImpl(BookingRepository bookingRepository, RestaurantTableRepository restaurantTableRepository, BookingValidator bookingValidator, MessageSource messageSource) {
         this.bookingRepository = bookingRepository;
-        this.environment = environment;
+        this.restaurantTableRepository = restaurantTableRepository;
+        this.bookingValidator = bookingValidator;
         this.messageSource = messageSource;
     }
 
     @Override
-    public void save(Booking booking) {
-        try {
-            DayPart dayPart = computeDayPart(booking.getTime());
-            booking.setDayPart(dayPart);
-        } catch (LocalizedException e) {
-            log.warn("Wrong booking time.");
-        }
-        bookingRepository.save(booking);
-    }
-
-    @Override
-    public void delete(Booking booking) {
-
-    }
-
-    @Override
-    public List<Booking> findAllByWeek(int year, int week) {
-        return bookingRepository.findAllByWeek(year, week);
-    }
-
-    @Override
-    public List<Booking> findAllByDate(LocalDate date) {
-        return bookingRepository.findAllByDate(date);
-    }
-
-    private DayPart computeDayPart(LocalTime time) throws LocalizedException {
-        String restaurantId = environment.getProperty("RESTAURANT_ID");
-        assert restaurantId != null;
-        Restaurant restaurant = restaurantService.findById(Integer.valueOf(restaurantId)).orElseThrow();
-
-        LocalTime firstHalfStart = restaurant.getOpening();
-        LocalTime firstHalfEnd = computeAvgTime(restaurant.getOpening(), restaurant.getClosing());
-        LocalTime secondHalfStart = firstHalfEnd.plusMinutes(1);
-        LocalTime secondHalfEnd = restaurant.getClosing();
-
-        if (time.isAfter(firstHalfStart) && time.isBefore(firstHalfEnd)) {
-            return DayPart.FIRST_HALF;
-        } else if (time.isAfter(secondHalfStart) && time.isBefore(secondHalfEnd)) {
-            return DayPart.SECOND_HALF;
+    @Transactional
+    public void save(Booking booking) throws LocalizedException {
+        if (bookingValidator.isValidBooking(booking)) {
+            bookingRepository.saveAndFlush(booking);
+            RestaurantTable table = restaurantTableRepository.findById(booking.getTableId()).orElseThrow();
+            table.getBookings().add(booking);
+            restaurantTableRepository.save(table);
         } else {
             throw new LocalizedException(String.format(messageSource.getMessage(
-                    "error.bookingService.general.wrongBookingTime",
+                    "error.bookingService.general.bookingCollides",
                     null, LocaleContextHolder.getLocale())));
         }
     }
 
-    private LocalTime computeAvgTime(LocalTime opening, LocalTime closing) {
-        long openingSecondOfDay = opening.toSecondOfDay();
-        long closingSecondOfDay = closing.toSecondOfDay();
-        long averageTotalSeconds = (openingSecondOfDay + closingSecondOfDay) / 2;
-        return LocalTime.ofSecondOfDay(averageTotalSeconds);
+    @Override
+    public void delete(Booking booking) {
+        bookingRepository.delete(booking);
+    }
+
+    @Override
+    public Set<Booking> findAllByWeek(int year, int week) {
+        return bookingRepository.findAllByWeek(year, week);
+    }
+
+    @Override
+    public Set<Booking> findAllByDate(LocalDate date) {
+        return bookingRepository.findAllByDate(date);
     }
 }
