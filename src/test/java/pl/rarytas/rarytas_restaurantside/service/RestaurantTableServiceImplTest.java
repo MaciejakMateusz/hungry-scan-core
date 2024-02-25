@@ -41,7 +41,7 @@ public class RestaurantTableServiceImplTest {
     @Test
     @Order(1)
     void shouldBookTable() throws LocalizedException {
-        LocalDate bookingDate = LocalDate.now().plusDays(2L);
+        LocalDate bookingDate = LocalDate.now().plusDays(5L);
         Booking booking = createBooking(
                 bookingDate,
                 LocalTime.of(12, 0),
@@ -55,7 +55,7 @@ public class RestaurantTableServiceImplTest {
     @Test
     @Order(2)
     void shouldNotBookTable() {
-        LocalDate bookingDate = LocalDate.now().plusDays(2L);
+        LocalDate bookingDate = LocalDate.now().plusDays(5L);
         Booking booking = createBooking(
                 bookingDate,
                 LocalTime.of(14, 55),
@@ -73,7 +73,7 @@ public class RestaurantTableServiceImplTest {
         booking.setTime(time);
         booking.setNumOfPpl(numOfPpl);
         booking.setSurname(surname);
-        booking.setTableId(3);
+        booking.setTableId(7);
         return booking;
     }
 }

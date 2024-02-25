@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
@@ -154,8 +155,22 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @Transactional
     @org.junit.jupiter.api.Order(13)
-    public void shouldSaveNewDineInOrder() throws Exception {
+    public void launchPostPatchTestsInSequence() throws Exception {
+        shouldSaveNewDineInOrder();
+        shouldNotSaveOrderForOccupiedTable();
+        shouldSaveNewTakeAwayOrder();
+        shouldSaveNextDineInOrder();
+        shouldRequestBillAndUpdateOrder();
+        shouldThrowWhenRequestingBill();
+        shouldThrowWhenCallingWaiter();
+        shouldCallWaiter();
+        shouldNotRequestBill();
+        shouldNotCallWaiter();
+    }
+
+    private void shouldSaveNewDineInOrder() throws Exception {
         Order order = orderProcessor.getCreatedOrder(12, List.of(4, 12, 15), false);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -173,9 +188,7 @@ class OrderRestControllerTest {
                 orderProcessor.countTotalAmount(savedOrder.getOrderedItems()));
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(14)
-    public void shouldNotSaveOrderForOccupiedTable() throws Exception {
+    private void shouldNotSaveOrderForOccupiedTable() throws Exception {
         Order order = orderProcessor.getCreatedOrder(12, List.of(5, 1, 22), false);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -188,8 +201,6 @@ class OrderRestControllerTest {
         );
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(15)
     public void shouldSaveNewTakeAwayOrder() throws Exception {
         Order order = orderProcessor.getCreatedOrder(19, List.of(3, 10, 22, 33), true);
 
@@ -208,9 +219,7 @@ class OrderRestControllerTest {
                 orderProcessor.countTotalAmount(savedOrder.getOrderedItems()));
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(16)
-    public void shouldSaveNextDineInOrder() throws Exception {
+    private void shouldSaveNextDineInOrder() throws Exception {
         Order order = orderProcessor.getCreatedOrder(10, List.of(7, 9, 22, 31), false);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -228,9 +237,7 @@ class OrderRestControllerTest {
                 orderProcessor.countTotalAmount(savedOrder.getOrderedItems()));
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(17)
-    public void shouldRequestBillAndUpdateOrder() throws Exception {
+    private void shouldRequestBillAndUpdateOrder() throws Exception {
         Order order = (Order) orderService.findById(7).orElse(null);
         assertNotNull(order);
 
@@ -249,9 +256,7 @@ class OrderRestControllerTest {
                 orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()));
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(18)
-    public void shouldThrowWhenRequestingBill() throws Exception {
+    private void shouldThrowWhenRequestingBill() throws Exception {
         Order order = (Order) orderService.findById(7).orElse(null);
         assertNotNull(order);
 
@@ -264,9 +269,7 @@ class OrderRestControllerTest {
                         .content(orderJson)));
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(19)
-    public void shouldThrowWhenCallingWaiter() throws Exception {
+    private void shouldThrowWhenCallingWaiter() throws Exception {
         Order order = (Order) orderService.findById(7).orElse(null);
         assertNotNull(order);
 
@@ -279,9 +282,7 @@ class OrderRestControllerTest {
                         .content(orderJson)));
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(20)
-    public void shouldCallWaiter() throws Exception {
+    private void shouldCallWaiter() throws Exception {
         Order order = (Order) orderService.findById(9).orElse(null);
         assertNotNull(order);
 
@@ -300,9 +301,7 @@ class OrderRestControllerTest {
                 orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()));
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(21)
-    public void shouldNotRequestBill() throws Exception {
+    private void shouldNotRequestBill() throws Exception {
         Order order = (Order) orderService.findById(9).orElse(null);
         assertNotNull(order);
 
@@ -315,9 +314,7 @@ class OrderRestControllerTest {
                         .content(orderJson)));
     }
 
-    @Test
-    @org.junit.jupiter.api.Order(22)
-    public void shouldNotCallWaiter() throws Exception {
+    private void shouldNotCallWaiter() throws Exception {
         Order order = (Order) orderService.findById(9).orElse(null);
         assertNotNull(order);
 
