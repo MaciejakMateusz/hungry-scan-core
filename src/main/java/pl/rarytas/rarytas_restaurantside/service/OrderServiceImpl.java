@@ -86,19 +86,6 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private boolean orderExistsForGivenTable(Order order) throws LocalizedException {
-        if (orderRepository.existsByRestaurantTable(order.getRestaurantTable())) {
-            Integer tableNumber = order.getRestaurantTable().getId();
-            Order existingOrder = orderRepository.findNewestOrderByTableNumber(tableNumber).orElseThrow();
-            if (!existingOrder.isResolved()) {
-                throw new LocalizedException(String.format(messageSource.getMessage(
-                        "error.orderService.general.orderExistsForTable",
-                        null, LocaleContextHolder.getLocale()), order.getId()));
-            }
-        }
-        return false;
-    }
-
     @Override
     public void saveTakeAway(Order order) {
         orderRepository.save(order);
@@ -114,10 +101,10 @@ public class OrderServiceImpl implements OrderService {
                     null, LocaleContextHolder.getLocale()), order.getId()));
         }
         Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
-        if (existingOrder.isWaiterCalled()) {
+        if (isInvalidBillRequest(existingOrder)) {
             throw new LocalizedException(String.format(messageSource.getMessage(
-                    "error.orderService.general.waiterCalled",
-                    null, LocaleContextHolder.getLocale()), existingOrder.getId()));
+                    "error.orderService.general.alreadyRequested",
+                    new Integer[]{existingOrder.getOrderNumber()}, LocaleContextHolder.getLocale())));
         }
         existingOrder.setBillRequested(true);
         existingOrder.setPaymentMethod(order.getPaymentMethod());
@@ -141,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
 
         if (existingOrder.isWaiterCalled()) {
             throw new LocalizedException(String.format(messageSource.getMessage(
-                    "error.orderService.general.waiterCalled",
+                    "error.orderService.general.alreadyRequested",
                     null, LocaleContextHolder.getLocale()), id));
         }
 
@@ -182,7 +169,7 @@ public class OrderServiceImpl implements OrderService {
                     null, LocaleContextHolder.getLocale()), order.getId()));
         } else if (existingOrder.isWaiterCalled()) {
             throw new LocalizedException(String.format(messageSource.getMessage(
-                    "error.orderService.general.waiterCalled",
+                    "error.orderService.general.alreadyRequested",
                     null, LocaleContextHolder.getLocale()), order.getId()));
         }
         existingOrder.setWaiterCalled(true);
@@ -222,5 +209,22 @@ public class OrderServiceImpl implements OrderService {
             sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
         }
         return sum;
+    }
+
+    private boolean orderExistsForGivenTable(Order order) throws LocalizedException {
+        if (orderRepository.existsByRestaurantTable(order.getRestaurantTable())) {
+            Integer tableNumber = order.getRestaurantTable().getId();
+            Order existingOrder = orderRepository.findNewestOrderByTableNumber(tableNumber).orElseThrow();
+            if (!existingOrder.isResolved()) {
+                throw new LocalizedException(String.format(messageSource.getMessage(
+                        "error.orderService.general.orderExistsForTable",
+                        null, LocaleContextHolder.getLocale()), order.getId()));
+            }
+        }
+        return false;
+    }
+
+    private boolean isInvalidBillRequest(Order existingOrder) {
+        return existingOrder.isWaiterCalled() || existingOrder.isBillRequested();
     }
 }
