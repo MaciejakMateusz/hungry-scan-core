@@ -18,7 +18,7 @@ import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
 import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
-import pl.rarytas.rarytas_restaurantside.utility.PaymentMethodEnum;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -102,7 +102,7 @@ class OrderServiceImplTest {
         Integer tableNumber = activeOrder.getRestaurantTable().getId();
         assertEquals(1, tableNumber);
 
-        activeOrder.setPaymentMethod(String.valueOf(PaymentMethodEnum.CARD));
+        activeOrder.setPaymentMethod(String.valueOf(PaymentMethod.CARD));
         orderService.requestBill(activeOrder);
 
         activeOrder = (Order) orderService.findById(1).orElseThrow();

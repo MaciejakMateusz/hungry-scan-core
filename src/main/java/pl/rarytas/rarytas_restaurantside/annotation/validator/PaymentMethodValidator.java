@@ -3,13 +3,12 @@ package pl.rarytas.rarytas_restaurantside.annotation.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
-import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
-import pl.rarytas.rarytas_restaurantside.utility.PaymentMethodEnum;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 
 import java.util.Arrays;
 
 @Slf4j
-public class PaymentMethodValidator implements ConstraintValidator<PaymentMethod, String> {
+public class PaymentMethodValidator implements ConstraintValidator<pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
@@ -25,7 +24,7 @@ public class PaymentMethodValidator implements ConstraintValidator<PaymentMethod
     }
 
     private static boolean isValidPaymentMethod(String value) {
-        return Arrays.stream(PaymentMethodEnum.values())
+        return Arrays.stream(PaymentMethod.values())
                 .anyMatch(paymentMethod -> paymentMethod.getMethodName().equalsIgnoreCase(value));
     }
 }
