@@ -101,7 +101,7 @@ public class OrderRestController {
     }
 
     @PatchMapping
-    public void orderMoreDishes(@RequestBody Order order) throws LocalizedException {
+    public void orderMoreDishes(@RequestBody Order order) {
         orderService.orderMoreDishes(order);
     }
 
