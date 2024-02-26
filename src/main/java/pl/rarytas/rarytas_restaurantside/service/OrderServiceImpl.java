@@ -79,7 +79,22 @@ public class OrderServiceImpl implements OrderService {
         if (orderExistsForGivenTable(order)) {
             return;
         }
-        orderRepository.save(order);
+        saveRefreshAndNotify(order);
+    }
+
+    @Override
+    public void orderMoreDishes(Order order) {
+        Order existingOrder = (Order) findById(order.getId()).orElseThrow();
+        addItemsToOrder(existingOrder, order.getOrderedItems());
+        saveRefreshAndNotify(existingOrder);
+    }
+
+    private void addItemsToOrder(Order existingOrder, List<OrderedItem> newItems) {
+        existingOrder.getOrderedItems().addAll(newItems);
+    }
+
+    private void saveRefreshAndNotify(Order order) {
+        orderRepository.saveAndFlush(order);
         orderRepository.refresh(order);
         if (!order.isForTakeAway()) {
             messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());

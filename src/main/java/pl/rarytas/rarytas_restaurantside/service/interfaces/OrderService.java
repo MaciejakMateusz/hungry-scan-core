@@ -21,6 +21,8 @@ public interface OrderService {
 
     void save(Order order) throws LocalizedException;
 
+    void orderMoreDishes(Order order);
+
     void saveTakeAway(Order order);
 
     void requestBill(Order order) throws LocalizedException;
