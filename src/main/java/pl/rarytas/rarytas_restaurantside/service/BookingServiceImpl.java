@@ -1,12 +1,11 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.BookingRepository;
 import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
@@ -23,13 +22,16 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final RestaurantTableRepository restaurantTableRepository;
     private final BookingValidator bookingValidator;
-    private final MessageSource messageSource;
+    private final ExceptionHelper exceptionHelper;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, RestaurantTableRepository restaurantTableRepository, BookingValidator bookingValidator, MessageSource messageSource) {
+    public BookingServiceImpl(BookingRepository bookingRepository,
+                              RestaurantTableRepository restaurantTableRepository,
+                              BookingValidator bookingValidator,
+                              ExceptionHelper exceptionHelper) {
         this.bookingRepository = bookingRepository;
         this.restaurantTableRepository = restaurantTableRepository;
         this.bookingValidator = bookingValidator;
-        this.messageSource = messageSource;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
@@ -41,9 +43,7 @@ public class BookingServiceImpl implements BookingService {
             table.getBookings().add(booking);
             restaurantTableRepository.save(table);
         } else {
-            throw new LocalizedException(String.format(messageSource.getMessage(
-                    "error.bookingService.general.bookingCollides",
-                    null, LocaleContextHolder.getLocale())));
+            exceptionHelper.throwLocalizedMessage("error.bookingService.general.bookingCollides");
         }
     }
 

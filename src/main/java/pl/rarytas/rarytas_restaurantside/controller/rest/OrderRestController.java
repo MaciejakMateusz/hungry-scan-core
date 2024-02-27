@@ -100,6 +100,11 @@ public class OrderRestController {
         orderService.save(order);
     }
 
+    @PatchMapping
+    public void orderMoreDishes(@RequestBody Order order) {
+        orderService.orderMoreDishes(order);
+    }
+
     @PatchMapping("/request-bill")
     public void requestBill(@RequestBody Order order) throws LocalizedException {
         orderService.requestBill(order);

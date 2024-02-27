@@ -19,6 +19,7 @@ import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
@@ -165,6 +166,7 @@ class OrderRestControllerTest {
         shouldRequestBillAndUpdateOrder();
         shouldThrowWhenRequestingBill();
         shouldThrowWhenCallingWaiter();
+        shouldOrderMoreDishes();
         shouldCallWaiter();
         shouldNotRequestBill();
         shouldNotCallWaiter();
@@ -280,6 +282,28 @@ class OrderRestControllerTest {
                 mockMvc.perform(patch("/api/orders/call-waiter")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(orderJson)));
+    }
+
+    private void shouldOrderMoreDishes() throws Exception {
+        Order newOrder = orderProcessor.getCreatedOrder(12, List.of(2, 35), false);
+        newOrder.setId(9);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(newOrder);
+
+        mockMvc.perform(patch("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
+                .andExpect(status().is2xxSuccessful());
+
+        Order updatedOrder = (Order) orderService.findById(9).orElse(null);
+        assertNotNull(updatedOrder);
+        BigDecimal newItemsAmount = orderProcessor.countTotalAmount(newOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal newTotalAmount = orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
+
+        assertEquals(BigDecimal.valueOf(40.00).setScale(2, RoundingMode.HALF_UP), newItemsAmount);
+        assertEquals(BigDecimal.valueOf(136.25).setScale(2, RoundingMode.HALF_UP), newTotalAmount);
+        assertEquals(6, updatedOrder.getOrderedItems().size());
     }
 
     private void shouldCallWaiter() throws Exception {
