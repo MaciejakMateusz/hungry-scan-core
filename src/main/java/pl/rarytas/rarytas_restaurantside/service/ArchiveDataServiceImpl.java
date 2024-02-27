@@ -37,7 +37,19 @@ public class ArchiveDataServiceImpl implements ArchiveDataService {
     }
 
     private HistoryOrder mapOrderToHistoryOrder(Order order) {
-        HistoryOrder historyOrder = new HistoryOrder();
+        HistoryOrder historyOrder = new HistoryOrder(
+                order.getId(),
+                order.getRestaurantTable(),
+                order.getRestaurant(),
+                order.getOrderTime(),
+                order.getPaymentMethod(),
+                order.getTotalAmount(),
+                order.isPaid(),
+                order.isForTakeAway(),
+                order.isBillRequested(),
+                order.isResolved(),
+                order.isWaiterCalled(),
+                order.getOrderNumber());
 
         List<HistoryOrderedItem> transferredItems = new ArrayList<>();
         order.getOrderedItems().forEach(orderedItem -> {
@@ -49,18 +61,6 @@ public class ArchiveDataServiceImpl implements ArchiveDataService {
         });
 
         historyOrder.setHistoryOrderedItems(transferredItems);
-        historyOrder.setId(Long.valueOf(order.getId()));
-        historyOrder.setOrderNumber(order.getOrderNumber());
-        historyOrder.setOrderTime(order.getOrderTime());
-        historyOrder.setPaid(order.isPaid());
-        historyOrder.setResolved(order.isResolved());
-        historyOrder.setRestaurant(order.getRestaurant());
-        historyOrder.setBillRequested(order.isBillRequested());
-        historyOrder.setForTakeAway(order.isForTakeAway());
-        historyOrder.setPaymentMethod(order.getPaymentMethod());
-        historyOrder.setRestaurantTable(order.getRestaurantTable());
-        historyOrder.setTotalAmount(order.getTotalAmount());
-        historyOrder.setWaiterCalled(order.isWaiterCalled());
 
         return historyOrder;
     }

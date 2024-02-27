@@ -13,11 +13,11 @@ public interface OrderService {
 
     List<Order> findAllByResolvedIsTrue();
 
-    Optional<Order> findFinalizedById(Integer id, boolean forTakeAway);
+    Optional<Order> findFinalizedById(Long id, boolean forTakeAway);
 
-    Optional<Order> findByTableNumber(Integer number);
+    Optional<Order> findByTableNumber(Integer tableNumber);
 
-    Optional<?> findById(Integer id);
+    Optional<?> findById(Long id);
 
     void save(Order order) throws LocalizedException;
 
@@ -27,13 +27,13 @@ public interface OrderService {
 
     void requestBill(Order order) throws LocalizedException;
 
-    void finish(Integer id, boolean paid, boolean isResolved) throws LocalizedException;
+    void finish(Long id, boolean paid, boolean isResolved) throws LocalizedException;
 
-    void finishTakeAway(Integer id, boolean paid, boolean isResolved) throws LocalizedException;
+    void finishTakeAway(Long id, boolean paid, boolean isResolved) throws LocalizedException;
 
     void callWaiter(Order order) throws LocalizedException;
 
-    void resolveWaiterCall(Integer id) throws LocalizedException;
+    void resolveWaiterCall(Long id) throws LocalizedException;
 
     void delete(Order order);
 }

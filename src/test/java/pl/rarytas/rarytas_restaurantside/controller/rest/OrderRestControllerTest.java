@@ -87,7 +87,7 @@ class OrderRestControllerTest {
     @Test
     @org.junit.jupiter.api.Order(5)
     public void shouldGetFinalizedDineInByIdFromDB() {
-        Order order = orderService.findFinalizedById(3, false).orElse(new Order());
+        Order order = orderService.findFinalizedById(3L, false).orElse(new Order());
 
         assertTrue(order.isPaid());
         assertTrue(order.isResolved());
@@ -142,7 +142,7 @@ class OrderRestControllerTest {
     @Test
     @org.junit.jupiter.api.Order(11)
     public void shouldGetByIdFromDB() {
-        Order order = (Order) orderService.findById(4).orElseThrow();
+        Order order = (Order) orderService.findById(4L).orElseThrow();
         //only order with ID 4 has total amount = 73.50
         assertEquals("73.50", order.getTotalAmount().setScale(2, RoundingMode.HALF_UP).toString());
     }
@@ -183,7 +183,7 @@ class OrderRestControllerTest {
                         .content(orderJson))
                 .andExpect(status().is2xxSuccessful());
 
-        Order savedOrder = (Order) orderService.findById(7).orElse(null);
+        Order savedOrder = (Order) orderService.findById(7L).orElse(null);
         assertNotNull(savedOrder);
         assertEquals(savedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
@@ -214,7 +214,7 @@ class OrderRestControllerTest {
                         .content(orderJson))
                 .andExpect(status().is2xxSuccessful());
 
-        Order savedOrder = (Order) orderService.findById(8).orElse(null);
+        Order savedOrder = (Order) orderService.findById(8L).orElse(null);
         assertNotNull(savedOrder);
         assertEquals(savedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
@@ -232,7 +232,7 @@ class OrderRestControllerTest {
                         .content(orderJson))
                 .andExpect(status().is2xxSuccessful());
 
-        Order savedOrder = (Order) orderService.findById(9).orElse(null);
+        Order savedOrder = (Order) orderService.findById(9L).orElse(null);
         assertNotNull(savedOrder);
         assertEquals(savedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
@@ -240,7 +240,7 @@ class OrderRestControllerTest {
     }
 
     private void shouldRequestBillAndUpdateOrder() throws Exception {
-        Order order = (Order) orderService.findById(7).orElse(null);
+        Order order = (Order) orderService.findById(7L).orElse(null);
         assertNotNull(order);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -251,7 +251,7 @@ class OrderRestControllerTest {
                         .content(orderJson))
                 .andExpect(status().is2xxSuccessful());
 
-        Order updatedOrder = (Order) orderService.findById(7).orElse(null);
+        Order updatedOrder = (Order) orderService.findById(7L).orElse(null);
         assertNotNull(updatedOrder);
         assertTrue(updatedOrder.isBillRequested());
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
@@ -259,7 +259,7 @@ class OrderRestControllerTest {
     }
 
     private void shouldThrowWhenRequestingBill() throws Exception {
-        Order order = (Order) orderService.findById(7).orElse(null);
+        Order order = (Order) orderService.findById(7L).orElse(null);
         assertNotNull(order);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -272,7 +272,7 @@ class OrderRestControllerTest {
     }
 
     private void shouldThrowWhenCallingWaiter() throws Exception {
-        Order order = (Order) orderService.findById(7).orElse(null);
+        Order order = (Order) orderService.findById(7L).orElse(null);
         assertNotNull(order);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -286,7 +286,7 @@ class OrderRestControllerTest {
 
     private void shouldOrderMoreDishes() throws Exception {
         Order newOrder = orderProcessor.getCreatedOrder(12, List.of(2, 35), false);
-        newOrder.setId(9);
+        newOrder.setId(9L);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String orderJson = objectMapper.writeValueAsString(newOrder);
@@ -296,7 +296,7 @@ class OrderRestControllerTest {
                         .content(orderJson))
                 .andExpect(status().is2xxSuccessful());
 
-        Order updatedOrder = (Order) orderService.findById(9).orElse(null);
+        Order updatedOrder = (Order) orderService.findById(9L).orElse(null);
         assertNotNull(updatedOrder);
         BigDecimal newItemsAmount = orderProcessor.countTotalAmount(newOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
         BigDecimal newTotalAmount = orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
@@ -307,7 +307,7 @@ class OrderRestControllerTest {
     }
 
     private void shouldCallWaiter() throws Exception {
-        Order order = (Order) orderService.findById(9).orElse(null);
+        Order order = (Order) orderService.findById(9L).orElse(null);
         assertNotNull(order);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -318,7 +318,7 @@ class OrderRestControllerTest {
                         .content(orderJson))
                 .andExpect(status().is2xxSuccessful());
 
-        Order updatedOrder = (Order) orderService.findById(9).orElse(null);
+        Order updatedOrder = (Order) orderService.findById(9L).orElse(null);
         assertNotNull(updatedOrder);
         assertTrue(updatedOrder.isWaiterCalled());
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
@@ -326,7 +326,7 @@ class OrderRestControllerTest {
     }
 
     private void shouldNotRequestBill() throws Exception {
-        Order order = (Order) orderService.findById(9).orElse(null);
+        Order order = (Order) orderService.findById(9L).orElse(null);
         assertNotNull(order);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -339,7 +339,7 @@ class OrderRestControllerTest {
     }
 
     private void shouldNotCallWaiter() throws Exception {
-        Order order = (Order) orderService.findById(9).orElse(null);
+        Order order = (Order) orderService.findById(9L).orElse(null);
         assertNotNull(order);
 
         ObjectMapper objectMapper = new ObjectMapper();

@@ -8,7 +8,7 @@ import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import java.util.List;
 import java.util.Optional;
 
-public interface OrderRepository extends CustomRepository<Order, Integer> {
+public interface OrderRepository extends CustomRepository<Order, Long> {
 
     @Query(value = "SELECT o FROM Order o WHERE o.paid = false AND o.forTakeAway = false AND o.isResolved = false")
     List<Order> findAllNotPaid();
@@ -25,6 +25,6 @@ public interface OrderRepository extends CustomRepository<Order, Integer> {
     boolean existsByRestaurantTable(RestaurantTable restaurantTable);
 
     @Query(value = "SELECT o FROM Order o WHERE o.id = :id AND o.forTakeAway = :forTakeAway")
-    Optional<Order> findFinalizedById(@Param("id") Integer id,
+    Optional<Order> findFinalizedById(@Param("id") Long id,
                                       @Param("forTakeAway") boolean forTakeAway);
 }

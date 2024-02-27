@@ -61,14 +61,14 @@ class OrderServiceImplTest {
 
     @Test
     void shouldFindFinalizedById() {
-        Order order = orderService.findFinalizedById(3, false).orElse(new Order());
+        Order order = orderService.findFinalizedById(3L, false).orElse(new Order());
         assertEquals(BigDecimal.valueOf(44).setScale(2, RoundingMode.HALF_UP), order.getTotalAmount());
     }
 
     @Test
     void shouldNotFindFinalizedById() {
-        assertThrows(NoSuchElementException.class, () -> orderService.findFinalizedById(12, false).orElseThrow());
-        assertThrows(NoSuchElementException.class, () -> orderService.findFinalizedById(3, true).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> orderService.findFinalizedById(12L, false).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> orderService.findFinalizedById(3L, true).orElseThrow());
     }
 
     @Test
@@ -85,49 +85,49 @@ class OrderServiceImplTest {
 
     @Test
     void shouldFindById() {
-        Order order = (Order) orderService.findById(2).orElseThrow();
+        Order order = (Order) orderService.findById(2L).orElseThrow();
         int orderNumber = order.getOrderNumber();
         assertEquals(322, orderNumber);
     }
 
     @Test
     void shouldNotFindById() {
-        assertThrows(NoSuchElementException.class, () -> orderService.findById(23).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> orderService.findById(23L).orElseThrow());
     }
 
     @Test
     @Transactional
     void shouldRequestBill() throws LocalizedException {
-        Order activeOrder = (Order) orderService.findById(1).orElseThrow();
+        Order activeOrder = (Order) orderService.findById(1L).orElseThrow();
         Integer tableNumber = activeOrder.getRestaurantTable().getId();
         assertEquals(1, tableNumber);
 
         activeOrder.setPaymentMethod(String.valueOf(PaymentMethod.CARD));
         orderService.requestBill(activeOrder);
 
-        activeOrder = (Order) orderService.findById(1).orElseThrow();
+        activeOrder = (Order) orderService.findById(1L).orElseThrow();
         assertTrue(activeOrder.isBillRequested(), "The value should be true, but was false");
     }
 
     @Test
     @Transactional
     void shouldFinishAndArchive() throws LocalizedException {
-        Order existingOrder = (Order) orderService.findById(2).orElseThrow();
+        Order existingOrder = (Order) orderService.findById(2L).orElseThrow();
         assertTrue(existingOrder.isBillRequested());
 
-        orderService.finish(2, true, true);
-        assertEquals(HistoryOrder.class, orderService.findById(2).orElseThrow().getClass());
+        orderService.finish(2L, true, true);
+        assertEquals(HistoryOrder.class, orderService.findById(2L).orElseThrow().getClass());
     }
 
     @Test
     void shouldNotFinishAndArchive() {
-        assertThrows(LocalizedException.class, () -> orderService.finish(15, true, true));
+        assertThrows(LocalizedException.class, () -> orderService.finish(15L, true, true));
     }
 
     @Test
     @org.junit.jupiter.api.Order(1)
     void shouldCallWaiter() throws LocalizedException {
-        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
+        Order existingOrder = (Order) orderService.findById(1L).orElseThrow();
         assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime());
 
         orderService.callWaiter(existingOrder);
@@ -138,8 +138,8 @@ class OrderServiceImplTest {
     @Test
     @org.junit.jupiter.api.Order(2)
     void shouldResolveWaiterCall() throws LocalizedException {
-        orderService.resolveWaiterCall(1);
-        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
+        orderService.resolveWaiterCall(1L);
+        Order existingOrder = (Order) orderService.findById(1L).orElseThrow();
 
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
         waiterCalls.forEach(waiterCall -> assertTrue(waiterCall.isResolved()));
@@ -148,9 +148,9 @@ class OrderServiceImplTest {
     @Test
     @Transactional
     void shouldDelete() {
-        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
+        Order existingOrder = (Order) orderService.findById(1L).orElseThrow();
         assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime());
         orderService.delete(existingOrder);
-        assertThrows(NoSuchElementException.class, () -> orderService.findById(1).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> orderService.findById(1L).orElseThrow());
     }
 }
