@@ -1,10 +1,9 @@
 package pl.rarytas.rarytas_restaurantside.utility;
 
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
+import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 
@@ -14,11 +13,11 @@ import java.math.BigDecimal;
 public class OrderServiceHelper {
 
     private final OrderRepository orderRepository;
-    private final MessageSource messageSource;
+    private final ExceptionHelper exceptionHelper;
 
-    public OrderServiceHelper(OrderRepository orderRepository, MessageSource messageSource) {
+    public OrderServiceHelper(OrderRepository orderRepository, ExceptionHelper exceptionHelper) {
         this.orderRepository = orderRepository;
-        this.messageSource = messageSource;
+        this.exceptionHelper = exceptionHelper;
     }
 
     private BigDecimal calculateTotalAmount(Order order) {
@@ -50,17 +49,13 @@ public class OrderServiceHelper {
 
     public void assertOrderExistsElseThrow(Integer id) throws LocalizedException {
         if (!orderRepository.existsById(id)) {
-            throw new LocalizedException(String.format(messageSource.getMessage(
-                    "error.orderService.general.orderNotfound",
-                    new Integer[]{id}, LocaleContextHolder.getLocale())));
+            exceptionHelper.throwLocalizedMessage("error.orderService.general.orderNotfound", id);
         }
     }
 
     private void assertIsNotResolvedElseThrow(Order existingOrder) throws LocalizedException {
         if (!existingOrder.isResolved()) {
-            throw new LocalizedException(String.format(messageSource.getMessage(
-                    "error.orderService.general.orderExistsForTable",
-                    new Integer[]{existingOrder.getId()}, LocaleContextHolder.getLocale())));
+            exceptionHelper.throwLocalizedMessage("error.orderService.general.orderExistsForTable", existingOrder.getId());
         }
     }
 
@@ -77,8 +72,6 @@ public class OrderServiceHelper {
     }
 
     private void throwAlreadyRequested(Order existingOrder) throws LocalizedException {
-        throw new LocalizedException(String.format(messageSource.getMessage(
-                "error.orderService.general.alreadyRequested",
-                new Integer[]{existingOrder.getId()}, LocaleContextHolder.getLocale())));
+        exceptionHelper.throwLocalizedMessage("error.orderService.general.alreadyRequested", existingOrder.getId());
     }
 }
