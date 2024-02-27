@@ -54,22 +54,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<Order> findFinalizedById(Integer id, boolean forTakeAway) {
+    public Optional<Order> findFinalizedById(Long id, boolean forTakeAway) {
         return orderRepository.findFinalizedById(id, forTakeAway);
     }
 
     @Override
-    public Optional<Order> findByTableNumber(Integer number) {
-        return orderRepository.findNewestOrderByTableNumber(number);
+    public Optional<Order> findByTableNumber(Integer tableNumber) {
+        return orderRepository.findNewestOrderByTableNumber(tableNumber);
     }
 
     @Override
-    public Optional<?> findById(Integer id) {
+    public Optional<?> findById(Long id) {
         Optional<Order> order = orderRepository.findById(id);
         if (order.isPresent()) {
             return order;
         } else {
-            return historyOrderRepository.findById(Long.valueOf(id));
+            return historyOrderRepository.findById(id);
         }
     }
 
@@ -100,7 +100,8 @@ public class OrderServiceImpl implements OrderService {
         orderHelper.assertOrderExistsElseThrow(order.getId());
         Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
-        orderHelper.assertNoBillRequestedElseThrow(existingOrder);        existingOrder.setBillRequested(true);
+        orderHelper.assertNoBillRequestedElseThrow(existingOrder);
+        existingOrder.setBillRequested(true);
         existingOrder.setPaymentMethod(order.getPaymentMethod());
         orderRepository.saveAndFlush(existingOrder);
         assert !existingOrder.isForTakeAway();
@@ -108,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void finish(Integer id, boolean paid, boolean isResolved) throws LocalizedException {
+    public void finish(Long id, boolean paid, boolean isResolved) throws LocalizedException {
         orderHelper.assertOrderExistsElseThrow(id);
         Order existingOrder = orderRepository.findById(id).orElseThrow();
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
@@ -122,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void finishTakeAway(Integer id,
+    public void finishTakeAway(Long id,
                                boolean paid,
                                boolean isResolved) throws LocalizedException {
         finish(id, paid, isResolved);
@@ -144,7 +145,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void resolveWaiterCall(Integer id) throws LocalizedException {
+    public void resolveWaiterCall(Long id) throws LocalizedException {
         orderHelper.assertOrderExistsElseThrow(id);
         Order order = orderRepository.findById(id).orElseThrow();
         order.setWaiterCalled(false);

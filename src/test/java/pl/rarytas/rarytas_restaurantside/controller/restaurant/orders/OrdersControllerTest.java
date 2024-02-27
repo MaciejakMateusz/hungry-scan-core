@@ -67,7 +67,7 @@ public class OrdersControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/restaurant"));
 
-        verify(mockOrderService, times(1)).finish(1, true, true);
+        verify(mockOrderService, times(1)).finish(1L, true, true);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class OrdersControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/restaurant/orders/take-away"));
 
-        verify(mockOrderService, times(1)).finishTakeAway(1, true, true);
+        verify(mockOrderService, times(1)).finishTakeAway(1L, true, true);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class OrdersControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/restaurant"));
 
-        verify(mockOrderService, times(1)).resolveWaiterCall(1);
+        verify(mockOrderService, times(1)).resolveWaiterCall(1L);
     }
 
     @Test
