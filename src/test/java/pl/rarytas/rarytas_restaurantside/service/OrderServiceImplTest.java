@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
 import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
-import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

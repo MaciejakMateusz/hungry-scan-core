@@ -45,7 +45,7 @@ class CategoryRestControllerTest {
     public void shouldGetSpecificJsonFormat() throws Exception {
         String expectedCategoryJson =
                 "{\"id\":1,\"name\":\"Przystawki\",\"description\":\"Rozpocznij swoją kulinarną podróż od pysznych przystawek, które skradną Twoje podniebienie. Wybierz spośród aromatycznych krewetek marynowanych w cytrynie, wyrafinowanego carpaccio z polędwicy wołowej lub chrupiących nachos z soczystym sosem serowym.\"," +
-                "\"menuItems\":[" +
+                        "\"menuItems\":[" +
                         "{\"id\":1,\"name\":\"Krewetki marynowane w cytrynie\",\"description\":\"Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.\",\"ingredients\":\"Krewetki, cytryna, oliwa z oliwek, czosnek, przyprawy\",\"price\":19.99,\"created\":null,\"updated\":null,\"base64Image\":\"empty\",\"available\":true}," +
                         "{\"id\":2,\"name\":\"Carpaccio z polędwicy wołowej\",\"description\":\"Cienko pokrojona polędwica wołowa podana z rukolą, parmezanem i kaparami.\",\"ingredients\":\"Polędwica wołowa, rukola, parmezan, kapary, oliwa z oliwek\",\"price\":24.50,\"created\":null,\"updated\":null,\"base64Image\":\"empty\",\"available\":true}," +
                         "{\"id\":3,\"name\":\"Krewetki w tempurze\",\"description\":\"Delikatne krewetki w cieście tempura, podawane z sosem słodko-kwaśnym\",\"ingredients\":\"Krewetki, mąka, jajko, olej roślinny, sos słodko-kwaśny\",\"price\":22.00,\"created\":null,\"updated\":null,\"base64Image\":\"empty\",\"available\":true}," +

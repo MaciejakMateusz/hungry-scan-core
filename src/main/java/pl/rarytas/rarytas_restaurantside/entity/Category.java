@@ -29,7 +29,7 @@ public class Category {
     @Column(length = 400)
     private String description;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "category")
     private List<MenuItem> menuItems;
 
     private LocalDateTime created;
