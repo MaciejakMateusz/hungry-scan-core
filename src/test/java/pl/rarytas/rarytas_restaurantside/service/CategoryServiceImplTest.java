@@ -15,7 +15,7 @@ import pl.rarytas.rarytas_restaurantside.repository.CategoryRepository;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
