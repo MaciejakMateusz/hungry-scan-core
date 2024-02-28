@@ -1,9 +1,12 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
+import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 import pl.rarytas.rarytas_restaurantside.repository.OrderedItemRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemService;
 
@@ -13,10 +16,15 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class OrderedItemServiceImpl implements OrderedItemService {
-    private final OrderedItemRepository orderedItemRepository;
 
-    public OrderedItemServiceImpl(OrderedItemRepository orderedItemRepository) {
+    private final OrderedItemRepository orderedItemRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final OrderRepository orderRepository;
+
+    public OrderedItemServiceImpl(OrderedItemRepository orderedItemRepository, SimpMessagingTemplate messagingTemplate, OrderRepository orderRepository) {
         this.orderedItemRepository = orderedItemRepository;
+        this.messagingTemplate = messagingTemplate;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -45,6 +53,9 @@ public class OrderedItemServiceImpl implements OrderedItemService {
     public void update(Long id, boolean isReadyToServe) {
         OrderedItem orderedItem = findById(id).orElseThrow();
         orderedItem.setReadyToServe(isReadyToServe);
-        orderedItemRepository.save(orderedItem);
+        orderedItemRepository.saveAndFlush(orderedItem);
+        orderedItemRepository.refresh(orderedItem);
+        List<Order> orders = orderRepository.findAllNotPaid();
+        messagingTemplate.convertAndSend("/topic/restaurant-orders", orders);
     }
 }
