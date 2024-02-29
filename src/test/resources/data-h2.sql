@@ -160,44 +160,44 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO restaurant_tables (id)
-VALUES (1);
-INSERT INTO restaurant_tables (id)
-VALUES (2);
-INSERT INTO restaurant_tables (id)
-VALUES (3);
-INSERT INTO restaurant_tables (id)
-VALUES (4);
-INSERT INTO restaurant_tables (id)
-VALUES (5);
-INSERT INTO restaurant_tables (id)
-VALUES (6);
-INSERT INTO restaurant_tables (id)
-VALUES (7);
-INSERT INTO restaurant_tables (id)
-VALUES (8);
-INSERT INTO restaurant_tables (id)
-VALUES (9);
-INSERT INTO restaurant_tables (id)
-VALUES (10);
-INSERT INTO restaurant_tables (id)
-VALUES (11);
-INSERT INTO restaurant_tables (id)
-VALUES (12);
-INSERT INTO restaurant_tables (id)
-VALUES (13);
-INSERT INTO restaurant_tables (id)
-VALUES (14);
-INSERT INTO restaurant_tables (id)
-VALUES (15);
-INSERT INTO restaurant_tables (id)
-VALUES (16);
-INSERT INTO restaurant_tables (id)
-VALUES (17);
-INSERT INTO restaurant_tables (id)
-VALUES (18);
-INSERT INTO restaurant_tables (id)
-VALUES (19);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (1, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (2, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (3, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (4, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (5, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (6, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (7, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (8, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (9, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (10, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (11, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (12, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (13, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (14, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (15, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (16, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (17, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (18, false);
+INSERT INTO restaurant_tables (id, is_active)
+VALUES (19, false);
 
 INSERT INTO role (id, name)
 VALUES (1, 'ROLE_USER');

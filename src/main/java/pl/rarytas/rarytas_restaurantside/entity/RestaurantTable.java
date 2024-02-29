@@ -24,4 +24,6 @@ public class RestaurantTable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Booking> bookings;
+
+    private boolean isActive;
 }
