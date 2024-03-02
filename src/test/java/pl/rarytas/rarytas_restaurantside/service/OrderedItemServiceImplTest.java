@@ -39,26 +39,26 @@ class OrderedItemServiceImplTest {
 
     @Test
     void shouldFindById() {
-        OrderedItem orderedItem = orderedItemService.findById(1).orElse(new OrderedItem());
+        OrderedItem orderedItem = orderedItemService.findById(1L).orElse(new OrderedItem());
         assertEquals(3, orderedItem.getMenuItem().getId());
         assertEquals(2, orderedItem.getQuantity());
     }
 
     @Test
     void shouldNotFindById() {
-        assertThrows(NoSuchElementException.class, () -> orderedItemService.findById(8).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> orderedItemService.findById(8L).orElseThrow());
     }
 
     @Test
     void shouldDelete() {
-        OrderedItem orderedItem = orderedItemService.findById(6).orElse(new OrderedItem());
+        OrderedItem orderedItem = orderedItemService.findById(6L).orElse(new OrderedItem());
         orderedItemService.delete(orderedItem);
-        assertThrows(NoSuchElementException.class, () -> orderedItemService.findById(6).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> orderedItemService.findById(6L).orElseThrow());
     }
 
     @Test
     void shouldNotDelete() {
-        OrderedItem orderedItem = orderedItemService.findById(1).orElse(new OrderedItem());
+        OrderedItem orderedItem = orderedItemService.findById(1L).orElse(new OrderedItem());
         assertThrows(DataIntegrityViolationException.class, () -> orderedItemService.delete(orderedItem));
     }
 }

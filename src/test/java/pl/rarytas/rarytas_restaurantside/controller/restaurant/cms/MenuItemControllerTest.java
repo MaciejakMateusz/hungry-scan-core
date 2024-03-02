@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@WithMockUser(roles = "ADMIN")
 class MenuItemControllerTest {
 
     @Autowired
@@ -38,21 +37,38 @@ class MenuItemControllerTest {
     private MenuItemService mockMenuItemService;
 
     @Test
-    void testItemsList() throws Exception {
+    @WithMockUser(roles = "MANAGER")
+    void shouldReturnCmsItemsListView() throws Exception {
         mockMvc.perform(get("/restaurant/cms/items"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/cms/items/list"));
     }
 
     @Test
-    void testAddItem() throws Exception {
+    @WithMockUser(roles = "WAITER")
+    void shouldNotAllowUnauthorizedAccessToCmsItemsListView() throws Exception {
+        mockMvc.perform(get("/restaurant/cms/items"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "MANAGER")
+    void shouldReturnCmsItemsAddView() throws Exception {
         mockMvc.perform(get("/restaurant/cms/items/add"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/cms/items/add"));
     }
 
     @Test
-    void testUpdateItem() throws Exception {
+    @WithMockUser(roles = "COOK")
+    void shouldNotAllowUnauthorizedAccessToCmsItemsAddView() throws Exception {
+        mockMvc.perform(get("/restaurant/cms/items/add"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "MANAGER")
+    void shouldUpdateItem() throws Exception {
         MenuItem menuItem = createMenuItem();
 
         MockMultipartFile file = new MockMultipartFile(
@@ -70,7 +86,8 @@ class MenuItemControllerTest {
     }
 
     @Test
-    void testDeleteItem() throws Exception {
+    @WithMockUser(roles = "MANAGER")
+    void shouldReturnCmsItemsDeleteView() throws Exception {
         when(mockMenuItemService.findById(anyInt())).thenReturn(Optional.of(new MenuItem()));
 
         mockMvc.perform(post("/restaurant/cms/items/delete")
@@ -81,17 +98,30 @@ class MenuItemControllerTest {
     }
 
     @Test
-    void testRemoveItem() throws Exception {
+    @WithMockUser(roles = "WAITER")
+    void shouldNotAllowUnauthorizedAccessToCmsItemsDeleteView() throws Exception {
+        mockMvc.perform(get("/restaurant/cms/items/delete"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "MANAGER")
+    void shouldRemoveMenuItem() throws Exception {
         when(mockMenuItemService.findById(anyInt())).thenReturn(Optional.of(new MenuItem()));
         MenuItem menuItem = createMenuItem();
-        menuItem.setName("Sample Item");
-        menuItem.setPrice(BigDecimal.valueOf(10.99));
 
         mockMvc.perform(post("/restaurant/cms/items/remove")
                         .param("name", menuItem.getName())
                         .param("price", menuItem.getPrice().toString()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/restaurant/cms/items"));
+    }
+
+    @Test
+    @WithMockUser(roles = "WAITER")
+    void shouldNotAllowUnauthorizedAccessToRemoveEndpoint() throws Exception {
+        mockMvc.perform(post("/restaurant/cms/items/remove"))
+                .andExpect(status().isForbidden());
     }
 
     private MenuItem createMenuItem() {

@@ -3,6 +3,7 @@ package pl.rarytas.rarytas_restaurantside.entity.archive;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
@@ -15,9 +16,35 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "history_orders")
 @Slf4j
 public class HistoryOrder {
+
+    public HistoryOrder(Long id,
+                        RestaurantTable restaurantTable,
+                        Restaurant restaurant, String orderTime,
+                        String paymentMethod,
+                        BigDecimal totalAmount,
+                        boolean paid,
+                        boolean forTakeAway,
+                        boolean billRequested,
+                        boolean isResolved,
+                        boolean waiterCalled,
+                        Integer orderNumber) {
+        this.id = id;
+        this.restaurantTable = restaurantTable;
+        this.restaurant = restaurant;
+        this.orderTime = orderTime;
+        this.paymentMethod = paymentMethod;
+        this.totalAmount = totalAmount;
+        this.paid = paid;
+        this.forTakeAway = forTakeAway;
+        this.billRequested = billRequested;
+        this.isResolved = isResolved;
+        this.waiterCalled = waiterCalled;
+        this.orderNumber = orderNumber;
+    }
 
     @Id
     private Long id;

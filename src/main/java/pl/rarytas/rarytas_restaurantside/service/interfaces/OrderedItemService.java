@@ -8,7 +8,11 @@ import java.util.Optional;
 public interface OrderedItemService {
     List<OrderedItem> findAll();
 
-    Optional<OrderedItem> findById(Integer id);
+    Optional<OrderedItem> findById(Long id);
 
     void delete(OrderedItem orderedItem);
+
+    void saveAll(List<OrderedItem> orderedItems);
+
+    void update(Long id, boolean isReadyToServe);
 }

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import pl.rarytas.rarytas_restaurantside.annotation.CollectionNotEmpty;
 import pl.rarytas.rarytas_restaurantside.annotation.Email;
 import pl.rarytas.rarytas_restaurantside.annotation.Password;
 import pl.rarytas.rarytas_restaurantside.annotation.Username;
@@ -58,7 +57,6 @@ public class User {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @CollectionNotEmpty
     private Set<Role> roles;
 
     @PrePersist

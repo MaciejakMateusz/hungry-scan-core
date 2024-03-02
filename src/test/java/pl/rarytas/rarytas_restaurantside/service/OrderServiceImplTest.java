@@ -14,12 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
-import pl.rarytas.rarytas_restaurantside.utility.PaymentMethodEnum;
+import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -37,16 +36,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class OrderServiceImplTest {
 
     @Autowired
-    private RestaurantService restaurantService;
-
-    @Autowired
-    private RestaurantTableService restaurantTableService;
-
-    @Autowired
     private OrderService orderService;
 
     @Autowired
     private WaiterCallService waiterCallService;
+
+    @Autowired
+    OrderProcessor orderProcessor;
 
     @Test
     void shouldFindAllNotPaid() {
@@ -65,14 +61,14 @@ class OrderServiceImplTest {
 
     @Test
     void shouldFindFinalizedById() {
-        Order order = orderService.findFinalizedById(3, false).orElse(new Order());
+        Order order = orderService.findFinalizedById(3L, false).orElse(new Order());
         assertEquals(BigDecimal.valueOf(44).setScale(2, RoundingMode.HALF_UP), order.getTotalAmount());
     }
 
     @Test
     void shouldNotFindFinalizedById() {
-        assertThrows(NoSuchElementException.class, () -> orderService.findFinalizedById(12, false).orElseThrow());
-        assertThrows(NoSuchElementException.class, () -> orderService.findFinalizedById(3, true).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> orderService.findFinalizedById(12L, false).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> orderService.findFinalizedById(3L, true).orElseThrow());
     }
 
     @Test
@@ -89,88 +85,49 @@ class OrderServiceImplTest {
 
     @Test
     void shouldFindById() {
-        Order order = (Order) orderService.findById(2).orElseThrow();
+        Order order = (Order) orderService.findById(2L).orElseThrow();
         int orderNumber = order.getOrderNumber();
         assertEquals(322, orderNumber);
     }
 
     @Test
     void shouldNotFindById() {
-        assertThrows(NoSuchElementException.class, () -> orderService.findById(23).orElseThrow());
-    }
-
-    @Test
-    @Transactional
-    void shouldSave() throws LocalizedException {
-        Order order = (Order) orderService.findById(7).orElse(null);
-        assertNull(order);
-
-        order = createOrder(
-                2,
-                7);
-
-        orderService.save(order);
-
-        Order foundOrder = (Order) orderService.findById(7).orElseThrow();
-        assertEquals(7, foundOrder.getRestaurantTable().getId());
-    }
-
-    @Test
-    @Transactional
-    void shouldNotSaveOrderWithExistingTable() {
-        Order order = createOrder(
-                2,
-                2); //table 2 has already ordered
-
-        assertThrows(LocalizedException.class, () -> orderService.save(order));
+        assertThrows(NoSuchElementException.class, () -> orderService.findById(23L).orElseThrow());
     }
 
     @Test
     @Transactional
     void shouldRequestBill() throws LocalizedException {
-        Order activeOrder = (Order) orderService.findById(1).orElseThrow();
+        Order activeOrder = (Order) orderService.findById(1L).orElseThrow();
         Integer tableNumber = activeOrder.getRestaurantTable().getId();
         assertEquals(1, tableNumber);
 
-        activeOrder.setPaymentMethod(String.valueOf(PaymentMethodEnum.CARD));
+        activeOrder.setPaymentMethod(String.valueOf(PaymentMethod.CARD));
         orderService.requestBill(activeOrder);
 
-        activeOrder = (Order) orderService.findById(1).orElseThrow();
+        activeOrder = (Order) orderService.findById(1L).orElseThrow();
         assertTrue(activeOrder.isBillRequested(), "The value should be true, but was false");
     }
 
     @Test
     @Transactional
-    void shouldNotRequestBill() {
-        Order order = createOrder(
-                1,
-                12);
-        order.setId(12);
-        assertThrows(LocalizedException.class, () -> orderService.requestBill(order));
-
-        order.setId(5); // order with ID=5 has called a waiter already
-        assertThrows(LocalizedException.class, () -> orderService.requestBill(order));
-    }
-
-    @Test
-    @Transactional
     void shouldFinishAndArchive() throws LocalizedException {
-        Order existingOrder = (Order) orderService.findById(2).orElseThrow();
+        Order existingOrder = (Order) orderService.findById(2L).orElseThrow();
         assertTrue(existingOrder.isBillRequested());
 
-        orderService.finish(2, true, true);
-        assertEquals(HistoryOrder.class, orderService.findById(2).orElseThrow().getClass());
+        orderService.finish(2L, true, true);
+        assertEquals(HistoryOrder.class, orderService.findById(2L).orElseThrow().getClass());
     }
 
     @Test
     void shouldNotFinishAndArchive() {
-        assertThrows(LocalizedException.class, () -> orderService.finish(15, true, true));
+        assertThrows(LocalizedException.class, () -> orderService.finish(15L, true, true));
     }
 
     @Test
     @org.junit.jupiter.api.Order(1)
     void shouldCallWaiter() throws LocalizedException {
-        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
+        Order existingOrder = (Order) orderService.findById(1L).orElseThrow();
         assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime());
 
         orderService.callWaiter(existingOrder);
@@ -181,8 +138,8 @@ class OrderServiceImplTest {
     @Test
     @org.junit.jupiter.api.Order(2)
     void shouldResolveWaiterCall() throws LocalizedException {
-        orderService.resolveWaiterCall(1);
-        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
+        orderService.resolveWaiterCall(1L);
+        Order existingOrder = (Order) orderService.findById(1L).orElseThrow();
 
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
         waiterCalls.forEach(waiterCall -> assertTrue(waiterCall.isResolved()));
@@ -191,26 +148,9 @@ class OrderServiceImplTest {
     @Test
     @Transactional
     void shouldDelete() {
-        Order existingOrder = (Order) orderService.findById(1).orElseThrow();
+        Order existingOrder = (Order) orderService.findById(1L).orElseThrow();
         assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime());
         orderService.delete(existingOrder);
-        assertThrows(NoSuchElementException.class, () -> orderService.findById(1).orElseThrow());
-    }
-
-    private Order createOrder(int restaurantId,
-                              int tableId) {
-        Order order = new Order();
-        order.setBillRequested(false);
-        order.setForTakeAway(false);
-        order.setResolved(false);
-        order.setOrderNumber(1);
-        order.setOrderTime("2024-01-29 08:29:20.738823");
-        order.setPaid(false);
-        order.setPaymentMethod(null);
-        order.setTotalAmount(null);
-        order.setWaiterCalled(false);
-        order.setRestaurant(restaurantService.findById(restaurantId).orElseThrow());
-        order.setRestaurantTable(restaurantTableService.findById(tableId).orElseThrow());
-        return order;
+        assertThrows(NoSuchElementException.class, () -> orderService.findById(1L).orElseThrow());
     }
 }

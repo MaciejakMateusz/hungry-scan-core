@@ -21,10 +21,10 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @JoinColumn(name = "table_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @NotNull
     private RestaurantTable restaurantTable;
 
@@ -37,7 +37,7 @@ public class Order {
     @NotNull
     private String orderTime;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderedItem> orderedItems;
 
     @Column(name = "payment_method")

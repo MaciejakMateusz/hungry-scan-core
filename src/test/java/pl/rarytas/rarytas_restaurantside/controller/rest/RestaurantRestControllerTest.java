@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
+import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
 import java.util.List;
 
@@ -34,6 +35,9 @@ public class RestaurantRestControllerTest {
     @Autowired
     private RestaurantService restaurantService;
 
+    @Autowired
+    ApiRequestUtils apiRequestUtils;
+
     @Test
     public void shouldGetAllFromDB() {
         List<Restaurant> restaurants = restaurantService.findAll();
@@ -42,10 +46,12 @@ public class RestaurantRestControllerTest {
 
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/restaurants")).andReturn();
-        String actualRestaurantJson = result.getResponse().getContentAsString();
-        assertEquals("[{\"id\":1,\"name\":\"Rarytas\",\"address\":\"ul. GÅ\u0082Ã³wna 123, Miastowo, WojewÃ³dztwo, 54321\"},{\"id\":2,\"name\":\"Wykwintna Bistro\",\"address\":\"ul. DÄ\u0099bowa 456, Miasteczko, Wiejskie, 98765\"}]",
-                actualRestaurantJson);
+        List<Restaurant> restaurants =
+                apiRequestUtils.fetchItemListFromEndpoint(
+                        "/api/restaurants", Restaurant.class);
+
+        assertEquals(2, restaurants.size());
+        assertEquals("Wykwintna Bistro", restaurants.get(1).getName());
     }
 
     @Test

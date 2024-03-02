@@ -81,7 +81,7 @@ public class OrderRestController {
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         Optional<?> result = orderService.findById(id);
         return result.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
@@ -93,6 +93,11 @@ public class OrderRestController {
             return;
         }
         orderService.save(order);
+    }
+
+    @PatchMapping
+    public void orderMoreDishes(@RequestBody Order order) {
+        orderService.orderMoreDishes(order);
     }
 
     @PatchMapping("/request-bill")

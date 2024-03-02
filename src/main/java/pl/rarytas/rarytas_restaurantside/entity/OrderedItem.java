@@ -18,9 +18,9 @@ public class OrderedItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
     private MenuItem menuItem;
 
@@ -29,4 +29,5 @@ public class OrderedItem implements Serializable {
     @NotNull
     private Integer quantity;
 
+    boolean isReadyToServe;
 }

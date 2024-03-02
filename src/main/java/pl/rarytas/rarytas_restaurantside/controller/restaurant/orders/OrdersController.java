@@ -34,7 +34,7 @@ public class OrdersController {
     }
 
     @PostMapping("/finalize-dineIn")
-    public String finalizeDineInOrder(@RequestParam Integer id,
+    public String finalizeDineInOrder(@RequestParam Long id,
                                       @RequestParam boolean paid,
                                       @RequestParam boolean isResolved) throws LocalizedException {
         orderService.finish(id, paid, isResolved);
@@ -42,7 +42,7 @@ public class OrdersController {
     }
 
     @PostMapping("/finalize-takeAway")
-    public String finalizeTakeAwayOrder(@RequestParam Integer id,
+    public String finalizeTakeAwayOrder(@RequestParam Long id,
                                         @RequestParam boolean paid,
                                         @RequestParam boolean isResolved) throws LocalizedException {
         orderService.finishTakeAway(id, paid, isResolved);
@@ -50,7 +50,7 @@ public class OrdersController {
     }
 
     @PostMapping("/resolve-call")
-    public String resolveWaiterCall(@RequestParam Integer id) throws LocalizedException {
+    public String resolveWaiterCall(@RequestParam Long id) throws LocalizedException {
         orderService.resolveWaiterCall(id);
         return "redirect:/restaurant";
     }

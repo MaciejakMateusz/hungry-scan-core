@@ -1,5 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.controller.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -9,17 +10,22 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
+import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,7 +41,11 @@ class OrderRestControllerTest {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private OrderProcessor orderProcessor;
+
     @Test
+    @org.junit.jupiter.api.Order(1)
     public void shouldGetAllNotPaidFromDB() {
         List<Order> orders = orderService.findAllNotPaid();
 
@@ -47,6 +57,7 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(2)
     public void shouldGetAllNotPaidFromEndpoint() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/orders")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
@@ -54,6 +65,7 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(3)
     public void shouldGetAllResolvedFromDB() {
         List<Order> orders = orderService.findAllByResolvedIsTrue();
 
@@ -65,6 +77,7 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(4)
     public void shouldGetAllResolvedFromEndpoint() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/orders/resolved")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
@@ -72,8 +85,9 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(5)
     public void shouldGetFinalizedDineInByIdFromDB() {
-        Order order = orderService.findFinalizedById(3, false).orElse(new Order());
+        Order order = orderService.findFinalizedById(3L, false).orElse(new Order());
 
         assertTrue(order.isPaid());
         assertTrue(order.isResolved());
@@ -81,6 +95,7 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(6)
     public void shouldGetFinalizedDineInByIdFromEndpoint() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/orders/finalized/id/3/false")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
@@ -90,12 +105,14 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(7)
     public void shouldGetAllForTakeAwayFromDB() {
         List<Order> orders = orderService.findAllTakeAway();
         assertEquals(1, orders.size());
     }
 
     @Test
+    @org.junit.jupiter.api.Order(8)
     public void shouldGetAllForTakeAwayFromEndpoint() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/orders/takeAway")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
@@ -107,6 +124,7 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(9)
     public void shouldGetByTableNumberFromDB() {
         Order order = orderService.findByTableNumber(2).orElse(new Order());
         //only table number 2 has cash payment method
@@ -114,6 +132,7 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(10)
     public void shouldGetByTableNumberFromEndpoint() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/orders/2")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
@@ -121,16 +140,214 @@ class OrderRestControllerTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Order(11)
     public void shouldGetByIdFromDB() {
-        Order order = (Order) orderService.findById(4).orElseThrow();
+        Order order = (Order) orderService.findById(4L).orElseThrow();
         //only order with ID 4 has total amount = 73.50
         assertEquals("73.50", order.getTotalAmount().setScale(2, RoundingMode.HALF_UP).toString());
     }
 
     @Test
+    @org.junit.jupiter.api.Order(12)
     public void shouldGetByIdFromEndpoint() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/orders/id/4")).andReturn();
         String actualOrderJson = result.getResponse().getContentAsString();
         assertTrue(actualOrderJson.contains("\"totalAmount\":73.50"));
+    }
+
+    @Test
+    @Transactional
+    @org.junit.jupiter.api.Order(13)
+    public void launchPostPatchTestsInSequence() throws Exception {
+        shouldSaveNewDineInOrder();
+        shouldNotSaveOrderForOccupiedTable();
+        shouldSaveNewTakeAwayOrder();
+        shouldSaveNextDineInOrder();
+        shouldRequestBillAndUpdateOrder();
+        shouldThrowWhenRequestingBill();
+        shouldThrowWhenCallingWaiter();
+        shouldOrderMoreDishes();
+        shouldCallWaiter();
+        shouldNotRequestBill();
+        shouldNotCallWaiter();
+    }
+
+    private void shouldSaveNewDineInOrder() throws Exception {
+        Order order = orderProcessor.getCreatedOrder(12, List.of(4, 12, 15), false);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
+                .andExpect(status().is2xxSuccessful());
+
+        Order savedOrder = (Order) orderService.findById(7L).orElse(null);
+        assertNotNull(savedOrder);
+        assertEquals(savedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
+                orderProcessor.countTotalAmount(savedOrder.getOrderedItems()));
+    }
+
+    private void shouldNotSaveOrderForOccupiedTable() throws Exception {
+        Order order = orderProcessor.getCreatedOrder(12, List.of(5, 1, 22), false);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        assertThrows(Exception.class, () ->
+                mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
+        );
+    }
+
+    public void shouldSaveNewTakeAwayOrder() throws Exception {
+        Order order = orderProcessor.getCreatedOrder(19, List.of(3, 10, 22, 33), true);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
+                .andExpect(status().is2xxSuccessful());
+
+        Order savedOrder = (Order) orderService.findById(8L).orElse(null);
+        assertNotNull(savedOrder);
+        assertEquals(savedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
+                orderProcessor.countTotalAmount(savedOrder.getOrderedItems()));
+    }
+
+    private void shouldSaveNextDineInOrder() throws Exception {
+        Order order = orderProcessor.getCreatedOrder(10, List.of(7, 9, 22, 31), false);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
+                .andExpect(status().is2xxSuccessful());
+
+        Order savedOrder = (Order) orderService.findById(9L).orElse(null);
+        assertNotNull(savedOrder);
+        assertEquals(savedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
+                orderProcessor.countTotalAmount(savedOrder.getOrderedItems()));
+    }
+
+    private void shouldRequestBillAndUpdateOrder() throws Exception {
+        Order order = (Order) orderService.findById(7L).orElse(null);
+        assertNotNull(order);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        mockMvc.perform(patch("/api/orders/request-bill")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
+                .andExpect(status().is2xxSuccessful());
+
+        Order updatedOrder = (Order) orderService.findById(7L).orElse(null);
+        assertNotNull(updatedOrder);
+        assertTrue(updatedOrder.isBillRequested());
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
+                orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()));
+    }
+
+    private void shouldThrowWhenRequestingBill() throws Exception {
+        Order order = (Order) orderService.findById(7L).orElse(null);
+        assertNotNull(order);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        assertThrows(Exception.class, () ->
+                mockMvc.perform(patch("/api/orders/request-bill")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson)));
+    }
+
+    private void shouldThrowWhenCallingWaiter() throws Exception {
+        Order order = (Order) orderService.findById(7L).orElse(null);
+        assertNotNull(order);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        assertThrows(Exception.class, () ->
+                mockMvc.perform(patch("/api/orders/call-waiter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson)));
+    }
+
+    private void shouldOrderMoreDishes() throws Exception {
+        Order newOrder = orderProcessor.getCreatedOrder(12, List.of(2, 35), false);
+        newOrder.setId(9L);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(newOrder);
+
+        mockMvc.perform(patch("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
+                .andExpect(status().is2xxSuccessful());
+
+        Order updatedOrder = (Order) orderService.findById(9L).orElse(null);
+        assertNotNull(updatedOrder);
+        BigDecimal newItemsAmount = orderProcessor.countTotalAmount(newOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal newTotalAmount = orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
+
+        assertEquals(BigDecimal.valueOf(40.00).setScale(2, RoundingMode.HALF_UP), newItemsAmount);
+        assertEquals(BigDecimal.valueOf(136.25).setScale(2, RoundingMode.HALF_UP), newTotalAmount);
+        assertEquals(6, updatedOrder.getOrderedItems().size());
+    }
+
+    private void shouldCallWaiter() throws Exception {
+        Order order = (Order) orderService.findById(9L).orElse(null);
+        assertNotNull(order);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        mockMvc.perform(patch("/api/orders/call-waiter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
+                .andExpect(status().is2xxSuccessful());
+
+        Order updatedOrder = (Order) orderService.findById(9L).orElse(null);
+        assertNotNull(updatedOrder);
+        assertTrue(updatedOrder.isWaiterCalled());
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
+                orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()));
+    }
+
+    private void shouldNotRequestBill() throws Exception {
+        Order order = (Order) orderService.findById(9L).orElse(null);
+        assertNotNull(order);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        assertThrows(Exception.class, () ->
+                mockMvc.perform(patch("/api/orders/request-bill")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson)));
+    }
+
+    private void shouldNotCallWaiter() throws Exception {
+        Order order = (Order) orderService.findById(9L).orElse(null);
+        assertNotNull(order);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderJson = objectMapper.writeValueAsString(order);
+
+        assertThrows(Exception.class, () ->
+                mockMvc.perform(patch("/api/orders/call-waiter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson)));
     }
 }

@@ -34,28 +34,50 @@ public class OrdersControllerTest {
     private OrderService mockOrderService;
 
     @Test
-    public void testTakeAwayOrders() throws Exception {
+    @WithMockUser(roles = "WAITER")
+    public void shouldReturnTakeAwayView() throws Exception {
         mockMvc.perform(get("/restaurant/orders/take-away"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/orders/take-away"));
     }
 
     @Test
-    void testFinalizedOrders() throws Exception {
+    public void shouldNotAllowUnauthorizedAccessToTakeAwayView() throws Exception {
+        mockMvc.perform(get("/restaurant/orders/take-away"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "WAITER")
+    void shouldReturnHistoryDineInView() throws Exception {
         mockMvc.perform(get("/restaurant/orders/finalized"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/orders/history-dineIn"));
     }
 
     @Test
-    void testFinalizedTakeAwayOrders() throws Exception {
+    public void shouldNotAllowUnauthorizedAccessToHistoryDineInView() throws Exception {
+        mockMvc.perform(get("/restaurant/orders/finalized"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "WAITER")
+    void shouldReturnHistoryTakeAwayView() throws Exception {
         mockMvc.perform(get("/restaurant/orders/finalized/take-away"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/orders/history-takeAway"));
     }
 
     @Test
-    void testFinalizeDineInOrder() throws Exception {
+    public void shouldNotAllowUnauthorizedAccessToHistoryTakeAwayView() throws Exception {
+        mockMvc.perform(get("/restaurant/orders/finalized/take-away"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "WAITER")
+    void shouldFinalizeDineInOrder() throws Exception {
         mockMvc.perform(post("/restaurant/orders/finalize-dineIn")
                         .param("id", "1")
                         .param("paid", "true")
@@ -63,11 +85,12 @@ public class OrdersControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/restaurant"));
 
-        verify(mockOrderService, times(1)).finish(1, true, true);
+        verify(mockOrderService, times(1)).finish(1L, true, true);
     }
 
     @Test
-    void testFinalizeTakeAwayOrder() throws Exception {
+    @WithMockUser(roles = "WAITER")
+    void shouldFinalizeTakeAwayOrder() throws Exception {
         mockMvc.perform(post("/restaurant/orders/finalize-takeAway")
                         .param("id", "1")
                         .param("paid", "true")
@@ -75,16 +98,29 @@ public class OrdersControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/restaurant/orders/take-away"));
 
-        verify(mockOrderService, times(1)).finishTakeAway(1, true, true);
+        verify(mockOrderService, times(1)).finishTakeAway(1L, true, true);
     }
 
     @Test
-    void testResolveWaiterCall() throws Exception {
+    @WithMockUser(roles = "WAITER")
+    void shouldResolveWaiterCall() throws Exception {
         mockMvc.perform(post("/restaurant/orders/resolve-call")
                         .param("id", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/restaurant"));
 
-        verify(mockOrderService, times(1)).resolveWaiterCall(1);
+        verify(mockOrderService, times(1)).resolveWaiterCall(1L);
+    }
+
+    @Test
+    void shouldThrow403ForPostRequests() throws Exception {
+        mockMvc.perform(post("/restaurant/orders/finalize-dineIn"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(post("/restaurant/orders/finalize-takeAway"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(post("/restaurant/orders/resolve-call"))
+                .andExpect(status().isForbidden());
     }
 }
