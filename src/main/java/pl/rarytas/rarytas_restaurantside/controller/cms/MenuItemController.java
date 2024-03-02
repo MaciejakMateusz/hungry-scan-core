@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.restaurant.cms;
+package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

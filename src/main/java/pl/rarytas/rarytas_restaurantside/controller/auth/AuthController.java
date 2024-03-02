@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.rest;
+package pl.rarytas.rarytas_restaurantside.controller.auth;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;

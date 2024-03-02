@@ -18,10 +18,10 @@ public class CustomUserDetails extends User implements UserDetails {
 
     public CustomUserDetails(User byUsername) {
         this.username = byUsername.getUsername();
-        this.password= byUsername.getPassword();
+        this.password = byUsername.getPassword();
         List<GrantedAuthority> auths = new ArrayList<>();
 
-        for(Role role : byUsername.getRoles()){
+        for (Role role : byUsername.getRoles()) {
 
             auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
         }

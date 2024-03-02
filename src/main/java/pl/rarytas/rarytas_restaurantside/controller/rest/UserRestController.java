@@ -43,7 +43,7 @@ public class UserRestController {
     public JwtResponseDTO login(@RequestBody AuthRequestDTO authRequestDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
-        if(authentication.isAuthenticated()) {
+        if (authentication.isAuthenticated()) {
             return JwtResponseDTO.builder().accessToken(jwtService.GenerateToken(authRequestDTO.getUsername())).build();
         } else {
             throw new UsernameNotFoundException("Not authorized - invalid user request");
