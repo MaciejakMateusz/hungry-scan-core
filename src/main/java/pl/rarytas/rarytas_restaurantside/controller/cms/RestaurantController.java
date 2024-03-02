@@ -1,81 +1,69 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-@Slf4j
-@Controller
-@RequestMapping("/restaurant/cms/restaurants")
+@RestController
+@RequestMapping("/api/cms/restaurants")
+@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
+    private final ResponseHelper responseHelper;
 
-    public RestaurantController(RestaurantService restaurantService) {
+    public RestaurantController(RestaurantService restaurantService, ResponseHelper responseHelper) {
         this.restaurantService = restaurantService;
+        this.responseHelper = responseHelper;
     }
 
 
     @GetMapping
-    public String restaurantsList() {
-        return "restaurant/cms/restaurants/list";
+    public ResponseEntity<List<Restaurant>> restaurantsList() {
+        return ResponseEntity.ok(restaurantService.findAll());
     }
 
     @GetMapping("/add")
-    public String addRestaurant(Model model) {
-        model.addAttribute("restaurant", new Restaurant());
-        return "restaurant/cms/restaurants/add";
+    public ResponseEntity<Restaurant> addRestaurant() {
+        return ResponseEntity.ok(new Restaurant());
     }
 
     @PostMapping("/add")
-    public String addRestaurant(@Valid Restaurant restaurant,
-                                BindingResult br) {
-        if (br.hasErrors()) {
-            return "restaurant/cms/restaurants/add";
-        }
-        restaurantService.save(restaurant);
-        return "redirect:/restaurant/cms/restaurants";
+    public ResponseEntity<Map<String, Object>> addRestaurant(@Valid @RequestParam Restaurant restaurant,
+                                                             BindingResult br) {
+        return responseHelper.buildResponseEntity(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/edit")
-    public String updateRestaurant(Model model,
-                                   @RequestParam Integer id) {
-        model.addAttribute("restaurant", restaurantService.findById(id).orElseThrow());
-        return "restaurant/cms/restaurants/edit";
+    public ResponseEntity<Restaurant> updateRestaurant(@RequestParam Integer id) {
+        return ResponseEntity.ok(restaurantService.findById(id).orElseThrow());
     }
 
     @PostMapping("/update")
-    public String updateRestaurant(@Valid Restaurant restaurant,
-                                   BindingResult br) {
-        if (br.hasErrors()) {
-            return "restaurant/cms/restaurants/edit";
-        }
-        restaurantService.save(restaurant);
-        return "redirect:/restaurant/cms/restaurants";
+    public ResponseEntity<Map<String, Object>> updateRestaurant(@Valid @RequestParam Restaurant restaurant,
+                                                                BindingResult br) {
+        return responseHelper.buildResponseEntity(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/delete")
-    public String deleteItem(Model model,
-                             @RequestParam Integer id) {
-        model.addAttribute("restaurant", restaurantService.findById(id).orElseThrow());
-        return "restaurant/cms/restaurants/delete";
+    public ResponseEntity<Restaurant> deleteItem(@RequestParam Integer id) {
+        return ResponseEntity.ok(restaurantService.findById(id).orElseThrow());
     }
 
     @PostMapping("/remove")
-    public String deleteItem(@ModelAttribute Restaurant restaurant) {
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Restaurant restaurant) {
+        Map<String, Object> params = new HashMap<>();
         restaurantService.delete(restaurant);
-        return "redirect:/restaurant/cms/restaurants";
-    }
-
-    @ModelAttribute("restaurants")
-    private List<Restaurant> getAllItems() {
-        return restaurantService.findAll();
+        params.put("success", true);
+        return ResponseEntity.ok(params);
     }
 }

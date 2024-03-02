@@ -3,9 +3,10 @@ package pl.rarytas.rarytas_restaurantside.controller.cms;
 import jakarta.validation.Valid;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 
@@ -15,12 +16,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/categories")
+@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final ResponseHelper responseHelper;
 
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, ResponseHelper responseHelper) {
         this.categoryService = categoryService;
+        this.responseHelper = responseHelper;
     }
 
     @GetMapping
@@ -35,7 +39,7 @@ public class CategoryController {
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> add(@Valid @RequestParam Category category, BindingResult br) {
-        return buildResponseEntity(category, br, categoryService);
+        return responseHelper.buildResponseEntity(category, br, categoryService::save);
     }
 
     @PostMapping("/edit")
@@ -46,7 +50,7 @@ public class CategoryController {
     @Modifying
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestParam Category category, BindingResult br) {
-        return buildResponseEntity(category, br, categoryService);
+        return responseHelper.buildResponseEntity(category, br, categoryService::save);
     }
 
     @PostMapping("/delete")
@@ -60,24 +64,5 @@ public class CategoryController {
         categoryService.delete(category);
         params.put("success", true);
         return ResponseEntity.ok(params);
-    }
-
-    private ResponseEntity<Map<String, Object>> buildResponseEntity(Category category, BindingResult br, CategoryService service) {
-        Map<String, Object> params = new HashMap<>();
-        if (br.hasErrors()) {
-            params.put("errors", getFieldErrors(br));
-            return ResponseEntity.badRequest().body(params);
-        }
-        service.save(category);
-        params.put("success", true);
-        return ResponseEntity.ok(params);
-    }
-
-    private Map<String, String> getFieldErrors(BindingResult br) {
-        Map<String, String> fieldErrors = new HashMap<>();
-        for (FieldError error : br.getFieldErrors()) {
-            fieldErrors.put(error.getField(), error.getDefaultMessage());
-        }
-        return fieldErrors;
     }
 }

@@ -1,13 +1,11 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
@@ -17,17 +15,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
-@Controller
-@RequestMapping("/restaurant/cms/items")
+@RestController
+@RequestMapping("/api/cms/items")
+@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
     private final CategoryService categoryService;
+    private final ResponseHelper responseHelper;
 
-    public MenuItemController(MenuItemService menuItemService, CategoryService categoryService) {
+    public MenuItemController(MenuItemService menuItemService, CategoryService categoryService, ResponseHelper responseHelper) {
         this.menuItemService = menuItemService;
         this.categoryService = categoryService;
+        this.responseHelper = responseHelper;
     }
 
     @GetMapping
@@ -43,7 +43,7 @@ public class MenuItemController {
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addItem(@Valid @RequestBody Map<String, Object> mappedRequest,
                                                        BindingResult br) {
-        return buildResponseEntity(mappedRequest, br, menuItemService);
+        return responseHelper.buildResponseEntity(mappedRequest, br, menuItemService);
     }
 
     @PostMapping("/edit")
@@ -54,7 +54,7 @@ public class MenuItemController {
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody Map<String, Object> mappedRequest,
                                                           BindingResult br) {
-        return buildResponseEntity(mappedRequest, br, menuItemService);
+        return responseHelper.buildResponseEntity(mappedRequest, br, menuItemService);
     }
 
     @PostMapping("/delete")
@@ -68,28 +68,5 @@ public class MenuItemController {
         menuItemService.delete(menuItem);
         params.put("success", true);
         return ResponseEntity.ok(params);
-    }
-
-    private ResponseEntity<Map<String, Object>> buildResponseEntity(Map<String, Object> object,
-                                                                    BindingResult br,
-                                                                    MenuItemService service) {
-        Map<String, Object> params = new HashMap<>();
-        if (br.hasErrors()) {
-            params.put("errors", getFieldErrors(br));
-            return ResponseEntity.badRequest().body(params);
-        }
-        MenuItem menuItem = (MenuItem) object.get("menuItem");
-        MultipartFile imageFile = (MultipartFile) object.get("imageFile");
-        service.save(menuItem, imageFile);
-        params.put("success", true);
-        return ResponseEntity.ok(params);
-    }
-
-    private Map<String, String> getFieldErrors(BindingResult br) {
-        Map<String, String> fieldErrors = new HashMap<>();
-        for (FieldError error : br.getFieldErrors()) {
-            fieldErrors.put(error.getField(), error.getDefaultMessage());
-        }
-        return fieldErrors;
     }
 }
