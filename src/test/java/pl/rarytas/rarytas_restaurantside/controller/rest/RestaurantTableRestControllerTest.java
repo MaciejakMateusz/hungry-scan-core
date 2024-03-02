@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
+import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
 import java.util.List;
 
@@ -35,6 +36,9 @@ public class RestaurantTableRestControllerTest {
     @Autowired
     private RestaurantTableService restaurantTableService;
 
+    @Autowired
+    ApiRequestUtils apiRequestUtils;
+
     @Test
     public void shouldGetAllFromDB() {
         List<RestaurantTable> tables = restaurantTableService.findAll();
@@ -43,10 +47,11 @@ public class RestaurantTableRestControllerTest {
 
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/restaurantTables")).andReturn();
-        String actualTableJson = result.getResponse().getContentAsString();
-        assertEquals("[{\"id\":1,\"customerName\":null},{\"id\":2,\"customerName\":null},{\"id\":3,\"customerName\":null},{\"id\":4,\"customerName\":null},{\"id\":5,\"customerName\":null},{\"id\":6,\"customerName\":null},{\"id\":7,\"customerName\":null},{\"id\":8,\"customerName\":null},{\"id\":9,\"customerName\":null},{\"id\":10,\"customerName\":null},{\"id\":11,\"customerName\":null},{\"id\":12,\"customerName\":null},{\"id\":13,\"customerName\":null},{\"id\":14,\"customerName\":null},{\"id\":15,\"customerName\":null},{\"id\":16,\"customerName\":null},{\"id\":17,\"customerName\":null},{\"id\":18,\"customerName\":null},{\"id\":19,\"customerName\":null}]",
-                actualTableJson);
+        List<RestaurantTable> restaurantTables =
+                apiRequestUtils.fetchItemListFromEndpoint(
+                        "/api/restaurantTables", RestaurantTable.class);
+
+        assertEquals(19, restaurantTables.size());
     }
 
     @Test

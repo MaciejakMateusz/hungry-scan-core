@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import pl.rarytas.rarytas_restaurantside.utility.PaymentMethodEnum;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 
 import java.util.Arrays;
 
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestPaymentMethodValidator {
 
     private static boolean isValidPaymentMethod(String value) {
-        return Arrays.stream(PaymentMethodEnum.values())
+        return Arrays.stream(PaymentMethod.values())
                 .anyMatch(paymentMethod -> paymentMethod.getMethodName().equalsIgnoreCase(value));
     }
 

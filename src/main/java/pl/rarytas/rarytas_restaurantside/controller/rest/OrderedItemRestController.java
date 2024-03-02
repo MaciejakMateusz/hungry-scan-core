@@ -29,8 +29,18 @@ public class OrderedItemRestController {
     }
 
     @GetMapping("/{id}")
-    public OrderedItem getById(@PathVariable Integer id) {
+    public OrderedItem getById(@PathVariable Long id) {
         return orderedItemService.findById(id).orElseThrow();
+    }
+
+    @PostMapping
+    public void saveAll(@RequestBody List<OrderedItem> orderedItems) {
+        orderedItemService.saveAll(orderedItems);
+    }
+
+    @PatchMapping
+    public void update(@RequestParam Long id, @RequestParam boolean isReadyToServe) {
+        orderedItemService.update(id, isReadyToServe);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

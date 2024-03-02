@@ -3,6 +3,7 @@ package pl.rarytas.rarytas_restaurantside.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,16 +12,17 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@Entity
 @ToString
+@EqualsAndHashCode
 @Table(name = "ordered_items")
+@Entity
 public class OrderedItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
     private MenuItem menuItem;
 
@@ -29,4 +31,5 @@ public class OrderedItem implements Serializable {
     @NotNull
     private Integer quantity;
 
+    boolean isReadyToServe;
 }

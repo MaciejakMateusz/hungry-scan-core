@@ -1,16 +1,16 @@
-package pl.rarytas.rarytas_restaurantside.utility;
+package pl.rarytas.rarytas_restaurantside.enums;
 
 import lombok.Getter;
 
 @Getter
-public enum PaymentMethodEnum {
+public enum PaymentMethod {
     CASH("cash"),
     CARD("card"),
     ONLINE("online");
 
     private final String methodName;
 
-    PaymentMethodEnum(String methodName) {
+    PaymentMethod(String methodName) {
         this.methodName = methodName;
     }
 }

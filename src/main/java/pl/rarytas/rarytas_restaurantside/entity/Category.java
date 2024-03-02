@@ -2,6 +2,7 @@ package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
@@ -11,8 +12,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@Entity
+@EqualsAndHashCode
 @Table(name = "categories")
+@Entity
 public class Category {
 
     @Id
@@ -27,7 +29,7 @@ public class Category {
     @Column(length = 400)
     private String description;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "category")
     private List<MenuItem> menuItems;
 
     private LocalDateTime created;

@@ -13,6 +13,7 @@ public interface HistoryOrderService {
     List<HistoryOrder> findAllByResolvedIsTrue();
 
     Long countResolved();
+
     Page<HistoryOrder> findAllFinalized(boolean forTakeAway, Pageable pageable);
 
     Optional<HistoryOrder> findFinalizedById(Long id, boolean forTakeAway);
