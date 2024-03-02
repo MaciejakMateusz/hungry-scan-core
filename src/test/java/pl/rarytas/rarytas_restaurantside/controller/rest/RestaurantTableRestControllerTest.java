@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
+import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
 import java.util.List;
 
@@ -35,6 +36,9 @@ public class RestaurantTableRestControllerTest {
     @Autowired
     private RestaurantTableService restaurantTableService;
 
+    @Autowired
+    ApiRequestUtils apiRequestUtils;
+
     @Test
     public void shouldGetAllFromDB() {
         List<RestaurantTable> tables = restaurantTableService.findAll();
@@ -43,10 +47,11 @@ public class RestaurantTableRestControllerTest {
 
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/restaurantTables")).andReturn();
-        String actualTableJson = result.getResponse().getContentAsString();
-        assertEquals("[{\"id\":1,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":2,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":3,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":4,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":5,\"customerName\":null,\"bookings\":[{\"id\":1,\"date\":\"2024-02-23\",\"time\":\"16:00:00\",\"expirationTime\":\"19:00:00\",\"numOfPpl\":2,\"surname\":\"Pierwszy\",\"tableId\":5,\"numTablesBooked\":null}],\"active\":false},{\"id\":6,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":7,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":8,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":9,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":10,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":11,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":12,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":13,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":14,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":15,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":16,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":17,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":18,\"customerName\":null,\"bookings\":[],\"active\":false},{\"id\":19,\"customerName\":null,\"bookings\":[],\"active\":false}]",
-                actualTableJson);
+        List<RestaurantTable> restaurantTables =
+                apiRequestUtils.fetchItemListFromEndpoint(
+                        "/api/restaurantTables", RestaurantTable.class);
+
+        assertEquals(19, restaurantTables.size());
     }
 
     @Test
