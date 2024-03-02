@@ -23,14 +23,16 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     @Override
-    public void save(MenuItem menuItem, MultipartFile file) throws IOException {
-
+    public void save(MenuItem menuItem, MultipartFile file) {
         if (menuItem.getId() == null) {
             menuItemRepository.save(menuItem);
             return;
         }
-
-        setImageFile(menuItem, file);
+        try {
+            setImageFile(menuItem, file);
+        } catch (IOException e) {
+            log.warn("An error occurred when saving file.");
+        }
         menuItemRepository.save(menuItem);
     }
 

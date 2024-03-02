@@ -8,7 +8,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.GenericService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +18,9 @@ import java.util.Map;
 public class CategoryController {
 
     private final CategoryService categoryService;
-    private final GenericService<Category> genericService;
 
-    public CategoryController(CategoryService categoryService, GenericService<Category> genericService) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.genericService = genericService;
     }
 
     @GetMapping
@@ -37,8 +34,8 @@ public class CategoryController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> add(@Valid Category category, BindingResult br) {
-        return buildResponseEntity(category, br, genericService);
+    public ResponseEntity<Map<String, Object>> add(@Valid @RequestParam Category category, BindingResult br) {
+        return buildResponseEntity(category, br, categoryService);
     }
 
     @PostMapping("/edit")
@@ -48,8 +45,8 @@ public class CategoryController {
 
     @Modifying
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateItem(@Valid Category category, BindingResult br) {
-        return buildResponseEntity(category, br, genericService);
+    public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestParam Category category, BindingResult br) {
+        return buildResponseEntity(category, br, categoryService);
     }
 
     @PostMapping("/delete")
@@ -65,13 +62,13 @@ public class CategoryController {
         return ResponseEntity.ok(params);
     }
 
-    private <T> ResponseEntity<Map<String, Object>> buildResponseEntity(T object, BindingResult br, GenericService<T> service) {
+    private ResponseEntity<Map<String, Object>> buildResponseEntity(Category category, BindingResult br, CategoryService service) {
         Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
             params.put("errors", getFieldErrors(br));
             return ResponseEntity.badRequest().body(params);
         }
-        service.save(object);
+        service.save(category);
         params.put("success", true);
         return ResponseEntity.ok(params);
     }

@@ -2,9 +2,10 @@ package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
@@ -12,8 +13,9 @@ import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -29,65 +31,65 @@ public class MenuItemController {
     }
 
     @GetMapping
-    public String itemsList() {
-        return "restaurant/cms/items/list";
+    public ResponseEntity<List<Category>> itemsList() {
+        return ResponseEntity.ok(categoryService.findAll());
     }
 
     @GetMapping("/add")
-    public String addItem(Model model) {
-        model.addAttribute("menuItem", new MenuItem());
-        return "restaurant/cms/items/add";
+    public ResponseEntity<MenuItem> addItem() {
+        return ResponseEntity.ok(new MenuItem());
     }
 
     @PostMapping("/add")
-    public String addItem(@Valid MenuItem menuItem,
-                          BindingResult br,
-                          @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if (br.hasErrors()) {
-            return "restaurant/cms/items/add";
-        }
-        menuItemService.save(menuItem, imageFile);
-        return "redirect:/restaurant/cms/items";
+    public ResponseEntity<Map<String, Object>> addItem(@Valid @RequestBody Map<String, Object> mappedRequest,
+                                                       BindingResult br) {
+        return buildResponseEntity(mappedRequest, br, menuItemService);
     }
 
     @PostMapping("/edit")
-    public String updateItem(Model model,
-                             @RequestParam Integer id) {
-        model.addAttribute("menuItem", menuItemService.findById(id).orElseThrow());
-        return "restaurant/cms/items/edit";
+    public ResponseEntity<MenuItem> updateItem(@RequestParam Integer id) {
+        return ResponseEntity.ok(menuItemService.findById(id).orElseThrow());
     }
 
     @PostMapping("/update")
-    public String updateItem(@Valid MenuItem menuItem,
-                             BindingResult br,
-                             @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if (br.hasErrors()) {
-            return "restaurant/cms/items/edit";
-        }
-        menuItemService.save(menuItem, imageFile);
-        return "redirect:/restaurant/cms/items";
+    public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody Map<String, Object> mappedRequest,
+                                                          BindingResult br) {
+        return buildResponseEntity(mappedRequest, br, menuItemService);
     }
 
     @PostMapping("/delete")
-    public String deleteItem(Model model,
-                             @RequestParam Integer id) {
-        model.addAttribute("menuItem", menuItemService.findById(id).orElseThrow());
-        return "restaurant/cms/items/delete";
+    public ResponseEntity<MenuItem> deleteItem(@RequestParam Integer id) {
+        return ResponseEntity.ok(menuItemService.findById(id).orElseThrow());
     }
 
     @PostMapping("/remove")
-    public String deleteItem(@ModelAttribute MenuItem menuItem) {
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam MenuItem menuItem) {
+        Map<String, Object> params = new HashMap<>();
         menuItemService.delete(menuItem);
-        return "redirect:/restaurant/cms/items";
+        params.put("success", true);
+        return ResponseEntity.ok(params);
     }
 
-    @ModelAttribute("menuItems")
-    private List<MenuItem> getAllItems() {
-        return menuItemService.findAll();
+    private ResponseEntity<Map<String, Object>> buildResponseEntity(Map<String, Object> object,
+                                                                    BindingResult br,
+                                                                    MenuItemService service) {
+        Map<String, Object> params = new HashMap<>();
+        if (br.hasErrors()) {
+            params.put("errors", getFieldErrors(br));
+            return ResponseEntity.badRequest().body(params);
+        }
+        MenuItem menuItem = (MenuItem) object.get("menuItem");
+        MultipartFile imageFile = (MultipartFile) object.get("imageFile");
+        service.save(menuItem, imageFile);
+        params.put("success", true);
+        return ResponseEntity.ok(params);
     }
 
-    @ModelAttribute("categories")
-    private List<Category> getAllCategories() {
-        return categoryService.findAll();
+    private Map<String, String> getFieldErrors(BindingResult br) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        for (FieldError error : br.getFieldErrors()) {
+            fieldErrors.put(error.getField(), error.getDefaultMessage());
+        }
+        return fieldErrors;
     }
 }

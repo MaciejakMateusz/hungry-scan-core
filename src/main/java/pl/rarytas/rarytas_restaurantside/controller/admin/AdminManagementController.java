@@ -72,7 +72,7 @@ public class AdminManagementController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> add(@Valid User user, BindingResult br) {
+    public ResponseEntity<Map<String, Object>> add(@Valid @RequestParam User user, BindingResult br) {
         return buildResponse(user, br);
     }
 
@@ -82,7 +82,7 @@ public class AdminManagementController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> edit(@Valid User user, BindingResult br) {
+    public ResponseEntity<Map<String, Object>> edit(@Valid @RequestParam User user, BindingResult br) {
         Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
             params.put("errors", getFieldErrors(br));
