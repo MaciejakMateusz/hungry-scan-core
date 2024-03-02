@@ -26,14 +26,14 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void testRedirectToLogin() throws Exception {
+    void shouldRedirectToLogin() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
     }
 
     @Test
-    void testRegisterGet() throws Exception {
+    void shouldReturnRegisterView() throws Exception {
         mockMvc.perform(get("/register"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("register"))
@@ -41,7 +41,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testRegisterPost() throws Exception {
+    void shouldRegisterNewUser() throws Exception {
         User user = createCorrectUser();
 
         mockMvc.perform(post("/register")
@@ -51,8 +51,11 @@ class UserControllerTest {
                         .param("repeatedPassword", user.getRepeatedPassword()))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("success-registration"));
+    }
 
-        user = createIncorrectUser();
+    @Test
+    void shouldNotRegisterNewUser() throws Exception {
+        User user = createIncorrectUser();
 
         mockMvc.perform(post("/register")
                         .param("username", user.getUsername())
@@ -65,7 +68,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testAdminRegisterPost() throws Exception {
+    void shouldRegisterNewAdmin() throws Exception {
         User admin = createCorrectAdmin();
 
         mockMvc.perform(post("/registerAdmin")
@@ -89,7 +92,21 @@ class UserControllerTest {
     }
 
     @Test
-    void testLogin() throws Exception {
+    void shouldNotRegisterNewAdmin() throws Exception {
+        User admin = createIncorrectUser();
+
+        mockMvc.perform(post("/registerAdmin")
+                        .param("username", admin.getUsername())
+                        .param("email", admin.getEmail())
+                        .param("password", admin.getPassword())
+                        .param("repeatedPassword", admin.getRepeatedPassword()))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(view().name("registerAdmin"))
+                .andExpect(model().hasErrors());
+    }
+
+    @Test
+    void shouldReturnLoginView() throws Exception {
         mockMvc.perform(get("/login"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("login"))

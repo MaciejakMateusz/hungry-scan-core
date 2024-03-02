@@ -35,31 +35,49 @@ public class OrdersControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    public void testTakeAwayOrders() throws Exception {
+    public void shouldReturnTakeAwayView() throws Exception {
         mockMvc.perform(get("/restaurant/orders/take-away"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/orders/take-away"));
     }
 
     @Test
+    public void shouldNotAllowUnauthorizedAccessToTakeAwayView() throws Exception {
+        mockMvc.perform(get("/restaurant/orders/take-away"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(roles = "WAITER")
-    void testFinalizedOrders() throws Exception {
+    void shouldReturnHistoryDineInView() throws Exception {
         mockMvc.perform(get("/restaurant/orders/finalized"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/orders/history-dineIn"));
     }
 
     @Test
+    public void shouldNotAllowUnauthorizedAccessToHistoryDineInView() throws Exception {
+        mockMvc.perform(get("/restaurant/orders/finalized"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(roles = "WAITER")
-    void testFinalizedTakeAwayOrders() throws Exception {
+    void shouldReturnHistoryTakeAwayView() throws Exception {
         mockMvc.perform(get("/restaurant/orders/finalized/take-away"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("restaurant/orders/history-takeAway"));
     }
 
     @Test
+    public void shouldNotAllowUnauthorizedAccessToHistoryTakeAwayView() throws Exception {
+        mockMvc.perform(get("/restaurant/orders/finalized/take-away"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(roles = "WAITER")
-    void testFinalizeDineInOrder() throws Exception {
+    void shouldFinalizeDineInOrder() throws Exception {
         mockMvc.perform(post("/restaurant/orders/finalize-dineIn")
                         .param("id", "1")
                         .param("paid", "true")
@@ -72,7 +90,7 @@ public class OrdersControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    void testFinalizeTakeAwayOrder() throws Exception {
+    void shouldFinalizeTakeAwayOrder() throws Exception {
         mockMvc.perform(post("/restaurant/orders/finalize-takeAway")
                         .param("id", "1")
                         .param("paid", "true")
@@ -85,7 +103,7 @@ public class OrdersControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    void testResolveWaiterCall() throws Exception {
+    void shouldResolveWaiterCall() throws Exception {
         mockMvc.perform(post("/restaurant/orders/resolve-call")
                         .param("id", "1"))
                 .andExpect(status().is3xxRedirection())
@@ -95,23 +113,14 @@ public class OrdersControllerTest {
     }
 
     @Test
-    void shouldThrow403() throws Exception {
-        mockMvc.perform(get("/restaurant/orders/take-away"))
+    void shouldThrow403ForPostRequests() throws Exception {
+        mockMvc.perform(post("/restaurant/orders/finalize-dineIn"))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(get("/restaurant/orders/finalized"))
+        mockMvc.perform(post("/restaurant/orders/finalize-takeAway"))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(get("/restaurant/orders/finalized/take-away"))
-                .andExpect(status().isForbidden());
-
-        mockMvc.perform(get("/restaurant/orders/finalize-dineIn"))
-                .andExpect(status().isForbidden());
-
-        mockMvc.perform(get("/restaurant/orders/finalize-takeAway"))
-                .andExpect(status().isForbidden());
-
-        mockMvc.perform(get("/restaurant/orders/resolve-call"))
+        mockMvc.perform(post("/restaurant/orders/resolve-call"))
                 .andExpect(status().isForbidden());
     }
 }
