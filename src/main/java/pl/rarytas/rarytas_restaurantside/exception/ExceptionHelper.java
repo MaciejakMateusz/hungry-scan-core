@@ -5,6 +5,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 
 @Component
 public class ExceptionHelper {
@@ -19,6 +20,11 @@ public class ExceptionHelper {
 
     public void throwLocalizedMessage(String messageCode, Object... args) throws LocalizedException {
         throw new LocalizedException(String.format(messageSource.getMessage(
+                messageCode, args, locale)));
+    }
+
+    public Supplier<LocalizedException> supplyLocalizedMessage(String messageCode, Object... args) {
+        return () -> new LocalizedException(String.format(messageSource.getMessage(
                 messageCode, args, locale)));
     }
 }

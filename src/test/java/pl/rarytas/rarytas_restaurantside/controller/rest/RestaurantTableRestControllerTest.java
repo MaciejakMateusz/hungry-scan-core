@@ -48,7 +48,7 @@ public class RestaurantTableRestControllerTest {
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
         List<RestaurantTable> restaurantTables =
-                apiRequestUtils.fetchItemListFromEndpoint(
+                apiRequestUtils.fetchObjects(
                         "/api/restaurantTables", RestaurantTable.class);
 
         assertEquals(19, restaurantTables.size());

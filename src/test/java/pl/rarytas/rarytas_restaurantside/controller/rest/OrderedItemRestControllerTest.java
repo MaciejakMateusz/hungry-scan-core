@@ -46,7 +46,7 @@ public class OrderedItemRestControllerTest {
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
         List<OrderedItem> orderedItems =
-                apiRequestUtils.fetchItemListFromEndpoint(
+                apiRequestUtils.fetchObjects(
                         "/api/orderedItems", OrderedItem.class);
         assertEquals(6, orderedItems.size());
         assertEquals(4, orderedItems.get(5).getQuantity());

@@ -47,7 +47,7 @@ class CategoryRestControllerTest {
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
         List<Category> categories =
-                apiRequestUtils.fetchItemListFromEndpoint(
+                apiRequestUtils.fetchObjects(
                         "/api/categories", Category.class);
 
         assertEquals(8, categories.size());

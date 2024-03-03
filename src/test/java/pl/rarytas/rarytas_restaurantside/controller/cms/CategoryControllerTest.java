@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.restaurant.cms;
+package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;

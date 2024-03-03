@@ -1,34 +1,35 @@
 package pl.rarytas.rarytas_restaurantside.controller.admin;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import pl.rarytas.rarytas_restaurantside.entity.Role;
+import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.User;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RoleService;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
 
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/admin/users")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminManagementController {
 
     private final UserService userService;
-    private final RoleService roleService;
+    private final ResponseHelper responseHelper;
 
-    public AdminManagementController(UserService userService, RoleService roleService) {
+    public AdminManagementController(UserService userService,
+                                     ResponseHelper responseHelper) {
         this.userService = userService;
-        this.roleService = roleService;
+        this.responseHelper = responseHelper;
     }
 
     @GetMapping
@@ -49,7 +50,7 @@ public class AdminManagementController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("managers")
+    @GetMapping("/managers")
     public ResponseEntity<List<User>> managers() {
         List<User> users = userService.findAllByRole("ROLE_MANAGER");
         return ResponseEntity.ok(users);
@@ -62,8 +63,19 @@ public class AdminManagementController {
     }
 
     @PostMapping("/show")
-    public ResponseEntity<User> show(@RequestParam Integer id) {
-        return ResponseEntity.ok(userService.findById(id));
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+        Map<String, Object> params = new HashMap<>();
+        User user;
+        try {
+            user = userService.findById(id);
+        } catch (LocalizedException e) {
+            params.put("error", true);
+            params.put("exceptionMsg", e.getMessage());
+            log.warn(e.getMessage());
+            return ResponseEntity.badRequest().body(params);
+        }
+        params.put("user", user);
+        return ResponseEntity.ok(params);
     }
 
     @GetMapping("/add")
@@ -72,34 +84,17 @@ public class AdminManagementController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> add(@Valid @RequestParam User user, BindingResult br) {
-        return buildResponse(user, br);
-    }
-
-    @PostMapping("/edit")
-    public ResponseEntity<User> edit(@RequestParam Integer id) {
-        return ResponseEntity.ok(userService.findById(id));
+    public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody User user, BindingResult br) {
+        return responseHelper.buildResponseEntity(user, br, userService);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> edit(@Valid @RequestParam User user, BindingResult br) {
-        Map<String, Object> params = new HashMap<>();
-        if (br.hasErrors()) {
-            params.put("errors", getFieldErrors(br));
-            return ResponseEntity.badRequest().body(params);
-        }
-        userService.save(user);
-        params.put("isUpdated", true);
-        return ResponseEntity.ok(params);
-    }
-
-    @PostMapping("/delete")
-    public ResponseEntity<User> delete(@RequestParam Integer id) {
-        return ResponseEntity.ok(userService.findById(id));
+    public ResponseEntity<Map<String, Object>> edit(@RequestBody User user, BindingResult br) {
+        return responseHelper.buildResponseEntity(user, br, userService::save);
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<Map<String, Object>> delete(User user, Principal principal) {
+    public ResponseEntity<Map<String, Object>> delete(@RequestBody User user, Principal principal) {
         Map<String, Object> params = new HashMap<>();
         User currentAdmin = userService.findByUsername(principal.getName());
         if (currentAdmin.getId().equals(user.getId())) {
@@ -107,38 +102,7 @@ public class AdminManagementController {
             return ResponseEntity.badRequest().body(params);
         }
         userService.delete(user);
-        params.put("isRemoved", true);
+        params.put("success", true);
         return ResponseEntity.ok(params);
-    }
-
-    @ModelAttribute("roles")
-    private Set<Role> getAllRoles() {
-        return roleService.findAll();
-    }
-
-    private ResponseEntity<Map<String, Object>> buildResponse(User user, BindingResult br) {
-        Map<String, Object> params = new HashMap<>();
-        if (br.hasErrors()) {
-            params.put("errors", getFieldErrors(br));
-            return ResponseEntity.badRequest().body(params);
-        } else if (userService.existsByEmail(user.getEmail())) {
-            params.put("emailExists", true);
-            return ResponseEntity.badRequest().body(params);
-        } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
-            params.put("passwordsNotMatch", true);
-            return ResponseEntity.badRequest().body(params);
-        }
-        userService.save(user);
-        params.put("isCreated", true);
-        params.put("user", new User());
-        return ResponseEntity.ok(params);
-    }
-
-    private Map<String, String> getFieldErrors(BindingResult br) {
-        Map<String, String> fieldErrors = new HashMap<>();
-        for (FieldError error : br.getFieldErrors()) {
-            fieldErrors.put(error.getField(), error.getDefaultMessage());
-        }
-        return fieldErrors;
     }
 }

@@ -47,11 +47,11 @@ public class RestaurantRestControllerTest {
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
         List<Restaurant> restaurants =
-                apiRequestUtils.fetchItemListFromEndpoint(
+                apiRequestUtils.fetchObjects(
                         "/api/restaurants", Restaurant.class);
 
         assertEquals(2, restaurants.size());
-        assertEquals("Wykwintna Bistro", restaurants.get(1).getName());
+        assertEquals("admin", restaurants.get(1).getName());
     }
 
     @Test

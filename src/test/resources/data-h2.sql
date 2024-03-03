@@ -199,10 +199,11 @@ VALUES (18, false);
 INSERT INTO restaurant_tables (id, is_active)
 VALUES (19, false);
 
-INSERT INTO role (id, name)
-VALUES (1, 'ROLE_USER');
-INSERT INTO role (id, name)
-VALUES (2, 'ROLE_ADMIN');
+INSERT INTO role (id, name, displayed_name) VALUES (1, 'ROLE_WAITER', 'Kelner');
+INSERT INTO role (id, name, displayed_name) VALUES (2, 'ROLE_ADMIN', 'Administrator');
+INSERT INTO role (id, name, displayed_name) VALUES (3, 'ROLE_MANAGER', 'Menadżer');
+INSERT INTO role (id, name, displayed_name) VALUES (4, 'ROLE_COOK', 'Kucharz');
+
 
 INSERT INTO ordered_items (quantity, menu_item_id, is_ready_to_serve)
 VALUES (2, 3, false);
@@ -308,3 +309,17 @@ VALUES (5, 1);
 
 INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity)
 VALUES (1, 3, '07:00:00', '23:00:00', 1, 120);
+
+INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname) VALUES ('2024-01-20 12:04:00.000000', 'matimemek@test.com', 1, '$2a$10$z/0edEimosa3QjYYxjiHuO8bNZHfI3jxDVwqDNd5bc2vCr5TERDz6', '2024-02-02 20:54:41.531670', 'mati', null, 'Mati', '+48 123 123 123', 'Memek');
+INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname) VALUES ('2024-01-20 19:09:00.000000', 'admin@example.com', 1, 'admin_password', '2024-02-04 07:50:29.047589', 'admin', null, '', '', '');
+INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname) VALUES ('2024-01-24 19:06:36.680304', 'netka@test.com', 1, '$2a$10$ViUyMtRUmZgeZWRBME67g.Wp3K9p8UyJPfQd2GB9uXbQnBiDe4FJ.', null, 'neta', null, null, null, null);
+INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname) VALUES ('2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1, '$2a$10$.HWarZkysOgBF0/tOXmmtONdRkZHGZCsRFs27Q7FcNrDc4bSzE0fW', '2024-02-03 10:33:07.307903', 'kucharz', null, 'ada', '', 'asdqwe');
+INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname) VALUES ('2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1, '$2a$10$tykyevzP4v1WV/FyuYWNOO6wspbmAHnzI.deEAZQU6SA8NSxod3Vy', null, 'owner', null, 'Właściciel', '', 'Biznesmen');
+
+INSERT INTO user_role (user_id, role_id) VALUES (1, 1);
+INSERT INTO user_role (user_id, role_id) VALUES (3, 1);
+INSERT INTO user_role (user_id, role_id) VALUES (2, 2);
+INSERT INTO user_role (user_id, role_id) VALUES (5, 2);
+INSERT INTO user_role (user_id, role_id) VALUES (3, 3);
+INSERT INTO user_role (user_id, role_id) VALUES (5, 3);
+INSERT INTO user_role (user_id, role_id) VALUES (4, 4);

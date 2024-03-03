@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.User;
+import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.UserRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
 
@@ -13,9 +15,11 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ExceptionHelper exceptionHelper;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, ExceptionHelper exceptionHelper) {
         this.userRepository = userRepository;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
@@ -34,8 +38,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Integer id) {
-        return userRepository.findById(id).orElseThrow();
+    public User findById(Integer id) throws LocalizedException {
+        return userRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.userService.userNotExist", id));
     }
 
     @Override

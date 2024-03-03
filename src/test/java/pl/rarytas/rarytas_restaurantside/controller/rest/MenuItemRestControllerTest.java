@@ -48,7 +48,7 @@ public class MenuItemRestControllerTest {
     @Test
     public void shouldGetAllFromEndpoint() throws Exception {
         List<MenuItem> menuItems =
-                apiRequestUtils.fetchItemListFromEndpoint(
+                apiRequestUtils.fetchObjects(
                         "/api/items", MenuItem.class);
         assertEquals(40, menuItems.size());
         assertEquals("Nachos z sosem serowym", menuItems.get(4).getName());

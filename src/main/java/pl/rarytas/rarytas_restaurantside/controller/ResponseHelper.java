@@ -6,7 +6,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,24 @@ public class ResponseHelper {
         MultipartFile imageFile = (MultipartFile) mappedRequest.get("imageFile");
         service.save(menuItem, imageFile);
         params.put("success", true);
+        return ResponseEntity.ok(params);
+    }
+
+    public ResponseEntity<Map<String, Object>> buildResponseEntity(User user, BindingResult br, UserService userService) {
+        Map<String, Object> params = new HashMap<>();
+        if (br.hasErrors()) {
+            params.put("errors", getFieldErrors(br));
+            return ResponseEntity.badRequest().body(params);
+        } else if (userService.existsByEmail(user.getEmail())) {
+            params.put("emailExists", true);
+            return ResponseEntity.badRequest().body(params);
+        } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
+            params.put("passwordsNotMatch", true);
+            return ResponseEntity.badRequest().body(params);
+        }
+        userService.save(user);
+        params.put("isCreated", true);
+        params.put("user", new User());
         return ResponseEntity.ok(params);
     }
 
