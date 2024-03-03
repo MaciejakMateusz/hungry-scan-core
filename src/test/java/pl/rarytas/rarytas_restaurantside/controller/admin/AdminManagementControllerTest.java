@@ -161,6 +161,16 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     @Order(13)
+    void shouldNotShowUserById() throws Exception {
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 55, status().isBadRequest());
+        assertTrue((Boolean) responseBody.get("error"));
+        assertNotNull(responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @Order(14)
     void shouldGetNewUserObject() throws Exception {
         Object user = apiRequestUtils.fetchObject("/api/admin/users/add", User.class);
         assertInstanceOf(User.class, user);
@@ -168,7 +178,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(14)
+    @Order(15)
     void shouldNotAllowUnauthorizedAccessToNewUserObject() throws Exception {
         mockMvc.perform(get("/api/admin/users/add"))
                 .andExpect(status().isForbidden());
@@ -176,10 +186,14 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(15)
+    @Order(16)
     void shouldAddNewUser() throws Exception {
-        User user = UserBuilder.createCorrectUser();
-        apiRequestUtils.postObject("/api/admin/users/add", user, status().isOk());
+        User user = UserBuilder.createUser();
+        Map<String,Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isOk());
+        assertTrue((Boolean) responseBody.get("isCreated"));
+        assertEquals(new User(), apiRequestUtils.deserializeObject(responseBody.get("user"), User.class));
+
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
         User persistedUser = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
@@ -188,30 +202,91 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(16)
+    @Order(17)
     void shouldNotAllowUnauthorizedToAddUser() throws Exception {
-        User user = UserBuilder.createCorrectUser();
+        User user = UserBuilder.createUser();
         apiRequestUtils.postObject("/api/admin/users/add", user, status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(17)
-    void shouldNotAddIncorrectUser() throws Exception {
-        User user = UserBuilder.createIncorrectUser();
+    @Order(18)
+    void shouldNotAddWithIncorrectEmail() throws Exception {
+        User user = UserBuilder.createUser();
+        user.setEmail("mordo@gmailcom");
 
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
         Map<?, ?> errors = (Map<?, ?>) responseParams.get("errors");
 
         assertNotNull(errors);
-        assertEquals(2, errors.size());
+        assertEquals(1, errors.size());
         assertEquals("Niepoprawny format adresu email", errors.get("email"));
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(18)
+    @Order(19)
+    void shouldNotAddWithIncorrectUsername() throws Exception {
+        User user = UserBuilder.createUser();
+        user.setUsername("ex");
+
+        Map<String, Object> responseParams =
+                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
+        Map<?, ?> errors = (Map<?, ?>) responseParams.get("errors");
+
+        assertNotNull(errors);
+        assertEquals(1, errors.size());
+        assertEquals("Nazwa uÅ¼ytkownika musi posiadaÄ\u0087 od 3 do 20 znakÃ³w i nie moÅ¼e zawieraÄ\u0087 spacji", errors.get("username"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @Order(20)
+    void shouldNotAddWithIncorrectPassword() throws Exception {
+        User user = UserBuilder.createUser();
+        user.setPassword("example123");
+        user.setRepeatedPassword("example123");
+
+        Map<String, Object> responseParams =
+                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
+        Map<?, ?> errors = (Map<?, ?>) responseParams.get("errors");
+
+        assertNotNull(errors);
+        assertEquals(1, errors.size());
+        assertEquals("HasÅ\u0082o musi posiadaÄ\u0087 przynajmniej  jednÄ\u0085 duÅ¼Ä\u0085 literÄ\u0099, jednÄ\u0085 maÅ\u0082Ä\u0085 literÄ\u0099, jednÄ\u0085 cyfrÄ\u0099 i jeden znak specjalny", errors.get("password"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @Order(21)
+    void shouldNotAddWithExistingEmail() throws Exception {
+        User user = UserBuilder.createUser();
+        user.setEmail("netka@test.com");
+
+        Map<String, Object> responseParams =
+                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
+
+        assertTrue((Boolean) responseParams.get("emailExists"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @Order(22)
+    void shouldNotAddWithNotMatchingPasswords() throws Exception {
+        User user = UserBuilder.createUser();
+        user.setEmail("test21@gmail.com");
+        user.setRepeatedPassword("Examplepass123");
+
+        Map<String, Object> responseParams =
+                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
+
+        assertTrue((Boolean) responseParams.get("passwordsNotMatch"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @Order(23)
     void shouldUpdateUser() throws Exception {
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
@@ -228,7 +303,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(19)
+    @Order(24)
     void shouldNotAllowUnauthorizedAccessToUpdateUser() throws Exception {
         User user = new User();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -240,7 +315,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(20)
+    @Order(25)
     void shouldNotUpdateIncorrectUser() throws Exception {
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
@@ -258,7 +333,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
-    @Order(21)
+    @Order(26)
     void shouldRemoveUser() throws Exception {
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
@@ -276,7 +351,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(22)
+    @Order(27)
     void shouldNotAllowUnauthorizedAccessToRemoveUser() throws Exception {
         User user = new User();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -284,5 +359,18 @@ class AdminManagementControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin")
+    @Order(28)
+    void shouldNotSelfRemove() throws Exception {
+        Map<String, Object> responseParams =
+                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 2, status().isOk());
+        User existingUser = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/admin/users/remove", existingUser, status().isBadRequest());
+        assertTrue((Boolean) responseBody.get("illegalRemoval"));
     }
 }
