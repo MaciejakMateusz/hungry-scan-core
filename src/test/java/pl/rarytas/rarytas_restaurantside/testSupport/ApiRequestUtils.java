@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import pl.rarytas.rarytas_restaurantside.entity.User;
 
 import java.util.List;
 import java.util.Map;
@@ -91,5 +92,23 @@ public class ApiRequestUtils {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
+    }
+
+    public User getPersistedUser(Integer id) throws Exception {
+        Map<String, Object> responseParams =
+                postAndReturnResponseBody("/api/admin/users/show", id, status().isOk());
+        return deserializeObject(responseParams.get("user"), User.class);
+    }
+
+    public Map<?, ?> getErrorsFromResponse(User user) throws Exception {
+        Map<String, Object> responseParams =
+                postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
+        return (Map<?, ?>) responseParams.get("errors");
+    }
+
+    public boolean postAndCheckSuccessFrom200Response(String endpointName, User user) throws Exception {
+        Map<String, Object> responseBody =
+                postAndReturnResponseBody("/api/admin/users/" + endpointName, user, status().isOk());
+        return (Boolean) responseBody.get("success");
     }
 }

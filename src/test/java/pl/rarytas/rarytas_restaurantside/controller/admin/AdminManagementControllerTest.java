@@ -140,9 +140,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(11)
     void shouldShowUserById() throws Exception {
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 5, status().isOk());
-        User user = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
+        User user = apiRequestUtils.getPersistedUser(5);
         assertEquals("owner", user.getUsername());
     }
 
@@ -189,14 +187,12 @@ class AdminManagementControllerTest {
     @Order(16)
     void shouldAddNewUser() throws Exception {
         User user = UserBuilder.createUser();
-        Map<String,Object> responseBody =
+        Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isOk());
         assertTrue((Boolean) responseBody.get("isCreated"));
         assertEquals(new User(), apiRequestUtils.deserializeObject(responseBody.get("user"), User.class));
 
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
-        User persistedUser = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
+        User persistedUser = apiRequestUtils.getPersistedUser(6);
         assertEquals("exampleUser", persistedUser.getUsername());
     }
 
@@ -215,9 +211,7 @@ class AdminManagementControllerTest {
         User user = UserBuilder.createUser();
         user.setEmail("mordo@gmailcom");
 
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
-        Map<?, ?> errors = (Map<?, ?>) responseParams.get("errors");
+        Map<?, ?> errors = apiRequestUtils.getErrorsFromResponse(user);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
@@ -231,9 +225,7 @@ class AdminManagementControllerTest {
         User user = UserBuilder.createUser();
         user.setUsername("ex");
 
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
-        Map<?, ?> errors = (Map<?, ?>) responseParams.get("errors");
+        Map<?, ?> errors = apiRequestUtils.getErrorsFromResponse(user);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
@@ -248,9 +240,7 @@ class AdminManagementControllerTest {
         user.setPassword("example123");
         user.setRepeatedPassword("example123");
 
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
-        Map<?, ?> errors = (Map<?, ?>) responseParams.get("errors");
+        Map<?, ?> errors = apiRequestUtils.getErrorsFromResponse(user);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
@@ -288,16 +278,13 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(23)
     void shouldUpdateUser() throws Exception {
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
-        User existingUser = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
+        User existingUser = apiRequestUtils.getPersistedUser(6);
         existingUser.setEmail("updated@email.com");
 
-        apiRequestUtils.postObject("/api/admin/users/update", existingUser, status().isOk());
+        boolean isSuccess = apiRequestUtils.postAndCheckSuccessFrom200Response("update", existingUser);
+        assertTrue(isSuccess);
 
-        responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
-        User updatedUser = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
+        User updatedUser = apiRequestUtils.getPersistedUser(6);
         assertEquals("updated@email.com", updatedUser.getEmail());
     }
 
@@ -317,14 +304,10 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(25)
     void shouldNotUpdateIncorrectUser() throws Exception {
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
-        User existingUser = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
+        User existingUser = apiRequestUtils.getPersistedUser(6);
         existingUser.setEmail("updated@emailcom");
 
-        Map<String, Object> responseMap =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", existingUser, status().isBadRequest());
-        Map<?, ?> errors = (Map<?, ?>) responseMap.get("errors");
+        Map<?, ?> errors = apiRequestUtils.getErrorsFromResponse(existingUser);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
@@ -335,15 +318,12 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(26)
     void shouldRemoveUser() throws Exception {
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isOk());
-        User existingUser = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
+        User existingUser = apiRequestUtils.getPersistedUser(6);
+
+        boolean isSuccess = apiRequestUtils.postAndCheckSuccessFrom200Response("remove", existingUser);
+        assertTrue(isSuccess);
 
         Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/remove", existingUser, status().isOk());
-        assertTrue((Boolean) responseBody.get("success"));
-
-        responseBody =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isBadRequest());
         assertTrue((Boolean) responseBody.get("error"));
         assertNotNull(responseBody.get("exceptionMsg"));
@@ -365,9 +345,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(28)
     void shouldNotSelfRemove() throws Exception {
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 2, status().isOk());
-        User existingUser = apiRequestUtils.deserializeObject(responseParams.get("user"), User.class);
+        User existingUser = apiRequestUtils.getPersistedUser(2);
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/remove", existingUser, status().isBadRequest());
