@@ -35,6 +35,11 @@ public class MenuItemController {
         return ResponseEntity.ok(categoryService.findAll());
     }
 
+    @PostMapping("/show")
+    public ResponseEntity<MenuItem> updateItem(@RequestBody Integer id) {
+        return ResponseEntity.ok(menuItemService.findById(id).orElseThrow());
+    }
+
     @GetMapping("/add")
     public ResponseEntity<MenuItem> addItem() {
         return ResponseEntity.ok(new MenuItem());
@@ -46,24 +51,14 @@ public class MenuItemController {
         return responseHelper.buildResponseEntity(mappedRequest, br, menuItemService);
     }
 
-    @PostMapping("/edit")
-    public ResponseEntity<MenuItem> updateItem(@RequestParam Integer id) {
-        return ResponseEntity.ok(menuItemService.findById(id).orElseThrow());
-    }
-
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody Map<String, Object> mappedRequest,
                                                           BindingResult br) {
         return responseHelper.buildResponseEntity(mappedRequest, br, menuItemService);
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<MenuItem> deleteItem(@RequestParam Integer id) {
-        return ResponseEntity.ok(menuItemService.findById(id).orElseThrow());
-    }
-
     @PostMapping("/remove")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam MenuItem menuItem) {
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody MenuItem menuItem) {
         Map<String, Object> params = new HashMap<>();
         menuItemService.delete(menuItem);
         params.put("success", true);

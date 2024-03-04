@@ -9,7 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.User;
-import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
 
 import java.security.Principal;
@@ -64,18 +63,7 @@ public class AdminManagementController {
 
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
-        Map<String, Object> params = new HashMap<>();
-        User user;
-        try {
-            user = userService.findById(id);
-        } catch (LocalizedException e) {
-            params.put("error", true);
-            params.put("exceptionMsg", e.getMessage());
-            log.warn(e.getMessage());
-            return ResponseEntity.badRequest().body(params);
-        }
-        params.put("user", user);
-        return ResponseEntity.ok(params);
+        return responseHelper.getResponseBody(id, userService::findById);
     }
 
     @GetMapping("/add")

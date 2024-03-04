@@ -92,20 +92,21 @@ public class ApiRequestUtils {
         return objectMapper.readValue(responseBody, typeReference);
     }
 
-    public <T> T deserializeObject(Object object, Class<T> classType) {
-        return prepObjMapper().convertValue(object, classType);
-    }
-
     private ObjectMapper prepObjMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
     }
 
-    public User getPersistedUser(Integer id) throws Exception {
+    public <T> T getObjectExpect200(String endpoint, Integer id, Class<T> classType) throws Exception {
         Map<String, Object> responseParams =
-                postAndReturnResponseBody("/api/admin/users/show", id, status().isOk());
-        return deserializeObject(responseParams.get("user"), User.class);
+                postAndReturnResponseBody(endpoint, id, status().isOk());
+        String paramName = classType.getSimpleName().toLowerCase();
+        return deserializeObject(responseParams.get(paramName), classType);
+    }
+
+    public <T> T deserializeObject(Object object, Class<T> classType) {
+        return prepObjMapper().convertValue(object, classType);
     }
 
     public Map<?, ?> getErrorsFromResponse(User user) throws Exception {

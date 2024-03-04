@@ -10,10 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.TestPropertySource;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,8 +36,8 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void shouldFindById() {
-        Category category = categoryService.findById(1).orElse(new Category());
+    void shouldFindById() throws LocalizedException {
+        Category category = categoryService.findById(1);
         assertEquals("Przystawki", category.getName());
     }
 
@@ -58,10 +58,10 @@ class CategoryServiceImplTest {
 
     @Test
     @Order(2)
-    public void shouldInsertNew() {
+    public void shouldInsertNew() throws LocalizedException {
         Category newCategory = createCategory("Tajskie", "Ostre, orientalne posiłki prosto z dalekiego kraju");
         categoryService.save(newCategory);
-        Category category = categoryService.findById(newCategory.getId()).orElse(new Category());
+        Category category = categoryService.findById(newCategory.getId());
         assertEquals(newCategory.getId(), category.getId());
     }
 
@@ -90,26 +90,26 @@ class CategoryServiceImplTest {
 
     @Test
     @Order(3)
-    public void shouldUpdate() {
-        Category existingCategory = categoryService.findById(9).orElse(new Category());
+    public void shouldUpdate() throws LocalizedException {
+        Category existingCategory = categoryService.findById(9);
         existingCategory.setName("Testowe jedzenie");
         categoryService.save(existingCategory);
-        Category updatedCategory = categoryService.findById(9).orElse(new Category());
+        Category updatedCategory = categoryService.findById(9);
         assertEquals("Testowe jedzenie", updatedCategory.getName());
     }
 
     @Test
     @Order(4)
-    public void shouldDelete() {
-        Category category = categoryService.findById(9).orElseThrow();
+    public void shouldDelete() throws LocalizedException {
+        Category category = categoryService.findById(9);
         categoryService.delete(category);
-        assertThrows(NoSuchElementException.class, () -> categoryService.findById(9).orElseThrow());
+        assertThrows(LocalizedException.class, () -> categoryService.findById(9));
     }
 
     @Test
     @Order(5)
-    public void shouldNotDelete() {
-        Category category = categoryService.findById(1).orElseThrow();
+    public void shouldNotDelete() throws LocalizedException {
+        Category category = categoryService.findById(1);
         assertThrows(DataIntegrityViolationException.class, () -> categoryService.delete(category));
     }
 

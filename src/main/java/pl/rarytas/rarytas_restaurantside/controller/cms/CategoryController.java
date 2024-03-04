@@ -1,6 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/cms/categories")
 @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
@@ -32,34 +34,29 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.findAll());
     }
 
+    @PostMapping("/show")
+    public ResponseEntity<Map<String, Object>> updateItem(@RequestBody Integer id) {
+        return responseHelper.getResponseBody(id, categoryService::findById);
+    }
+
     @GetMapping("/add")
     public ResponseEntity<Category> add() {
         return ResponseEntity.ok(new Category());
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> add(@Valid @RequestParam Category category, BindingResult br) {
+    public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody Category category, BindingResult br) {
         return responseHelper.buildResponseEntity(category, br, categoryService::save);
-    }
-
-    @PostMapping("/edit")
-    public ResponseEntity<Category> updateItem(@RequestParam Integer id) {
-        return ResponseEntity.ok(categoryService.findById(id).orElseThrow());
     }
 
     @Modifying
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestParam Category category, BindingResult br) {
+    public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody Category category, BindingResult br) {
         return responseHelper.buildResponseEntity(category, br, categoryService::save);
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<Category> deleteItem(@RequestParam Integer id) {
-        return ResponseEntity.ok(categoryService.findById(id).orElseThrow());
-    }
-
     @PostMapping("/remove")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Category category) {
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody Category category) {
         Map<String, Object> params = new HashMap<>();
         categoryService.delete(category);
         params.put("success", true);

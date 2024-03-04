@@ -1,5 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
@@ -7,13 +8,16 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.entity.User;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
+import pl.rarytas.rarytas_restaurantside.utility.ThrowingFunction;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@Slf4j
 @Component
 public class ResponseHelper {
 
@@ -60,6 +64,22 @@ public class ResponseHelper {
         userService.save(user);
         params.put("isCreated", true);
         params.put("user", new User());
+        return ResponseEntity.ok(params);
+    }
+
+    public <T, R> ResponseEntity<Map<String, Object>> getResponseBody(T id, ThrowingFunction<T, R> function) {
+        Map<String, Object> params = new HashMap<>();
+        R r;
+        try {
+            r = function.apply(id);
+        } catch (LocalizedException e) {
+            params.put("error", true);
+            params.put("exceptionMsg", e.getMessage());
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().body(params);
+        }
+        String paramName = r.getClass().getSimpleName().toLowerCase();
+        params.put(paramName, r);
         return ResponseEntity.ok(params);
     }
 

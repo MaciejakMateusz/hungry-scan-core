@@ -1,14 +1,14 @@
 package pl.rarytas.rarytas_restaurantside.service.interfaces;
 
 import pl.rarytas.rarytas_restaurantside.entity.Category;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CategoryService {
     List<Category> findAll();
 
-    Optional<Category> findById(Integer id);
+    Category findById(Integer id) throws LocalizedException;
 
     void save(Category category);
 

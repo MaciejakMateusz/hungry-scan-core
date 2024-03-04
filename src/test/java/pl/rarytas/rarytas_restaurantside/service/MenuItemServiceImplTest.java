@@ -9,10 +9,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -42,7 +42,7 @@ public class MenuItemServiceImplTest {
 
     @Test
     @Order(2)
-    public void shouldInsertNew() throws IOException {
+    public void shouldInsertNew() throws LocalizedException {
         MenuItem newMenuItem = createMenuItem("Burger", 2, "Z mięsem wegańskim", "Bułka, mięso sojowe, sałata, ogórek konserwowy, chrzan żurawinowy", BigDecimal.valueOf(20.00));
         menuItemService.save(newMenuItem, null);
         MenuItem menuItem = menuItemService.findById(newMenuItem.getId()).orElse(new MenuItem());
@@ -50,7 +50,7 @@ public class MenuItemServiceImplTest {
     }
 
     @Test
-    public void shouldNotInsertNew() {
+    public void shouldNotInsertNew() throws LocalizedException {
         MenuItem menuItem = createMenuItem("Cheeseburger", 3, "Z mięsem i serem wegańskim.", "Bułka, mięso sojowe, sałata, ogórek konserwowy, chrzan żurawinowy.", BigDecimal.valueOf(21.00));
 
         menuItem.setName("");
@@ -75,7 +75,7 @@ public class MenuItemServiceImplTest {
 
     @Test
     @Order(3)
-    public void shouldUpdate() throws IOException {
+    public void shouldUpdate() {
         MenuItem existingMenuItem = menuItemService.findById(41).orElse(new MenuItem());
         existingMenuItem.setName("Burger wege");
         menuItemService.save(existingMenuItem, null);
@@ -100,10 +100,10 @@ public class MenuItemServiceImplTest {
                                     int categoryId,
                                     String description,
                                     String ingredients,
-                                    BigDecimal price) {
+                                    BigDecimal price) throws LocalizedException {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(name);
-        menuItem.setCategory(categoryService.findById(categoryId).orElseThrow());
+        menuItem.setCategory(categoryService.findById(categoryId));
         menuItem.setDescription(description);
         menuItem.setIngredients(ingredients);
         menuItem.setPrice(price);

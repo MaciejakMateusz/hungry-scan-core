@@ -11,6 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
@@ -55,8 +56,8 @@ class CategoryRestControllerTest {
     }
 
     @Test
-    public void shouldGetCategoryFromDatabase() {
-        Category category = categoryService.findById(1).orElse(new Category());
+    public void shouldGetCategoryFromDatabase() throws LocalizedException {
+        Category category = categoryService.findById(1);
         assertEquals("Przystawki", category.getName());
     }
 

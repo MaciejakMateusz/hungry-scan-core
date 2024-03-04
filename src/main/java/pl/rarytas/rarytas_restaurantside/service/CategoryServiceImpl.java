@@ -3,20 +3,23 @@ package pl.rarytas.rarytas_restaurantside.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
+import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.CategoryRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ExceptionHelper exceptionHelper;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, ExceptionHelper exceptionHelper) {
         this.categoryRepository = categoryRepository;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
@@ -25,8 +28,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Optional<Category> findById(Integer id) {
-        return categoryRepository.findById(id);
+    public Category findById(Integer id) throws LocalizedException {
+        return categoryRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.userService.categoryNotExist", id));
     }
 
     @Override

@@ -26,7 +26,6 @@ public class RestaurantController {
         this.responseHelper = responseHelper;
     }
 
-
     @GetMapping
     public ResponseEntity<List<Restaurant>> restaurantsList() {
         return ResponseEntity.ok(restaurantService.findAll());
@@ -43,20 +42,15 @@ public class RestaurantController {
         return responseHelper.buildResponseEntity(restaurant, br, restaurantService::save);
     }
 
-    @PostMapping("/edit")
-    public ResponseEntity<Restaurant> updateRestaurant(@RequestParam Integer id) {
-        return ResponseEntity.ok(restaurantService.findById(id).orElseThrow());
+    @PostMapping("/show")
+    public ResponseEntity<Map<String, Object>> updateRestaurant(@RequestParam Integer id) {
+        return responseHelper.getResponseBody(id, restaurantService::findById);
     }
 
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> updateRestaurant(@Valid @RequestParam Restaurant restaurant,
                                                                 BindingResult br) {
         return responseHelper.buildResponseEntity(restaurant, br, restaurantService::save);
-    }
-
-    @PostMapping("/delete")
-    public ResponseEntity<Restaurant> deleteItem(@RequestParam Integer id) {
-        return ResponseEntity.ok(restaurantService.findById(id).orElseThrow());
     }
 
     @PostMapping("/remove")
