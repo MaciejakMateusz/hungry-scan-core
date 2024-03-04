@@ -161,7 +161,8 @@ class AdminManagementControllerTest {
     @Order(13)
     void shouldNotShowUserById() throws Exception {
         Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 55, status().isBadRequest());
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/admin/users/show", 55, status().isBadRequest());
         assertTrue((Boolean) responseBody.get("error"));
         assertNotNull(responseBody.get("exceptionMsg"));
     }
@@ -229,7 +230,9 @@ class AdminManagementControllerTest {
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
-        assertEquals("Nazwa uÅ¼ytkownika musi posiadaÄ\u0087 od 3 do 20 znakÃ³w i nie moÅ¼e zawieraÄ\u0087 spacji", errors.get("username"));
+        assertEquals(
+                "Nazwa uÅ¼ytkownika musi posiadaÄ\u0087 od 3 do 20 znakÃ³w i nie moÅ¼e zawieraÄ\u0087 spacji",
+                errors.get("username"));
     }
 
     @Test
@@ -244,7 +247,9 @@ class AdminManagementControllerTest {
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
-        assertEquals("HasÅ\u0082o musi posiadaÄ\u0087 przynajmniej  jednÄ\u0085 duÅ¼Ä\u0085 literÄ\u0099, jednÄ\u0085 maÅ\u0082Ä\u0085 literÄ\u0099, jednÄ\u0085 cyfrÄ\u0099 i jeden znak specjalny", errors.get("password"));
+        assertEquals(
+                "HasÅ\u0082o musi posiadaÄ\u0087 przynajmniej  jednÄ\u0085 duÅ¼Ä\u0085 literÄ\u0099, jednÄ\u0085 maÅ\u0082Ä\u0085 literÄ\u0099, jednÄ\u0085 cyfrÄ\u0099 i jeden znak specjalny",
+                errors.get("password"));
     }
 
     @Test
@@ -255,7 +260,8 @@ class AdminManagementControllerTest {
         user.setEmail("netka@test.com");
 
         Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/admin/users/add", user, status().isBadRequest());
 
         assertTrue((Boolean) responseParams.get("emailExists"));
     }
@@ -269,7 +275,8 @@ class AdminManagementControllerTest {
         user.setRepeatedPassword("Examplepass123");
 
         Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/admin/users/add", user, status().isBadRequest());
 
         assertTrue((Boolean) responseParams.get("passwordsNotMatch"));
     }
@@ -324,7 +331,8 @@ class AdminManagementControllerTest {
         assertTrue(isSuccess);
 
         Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/show", 6, status().isBadRequest());
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/admin/users/show", 6, status().isBadRequest());
         assertTrue((Boolean) responseBody.get("error"));
         assertNotNull(responseBody.get("exceptionMsg"));
     }
