@@ -56,6 +56,14 @@ public class ApiRequestUtils {
         return prepObjMapper().readValue(jsonResponse, itemType);
     }
 
+    public void fetchAndExpectUnauthorized(String endpointUrl, ResultMatcher matcher) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(matcher)
+                .andDo(print())
+                .andReturn();
+    }
+
     public <T> void postObject(String endpointUrl, T object, ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
