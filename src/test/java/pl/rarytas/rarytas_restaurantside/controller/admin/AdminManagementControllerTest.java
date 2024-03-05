@@ -187,9 +187,7 @@ class AdminManagementControllerTest {
     @Order(16)
     void shouldAddNewUser() throws Exception {
         User user = UserBuilder.createUser();
-        Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isOk());
-        assertEquals(0, responseBody.size());
+        apiRequestUtils.postAndExpect200("/api/admin/users/add", user);
 
         User persistedUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
         assertEquals("exampleUser", persistedUser.getUsername());
