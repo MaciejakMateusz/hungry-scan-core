@@ -30,7 +30,6 @@ public class ResponseHelper {
             return ResponseEntity.badRequest().body(params);
         }
         saveFunction.accept(entity);
-        params.put("success", true);
         return ResponseEntity.ok(params);
     }
 
@@ -45,7 +44,6 @@ public class ResponseHelper {
         MenuItem menuItem = (MenuItem) mappedRequest.get("menuItem");
         MultipartFile imageFile = (MultipartFile) mappedRequest.get("imageFile");
         service.save(menuItem, imageFile);
-        params.put("success", true);
         return ResponseEntity.ok(params);
     }
 
@@ -62,7 +60,6 @@ public class ResponseHelper {
             return ResponseEntity.badRequest().body(params);
         }
         userService.save(user);
-        params.put("isCreated", true);
         params.put("user", new User());
         return ResponseEntity.ok(params);
     }
@@ -73,7 +70,6 @@ public class ResponseHelper {
         try {
             r = function.apply(id);
         } catch (LocalizedException e) {
-            params.put("error", true);
             params.put("exceptionMsg", e.getMessage());
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(params);

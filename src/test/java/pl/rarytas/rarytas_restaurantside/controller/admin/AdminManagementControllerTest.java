@@ -163,7 +163,6 @@ class AdminManagementControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/show", 55, status().isBadRequest());
-        assertTrue((Boolean) responseBody.get("error"));
         assertNotNull(responseBody.get("exceptionMsg"));
     }
 
@@ -190,7 +189,6 @@ class AdminManagementControllerTest {
         User user = UserBuilder.createUser();
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isOk());
-        assertTrue((Boolean) responseBody.get("isCreated"));
         assertEquals(new User(), apiRequestUtils.deserializeObject(responseBody.get("user"), User.class));
 
         User persistedUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
@@ -288,8 +286,7 @@ class AdminManagementControllerTest {
         User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
         existingUser.setEmail("updated@email.com");
 
-        boolean isSuccess = apiRequestUtils.postAndCheckSuccessFrom200Response("update", existingUser);
-        assertTrue(isSuccess);
+        apiRequestUtils.postAndExpect200("update", existingUser);
 
         User updatedUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
         assertEquals("updated@email.com", updatedUser.getEmail());
@@ -327,13 +324,11 @@ class AdminManagementControllerTest {
     void shouldRemoveUser() throws Exception {
         User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
 
-        boolean isSuccess = apiRequestUtils.postAndCheckSuccessFrom200Response("remove", existingUser);
-        assertTrue(isSuccess);
+        apiRequestUtils.postAndExpect200("remove", existingUser);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/show", 6, status().isBadRequest());
-        assertTrue((Boolean) responseBody.get("error"));
         assertNotNull(responseBody.get("exceptionMsg"));
     }
 

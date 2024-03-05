@@ -90,7 +90,6 @@ public class AdminManagementController {
             return ResponseEntity.badRequest().body(params);
         }
         userService.delete(user);
-        params.put("success", true);
         return ResponseEntity.ok(params);
     }
 }

@@ -115,9 +115,7 @@ public class ApiRequestUtils {
         return (Map<?, ?>) responseParams.get("errors");
     }
 
-    public boolean postAndCheckSuccessFrom200Response(String endpointName, User user) throws Exception {
-        Map<String, Object> responseBody =
-                postAndReturnResponseBody("/api/admin/users/" + endpointName, user, status().isOk());
-        return (Boolean) responseBody.get("success");
+    public void postAndExpect200(String endpointName, User user) throws Exception {
+        postAndReturnResponseBody("/api/admin/users/" + endpointName, user, status().isOk());
     }
 }
