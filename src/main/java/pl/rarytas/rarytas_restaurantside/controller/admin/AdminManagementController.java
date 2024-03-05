@@ -73,12 +73,12 @@ public class AdminManagementController {
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody User user, BindingResult br) {
-        return responseHelper.buildResponseEntity(user, br, userService);
+        return responseHelper.buildResponseEntity(user, br, userService, true);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> edit(@RequestBody User user, BindingResult br) {
-        return responseHelper.buildResponseEntity(user, br, userService::save);
+    public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody User user, BindingResult br) {
+        return responseHelper.buildResponseEntity(user, br, userService, false);
     }
 
     @PostMapping("/remove")

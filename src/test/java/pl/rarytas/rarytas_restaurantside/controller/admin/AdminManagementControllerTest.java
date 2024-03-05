@@ -189,7 +189,7 @@ class AdminManagementControllerTest {
         User user = UserBuilder.createUser();
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody("/api/admin/users/add", user, status().isOk());
-        assertEquals(new User(), apiRequestUtils.deserializeObject(responseBody.get("user"), User.class));
+        assertEquals(0, responseBody.size());
 
         User persistedUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
         assertEquals("exampleUser", persistedUser.getUsername());
@@ -210,7 +210,7 @@ class AdminManagementControllerTest {
         User user = UserBuilder.createUser();
         user.setEmail("mordo@gmailcom");
 
-        Map<?, ?> errors = apiRequestUtils.getErrorsFromResponse(user);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
@@ -224,7 +224,7 @@ class AdminManagementControllerTest {
         User user = UserBuilder.createUser();
         user.setUsername("ex");
 
-        Map<?, ?> errors = apiRequestUtils.getErrorsFromResponse(user);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
@@ -241,7 +241,7 @@ class AdminManagementControllerTest {
         user.setPassword("example123");
         user.setRepeatedPassword("example123");
 
-        Map<?, ?> errors = apiRequestUtils.getErrorsFromResponse(user);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
@@ -286,7 +286,7 @@ class AdminManagementControllerTest {
         User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
         existingUser.setEmail("updated@email.com");
 
-        apiRequestUtils.postAndExpect200("update", existingUser);
+        apiRequestUtils.postAndExpect200("/api/admin/users/update", existingUser);
 
         User updatedUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
         assertEquals("updated@email.com", updatedUser.getEmail());
@@ -311,7 +311,7 @@ class AdminManagementControllerTest {
         User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
         existingUser.setEmail("updated@emailcom");
 
-        Map<?, ?> errors = apiRequestUtils.getErrorsFromResponse(existingUser);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/update", existingUser);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());
@@ -324,7 +324,7 @@ class AdminManagementControllerTest {
     void shouldRemoveUser() throws Exception {
         User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
 
-        apiRequestUtils.postAndExpect200("remove", existingUser);
+        apiRequestUtils.postAndExpect200("/api/admin/users/remove", existingUser);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
