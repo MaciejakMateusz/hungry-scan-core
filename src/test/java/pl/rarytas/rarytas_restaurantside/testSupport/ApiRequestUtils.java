@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import pl.rarytas.rarytas_restaurantside.entity.User;
 
 import java.util.List;
 import java.util.Map;
@@ -87,8 +86,7 @@ public class ApiRequestUtils {
                 .andDo(print());
 
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
-        };
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {};
         return objectMapper.readValue(responseBody, typeReference);
     }
 
@@ -109,13 +107,13 @@ public class ApiRequestUtils {
         return prepObjMapper().convertValue(object, classType);
     }
 
-    public Map<?, ?> getErrorsFromResponse(User user) throws Exception {
+    public <T> Map<?, ?> postAndExpectErrors(String url, T t) throws Exception {
         Map<String, Object> responseParams =
-                postAndReturnResponseBody("/api/admin/users/add", user, status().isBadRequest());
+                postAndReturnResponseBody(url, t, status().isBadRequest());
         return (Map<?, ?>) responseParams.get("errors");
     }
 
-    public void postAndExpect200(String endpointName, User user) throws Exception {
-        postAndReturnResponseBody("/api/admin/users/" + endpointName, user, status().isOk());
+    public <T> void postAndExpect200(String url, T t) throws Exception {
+        postAndReturnResponseBody(url, t, status().isOk());
     }
 }

@@ -47,7 +47,10 @@ public class ResponseHelper {
         return ResponseEntity.ok(params);
     }
 
-    public ResponseEntity<Map<String, Object>> buildResponseEntity(User user, BindingResult br, UserService userService) {
+    public ResponseEntity<Map<String, Object>> buildResponseEntity(User user,
+                                                                   BindingResult br,
+                                                                   UserService userService,
+                                                                   boolean checkPasswords) {
         Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
             params.put("errors", getFieldErrors(br));
@@ -55,12 +58,11 @@ public class ResponseHelper {
         } else if (userService.existsByEmail(user.getEmail())) {
             params.put("emailExists", true);
             return ResponseEntity.badRequest().body(params);
-        } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
+        } else if (!user.getPassword().equals(user.getRepeatedPassword()) && checkPasswords) {
             params.put("passwordsNotMatch", true);
             return ResponseEntity.badRequest().body(params);
         }
         userService.save(user);
-        params.put("user", new User());
         return ResponseEntity.ok(params);
     }
 
