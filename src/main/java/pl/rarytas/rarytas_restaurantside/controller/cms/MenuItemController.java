@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
@@ -46,15 +47,15 @@ public class MenuItemController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> addItem(@Valid @RequestBody Map<String, Object> mappedRequest,
-                                                       BindingResult br) {
-        return responseHelper.buildResponseEntity(mappedRequest, br, menuItemService);
+    public ResponseEntity<Map<String, Object>> addItem(@Valid @RequestBody MenuItem menuItem,
+                                                       BindingResult br, MultipartFile imageFile) {
+        return responseHelper.saveAndBuildResponseEntity(menuItem, imageFile, br, menuItemService::save);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody Map<String, Object> mappedRequest,
-                                                          BindingResult br) {
-        return responseHelper.buildResponseEntity(mappedRequest, br, menuItemService);
+    public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody MenuItem menuItem,
+                                                          BindingResult br, MultipartFile imageFile) {
+        return responseHelper.saveAndBuildResponseEntity(menuItem, imageFile, br, menuItemService::save);
     }
 
     @PostMapping("/remove")

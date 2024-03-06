@@ -39,7 +39,7 @@ public class RestaurantController {
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addRestaurant(@Valid @RequestParam Restaurant restaurant,
                                                              BindingResult br) {
-        return responseHelper.buildResponseEntity(restaurant, br, restaurantService::save);
+        return responseHelper.saveAndBuildResponseEntity(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/show")
@@ -50,7 +50,7 @@ public class RestaurantController {
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> updateRestaurant(@Valid @RequestParam Restaurant restaurant,
                                                                 BindingResult br) {
-        return responseHelper.buildResponseEntity(restaurant, br, restaurantService::save);
+        return responseHelper.saveAndBuildResponseEntity(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/remove")

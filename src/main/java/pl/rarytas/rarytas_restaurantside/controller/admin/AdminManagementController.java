@@ -73,12 +73,33 @@ public class AdminManagementController {
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody User user, BindingResult br) {
-        return responseHelper.buildResponseEntity(user, br, userService, true);
+        Map<String, Object> params = new HashMap<>();
+        if (br.hasErrors()) {
+            params.put("errors", responseHelper.getFieldErrors(br));
+            return ResponseEntity.badRequest().body(params);
+        } else if (userService.existsByEmail(user.getEmail())) {
+            params.put("emailExists", true);
+            return ResponseEntity.badRequest().body(params);
+        } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
+            params.put("passwordsNotMatch", true);
+            return ResponseEntity.badRequest().body(params);
+        }
+        userService.save(user);
+        return ResponseEntity.ok(params);
     }
 
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody User user, BindingResult br) {
-        return responseHelper.buildResponseEntity(user, br, userService, false);
+        Map<String, Object> params = new HashMap<>();
+        if (br.hasErrors()) {
+            params.put("errors", responseHelper.getFieldErrors(br));
+            return ResponseEntity.badRequest().body(params);
+        } else if (userService.existsByEmail(user.getEmail())) {
+            params.put("emailExists", true);
+            return ResponseEntity.badRequest().body(params);
+        }
+        userService.save(user);
+        return ResponseEntity.ok(params);
     }
 
     @PostMapping("/remove")
