@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
 
 import java.time.LocalDateTime;
@@ -26,7 +27,8 @@ public class Category {
     private String name;
 
     @SizeIfNotEmpty
-    @Column(length = 400)
+    @Length(max = 300)
+    @Column(length = 300)
     private String description;
 
     @OneToMany(mappedBy = "category")
