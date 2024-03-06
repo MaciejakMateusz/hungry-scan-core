@@ -13,7 +13,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
-import pl.rarytas.rarytas_restaurantside.testSupport.UserBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -186,7 +185,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(16)
     void shouldAddNewUser() throws Exception {
-        User user = UserBuilder.createUser();
+        User user = createUser();
         apiRequestUtils.postAndExpect200("/api/admin/users/add", user);
 
         User persistedUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
@@ -197,7 +196,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "WAITER")
     @Order(17)
     void shouldNotAllowUnauthorizedToAddUser() throws Exception {
-        User user = UserBuilder.createUser();
+        User user = createUser();
         apiRequestUtils.postObject("/api/admin/users/add", user, status().isForbidden());
     }
 
@@ -205,7 +204,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(18)
     void shouldNotAddWithIncorrectEmail() throws Exception {
-        User user = UserBuilder.createUser();
+        User user = createUser();
         user.setEmail("mordo@gmailcom");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
@@ -219,7 +218,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(19)
     void shouldNotAddWithIncorrectUsername() throws Exception {
-        User user = UserBuilder.createUser();
+        User user = createUser();
         user.setUsername("ex");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
@@ -235,7 +234,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(20)
     void shouldNotAddWithIncorrectPassword() throws Exception {
-        User user = UserBuilder.createUser();
+        User user = createUser();
         user.setPassword("example123");
         user.setRepeatedPassword("example123");
 
@@ -252,7 +251,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(21)
     void shouldNotAddWithExistingEmail() throws Exception {
-        User user = UserBuilder.createUser();
+        User user = createUser();
         user.setEmail("netka@test.com");
 
         Map<String, Object> responseParams =
@@ -266,7 +265,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(22)
     void shouldNotAddWithNotMatchingPasswords() throws Exception {
-        User user = UserBuilder.createUser();
+        User user = createUser();
         user.setEmail("test21@gmail.com");
         user.setRepeatedPassword("Examplepass123");
 
@@ -351,5 +350,14 @@ class AdminManagementControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/remove", existingUser, status().isBadRequest());
         assertTrue((Boolean) responseBody.get("illegalRemoval"));
+    }
+
+    private User createUser() {
+        User user = new User();
+        user.setEmail("example@example.com");
+        user.setUsername("exampleUser");
+        user.setPassword("Example123!");
+        user.setRepeatedPassword("Example123!");
+        return user;
     }
 }
