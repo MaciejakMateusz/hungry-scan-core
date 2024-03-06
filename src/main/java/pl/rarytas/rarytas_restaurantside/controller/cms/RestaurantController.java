@@ -39,18 +39,18 @@ public class RestaurantController {
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addRestaurant(@Valid @RequestParam Restaurant restaurant,
                                                              BindingResult br) {
-        return responseHelper.saveAndBuildResponseEntity(restaurant, br, restaurantService::save);
+        return responseHelper.buildResponse(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> updateRestaurant(@RequestParam Integer id) {
-        return responseHelper.getResponseBody(id, restaurantService::findById);
+        return responseHelper.getResponseEntity(id, restaurantService::findById);
     }
 
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> updateRestaurant(@Valid @RequestParam Restaurant restaurant,
                                                                 BindingResult br) {
-        return responseHelper.saveAndBuildResponseEntity(restaurant, br, restaurantService::save);
+        return responseHelper.buildResponse(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/remove")

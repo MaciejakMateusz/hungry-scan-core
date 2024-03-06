@@ -36,7 +36,7 @@ public class CategoryController {
 
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> updateItem(@RequestBody Integer id) {
-        return responseHelper.getResponseBody(id, categoryService::findById);
+        return responseHelper.getResponseEntity(id, categoryService::findById);
     }
 
     @GetMapping("/add")
@@ -46,13 +46,13 @@ public class CategoryController {
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody Category category, BindingResult br) {
-        return responseHelper.saveAndBuildResponseEntity(category, br, categoryService::save);
+        return responseHelper.buildResponse(category, br, categoryService::save);
     }
 
     @Modifying
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody Category category, BindingResult br) {
-        return responseHelper.saveAndBuildResponseEntity(category, br, categoryService::save);
+        return responseHelper.buildResponse(category, br, categoryService::save);
     }
 
     @PostMapping("/remove")

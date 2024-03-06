@@ -63,7 +63,7 @@ public class AdminManagementController {
 
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
-        return responseHelper.getResponseBody(id, userService::findById);
+        return responseHelper.getResponseEntity(id, userService::findById);
     }
 
     @GetMapping("/add")

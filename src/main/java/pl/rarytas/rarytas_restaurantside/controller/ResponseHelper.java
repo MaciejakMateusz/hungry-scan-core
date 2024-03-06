@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.utility.ThrowingFunction;
 
 import java.util.HashMap;
@@ -31,16 +30,10 @@ public class ResponseHelper {
      * @param saveFunction Behaviour to pass from a given service. For example userService::save
      * @return ResponseEntity with appropriate response code and body containing parameters map.
      */
-    public <T> ResponseEntity<Map<String, Object>> saveAndBuildResponseEntity(T entity,
-                                                                              BindingResult br,
-                                                                              Consumer<T> saveFunction) {
-        Map<String, Object> params = new HashMap<>();
-        if (br.hasErrors()) {
-            params.put("errors", getFieldErrors(br));
-            return ResponseEntity.badRequest().body(params);
-        }
-        saveFunction.accept(entity);
-        return ResponseEntity.ok(params);
+    public <ENTITY> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
+                                                                 BindingResult br,
+                                                                 Consumer<ENTITY> saveFunction) {
+        return br.hasErrors() ? createErrorResponse(br) : saveAndCreateSuccessResponse(saveFunction, entity);
     }
 
     /**
@@ -48,24 +41,18 @@ public class ResponseHelper {
      * If BindingResult has no errors it persists passed entity in database.
      *
      * @param entity       Entity to persist in database.
-     * @param r            Additional parameter to pass into service method.
+     * @param p            Additional parameter to pass into service method.
      * @param br           BindingResult created by using @Valid next to entity object in method parameters.
      *                     For example (@Valid User entity, BindingResult br) - br will hold errors if they occurred.
      * @param saveFunction Behaviour to pass from a given service. For example userService::save
      * @return ResponseEntity with appropriate response code and body containing parameters map.
      */
 
-    public <T, R> ResponseEntity<Map<String, Object>> saveAndBuildResponseEntity(T entity,
-                                                                                 R r,
-                                                                                 BindingResult br,
-                                                                                 BiConsumer<T, R> saveFunction) {
-        Map<String, Object> params = new HashMap<>();
-        if (br.hasErrors()) {
-            params.put("errors", getFieldErrors(br));
-            return ResponseEntity.badRequest().body(params);
-        }
-        saveFunction.accept(entity, r);
-        return ResponseEntity.ok(params);
+    public <ENTITY, P> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
+                                                                    P p,
+                                                                    BindingResult br,
+                                                                    BiConsumer<ENTITY, P> saveFunction) {
+        return br.hasErrors() ? createErrorResponse(br) : saveAndCreateSuccessResponse(saveFunction, entity, p);
     }
 
     /**
@@ -77,19 +64,15 @@ public class ResponseHelper {
      * @return ResponseEntity with appropriate response code and body containing parameters map.
      */
 
-    public <T, R> ResponseEntity<Map<String, Object>> getResponseBody(T id, ThrowingFunction<T, R> function) {
-        Map<String, Object> params = new HashMap<>();
-        R r;
+    public <ID, ENTITY> ResponseEntity<Map<String, Object>> getResponseEntity(ID id,
+                                                                              ThrowingFunction<ID, ENTITY> function) {
+        ENTITY entity;
         try {
-            r = function.apply(id);
-        } catch (LocalizedException e) {
-            params.put("exceptionMsg", e.getMessage());
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(params);
+            entity = function.apply(id);
+        } catch (Exception e) {
+            return createErrorResponse(e);
         }
-        String paramName = r.getClass().getSimpleName().toLowerCase();
-        params.put(paramName, r);
-        return ResponseEntity.ok(params);
+        return createSuccessResponse(entity);
     }
 
     /**
@@ -106,5 +89,35 @@ public class ResponseHelper {
             fieldErrors.put(error.getField(), error.getDefaultMessage());
         }
         return fieldErrors;
+    }
+
+    private ResponseEntity<Map<String, Object>> createErrorResponse(BindingResult br) {
+        Map<String, Object> params = Map.of("errors", getFieldErrors(br));
+        return ResponseEntity.badRequest().body(params);
+    }
+
+    private ResponseEntity<Map<String, Object>> createErrorResponse(Exception e) {
+        log.error(e.getMessage());
+        Map<String, Object> params = Map.of("exceptionMsg", e.getMessage());
+        return ResponseEntity.badRequest().body(params);
+    }
+
+    private <ENTITY> ResponseEntity<Map<String, Object>> createSuccessResponse(ENTITY entity) {
+        String paramName = entity.getClass().getSimpleName().toLowerCase();
+        Map<String, Object> params = Map.of(paramName, entity);
+        return ResponseEntity.ok(params);
+    }
+
+    private <ENTITY> ResponseEntity<Map<String, Object>> saveAndCreateSuccessResponse(Consumer<ENTITY> saveFunction,
+                                                                                      ENTITY entity) {
+        saveFunction.accept(entity);
+        return ResponseEntity.ok().body(new HashMap<>());
+    }
+
+    private <ENTITY, PARAM> ResponseEntity<Map<String, Object>> saveAndCreateSuccessResponse(BiConsumer<ENTITY, PARAM> saveFunction,
+                                                                                         ENTITY entity,
+                                                                                         PARAM param) {
+        saveFunction.accept(entity, param);
+        return ResponseEntity.ok().body(new HashMap<>());
     }
 }

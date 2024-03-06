@@ -49,13 +49,13 @@ public class MenuItemController {
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addItem(@Valid @RequestBody MenuItem menuItem,
                                                        BindingResult br, MultipartFile imageFile) {
-        return responseHelper.saveAndBuildResponseEntity(menuItem, imageFile, br, menuItemService::save);
+        return responseHelper.buildResponse(menuItem, imageFile, br, menuItemService::save);
     }
 
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody MenuItem menuItem,
                                                           BindingResult br, MultipartFile imageFile) {
-        return responseHelper.saveAndBuildResponseEntity(menuItem, imageFile, br, menuItemService::save);
+        return responseHelper.buildResponse(menuItem, imageFile, br, menuItemService::save);
     }
 
     @PostMapping("/remove")
