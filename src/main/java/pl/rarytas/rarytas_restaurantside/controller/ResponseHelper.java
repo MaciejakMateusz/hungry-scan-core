@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 
 /**
- * This class provides support methods for building response entities.
+ * This component provides support methods for building response entities.
  */
 @Slf4j
 @Component
