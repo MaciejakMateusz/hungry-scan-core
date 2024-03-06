@@ -68,6 +68,15 @@ public class ResponseHelper {
         return ResponseEntity.ok(params);
     }
 
+    /**
+     * Finds entity in database based on provided ID.
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param id       ID of entity to get from a database.
+     * @param function Behaviour to pass from a given service. For example userService::findById
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+
     public <T, R> ResponseEntity<Map<String, Object>> getResponseBody(T id, ThrowingFunction<T, R> function) {
         Map<String, Object> params = new HashMap<>();
         R r;
@@ -82,6 +91,14 @@ public class ResponseHelper {
         params.put(paramName, r);
         return ResponseEntity.ok(params);
     }
+
+    /**
+     * Gets errors based on provided BindingResult.
+     * Should be used after check br.hasErrors()
+     *
+     * @param br BindingResult passed from controller's argument.
+     * @return HashMap of field errors that occurred while validating given entity.
+     */
 
     public Map<String, String> getFieldErrors(BindingResult br) {
         Map<String, String> fieldErrors = new HashMap<>();
