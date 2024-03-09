@@ -2,6 +2,7 @@ package pl.rarytas.rarytas_restaurantside.testSupport;
 
 import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.*;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
@@ -129,7 +130,12 @@ public class OrderProcessor {
         private List<MenuItem> getMenuItems() {
             List<MenuItem> menuItems = new ArrayList<>();
             this.menuItemIds.forEach(id -> {
-                MenuItem menuItem = menuItemService.findById(id).orElseThrow();
+                MenuItem menuItem;
+                try {
+                    menuItem = menuItemService.findById(id);
+                } catch (LocalizedException e) {
+                    throw new RuntimeException(e);
+                }
                 menuItems.add(menuItem);
             });
             return menuItems;

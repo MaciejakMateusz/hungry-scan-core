@@ -13,6 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
@@ -55,8 +56,8 @@ public class MenuItemRestControllerTest {
     }
 
     @Test
-    public void shouldGetByIdFromDB() {
-        MenuItem menuItem = menuItemService.findById(6).orElse(new MenuItem());
+    public void shouldGetByIdFromDB() throws LocalizedException {
+        MenuItem menuItem = menuItemService.findById(6);
         assertEquals("Spaghetti Bolognese", menuItem.getName());
     }
 

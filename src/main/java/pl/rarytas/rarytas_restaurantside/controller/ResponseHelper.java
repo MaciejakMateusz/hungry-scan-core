@@ -22,7 +22,7 @@ public class ResponseHelper {
 
     /**
      * Creates ResponseEntity based on provided parameters.
-     * If BindingResult has no errors it persists passed entity in database.
+     * If BindingResult has no errors it persists passed entity in a database.
      *
      * @param entity       Entity to persist in database.
      * @param br           BindingResult created by using @Valid next to entity object in method parameters.

@@ -5,16 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,7 +78,9 @@ public class ApiRequestUtils {
                 .andReturn();
     }
 
-    public <T> Map<String, Object> postAndReturnResponseBody(String endpointUrl, T object, ResultMatcher matcher) throws Exception {
+    public <T> Map<String, Object> postAndReturnResponseBody(String endpointUrl,
+                                                             T object,
+                                                             ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
@@ -86,8 +91,26 @@ public class ApiRequestUtils {
                 .andDo(print());
 
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {};
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+        };
         return objectMapper.readValue(responseBody, typeReference);
+    }
+
+    public void postMultipartRequest(String endpointUrl,
+                                     MenuItem menuItem,
+                                     MockMultipartFile file,
+                                     ResultMatcher matcher) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(menuItem);
+
+        mockMvc.perform(multipart(endpointUrl)
+                        .file(file)
+                        .param("file", file.getOriginalFilename())
+                        .content(jsonRequest)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(matcher)
+                .andDo(print());
     }
 
     private ObjectMapper prepObjMapper() {
@@ -115,5 +138,9 @@ public class ApiRequestUtils {
 
     public <T> void postAndExpect200(String url, T t) throws Exception {
         postAndReturnResponseBody(url, t, status().isOk());
+    }
+
+    public void postAndExpect200(String url, MenuItem menuItem, MockMultipartFile file) throws Exception {
+        postMultipartRequest(url, menuItem, file, status().isOk());
     }
 }

@@ -45,7 +45,7 @@ public class MenuItemServiceImplTest {
     public void shouldInsertNew() throws LocalizedException {
         MenuItem newMenuItem = createMenuItem("Burger", 2, "Z mięsem wegańskim", "Bułka, mięso sojowe, sałata, ogórek konserwowy, chrzan żurawinowy", BigDecimal.valueOf(20.00));
         menuItemService.save(newMenuItem, null);
-        MenuItem menuItem = menuItemService.findById(newMenuItem.getId()).orElse(new MenuItem());
+        MenuItem menuItem = menuItemService.findById(newMenuItem.getId());
         assertEquals(newMenuItem.getId(), menuItem.getId());
     }
 
@@ -75,21 +75,21 @@ public class MenuItemServiceImplTest {
 
     @Test
     @Order(3)
-    public void shouldUpdate() {
-        MenuItem existingMenuItem = menuItemService.findById(41).orElse(new MenuItem());
+    public void shouldUpdate() throws LocalizedException {
+        MenuItem existingMenuItem = menuItemService.findById(41);
         existingMenuItem.setName("Burger wege");
         menuItemService.save(existingMenuItem, null);
-        MenuItem updatedMenuItem = menuItemService.findById(41).orElse(new MenuItem());
+        MenuItem updatedMenuItem = menuItemService.findById(41);
         assertEquals("Burger wege", updatedMenuItem.getName());
     }
 
     @Test
     @Order(4)
-    public void shouldDelete() {
-        MenuItem menuItem = menuItemService.findById(41).orElseThrow();
+    public void shouldDelete() throws LocalizedException {
+        MenuItem menuItem = menuItemService.findById(41);
         assertEquals("Burger wege", menuItem.getName());
         menuItemService.delete(menuItem);
-        assertThrows(NoSuchElementException.class, () -> menuItemService.findById(41).orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> menuItemService.findById(41));
     }
 
     private List<MenuItem> getMenuItems() {

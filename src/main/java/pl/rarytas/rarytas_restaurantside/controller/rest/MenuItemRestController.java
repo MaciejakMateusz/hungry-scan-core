@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.util.List;
@@ -34,8 +35,8 @@ public class MenuItemRestController {
     }
 
     @GetMapping("/{id}")
-    public MenuItem getItem(@PathVariable Integer id) {
-        return menuItemService.findById(id).orElseThrow();
+    public MenuItem getItem(@PathVariable Integer id) throws LocalizedException {
+        return menuItemService.findById(id);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

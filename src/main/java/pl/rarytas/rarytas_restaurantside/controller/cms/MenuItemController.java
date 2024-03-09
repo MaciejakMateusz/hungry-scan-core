@@ -7,9 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
-import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.util.HashMap;
@@ -22,23 +20,21 @@ import java.util.Map;
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
-    private final CategoryService categoryService;
     private final ResponseHelper responseHelper;
 
-    public MenuItemController(MenuItemService menuItemService, CategoryService categoryService, ResponseHelper responseHelper) {
+    public MenuItemController(MenuItemService menuItemService, ResponseHelper responseHelper) {
         this.menuItemService = menuItemService;
-        this.categoryService = categoryService;
         this.responseHelper = responseHelper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> itemsList() {
-        return ResponseEntity.ok(categoryService.findAll());
+    public ResponseEntity<List<MenuItem>> itemsList() {
+        return ResponseEntity.ok(menuItemService.findAll());
     }
 
     @PostMapping("/show")
-    public ResponseEntity<MenuItem> updateItem(@RequestBody Integer id) {
-        return ResponseEntity.ok(menuItemService.findById(id).orElseThrow());
+    public ResponseEntity<Map<String, Object>> updateItem(@RequestBody Integer id) {
+        return responseHelper.getResponseEntity(id, menuItemService::findById);
     }
 
     @GetMapping("/add")
@@ -46,10 +42,11 @@ public class MenuItemController {
         return ResponseEntity.ok(new MenuItem());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> addItem(@Valid @RequestBody MenuItem menuItem,
-                                                       BindingResult br, MultipartFile imageFile) {
-        return responseHelper.buildResponse(menuItem, imageFile, br, menuItemService::save);
+    @PostMapping(value = "/add")
+    public ResponseEntity<Map<String, Object>> addItem(@RequestParam("file") MultipartFile file,
+                                                       @RequestBody @Valid MenuItem menuItem,
+                                                       BindingResult br) {
+        return responseHelper.buildResponse(menuItem, file, br, menuItemService::save);
     }
 
     @PostMapping("/update")
