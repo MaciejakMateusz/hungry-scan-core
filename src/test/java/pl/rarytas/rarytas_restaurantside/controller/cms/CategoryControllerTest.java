@@ -142,7 +142,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(10)
+    @Order(11)
     void shouldNotAddWithTooLongDescription() throws Exception {
         Category category = createCategory();
         category.setDescription("""
@@ -175,7 +175,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(11)
+    @Order(12)
     void shouldUpdateCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
@@ -190,7 +190,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(12)
+    @Order(13)
     void shouldNotAllowUnauthorizedAccessToUpdateCategory() throws Exception {
         Category category = new Category();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -202,7 +202,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(13)
+    @Order(14)
     void shouldNotUpdateIncorrectCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
@@ -216,7 +216,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
-    @Order(14)
+    @Order(15)
     void shouldRemoveCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
@@ -231,7 +231,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(15)
+    @Order(16)
     void shouldNotAllowUnauthorizedAccessToRemoveCategory() throws Exception {
         Category category = new Category();
         ObjectMapper objectMapper = new ObjectMapper();
