@@ -12,7 +12,6 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -30,29 +29,13 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Override
     public void save(MenuItem menuItem, MultipartFile file) {
-        if (menuItem.getId() == null) {
-            menuItemRepository.save(menuItem);
-            return;
-        }
         try {
-            setImageFile(menuItem, file);
+            fileStorageService.storeFile(file);
         } catch (IOException e) {
-            log.warn("An error occurred when saving file.");
+            log.warn(e.getLocalizedMessage());
         }
+        menuItem.setImageName(file.getOriginalFilename());
         menuItemRepository.save(menuItem);
-    }
-
-    private void setImageFile(MenuItem menuItem, MultipartFile file) throws IOException {
-        if (Objects.isNull(file)) {
-            menuItem.setImage(null);
-            return;
-        }
-        if (file.isEmpty()) {
-            MenuItem existingItem = menuItemRepository.findById(menuItem.getId()).orElseThrow();
-            menuItem.setImage(existingItem.getImage());
-        } else {
-            menuItem.setImage(file.getBytes());
-        }
     }
 
     @Override

@@ -10,19 +10,21 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.UUID;
 
 @Service
-public class FileStorageServiceImpl  implements FileStorageService {
+public class FileStorageServiceImpl implements FileStorageService {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
     @Override
-    public String storeFile(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir + File.separator + fileName);
+    public void storeFile(MultipartFile file) throws IOException {
+        Path directoryPath = Paths.get(uploadDir);
+        if (!Files.exists(directoryPath)) {
+            Files.createDirectories(directoryPath);
+        }
+
+        Path filePath = Paths.get(uploadDir + File.separator + file.getOriginalFilename());
         Files.copy(file.getInputStream(), filePath);
-        return fileName;
     }
 }

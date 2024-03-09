@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -114,23 +115,14 @@ class MenuItemControllerTest {
     void shouldAddNewMenuItem() throws Exception {
         MenuItem menuItem = createMenuItem();
 
-        Path path = Paths.get("src/test/resources/sample.png");
-        byte[] pngBytes = Files.readAllBytes(path);
-
-        MockMultipartFile file
-                = new MockMultipartFile(
-                "file",
-                "sample.png",
-                MediaType.IMAGE_PNG_VALUE,
-                pngBytes
-        );
-
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem, file);
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem, getFile());
 
         MenuItem persistedMenuItem =
                 apiRequestUtils.getObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
         assertEquals("Sample Item", persistedMenuItem.getName());
+        assertEquals("Sample description.", persistedMenuItem.getDescription());
         assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
+        assertEquals("images/sample.png", persistedMenuItem.getImageName());
     }
 
     private MenuItem createMenuItem() {
@@ -139,5 +131,17 @@ class MenuItemControllerTest {
         menuItem.setDescription("Sample description.");
         menuItem.setPrice(BigDecimal.valueOf(10.99));
         return menuItem;
+    }
+
+    private MockMultipartFile getFile() throws IOException {
+        Path path = Paths.get("src/test/resources/images/sample.png");
+        byte[] pngBytes = Files.readAllBytes(path);
+
+        return new MockMultipartFile(
+                "file",
+                "images/sample.png",
+                MediaType.IMAGE_PNG_VALUE,
+                pngBytes
+        );
     }
 }

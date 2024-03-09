@@ -5,5 +5,5 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface FileStorageService {
-    String storeFile(MultipartFile multipartFile) throws IOException;
+    void storeFile(MultipartFile multipartFile) throws IOException;
 }
