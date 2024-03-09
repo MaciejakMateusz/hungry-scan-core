@@ -66,7 +66,7 @@ class MenuItemControllerTest {
     @Order(3)
     void shouldShowMenuItemById() throws Exception {
         MenuItem menuItem = apiRequestUtils.getObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
-        assertEquals("Roladki z bakÅ\u0082aÅ¼ana z feta i suszonymi pomidorami", menuItem.getName());
+        assertEquals("Roladki z bakłażana z feta i suszonymi pomidorami", menuItem.getName());
     }
 
     @Test
@@ -88,7 +88,7 @@ class MenuItemControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/items/show", 55, status().isBadRequest());
-        assertNotNull(responseBody.get("exceptionMsg"));
+        assertEquals("Danie z podanym ID = 55 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -165,9 +165,8 @@ class MenuItemControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItem);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
-        assertEquals("Pole nie moÅ¼e byÄ\u0087 puste", errors.get("name"));
+        assertEquals("Pole nie może być puste", errors.get("name"));
     }
 
     @Test
@@ -179,9 +178,8 @@ class MenuItemControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItem);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
-        assertEquals("Opis kategorii musi mieÄ\u0087 minimum 8 znakÃ³w", errors.get("description"));
+        assertEquals("Opis kategorii musi mieć minimum 8 znaków", errors.get("description"));
     }
 
     @Test
@@ -216,7 +214,7 @@ class MenuItemControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/items/show", 42, status().isBadRequest());
-        assertNotNull(responseBody.get("exceptionMsg"));
+        assertEquals("Danie z podanym ID = 42 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test

@@ -17,7 +17,8 @@ import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -85,7 +86,7 @@ class CategoryControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/categories/show", 55, status().isBadRequest());
-        assertNotNull(responseBody.get("exceptionMsg"));
+        assertEquals("Kategoria z podanym ID = 55 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -135,9 +136,8 @@ class CategoryControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", category);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
-        assertEquals("Pole nie moÅ¼e byÄ\u0087 puste", errors.get("name"));
+        assertEquals("Pole nie może być puste", errors.get("name"));
     }
 
     @Test
@@ -169,9 +169,8 @@ class CategoryControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", category);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
-        assertEquals("dÅ\u0082ugoÅ\u009BÄ\u0087 musi wynosiÄ\u0087 od 0 do 300", errors.get("description"));
+        assertEquals("Długość musi wynosić od 0 do 300", errors.get("description"));
     }
 
     @Test
@@ -211,9 +210,8 @@ class CategoryControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", existingCategory);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
-        assertEquals("Pole nie moÅ¼e byÄ\u0087 puste", errors.get("name"));
+        assertEquals("Pole nie może być puste", errors.get("name"));
     }
 
     @Test
@@ -228,7 +226,7 @@ class CategoryControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/categories/show", 9, status().isBadRequest());
-        assertNotNull(responseBody.get("exceptionMsg"));
+        assertEquals("Kategoria z podanym ID = 9 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test

@@ -14,11 +14,11 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,14 +32,14 @@ public class ApiRequestUtils {
     }
 
     public <T> List<T> fetchObjects(String endpointUrl, Class<T> itemType) throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(endpointUrl)
+        MvcResult result = mockMvc.perform(get(endpointUrl)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
 
         MockHttpServletResponse response = result.getResponse();
-        String jsonResponse = response.getContentAsString();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
         ObjectMapper objectMapper = prepObjMapper();
         return objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
@@ -53,7 +53,7 @@ public class ApiRequestUtils {
                 .andReturn();
 
         MockHttpServletResponse response = result.getResponse();
-        String jsonResponse = response.getContentAsString();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
         return prepObjMapper().readValue(jsonResponse, itemType);
     }
@@ -90,7 +90,7 @@ public class ApiRequestUtils {
                 .andExpect(matcher)
                 .andDo(print());
 
-        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
         };
         return objectMapper.readValue(responseBody, typeReference);

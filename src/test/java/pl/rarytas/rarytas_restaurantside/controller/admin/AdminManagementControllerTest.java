@@ -162,7 +162,7 @@ class AdminManagementControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/show", 55, status().isBadRequest());
-        assertNotNull(responseBody.get("exceptionMsg"));
+        assertEquals("Użytkownik z podanym ID = 55 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -209,7 +209,6 @@ class AdminManagementControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
         assertEquals("Niepoprawny format adresu email", errors.get("email"));
     }
@@ -223,10 +222,9 @@ class AdminManagementControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
         assertEquals(
-                "Nazwa uÅ¼ytkownika musi posiadaÄ\u0087 od 3 do 20 znakÃ³w i nie moÅ¼e zawieraÄ\u0087 spacji",
+                "Nazwa użytkownika musi posiadać od 3 do 20 znaków i nie może zawierać spacji",
                 errors.get("username"));
     }
 
@@ -240,10 +238,9 @@ class AdminManagementControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
         assertEquals(
-                "HasÅ\u0082o musi posiadaÄ\u0087 przynajmniej  jednÄ\u0085 duÅ¼Ä\u0085 literÄ\u0099, jednÄ\u0085 maÅ\u0082Ä\u0085 literÄ\u0099, jednÄ\u0085 cyfrÄ\u0099 i jeden znak specjalny",
+                "Hasło musi posiadać przynajmniej  jedną dużą literę, jedną małą literę, jedną cyfrę i jeden znak specjalny",
                 errors.get("password"));
     }
 
@@ -310,7 +307,6 @@ class AdminManagementControllerTest {
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/update", existingUser);
 
-        assertNotNull(errors);
         assertEquals(1, errors.size());
         assertEquals("Niepoprawny format adresu email", errors.get("email"));
     }
@@ -326,7 +322,7 @@ class AdminManagementControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/show", 6, status().isBadRequest());
-        assertNotNull(responseBody.get("exceptionMsg"));
+        assertEquals("Użytkownik z podanym ID = 6 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
