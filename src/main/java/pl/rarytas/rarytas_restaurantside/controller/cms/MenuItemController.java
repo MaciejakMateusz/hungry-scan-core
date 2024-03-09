@@ -43,16 +43,10 @@ public class MenuItemController {
     }
 
     @PostMapping(value = "/add")
-    public ResponseEntity<Map<String, Object>> addItem(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<Map<String, Object>> addItem(@RequestParam(required = false) MultipartFile file,
                                                        @RequestBody @Valid MenuItem menuItem,
                                                        BindingResult br) {
         return responseHelper.buildResponse(menuItem, file, br, menuItemService::save);
-    }
-
-    @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody MenuItem menuItem,
-                                                          BindingResult br, MultipartFile imageFile) {
-        return responseHelper.buildResponse(menuItem, imageFile, br, menuItemService::save);
     }
 
     @PostMapping("/remove")

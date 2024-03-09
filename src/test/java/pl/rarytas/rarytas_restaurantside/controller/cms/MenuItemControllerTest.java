@@ -1,9 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -26,8 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -35,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MenuItemControllerTest {
 
     @Autowired
@@ -123,6 +121,114 @@ class MenuItemControllerTest {
         assertEquals("Sample description.", persistedMenuItem.getDescription());
         assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
         assertEquals("sample.png", persistedMenuItem.getImageName());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Order(9)
+    void shouldAddNewMenuItemWithoutFile() throws Exception {
+        MenuItem menuItem = createMenuItem();
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+
+        MenuItem persistedMenuItem =
+                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
+        assertEquals("Sample Item", persistedMenuItem.getName());
+        assertEquals("Sample description.", persistedMenuItem.getDescription());
+        assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
+        assertNull(persistedMenuItem.getImageName());
+    }
+
+    @Test
+    @WithMockUser(roles = "WAITER")
+    @Order(10)
+    void shouldNotAllowUnauthorizedAccessToItemsAdd() throws Exception {
+        MenuItem menuItem = createMenuItem();
+        MockMultipartFile file = getFile();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(multipart("/api/cms/items/add")
+                        .file(file)
+                        .param("file", file.getOriginalFilename())
+                        .content(objectMapper.writeValueAsString(menuItem))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Order(11)
+    void shouldNotAddWithIncorrectName() throws Exception {
+        MenuItem menuItem = createMenuItem();
+        menuItem.setName("");
+
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItem);
+
+        assertNotNull(errors);
+        assertEquals(1, errors.size());
+        assertEquals("Pole nie moÅ¼e byÄ\u0087 puste", errors.get("name"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Order(12)
+    void shouldNotAddWithIncorrectDescription() throws Exception {
+        MenuItem menuItem = createMenuItem();
+        menuItem.setDescription("Meme");
+
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItem);
+
+        assertNotNull(errors);
+        assertEquals(1, errors.size());
+        assertEquals("Opis kategorii musi mieÄ\u0087 minimum 8 znakÃ³w", errors.get("description"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Order(13)
+    void shouldUpdateExistingMenuItem() throws Exception {
+        MenuItem persistedMenuItem =
+                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
+        persistedMenuItem.setName("Updated Item");
+        persistedMenuItem.setDescription("Updated description.");
+        persistedMenuItem.setPrice(BigDecimal.valueOf(15.22));
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem, getFile());
+
+        MenuItem updatedMenuItem =
+                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
+        assertEquals("Updated Item", updatedMenuItem.getName());
+        assertEquals("Updated description.", updatedMenuItem.getDescription());
+        assertEquals(BigDecimal.valueOf(15.22), updatedMenuItem.getPrice());
+        assertEquals("sample.png", updatedMenuItem.getImageName());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin")
+    @Order(14)
+    void shouldRemoveMenuItem() throws Exception {
+        MenuItem menuItem =
+                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/remove", menuItem);
+
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/cms/items/show", 42, status().isBadRequest());
+        assertNotNull(responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = "COOK")
+    @Order(15)
+    void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {
+        MenuItem menuItem = new MenuItem();
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(post("/api/cms/items/remove")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(menuItem)))
+                .andExpect(status().isForbidden());
     }
 
     private MenuItem createMenuItem() {
