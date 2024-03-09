@@ -182,7 +182,7 @@ class CategoryControllerTest {
                 apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
         existingCategory.setName("Foot");
 
-        apiRequestUtils.postAndExpect200("/api/cms/categories/update", existingCategory);
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
                 apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
@@ -195,7 +195,7 @@ class CategoryControllerTest {
     void shouldNotAllowUnauthorizedAccessToUpdateCategory() throws Exception {
         Category category = new Category();
         ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/categories/update")
+        mockMvc.perform(post("/api/cms/categories/add")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
                 .andExpect(status().isForbidden());
@@ -209,7 +209,7 @@ class CategoryControllerTest {
                 apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
         existingCategory.setName("");
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/update", existingCategory);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", existingCategory);
 
         assertNotNull(errors);
         assertEquals(1, errors.size());

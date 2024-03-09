@@ -2,7 +2,6 @@ package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -46,12 +45,6 @@ public class CategoryController {
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody Category category, BindingResult br) {
-        return responseHelper.buildResponse(category, br, categoryService::save);
-    }
-
-    @Modifying
-    @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateItem(@Valid @RequestBody Category category, BindingResult br) {
         return responseHelper.buildResponse(category, br, categoryService::save);
     }
 
