@@ -2,18 +2,22 @@ package pl.rarytas.rarytas_restaurantside.service;
 
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
+import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.RestaurantRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
-    private final RestaurantRepository restaurantRepository;
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository) {
+    private final RestaurantRepository restaurantRepository;
+    private final ExceptionHelper exceptionHelper;
+
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, ExceptionHelper exceptionHelper) {
         this.restaurantRepository = restaurantRepository;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
@@ -22,8 +26,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Optional<Restaurant> findById(Integer id) {
-        return restaurantRepository.findById(id);
+    public Restaurant findById(Integer id) throws LocalizedException {
+        return restaurantRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotExist", id));
     }
 
     @Override

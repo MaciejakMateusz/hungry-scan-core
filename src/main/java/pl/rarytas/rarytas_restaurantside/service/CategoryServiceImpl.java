@@ -30,7 +30,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category findById(Integer id) throws LocalizedException {
         return categoryRepository.findById(id)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.categoryService.categoryNotExist", id));
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.categoryService.categoryNotExist", id));
     }
 
     @Override

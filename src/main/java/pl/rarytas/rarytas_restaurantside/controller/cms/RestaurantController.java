@@ -37,24 +37,24 @@ public class RestaurantController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> addRestaurant(@Valid @RequestParam Restaurant restaurant,
+    public ResponseEntity<Map<String, Object>> addRestaurant(@Valid @RequestBody Restaurant restaurant,
                                                              BindingResult br) {
         return responseHelper.buildResponse(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/show")
-    public ResponseEntity<Map<String, Object>> updateRestaurant(@RequestParam Integer id) {
+    public ResponseEntity<Map<String, Object>> updateRestaurant(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, restaurantService::findById);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateRestaurant(@Valid @RequestParam Restaurant restaurant,
+    public ResponseEntity<Map<String, Object>> updateRestaurant(@Valid @RequestBody Restaurant restaurant,
                                                                 BindingResult br) {
         return responseHelper.buildResponse(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Restaurant restaurant) {
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody Restaurant restaurant) {
         Map<String, Object> params = new HashMap<>();
         restaurantService.delete(restaurant);
         params.put("success", true);

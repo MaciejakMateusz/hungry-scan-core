@@ -49,7 +49,7 @@ public class OrderProcessor {
      * @param forTakeAway A boolean indicating whether the order is for takeaway.
      * @return The created order.
      */
-    public Order getCreatedOrder(Integer tableNumber, List<Integer> menuItemIds, boolean forTakeAway) {
+    public Order getCreatedOrder(Integer tableNumber, List<Integer> menuItemIds, boolean forTakeAway) throws LocalizedException {
         return new CreateOrder(
                 restaurantService,
                 restaurantTableService,
@@ -77,7 +77,7 @@ public class OrderProcessor {
          *
          * @return The created order.
          */
-        private Order createOrder() {
+        private Order createOrder() throws LocalizedException {
             Order order = new Order();
             order.setRestaurant(getRestaurant());
             order.setRestaurantTable(getRestaurantTable());
@@ -91,8 +91,8 @@ public class OrderProcessor {
          *
          * @return The restaurant.
          */
-        private Restaurant getRestaurant() {
-            return restaurantService.findById(restaurantId).orElseThrow();
+        private Restaurant getRestaurant() throws LocalizedException {
+            return restaurantService.findById(restaurantId);
         }
 
         /**
