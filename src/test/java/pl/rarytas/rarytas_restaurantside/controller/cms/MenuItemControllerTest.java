@@ -122,7 +122,7 @@ class MenuItemControllerTest {
         assertEquals("Sample Item", persistedMenuItem.getName());
         assertEquals("Sample description.", persistedMenuItem.getDescription());
         assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
-        assertEquals("images/sample.png", persistedMenuItem.getImageName());
+        assertEquals("sample.png", persistedMenuItem.getImageName());
     }
 
     private MenuItem createMenuItem() {
@@ -139,7 +139,7 @@ class MenuItemControllerTest {
 
         return new MockMultipartFile(
                 "file",
-                "images/sample.png",
+                "sample.png",
                 MediaType.IMAGE_PNG_VALUE,
                 pngBytes
         );
