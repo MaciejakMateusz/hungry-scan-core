@@ -11,9 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import pl.rarytas.rarytas_restaurantside.entity.Role;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -249,6 +252,7 @@ class AdminManagementControllerTest {
     @Order(21)
     void shouldNotAddWithExistingEmail() throws Exception {
         User user = createUser();
+        user.setUsername("mleczyk");
         user.setEmail("netka@test.com");
 
         Map<String, Object> responseParams =
@@ -263,6 +267,7 @@ class AdminManagementControllerTest {
     @Order(22)
     void shouldNotAddWithNotMatchingPasswords() throws Exception {
         User user = createUser();
+        user.setUsername("ExampleUser2");
         user.setEmail("test21@gmail.com");
         user.setRepeatedPassword("Examplepass123");
 
@@ -354,6 +359,15 @@ class AdminManagementControllerTest {
         user.setUsername("exampleUser");
         user.setPassword("Example123!");
         user.setRepeatedPassword("Example123!");
+        user.setRoles(new HashSet<>(Collections.singletonList(createRole())));
         return user;
+    }
+
+    private Role createRole() {
+        Role role = new Role();
+        role.setId(1);
+        role.setName("ROLE_WAITER");
+        role.setDisplayedName("Kelner");
+        return role;
     }
 }

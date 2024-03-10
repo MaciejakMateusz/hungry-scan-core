@@ -23,5 +23,11 @@ public interface UserService {
 
     boolean existsByEmail(String email);
 
+    boolean existsByUsername(String username);
+
+    boolean isModifiedUserValid(User user) throws LocalizedException;
+
+    String getErrorParam(User user) throws LocalizedException;
+
     List<User> findAllByRole(String roleName);
 }

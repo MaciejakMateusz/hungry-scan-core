@@ -1,5 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -56,6 +58,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean isModifiedUserValid(User user) throws LocalizedException {
+        return "".equals(getErrorParam(user));
+    }
+
+    @Override
+    public String getErrorParam(User user) throws LocalizedException {
+        User modifiedUser = findById(user.getId());
+
+        if (existsByUsername(user.getUsername()) && !user.getUsername().equals(modifiedUser.getUsername())) {
+            return "userNameExists";
+        } else if(existsByEmail(user.getEmail()) && !user.getEmail().equals(modifiedUser.getEmail())) {
+            return "emailExists";
+        }
+        return "";
     }
 
     @Override

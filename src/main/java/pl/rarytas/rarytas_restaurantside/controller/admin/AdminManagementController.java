@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.User;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.UserService;
 
 import java.security.Principal;
@@ -75,31 +76,30 @@ public class AdminManagementController {
     public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody User user, BindingResult br) {
         Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
-            params.put("errors", responseHelper.getFieldErrors(br));
-            return ResponseEntity.badRequest().body(params);
+            return badRequestWithErrors(br);
+        } else if (userService.existsByUsername(user.getUsername())) {
+            return badRequestWithParam("usernameExists");
         } else if (userService.existsByEmail(user.getEmail())) {
-            params.put("emailExists", true);
-            return ResponseEntity.badRequest().body(params);
+            return badRequestWithParam("emailExists");
         } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
-            params.put("passwordsNotMatch", true);
-            return ResponseEntity.badRequest().body(params);
+            return badRequestWithParam("passwordsNotMatch");
         }
         userService.save(user);
         return ResponseEntity.ok(params);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody User user, BindingResult br) {
+    public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody User user, BindingResult br) throws LocalizedException {
         Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
-            params.put("errors", responseHelper.getFieldErrors(br));
-            return ResponseEntity.badRequest().body(params);
-        } else if (userService.existsByEmail(user.getEmail())) {
-            params.put("emailExists", true);
-            return ResponseEntity.badRequest().body(params);
+            return badRequestWithErrors(br);
         }
-        userService.save(user);
-        return ResponseEntity.ok(params);
+        if (userService.isModifiedUserValid(user)) {
+            userService.save(user);
+            return ResponseEntity.ok(params);
+        } else {
+            return badRequestWithParam(userService.getErrorParam(user));
+        }
     }
 
     @PostMapping("/remove")
@@ -112,5 +112,17 @@ public class AdminManagementController {
         }
         userService.delete(user);
         return ResponseEntity.ok(params);
+    }
+
+    private ResponseEntity<Map<String, Object>> badRequestWithErrors(BindingResult br) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("errors", responseHelper.getFieldErrors(br));
+        return ResponseEntity.badRequest().body(params);
+    }
+
+    private ResponseEntity<Map<String, Object>> badRequestWithParam(String paramName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(paramName, true);
+        return ResponseEntity.badRequest().body(params);
     }
 }
