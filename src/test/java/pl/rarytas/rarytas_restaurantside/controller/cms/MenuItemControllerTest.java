@@ -42,7 +42,7 @@ class MenuItemControllerTest {
     ApiRequestUtils apiRequestUtils;
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"WAITER"})
     @Order(1)
     void shouldGetAllMenuItems() throws Exception {
         List<MenuItem> menuItems =
@@ -54,15 +54,14 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
     @Order(2)
     void shouldNotAllowUnauthorizedAccessToMenuItems() throws Exception {
         mockMvc.perform(get("/api/cms/items"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"COOK"})
     @Order(3)
     void shouldShowMenuItemById() throws Exception {
         MenuItem menuItem = apiRequestUtils.getObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
@@ -70,7 +69,6 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
     @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowMenuItem() throws Exception {
         Integer id = 4;
@@ -78,11 +76,11 @@ class MenuItemControllerTest {
         mockMvc.perform(post("/api/cms/items/show")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"WAITER"})
     @Order(5)
     void shouldNotShowMenuItemById() throws Exception {
         Map<String, Object> responseBody =

@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/items")
-@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
@@ -28,21 +27,25 @@ public class MenuItemController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MenuItem>> itemsList() {
         return ResponseEntity.ok(menuItemService.findAll());
     }
 
     @PostMapping("/show")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> updateItem(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, menuItemService::findById);
     }
 
     @GetMapping("/add")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<MenuItem> addItem() {
         return ResponseEntity.ok(new MenuItem());
     }
 
     @PostMapping(value = "/add")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> addItem(@RequestParam(required = false) MultipartFile file,
                                                        @RequestBody @Valid MenuItem menuItem,
                                                        BindingResult br) {
@@ -50,10 +53,9 @@ public class MenuItemController {
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody MenuItem menuItem) {
-        Map<String, Object> params = new HashMap<>();
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<Map<String , Object>> deleteItem(@RequestBody MenuItem menuItem) {
         menuItemService.delete(menuItem);
-        params.put("success", true);
-        return ResponseEntity.ok(params);
+        return ResponseEntity.ok(new HashMap<>());
     }
 }

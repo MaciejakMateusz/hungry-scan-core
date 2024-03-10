@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/restaurants")
-@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
@@ -27,37 +26,34 @@ public class RestaurantController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Restaurant>> restaurantsList() {
         return ResponseEntity.ok(restaurantService.findAll());
     }
 
+    @PostMapping("/show")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> updateRestaurant(@RequestBody Integer id) {
+        return responseHelper.getResponseEntity(id, restaurantService::findById);
+    }
+
     @GetMapping("/add")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Restaurant> addRestaurant() {
         return ResponseEntity.ok(new Restaurant());
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> addRestaurant(@Valid @RequestBody Restaurant restaurant,
                                                              BindingResult br) {
         return responseHelper.buildResponse(restaurant, br, restaurantService::save);
     }
 
-    @PostMapping("/show")
-    public ResponseEntity<Map<String, Object>> updateRestaurant(@RequestBody Integer id) {
-        return responseHelper.getResponseEntity(id, restaurantService::findById);
-    }
-
-    @PostMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateRestaurant(@Valid @RequestBody Restaurant restaurant,
-                                                                BindingResult br) {
-        return responseHelper.buildResponse(restaurant, br, restaurantService::save);
-    }
-
     @PostMapping("/remove")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody Restaurant restaurant) {
-        Map<String, Object> params = new HashMap<>();
         restaurantService.delete(restaurant);
-        params.put("success", true);
-        return ResponseEntity.ok(params);
+        return ResponseEntity.ok(new HashMap<>());
     }
 }

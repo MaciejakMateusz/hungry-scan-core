@@ -38,7 +38,7 @@ public class RestaurantControllerTest {
     private ApiRequestUtils apiRequestUtils;
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"WAITER"})
     @Order(1)
     void shouldGetAllRestaurants() throws Exception {
         List<Restaurant> restaurants =
@@ -51,15 +51,14 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
     @Order(2)
     void shouldNotAllowUnauthorizedAccessToRestaurants() throws Exception {
         mockMvc.perform(get("/api/cms/restaurants"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"COOK"})
     @Order(3)
     void shouldShowRestaurantById() throws Exception {
         Restaurant restaurant =
@@ -68,7 +67,6 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
     @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowRestaurant() throws Exception {
         Integer id = 2;
@@ -76,11 +74,11 @@ public class RestaurantControllerTest {
         mockMvc.perform(post("/api/cms/restaurants/show")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"WAITER"})
     @Order(5)
     void shouldNotShowRestaurantById() throws Exception {
         Map<String, Object> responseBody =

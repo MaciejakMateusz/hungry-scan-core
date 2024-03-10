@@ -38,7 +38,7 @@ class CategoryControllerTest {
     private ApiRequestUtils apiRequestUtils;
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"WAITER"})
     @Order(1)
     void shouldGetAllCategories() throws Exception {
         List<Category> categories =
@@ -52,15 +52,14 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
     @Order(2)
     void shouldNotAllowUnauthorizedAccessToCategories() throws Exception {
         mockMvc.perform(get("/api/cms/categories"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"COOK"})
     @Order(3)
     void shouldShowCategoryById() throws Exception {
         Category category = apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 4, Category.class);
@@ -68,7 +67,6 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
     @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
         Integer id = 4;
@@ -76,11 +74,11 @@ class CategoryControllerTest {
         mockMvc.perform(post("/api/cms/categories/show")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"WAITER"})
     @Order(5)
     void shouldNotShowCategoryById() throws Exception {
         Map<String, Object> responseBody =

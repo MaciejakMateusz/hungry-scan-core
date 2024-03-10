@@ -17,7 +17,6 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/cms/categories")
-@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -29,30 +28,33 @@ public class CategoryController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Category>> list() {
         return ResponseEntity.ok(categoryService.findAll());
     }
 
     @PostMapping("/show")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> updateItem(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, categoryService::findById);
     }
 
     @GetMapping("/add")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Category> add() {
         return ResponseEntity.ok(new Category());
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody Category category, BindingResult br) {
         return responseHelper.buildResponse(category, br, categoryService::save);
     }
 
     @PostMapping("/remove")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody Category category) {
-        Map<String, Object> params = new HashMap<>();
         categoryService.delete(category);
-        params.put("success", true);
-        return ResponseEntity.ok(params);
+        return ResponseEntity.ok(new HashMap<>());
     }
 }
