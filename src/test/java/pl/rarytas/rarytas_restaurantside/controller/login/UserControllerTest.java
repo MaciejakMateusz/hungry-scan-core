@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller;
+package pl.rarytas.rarytas_restaurantside.controller.login;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.rest;
+package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
 
 import org.springframework.http.HttpHeaders;

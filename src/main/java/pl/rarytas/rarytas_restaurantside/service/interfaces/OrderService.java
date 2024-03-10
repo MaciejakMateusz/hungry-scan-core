@@ -7,21 +7,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
-    List<Order> findAllNotPaid();
+    List<Order> findAll();
 
     List<Order> findAllTakeAway();
 
-    List<Order> findAllByResolvedIsTrue();
-
-    Optional<Order> findFinalizedById(Long id, boolean forTakeAway);
+    Order findById(Long id) throws LocalizedException;
 
     Optional<Order> findByTableNumber(Integer tableNumber);
 
-    Optional<?> findById(Long id);
-
     void save(Order order) throws LocalizedException;
 
-    void orderMoreDishes(Order order);
+    void orderMoreDishes(Order order) throws LocalizedException;
 
     void saveTakeAway(Order order);
 

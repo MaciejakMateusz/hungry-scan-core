@@ -28,4 +28,6 @@ public class HistoryOrderedItem implements Serializable {
     @Min(value = 1, message = "Ilość musi wynosić minimum 1")
     @NotNull
     private Integer quantity;
+
+    boolean isReadyToServe;
 }

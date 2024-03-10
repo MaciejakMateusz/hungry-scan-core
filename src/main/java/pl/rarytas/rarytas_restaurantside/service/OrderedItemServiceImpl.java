@@ -55,7 +55,7 @@ public class OrderedItemServiceImpl implements OrderedItemService {
         orderedItem.setReadyToServe(isReadyToServe);
         orderedItemRepository.saveAndFlush(orderedItem);
         orderedItemRepository.refresh(orderedItem);
-        List<Order> orders = orderRepository.findAllNotPaid();
+        List<Order> orders = orderRepository.findAllDineIn();
         messagingTemplate.convertAndSend("/topic/restaurant-orders", orders);
     }
 }

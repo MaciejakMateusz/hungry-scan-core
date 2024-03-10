@@ -28,25 +28,25 @@ public class MenuItemController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<MenuItem>> itemsList() {
+    public ResponseEntity<List<MenuItem>> list() {
         return ResponseEntity.ok(menuItemService.findAll());
     }
 
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> updateItem(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, menuItemService::findById);
     }
 
     @GetMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<MenuItem> addItem() {
+    public ResponseEntity<MenuItem> add() {
         return ResponseEntity.ok(new MenuItem());
     }
 
     @PostMapping(value = "/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> addItem(@RequestParam(required = false) MultipartFile file,
+    public ResponseEntity<Map<String, Object>> add(@RequestParam(required = false) MultipartFile file,
                                                        @RequestBody @Valid MenuItem menuItem,
                                                        BindingResult br) {
         return responseHelper.buildResponse(menuItem, file, br, menuItemService::save);
@@ -54,7 +54,7 @@ public class MenuItemController {
 
     @PostMapping("/remove")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String , Object>> deleteItem(@RequestBody MenuItem menuItem) {
+    public ResponseEntity<Map<String , Object>> remove(@RequestBody MenuItem menuItem) {
         menuItemService.delete(menuItem);
         return ResponseEntity.ok(new HashMap<>());
     }

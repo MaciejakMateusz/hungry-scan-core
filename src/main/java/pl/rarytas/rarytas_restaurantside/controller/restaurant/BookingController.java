@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.restaurant.bookings;
+package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -19,11 +19,11 @@ import java.util.Set;
 
 @Controller
 @RequestMapping("/restaurant/bookings")
-public class BookingsController {
+public class BookingController {
 
     private final BookingService bookingService;
 
-    public BookingsController(BookingService bookingService) {
+    public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
     }
 

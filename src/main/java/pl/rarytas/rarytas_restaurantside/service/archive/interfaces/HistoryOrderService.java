@@ -3,28 +3,21 @@ package pl.rarytas.rarytas_restaurantside.service.archive.interfaces;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface HistoryOrderService {
-    List<HistoryOrder> findAllNotPaid();
 
-    List<HistoryOrder> findAllByResolvedIsTrue();
+    Page<HistoryOrder> findAllForTakeAway(Pageable pageable);
 
-    Long countResolved();
+    Page<HistoryOrder> findAllDineIn(Pageable pageable);
 
-    Page<HistoryOrder> findAllFinalized(boolean forTakeAway, Pageable pageable);
+    HistoryOrder findById(Long id) throws LocalizedException;
 
-    Optional<HistoryOrder> findFinalizedById(Long id, boolean forTakeAway);
+    Long countAll();
 
     List<HistoryOrder> findFinalizedByDate(String date, boolean forTakeAway);
 
-    List<HistoryOrder> findAllResolvedTakeAwayLimit50();
-
-    Optional<HistoryOrder> findById(Long id);
-
     void save(HistoryOrder historyOrder);
-
-    boolean existsByIdAndForTakeAwayAndResolved(Long id, boolean forTakeAway);
 }

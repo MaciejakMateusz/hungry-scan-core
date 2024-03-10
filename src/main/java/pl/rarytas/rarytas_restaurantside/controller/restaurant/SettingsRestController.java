@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.rest;
+package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -9,13 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.entity.Settings;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.SettingsService;
-
-/**
- * GET
- * /api/settings - returns settings for a restaurant with ID specified in environment variables
- * PATCH
- * /api/settings - updates settings
- **/
 
 @RestController
 @RequestMapping("/api/settings")

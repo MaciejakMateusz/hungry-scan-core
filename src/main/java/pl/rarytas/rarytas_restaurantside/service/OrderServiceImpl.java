@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
+import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
-import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryOrderRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.utility.OrderServiceHelper;
 
@@ -22,25 +22,25 @@ public class OrderServiceImpl implements OrderService {
     private final WaiterCallServiceImpl waiterCallServiceImpl;
     private final SimpMessagingTemplate messagingTemplate;
     private final ArchiveDataServiceImpl dataTransferServiceImpl;
-    private final HistoryOrderRepository historyOrderRepository;
     private final OrderServiceHelper orderHelper;
+    private final ExceptionHelper exceptionHelper;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             WaiterCallServiceImpl waiterCallServiceImpl,
                             SimpMessagingTemplate messagingTemplate,
                             ArchiveDataServiceImpl dataTransferServiceImpl,
-                            HistoryOrderRepository historyOrderRepository, OrderServiceHelper orderHelper) {
+                            OrderServiceHelper orderHelper, ExceptionHelper exceptionHelper) {
         this.orderRepository = orderRepository;
         this.waiterCallServiceImpl = waiterCallServiceImpl;
         this.messagingTemplate = messagingTemplate;
         this.dataTransferServiceImpl = dataTransferServiceImpl;
-        this.historyOrderRepository = historyOrderRepository;
         this.orderHelper = orderHelper;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
-    public List<Order> findAllNotPaid() {
-        return orderRepository.findAllNotPaid();
+    public List<Order> findAll() {
+        return orderRepository.findAllDineIn();
     }
 
     @Override
@@ -49,28 +49,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findAllByResolvedIsTrue() {
-        return orderRepository.findAllResolved();
-    }
-
-    @Override
-    public Optional<Order> findFinalizedById(Long id, boolean forTakeAway) {
-        return orderRepository.findFinalizedById(id, forTakeAway);
+    public Order findById(Long id) throws LocalizedException {
+        return orderRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.orderService.general.orderNotfound", id));
     }
 
     @Override
     public Optional<Order> findByTableNumber(Integer tableNumber) {
         return orderRepository.findNewestOrderByTableNumber(tableNumber);
-    }
-
-    @Override
-    public Optional<?> findById(Long id) {
-        Optional<Order> order = orderRepository.findById(id);
-        if (order.isPresent()) {
-            return order;
-        } else {
-            return historyOrderRepository.findById(id);
-        }
     }
 
     @Override
@@ -82,8 +69,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void orderMoreDishes(Order order) {
-        Order existingOrder = (Order) findById(order.getId()).orElseThrow();
+    public void orderMoreDishes(Order order) throws LocalizedException {
+        Order existingOrder = findById(order.getId());
         addItemsToOrder(existingOrder, order.getOrderedItems());
         saveRefreshAndNotify(existingOrder);
     }
@@ -105,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
         existingOrder.setPaymentMethod(order.getPaymentMethod());
         orderRepository.saveAndFlush(existingOrder);
         assert !existingOrder.isForTakeAway();
-        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
+        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
     }
 
     @Override
@@ -117,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(existingOrder);
         dataTransferServiceImpl.archiveOrder(existingOrder);
         if (!existingOrder.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
+            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
         }
         delete(existingOrder);
     }
@@ -141,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
         waiterCall.setOrder(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
         waiterCallServiceImpl.save(waiterCall);
-        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
+        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
     }
 
     @Override
@@ -169,7 +156,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(order);
         orderRepository.refresh(order);
         if (!order.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAllNotPaid());
+            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
         }
     }
 }

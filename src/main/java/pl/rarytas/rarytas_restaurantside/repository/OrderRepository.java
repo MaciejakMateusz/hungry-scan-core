@@ -10,21 +10,14 @@ import java.util.Optional;
 
 public interface OrderRepository extends CustomRepository<Order, Long> {
 
-    @Query(value = "SELECT o FROM Order o WHERE o.paid = false AND o.forTakeAway = false AND o.isResolved = false")
-    List<Order> findAllNotPaid();
+    @Query(value = "SELECT o FROM Order o WHERE o.forTakeAway = false")
+    List<Order> findAllDineIn();
 
-    @Query(value = "SELECT o FROM Order o WHERE o.forTakeAway = true AND o.isResolved = false ORDER BY o.id DESC")
+    @Query(value = "SELECT o FROM Order o WHERE o.forTakeAway = true")
     List<Order> findAllTakeAway();
-
-    @Query(value = "SELECT o FROM Order o WHERE o.isResolved = true ORDER BY o.id DESC")
-    List<Order> findAllResolved();
 
     @Query(value = "SELECT * FROM orders WHERE table_id = :tableNumber ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Optional<Order> findNewestOrderByTableNumber(@Param("tableNumber") Integer tableNumber);
 
     boolean existsByRestaurantTable(RestaurantTable restaurantTable);
-
-    @Query(value = "SELECT o FROM Order o WHERE o.id = :id AND o.forTakeAway = :forTakeAway")
-    Optional<Order> findFinalizedById(@Param("id") Long id,
-                                      @Param("forTakeAway") boolean forTakeAway);
 }

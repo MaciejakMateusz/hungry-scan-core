@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.rest;
+package pl.rarytas.rarytas_restaurantside.controller.login;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

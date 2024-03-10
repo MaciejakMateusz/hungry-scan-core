@@ -27,32 +27,32 @@ public class RestaurantController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Restaurant>> restaurantsList() {
+    public ResponseEntity<List<Restaurant>> list() {
         return ResponseEntity.ok(restaurantService.findAll());
     }
 
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> updateRestaurant(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, restaurantService::findById);
     }
 
     @GetMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Restaurant> addRestaurant() {
+    public ResponseEntity<Restaurant> add() {
         return ResponseEntity.ok(new Restaurant());
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> addRestaurant(@Valid @RequestBody Restaurant restaurant,
+    public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody Restaurant restaurant,
                                                              BindingResult br) {
         return responseHelper.buildResponse(restaurant, br, restaurantService::save);
     }
 
     @PostMapping("/remove")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody Restaurant restaurant) {
+    public ResponseEntity<Map<String, Object>> remove(@RequestBody Restaurant restaurant) {
         restaurantService.delete(restaurant);
         return ResponseEntity.ok(new HashMap<>());
     }

@@ -35,7 +35,7 @@ public class CategoryController {
 
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> updateItem(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, categoryService::findById);
     }
 
@@ -53,7 +53,7 @@ public class CategoryController {
 
     @PostMapping("/remove")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestBody Category category) {
+    public ResponseEntity<Map<String, Object>> remove(@RequestBody Category category) {
         categoryService.delete(category);
         return ResponseEntity.ok(new HashMap<>());
     }
