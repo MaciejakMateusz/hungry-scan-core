@@ -81,26 +81,39 @@ public class OrderController {
         return ResponseEntity.ok(new HashMap<>());
     }
 
-    @PostMapping("/finalize-dineIn")
-    public ResponseEntity<Map<String, Object>> finalizeDineInOrder(@RequestParam Long id,
-                                                                   @RequestParam boolean paid,
-                                                                   @RequestParam boolean isResolved) throws LocalizedException {
-        orderService.finish(id, paid, isResolved);
+    @PatchMapping("/resolve-call")
+    public ResponseEntity<Map<String, Object>> resolveWaiterCall(@RequestBody Long id) {
+        Map<String, Object> params = new HashMap<>();
+        try {
+            orderService.resolveWaiterCall(id);
+        } catch (LocalizedException e) {
+            params.put("exceptionMsg", e.getLocalizedMessage());
+            return ResponseEntity.badRequest().body(params);
+        }
         return ResponseEntity.ok(new HashMap<>());
     }
 
-    @PostMapping("/finalize-takeAway")
-    public String finalizeTakeAwayOrder(@RequestParam Long id,
-                                        @RequestParam boolean paid,
-                                        @RequestParam boolean isResolved) throws LocalizedException {
-        orderService.finishTakeAway(id, paid, isResolved);
-        return "redirect:/restaurant/orders/take-away";
+    @PostMapping("/finalize-dine-in")
+    public ResponseEntity<Map<String, Object>> finalizeDineInOrder(@RequestBody Long id) {
+        Map<String, Object> params = new HashMap<>();
+        try {
+            orderService.finish(id);
+        } catch (LocalizedException e) {
+            params.put("exceptionMsg", e.getLocalizedMessage());
+            return ResponseEntity.badRequest().body(params);
+        }
+        return ResponseEntity.ok(new HashMap<>());
     }
 
-    @PostMapping("/resolve-call")
-    public String resolveWaiterCall(@RequestParam Long id) throws LocalizedException {
-        orderService.resolveWaiterCall(id);
-        return "redirect:/restaurant";
+    @PostMapping("/finalize-take-away")
+    public ResponseEntity<Map<String, Object>> finalizeTakeAwayOrder(@RequestBody Long id) {
+        Map<String, Object> params = new HashMap<>();
+        try {
+            orderService.finishTakeAway(id);
+        } catch (LocalizedException e) {
+            params.put("exceptionMsg", e.getLocalizedMessage());
+            return ResponseEntity.badRequest().body(params);
+        }
+        return ResponseEntity.ok(new HashMap<>());
     }
-
 }

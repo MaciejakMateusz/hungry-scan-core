@@ -101,11 +101,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void finish(Long id, boolean paid, boolean isResolved) throws LocalizedException {
+    public void finish(Long id) throws LocalizedException {
         orderHelper.assertOrderExistsElseThrow(id);
-        Order existingOrder = orderRepository.findById(id).orElseThrow();
+        Order existingOrder = findById(id);
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
-        orderHelper.prepareForFinalizing(existingOrder, paid, isResolved);
+        orderHelper.prepareForFinalizing(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
         dataTransferServiceImpl.archiveOrder(existingOrder);
         if (!existingOrder.isForTakeAway()) {
@@ -115,10 +115,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void finishTakeAway(Long id,
-                               boolean paid,
-                               boolean isResolved) throws LocalizedException {
-        finish(id, paid, isResolved);
+    public void finishTakeAway(Long id) throws LocalizedException {
+        finish(id);
         messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
     }
 

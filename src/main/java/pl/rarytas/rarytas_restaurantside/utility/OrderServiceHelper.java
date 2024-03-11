@@ -39,9 +39,9 @@ public class OrderServiceHelper {
         return false;
     }
 
-    public void prepareForFinalizing(Order existingOrder, boolean paid, boolean isResolved) {
-        existingOrder.setPaid(paid);
-        existingOrder.setResolved(isResolved);
+    public void prepareForFinalizing(Order existingOrder) {
+        existingOrder.setPaid(true);
+        existingOrder.setResolved(true);
         existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
         assert !existingOrder.isForTakeAway();
         existingOrder.setBillRequested(true);

@@ -24,9 +24,9 @@ public interface OrderService {
 
     void requestBill(Order order) throws LocalizedException;
 
-    void finish(Long id, boolean paid, boolean isResolved) throws LocalizedException;
+    void finish(Long id) throws LocalizedException;
 
-    void finishTakeAway(Long id, boolean paid, boolean isResolved) throws LocalizedException;
+    void finishTakeAway(Long id) throws LocalizedException;
 
     void callWaiter(Order order) throws LocalizedException;
 

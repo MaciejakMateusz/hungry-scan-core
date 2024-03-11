@@ -100,13 +100,13 @@ class OrderServiceImplTest {
         Order existingOrder = orderService.findById(2L);
         assertTrue(existingOrder.isBillRequested());
 
-        orderService.finish(2L, true, true);
+        orderService.finish(2L);
         assertEquals(HistoryOrder.class, historyOrderService.findById(2L).getClass());
     }
 
     @Test
     void shouldNotFinishAndArchive() {
-        assertThrows(LocalizedException.class, () -> orderService.finish(15L, true, true));
+        assertThrows(LocalizedException.class, () -> orderService.finish(15L));
     }
 
     @Test

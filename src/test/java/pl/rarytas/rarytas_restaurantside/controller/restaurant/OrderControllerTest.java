@@ -23,6 +23,7 @@ import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -149,6 +150,8 @@ class OrderControllerTest {
         shouldCallWaiter();
         shouldNotRequestBillWhenWaiterCalled();
         shouldNotCallWaiterSecondTime();
+        shouldResolveWaiterCall();
+        shouldFinalizeDineIn();
     }
 
     private void shouldSaveNewDineInOrder() throws Exception {
@@ -279,5 +282,26 @@ class OrderControllerTest {
         assertNotNull(order);
         assertThrows(Exception.class, () ->
                 apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", order));
+    }
+
+    private void shouldResolveWaiterCall() throws Exception {
+        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/resolve-call", 7L);
+        Order updatedOrder =
+                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+
+        assertFalse(updatedOrder.isWaiterCalled());
+    }
+
+    private void shouldFinalizeDineIn() throws Exception {
+        Order order =
+                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+        assertNotNull(order);
+
+        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-dine-in", 7);
+
+        Map<?, ?> errors =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/restaurant/orders/show", 7L, status().isBadRequest());
+        assertEquals("Zamówienie z podanym ID = 7 nie istnieje.", errors.get("exceptionMsg"));
     }
 }

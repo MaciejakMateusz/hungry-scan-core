@@ -33,7 +33,7 @@ public class ResponseHelper {
     public <ENTITY> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
                                                                  BindingResult br,
                                                                  Consumer<ENTITY> saveFunction) {
-        return br.hasErrors() ? createErrorResponse(br) : saveAndCreateSuccessResponse(saveFunction, entity);
+        return br.hasErrors() ? createErrorResponse(br) : acceptAndCreateSuccessResponse(saveFunction, entity);
     }
 
     /**
@@ -108,8 +108,8 @@ public class ResponseHelper {
         return ResponseEntity.ok(params);
     }
 
-    private <ENTITY> ResponseEntity<Map<String, Object>> saveAndCreateSuccessResponse(Consumer<ENTITY> saveFunction,
-                                                                                      ENTITY entity) {
+    private <ENTITY> ResponseEntity<Map<String, Object>> acceptAndCreateSuccessResponse(Consumer<ENTITY> saveFunction,
+                                                                                        ENTITY entity) {
         saveFunction.accept(entity);
         return ResponseEntity.ok().body(new HashMap<>());
     }
