@@ -13,6 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.ArchiveDataService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
@@ -38,10 +39,10 @@ class ArchiveDataServiceImplTest {
 
     @Test
     @Transactional
-    void shouldArchiveOrder() {
-        Order existingOrder = (Order) orderService.findById(4L).orElseThrow();
+    void shouldArchiveOrder() throws LocalizedException {
+        Order existingOrder = orderService.findById(4L);
         archiveDataService.archiveOrder(existingOrder);
-        HistoryOrder historyOrder = historyOrderService.findById(4L).orElse(new HistoryOrder());
+        HistoryOrder historyOrder = historyOrderService.findById(4L);
         assertEquals("card", historyOrder.getPaymentMethod());
     }
 }

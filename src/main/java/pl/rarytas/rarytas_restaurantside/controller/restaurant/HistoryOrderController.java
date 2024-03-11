@@ -27,7 +27,7 @@ public class HistoryOrderController {
     }
 
     @PostMapping("/dine-in")
-    public ResponseEntity<Map<String, Object>> getAllDineIn(@RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<Map<String, Object>> getAllDineInHistoryOrders(@RequestBody Map<String, Object> requestBody) {
         int pageNumber = (int) requestBody.get("limit");
         int pageSize = (int) requestBody.get("offset");
         Page<HistoryOrder> orders = historyOrderService
@@ -37,7 +37,7 @@ public class HistoryOrderController {
     }
 
     @PostMapping("/take-away")
-    public ResponseEntity<Map<String, Object>> getAllForTakeAway(@RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<Map<String, Object>> getAllForTakeAwayHistoryOrders(@RequestBody Map<String, Object> requestBody) {
         int pageNumber = (int) requestBody.get("limit");
         int pageSize = (int) requestBody.get("offset");
         Page<HistoryOrder> orders = historyOrderService
@@ -47,7 +47,7 @@ public class HistoryOrderController {
     }
 
     @GetMapping("/numberResolved")
-    public ResponseEntity<Long> countAllResolved() {
+    public ResponseEntity<Long> countAll() {
         return ResponseEntity.ok(historyOrderService.countAll());
     }
 
@@ -57,8 +57,8 @@ public class HistoryOrderController {
         return ResponseEntity.ok(historyOrderService.findFinalizedByDate(date, forTakeAway));
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<Map<String, Object>> getById(@PathVariable Long id) {
+    @PostMapping("/show")
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, historyOrderService::findById);
     }
 

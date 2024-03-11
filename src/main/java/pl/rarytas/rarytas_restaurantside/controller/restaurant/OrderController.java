@@ -27,31 +27,38 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Order>> getAllNotPaid() {
+    public ResponseEntity<List<Order>> getAllOrders() {
         return ResponseEntity.ok(orderService.findAll());
     }
 
-    @GetMapping("/takeAway")
-    public ResponseEntity<List<Order>> getAllTakeAway() {
+    @GetMapping("/take-away")
+    public ResponseEntity<List<Order>> getAllTakeAwayOrders() {
         return ResponseEntity.ok(orderService.findAllTakeAway());
     }
 
-    @GetMapping("/{number}")
-    public ResponseEntity<Order> getByTableNumber(@PathVariable Integer number) {
-        return ResponseEntity.ok(orderService.findByTableNumber(number).orElseThrow());
+    @GetMapping("/dine-in")
+    public ResponseEntity<List<Order>> getAllDineInOrders() {
+        return ResponseEntity.ok(orderService.findAllDineIn());
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<Map<String, Object>> getById(@PathVariable Long id) {
+    @PostMapping("/table-number")
+    public ResponseEntity<Map<String, Object>> getByTableNumber(@RequestBody Integer number) {
+        return responseHelper.getResponseEntity(number, orderService::findByTableNumber);
+    }
+
+    @PostMapping("/show")
+    public ResponseEntity<Map<String, Object>> getById(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, orderService::findById);
     }
 
-    @PostMapping
-    public ResponseEntity<Map<String, Object>> saveOrder(@RequestBody Order order) throws LocalizedException {
-        if (order.isForTakeAway()) {
-            orderService.saveTakeAway(order);
-            return ResponseEntity.ok(new HashMap<>());
-        }
+    @PostMapping("/take-away")
+    public ResponseEntity<Map<String, Object>> saveTakeAwayOrder(@RequestBody Order order) {
+        orderService.saveTakeAway(order);
+        return ResponseEntity.ok(new HashMap<>());
+    }
+
+    @PostMapping("/dine-in")
+    public ResponseEntity<Map<String, Object>> saveDineInOrder(@RequestBody Order order) throws LocalizedException {
         orderService.save(order);
         return ResponseEntity.ok(new HashMap<>());
     }

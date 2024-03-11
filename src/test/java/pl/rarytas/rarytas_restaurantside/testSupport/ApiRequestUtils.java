@@ -96,6 +96,19 @@ public class ApiRequestUtils {
         return objectMapper.readValue(responseBody, typeReference);
     }
 
+    public <T> void patchAndReturnResponseBody(String endpointUrl,
+                                                             T object,
+                                                             ResultMatcher matcher) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        mockMvc.perform(patch(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(matcher)
+                .andDo(print());
+    }
+
     public void postMultipartRequest(String endpointUrl,
                                      MenuItem menuItem,
                                      MockMultipartFile file,
@@ -138,6 +151,10 @@ public class ApiRequestUtils {
 
     public <T> void postAndExpect200(String url, T t) throws Exception {
         postAndReturnResponseBody(url, t, status().isOk());
+    }
+
+    public <T> void patchAndExpect200(String url, T t) throws Exception {
+        patchAndReturnResponseBody(url, t, status().isOk());
     }
 
     public void postAndExpect200(String url, MenuItem menuItem, MockMultipartFile file) throws Exception {

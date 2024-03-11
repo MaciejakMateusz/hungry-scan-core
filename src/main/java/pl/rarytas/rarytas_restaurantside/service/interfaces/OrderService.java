@@ -4,16 +4,17 @@ import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface OrderService {
     List<Order> findAll();
 
     List<Order> findAllTakeAway();
 
+    List<Order> findAllDineIn();
+
     Order findById(Long id) throws LocalizedException;
 
-    Optional<Order> findByTableNumber(Integer tableNumber);
+    Order findByTableNumber(Integer tableNumber) throws LocalizedException;
 
     void save(Order order) throws LocalizedException;
 

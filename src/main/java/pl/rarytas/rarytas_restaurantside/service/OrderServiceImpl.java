@@ -13,8 +13,6 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.utility.OrderServiceHelper;
 
 import java.util.List;
-import java.util.Optional;
-
 @Service
 @Slf4j
 public class OrderServiceImpl implements OrderService {
@@ -49,6 +47,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<Order> findAllDineIn() {
+        return orderRepository.findAllDineIn();
+    }
+
+    @Override
     public Order findById(Long id) throws LocalizedException {
         return orderRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
@@ -56,8 +59,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<Order> findByTableNumber(Integer tableNumber) {
-        return orderRepository.findNewestOrderByTableNumber(tableNumber);
+    public Order findByTableNumber(Integer tableNumber) throws LocalizedException {
+        return orderRepository.findNewestOrderByTableNumber(tableNumber)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.orderService.general.orderNotfoundByTable", tableNumber));
     }
 
     @Override
@@ -155,8 +160,6 @@ public class OrderServiceImpl implements OrderService {
     private void saveRefreshAndNotify(Order order) {
         orderRepository.saveAndFlush(order);
         orderRepository.refresh(order);
-        if (!order.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
-        }
+        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
     }
 }

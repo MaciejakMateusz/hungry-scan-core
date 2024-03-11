@@ -42,14 +42,13 @@ public class OrderProcessor {
     }
 
     /**
-     * Creates an order based on provided parameters.
+     * Creates dine-in order based on provided parameters.
      *
      * @param tableNumber The number of the table where the order is placed.
      * @param menuItemIds The list of IDs of menu items to be included in the order.
-     * @param forTakeAway A boolean indicating whether the order is for takeaway.
      * @return The created order.
      */
-    public Order getCreatedOrder(Integer tableNumber, List<Integer> menuItemIds, boolean forTakeAway) throws LocalizedException {
+    public Order createDineInOrder(Integer tableNumber, List<Integer> menuItemIds) throws LocalizedException {
         return new CreateOrder(
                 restaurantService,
                 restaurantTableService,
@@ -57,8 +56,27 @@ public class OrderProcessor {
                 1,
                 tableNumber,
                 menuItemIds,
-                forTakeAway).createOrder();
+                false).createOrder();
     }
+
+    /**
+     * Creates take-away order based on provided parameters.
+     *
+     * @param tableNumber The number of the table where the order is placed.
+     * @param menuItemIds The list of IDs of menu items to be included in the order.
+     * @return The created order.
+     */
+    public Order createTakeAwayOrder(Integer tableNumber, List<Integer> menuItemIds) throws LocalizedException {
+        return new CreateOrder(
+                restaurantService,
+                restaurantTableService,
+                menuItemService,
+                1,
+                tableNumber,
+                menuItemIds,
+                true).createOrder();
+    }
+
 
     /**
      * A record representing a factory for creating orders.
