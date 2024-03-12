@@ -120,6 +120,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(existingOrder);
         dataTransferServiceImpl.archiveOrder(existingOrder);
         messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
+        delete(existingOrder);
     }
 
     @Override

@@ -316,7 +316,20 @@ class OrderControllerTest {
 
         Map<?, ?> errors =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/restaurant/orders/show", 6L, status().isBadRequest());
+                        "/api/restaurant/orders/finalize-take-away", 6L, status().isBadRequest());
         assertEquals("Zamówienie z podanym ID = 6 nie istnieje.", errors.get("exceptionMsg"));
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(12)
+    public void shouldNotAllowAccessWithoutAuthorization() throws Exception {
+        Order order = orderProcessor.createDineInOrder(12, List.of(4, 12, 15));
+        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/dine-in", order);
+        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/take-away", order);
+        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/request-bill", order);
+        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/call-waiter", order);
+        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/resolve-call", 111);
+        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-dine-in", 111);
+        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-take-away", 111);
     }
 }

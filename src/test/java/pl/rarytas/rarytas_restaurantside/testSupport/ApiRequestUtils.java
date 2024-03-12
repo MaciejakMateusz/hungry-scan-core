@@ -151,6 +151,28 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Sends a POST request to the specified endpoint URL with the provided object as the request body.
+     * Expects a certain result based on the provided ResultMatcher.
+     *
+     * @param endpointUrl The URL endpoint to send the PATCH request to.
+     * @param object The object to be serialized and sent as the request body.
+     * @param matcher The ResultMatcher to apply to the response.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T> void postAndExpect(String endpointUrl,
+                                  T object,
+                                  ResultMatcher matcher) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(matcher)
+                .andDo(print());
+    }
+
+    /**
      * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      *
@@ -159,9 +181,9 @@ public class ApiRequestUtils {
      * @param matcher The ResultMatcher to apply to the response.
      * @throws Exception If there are any errors during the request or response handling.
      */
-    public <T> void patchAndReturnResponseBody(String endpointUrl,
-                                                             T object,
-                                                             ResultMatcher matcher) throws Exception {
+    public <T> void patchAndExpect(String endpointUrl,
+                                   T object,
+                                   ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
@@ -255,6 +277,30 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Performs a POST request to the specified URL with the provided object and expects unauthorized response.
+     *
+     * @param url The URL to which the POST request will be sent.
+     * @param t   The object to be sent as part of the request.
+     * @param <T> The type of the object.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> void postAndExpectUnauthorized(String url, T t) throws Exception {
+        postAndExpect(url, t, status().isUnauthorized());
+    }
+
+    /**
+     * Performs a PATCH request to the specified URL with the provided object and expects unauthorized response.
+     *
+     * @param url The URL to which the POST request will be sent.
+     * @param t   The object to be sent as part of the request.
+     * @param <T> The type of the object.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> void patchAndExpectUnauthorized(String url, T t) throws Exception {
+        patchAndExpect(url, t, status().isUnauthorized());
+    }
+
+    /**
      * Performs a POST request to the specified URL with the provided object and expects a successful (200) response.
      *
      * @param url The URL to which the POST request will be sent.
@@ -263,7 +309,7 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the request.
      */
     public <T> void postAndExpect200(String url, T t) throws Exception {
-        postAndReturnResponseBody(url, t, status().isOk());
+        postAndExpect(url, t, status().isOk());
     }
 
     /**
@@ -275,7 +321,7 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the request.
      */
     public <T> void patchAndExpect200(String url, T t) throws Exception {
-        patchAndReturnResponseBody(url, t, status().isOk());
+        patchAndExpect(url, t, status().isOk());
     }
 
     /**
