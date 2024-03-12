@@ -39,12 +39,19 @@ public class OrderServiceHelper {
         return false;
     }
 
-    public void prepareForFinalizing(Order existingOrder) {
+    public void prepareForFinalizingDineIn(Order existingOrder) {
         existingOrder.setPaid(true);
         existingOrder.setResolved(true);
         existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
         assert !existingOrder.isForTakeAway();
         existingOrder.setBillRequested(true);
+    }
+
+    public void prepareForFinalizingTakeAway(Order existingOrder) {
+        assert existingOrder.isForTakeAway();
+        existingOrder.setPaid(true);
+        existingOrder.setResolved(true);
+        existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
     }
 
     public void assertOrderExistsElseThrow(Long id) throws LocalizedException {

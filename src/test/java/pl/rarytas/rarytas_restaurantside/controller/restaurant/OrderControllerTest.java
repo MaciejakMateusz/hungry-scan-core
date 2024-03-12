@@ -152,6 +152,7 @@ class OrderControllerTest {
         shouldNotCallWaiterSecondTime();
         shouldResolveWaiterCall();
         shouldFinalizeDineIn();
+        shouldFinalizeTakeAway();
     }
 
     private void shouldSaveNewDineInOrder() throws Exception {
@@ -303,5 +304,19 @@ class OrderControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/restaurant/orders/show", 7L, status().isBadRequest());
         assertEquals("Zamówienie z podanym ID = 7 nie istnieje.", errors.get("exceptionMsg"));
+    }
+
+    private void shouldFinalizeTakeAway() throws Exception {
+        Order order =
+                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
+        assertNotNull(order);
+        assertTrue(order.isForTakeAway());
+
+        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-take-away", 6);
+
+        Map<?, ?> errors =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/restaurant/orders/show", 6L, status().isBadRequest());
+        assertEquals("Zamówienie z podanym ID = 6 nie istnieje.", errors.get("exceptionMsg"));
     }
 }

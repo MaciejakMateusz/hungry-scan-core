@@ -84,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
     public void saveTakeAway(Order order) {
         orderRepository.save(order);
         orderRepository.refresh(order);
-        messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
+        messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
     }
 
     @Override
@@ -97,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
         existingOrder.setPaymentMethod(order.getPaymentMethod());
         orderRepository.saveAndFlush(existingOrder);
         assert !existingOrder.isForTakeAway();
-        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
+        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }
 
     @Override
@@ -105,19 +105,21 @@ public class OrderServiceImpl implements OrderService {
         orderHelper.assertOrderExistsElseThrow(id);
         Order existingOrder = findById(id);
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
-        orderHelper.prepareForFinalizing(existingOrder);
+        orderHelper.prepareForFinalizingDineIn(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
         dataTransferServiceImpl.archiveOrder(existingOrder);
-        if (!existingOrder.isForTakeAway()) {
-            messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
-        }
+        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
         delete(existingOrder);
     }
 
     @Override
     public void finishTakeAway(Long id) throws LocalizedException {
-        finish(id);
-        messagingTemplate.convertAndSend("/topic/takeAway-orders", findAllTakeAway());
+        orderHelper.assertOrderExistsElseThrow(id);
+        Order existingOrder = findById(id);
+        orderHelper.prepareForFinalizingTakeAway(existingOrder);
+        orderRepository.saveAndFlush(existingOrder);
+        dataTransferServiceImpl.archiveOrder(existingOrder);
+        messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
     }
 
     @Override
@@ -131,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
         waiterCall.setOrder(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
         waiterCallServiceImpl.save(waiterCall);
-        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
+        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }
 
     @Override
@@ -158,6 +160,6 @@ public class OrderServiceImpl implements OrderService {
     private void saveRefreshAndNotify(Order order) {
         orderRepository.saveAndFlush(order);
         orderRepository.refresh(order);
-        messagingTemplate.convertAndSend("/topic/restaurant-orders", findAll());
+        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }
 }
