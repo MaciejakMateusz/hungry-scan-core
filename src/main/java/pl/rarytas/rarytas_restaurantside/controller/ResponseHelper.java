@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import pl.rarytas.rarytas_restaurantside.utility.ThrowingConsumer;
 import pl.rarytas.rarytas_restaurantside.utility.ThrowingFunction;
 
 import java.util.HashMap;
@@ -63,7 +64,6 @@ public class ResponseHelper {
      * @param function Behaviour to pass from a given service. For example userService::findById
      * @return ResponseEntity with appropriate response code and body containing parameters map.
      */
-
     public <ID, ENTITY> ResponseEntity<Map<String, Object>> getResponseEntity(ID id,
                                                                               ThrowingFunction<ID, ENTITY> function) {
         ENTITY entity;
@@ -73,6 +73,22 @@ public class ResponseHelper {
             return createErrorResponse(e);
         }
         return createSuccessResponse(entity);
+    }
+
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param id       ID of entity that exists in database.
+     * @param function Behaviour to pass from a given service. For example orderService::finishDineIn
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <ID> ResponseEntity<Map<String, Object>> getResponseEntity(ID id, ThrowingConsumer<ID> function) {
+        try {
+            function.accept(id);
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+        return ResponseEntity.ok().build();
     }
 
     /**

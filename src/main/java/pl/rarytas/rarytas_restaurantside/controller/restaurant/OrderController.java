@@ -83,37 +83,16 @@ public class OrderController {
 
     @PatchMapping("/resolve-call")
     public ResponseEntity<Map<String, Object>> resolveWaiterCall(@RequestBody Long id) {
-        Map<String, Object> params = new HashMap<>();
-        try {
-            orderService.resolveWaiterCall(id);
-        } catch (LocalizedException e) {
-            params.put("exceptionMsg", e.getLocalizedMessage());
-            return ResponseEntity.badRequest().body(params);
-        }
-        return ResponseEntity.ok(new HashMap<>());
+        return responseHelper.getResponseEntity(id, orderService::resolveWaiterCall);
     }
 
     @PostMapping("/finalize-dine-in")
     public ResponseEntity<Map<String, Object>> finalizeDineInOrder(@RequestBody Long id) {
-        Map<String, Object> params = new HashMap<>();
-        try {
-            orderService.finish(id);
-        } catch (LocalizedException e) {
-            params.put("exceptionMsg", e.getLocalizedMessage());
-            return ResponseEntity.badRequest().body(params);
-        }
-        return ResponseEntity.ok(new HashMap<>());
+        return responseHelper.getResponseEntity(id, orderService::finish);
     }
 
     @PostMapping("/finalize-take-away")
     public ResponseEntity<Map<String, Object>> finalizeTakeAwayOrder(@RequestBody Long id) {
-        Map<String, Object> params = new HashMap<>();
-        try {
-            orderService.finishTakeAway(id);
-        } catch (LocalizedException e) {
-            params.put("exceptionMsg", e.getLocalizedMessage());
-            return ResponseEntity.badRequest().body(params);
-        }
-        return ResponseEntity.ok(new HashMap<>());
+        return responseHelper.getResponseEntity(id, orderService::finishTakeAway);
     }
 }
