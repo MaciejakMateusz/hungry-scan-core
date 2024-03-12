@@ -43,12 +43,10 @@ public class OrderServiceHelper {
         existingOrder.setPaid(true);
         existingOrder.setResolved(true);
         existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
-        assert !existingOrder.isForTakeAway();
         existingOrder.setBillRequested(true);
     }
 
     public void prepareForFinalizingTakeAway(Order existingOrder) {
-        assert existingOrder.isForTakeAway();
         existingOrder.setPaid(true);
         existingOrder.setResolved(true);
         existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
@@ -72,7 +70,7 @@ public class OrderServiceHelper {
         }
     }
 
-    public void assertNoBillRequestedElseThrow(Order existingOrder) throws LocalizedException {
+    public void assertBillNotRequestedElseThrow(Order existingOrder) throws LocalizedException {
         if (existingOrder.isBillRequested()) {
             throwAlreadyRequested(existingOrder);
         }

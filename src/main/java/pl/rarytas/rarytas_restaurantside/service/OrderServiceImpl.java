@@ -92,11 +92,10 @@ public class OrderServiceImpl implements OrderService {
         orderHelper.assertOrderExistsElseThrow(order.getId());
         Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
-        orderHelper.assertNoBillRequestedElseThrow(existingOrder);
+        orderHelper.assertBillNotRequestedElseThrow(existingOrder);
         existingOrder.setBillRequested(true);
         existingOrder.setPaymentMethod(order.getPaymentMethod());
         orderRepository.saveAndFlush(existingOrder);
-        assert !existingOrder.isForTakeAway();
         messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }
 
@@ -128,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
         orderHelper.assertOrderExistsElseThrow(order.getId());
         Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
-        orderHelper.assertNoBillRequestedElseThrow(existingOrder);
+        orderHelper.assertBillNotRequestedElseThrow(existingOrder);
         existingOrder.setWaiterCalled(true);
         WaiterCall waiterCall = new WaiterCall();
         waiterCall.setOrder(existingOrder);
