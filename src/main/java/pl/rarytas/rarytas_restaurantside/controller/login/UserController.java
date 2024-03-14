@@ -12,12 +12,12 @@ import pl.rarytas.rarytas_restaurantside.service.JwtService;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
-public class UserRestController {
+public class UserController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public UserRestController(AuthenticationManager authenticationManager, JwtService jwtService) {
+    public UserController(AuthenticationManager authenticationManager, JwtService jwtService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }

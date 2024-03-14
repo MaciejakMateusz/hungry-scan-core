@@ -20,7 +20,6 @@ import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import pl.rarytas.rarytas_restaurantside.filter.JwtAuthFilter;
-import pl.rarytas.rarytas_restaurantside.utility.LoginSuccessHandler;
 
 import java.util.List;
 
@@ -88,8 +87,6 @@ public class SecurityConfig {
 
         http.formLogin(login ->
                 login.loginPage("/login")
-                        .defaultSuccessUrl("/restaurant")
-                        .successHandler(new LoginSuccessHandler())
                         .permitAll()
         );
 

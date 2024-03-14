@@ -8,12 +8,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import pl.rarytas.rarytas_restaurantside.entity.User;
+import pl.rarytas.rarytas_restaurantside.dto.AuthRequestDTO;
+import pl.rarytas.rarytas_restaurantside.dto.JwtResponseDTO;
+import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -23,120 +23,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private ApiRequestUtils apiRequestUtils;
 
     @Test
-    void shouldRedirectToLogin() throws Exception {
-        mockMvc.perform(get("/"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login"));
-    }
+    void shouldAuthenticateAndLoginUser() throws Exception {
+        AuthRequestDTO authRequestDTO = new AuthRequestDTO("mati", "Lubieplacki123!");
 
-    @Test
-    void shouldReturnRegisterView() throws Exception {
-        mockMvc.perform(get("/register"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("register"))
-                .andExpect(model().attributeExists("user"));
+        JwtResponseDTO jwtResponseDTO =
+                apiRequestUtils.postAndFetchObject("/api/login", authRequestDTO, JwtResponseDTO.class);
+
+        assertNotNull(jwtResponseDTO);
+        assertEquals(129, jwtResponseDTO.getAccessToken().length());
     }
 
     @Test
-    void shouldRegisterNewUser() throws Exception {
-        User user = createCorrectUser();
-
-        mockMvc.perform(post("/register")
-                        .param("username", user.getUsername())
-                        .param("email", user.getEmail())
-                        .param("password", user.getPassword())
-                        .param("repeatedPassword", user.getRepeatedPassword()))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("success-registration"));
+    void shouldLoginAndReturnUnauthorized() throws Exception {
+        AuthRequestDTO authRequestDTO = new AuthRequestDTO("iDoNotExist", "DoesNotMatter123!");
+        apiRequestUtils.postAndExpectUnauthorized("/api/login", authRequestDTO);
     }
 
-    @Test
-    void shouldNotRegisterNewUser() throws Exception {
-        User user = createIncorrectUser();
-
-        mockMvc.perform(post("/register")
-                        .param("username", user.getUsername())
-                        .param("email", user.getEmail())
-                        .param("password", user.getPassword())
-                        .param("repeatedPassword", user.getRepeatedPassword()))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("register"))
-                .andExpect(model().hasErrors());
-    }
-
-    @Test
-    void shouldRegisterNewAdmin() throws Exception {
-        User admin = createCorrectAdmin();
-
-        mockMvc.perform(post("/registerAdmin")
-                        .param("username", admin.getUsername())
-                        .param("email", admin.getEmail())
-                        .param("password", admin.getPassword())
-                        .param("repeatedPassword", admin.getRepeatedPassword()))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("success-registration"));
-
-        admin = createIncorrectUser();
-
-        mockMvc.perform(post("/registerAdmin")
-                        .param("username", admin.getUsername())
-                        .param("email", admin.getEmail())
-                        .param("password", admin.getPassword())
-                        .param("repeatedPassword", admin.getRepeatedPassword()))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("registerAdmin"))
-                .andExpect(model().hasErrors());
-    }
-
-    @Test
-    void shouldNotRegisterNewAdmin() throws Exception {
-        User admin = createIncorrectUser();
-
-        mockMvc.perform(post("/registerAdmin")
-                        .param("username", admin.getUsername())
-                        .param("email", admin.getEmail())
-                        .param("password", admin.getPassword())
-                        .param("repeatedPassword", admin.getRepeatedPassword()))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("registerAdmin"))
-                .andExpect(model().hasErrors());
-    }
-
-    @Test
-    void shouldReturnLoginView() throws Exception {
-        mockMvc.perform(get("/login"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("login"))
-                .andExpect(model().attributeExists("user"));
-    }
-
-    private User createCorrectUser() {
-        User user = new User();
-        user.setEmail("example@example.com");
-        user.setUsername("exampleUser");
-        user.setPassword("Example123!");
-        user.setRepeatedPassword("Example123!");
-        return user;
-    }
-
-    private User createCorrectAdmin() {
-        User user = new User();
-        user.setEmail("admin@admino.com");
-        user.setUsername("exampleAdmin");
-        user.setPassword("Example123!");
-        user.setRepeatedPassword("Example123!");
-        return user;
-    }
-
-    private User createIncorrectUser() {
-        User user = new User();
-        user.setEmail("example@example");
-        user.setUsername("ex");
-        user.setPassword("Example123!");
-        user.setRepeatedPassword("Exhale1!");
-        return user;
-    }
 }

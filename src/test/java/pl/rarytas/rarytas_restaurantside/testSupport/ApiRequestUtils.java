@@ -33,6 +33,7 @@ public class ApiRequestUtils {
 
     /**
      * Constructor to initialize the ApiRequestUtils with a MockMvc instance.
+     *
      * @param mockMvc The MockMvc instance to be used for making requests.
      */
     public ApiRequestUtils(MockMvc mockMvc) {
@@ -42,9 +43,10 @@ public class ApiRequestUtils {
 
     /**
      * Fetches a list of objects from the specified endpoint.
+     *
      * @param endpointUrl The URL of the endpoint to fetch from.
-     * @param itemType The type of objects to fetch.
-     * @param <T> The type of objects to fetch.
+     * @param itemType    The type of objects to fetch.
+     * @param <T>         The type of objects to fetch.
      * @return A list of objects fetched from the endpoint.
      * @throws Exception If an error occurs during the request.
      */
@@ -62,7 +64,7 @@ public class ApiRequestUtils {
         return objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
     }
 
-    public <T> List<T> fetchObjects(String endpointUrl,Map<String, Object> requestParams, Class<T> itemType) throws Exception {
+    public <T> List<T> fetchObjects(String endpointUrl, Map<String, Object> requestParams, Class<T> itemType) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(requestParams);
 
@@ -91,6 +93,33 @@ public class ApiRequestUtils {
      */
     public <T> T fetchObject(String endpointUrl, Class<T> itemType) throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        return prepObjMapper().readValue(jsonResponse, itemType);
+    }
+
+    /**
+     * Fetches an object from the specified endpoint URL and converts it into the provided item type.
+     *
+     * @param endpointUrl The URL endpoint from which to fetch the object.
+     * @param object      The object to be posted.
+     * @param itemType    The class type of the object to be fetched.
+     * @return The fetched object of type R.
+     * @throws Exception If an error occurs during the fetching or parsing of the object.
+     */
+    public <T, R> R postAndFetchObject(String endpointUrl, T object, Class<R> itemType) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        MvcResult result = mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -144,9 +173,9 @@ public class ApiRequestUtils {
      * Retrieves and returns the response body as a Map of String keys to Object values.
      *
      * @param endpointUrl The URL endpoint to send the POST request to.
-     * @param object The object to be serialized and sent as the request body.
-     * @param matcher The ResultMatcher to apply to the response.
-     * @param <T> The type of the object being sent in the request body.
+     * @param object      The object to be serialized and sent as the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @param <T>         The type of the object being sent in the request body.
      * @return A Map representing the response body, with String keys and Object values.
      * @throws Exception If there are any errors during the request or response handling.
      */
@@ -173,8 +202,8 @@ public class ApiRequestUtils {
      * Expects a certain result based on the provided ResultMatcher.
      *
      * @param endpointUrl The URL endpoint to send the PATCH request to.
-     * @param object The object to be serialized and sent as the request body.
-     * @param matcher The ResultMatcher to apply to the response.
+     * @param object      The object to be serialized and sent as the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
      * @throws Exception If there are any errors during the request or response handling.
      */
     public <T> void postAndExpect(String endpointUrl,
@@ -195,8 +224,8 @@ public class ApiRequestUtils {
      * Expects a certain result based on the provided ResultMatcher.
      *
      * @param endpointUrl The URL endpoint to send the PATCH request to.
-     * @param object The object to be serialized and sent as the request body.
-     * @param matcher The ResultMatcher to apply to the response.
+     * @param object      The object to be serialized and sent as the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
      * @throws Exception If there are any errors during the request or response handling.
      */
     public <T> void patchAndExpect(String endpointUrl,
@@ -216,9 +245,9 @@ public class ApiRequestUtils {
      * Posts a multipart request to the specified endpoint URL with the provided MenuItem object, file, and matcher.
      *
      * @param endpointUrl The URL endpoint to which the multipart request will be sent.
-     * @param menuItem The MenuItem object to be sent as part of the request payload.
-     * @param file The MockMultipartFile object representing the file to be sent in the multipart request.
-     * @param matcher The ResultMatcher object to validate the response received from the server.
+     * @param menuItem    The MenuItem object to be sent as part of the request payload.
+     * @param file        The MockMultipartFile object representing the file to be sent in the multipart request.
+     * @param matcher     The ResultMatcher object to validate the response received from the server.
      * @throws Exception If an error occurs during the request execution.
      */
     public void postMultipartRequest(String endpointUrl,
@@ -253,16 +282,16 @@ public class ApiRequestUtils {
      * Sends a POST request to the specified endpoint, expecting a response with status code 200,
      * and deserializes the response body to the specified class type.
      *
-     * @param endpoint The URL endpoint to which the POST request will be sent.
-     * @param id The identifier used in the request.
+     * @param endpoint  The URL endpoint to which the POST request will be sent.
+     * @param object    Object passed in the request.
      * @param classType The class type to which the response body will be deserialized.
-     * @param <T> The type of the response body.
+     * @param <T>       The type of the response body.
      * @return An instance of the deserialized class.
      * @throws Exception If an error occurs during the request execution or deserialization process.
      */
-    public <T> T getObjectExpect200(String endpoint, Integer id, Class<T> classType) throws Exception {
+    public <T, R> R getObjectExpect200(String endpoint, T object, Class<R> classType) throws Exception {
         Map<String, Object> responseParams =
-                postAndReturnResponseBody(endpoint, id, status().isOk());
+                postAndReturnResponseBody(endpoint, object, status().isOk());
         String paramName = classType.getSimpleName().toLowerCase();
         return deserializeObject(responseParams.get(paramName), classType);
     }
@@ -346,9 +375,9 @@ public class ApiRequestUtils {
      * Performs a multipart POST request to the specified URL with the provided menu item and file,
      * expecting a successful (200) response.
      *
-     * @param url       The URL to which the POST request will be sent.
-     * @param menuItem  The menu item to be sent as part of the request.
-     * @param file      The file to be sent as part of the request.
+     * @param url      The URL to which the POST request will be sent.
+     * @param menuItem The menu item to be sent as part of the request.
+     * @param file     The file to be sent as part of the request.
      * @throws Exception If an error occurs during the request.
      */
     public void postAndExpect200(String url, MenuItem menuItem, MockMultipartFile file) throws Exception {
