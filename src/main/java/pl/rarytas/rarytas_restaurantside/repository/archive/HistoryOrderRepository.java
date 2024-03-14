@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
 
-import java.util.List;
+import java.time.LocalDate;
 
 public interface HistoryOrderRepository extends JpaRepository<HistoryOrder, Long> {
 
@@ -17,8 +17,13 @@ public interface HistoryOrderRepository extends JpaRepository<HistoryOrder, Long
     @Query(value = "SELECT ho FROM HistoryOrder ho WHERE ho.forTakeAway = true")
     Page<HistoryOrder> findAllForTakeAway(Pageable pageable);
 
-    @Query(value = "SELECT ho FROM HistoryOrder ho WHERE ho.orderTime LIKE %:date AND ho.forTakeAway = :forTakeAway")
-    List<HistoryOrder> findByDate(@Param("date") String date,
-                                  @Param("forTakeAway") boolean forTakeAway);
+    @Query(value = "SELECT ho FROM HistoryOrder ho WHERE ho.orderDate BETWEEN :startDate AND :endDate AND ho.forTakeAway = false")
+    Page<HistoryOrder> findDineInByDates(Pageable pageable,
+                                         @Param("startDate") LocalDate startDate,
+                                         @Param("endDate") LocalDate endDate);
 
+    @Query(value = "SELECT ho FROM HistoryOrder ho WHERE ho.orderDate BETWEEN :startDate AND :endDate AND ho.forTakeAway = true")
+    Page<HistoryOrder> findTakeAwayByDates(Pageable pageable,
+                                           @Param("startDate") LocalDate startDate,
+                                           @Param("endDate") LocalDate endDate);
 }

@@ -9,6 +9,7 @@ import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.listener.OrderListener;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -35,7 +36,7 @@ public class Order {
 
     @Column(name = "order_time", length = 50, nullable = false)
     @NotNull
-    private String orderTime;
+    private LocalDateTime orderTime;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderedItem> orderedItems;

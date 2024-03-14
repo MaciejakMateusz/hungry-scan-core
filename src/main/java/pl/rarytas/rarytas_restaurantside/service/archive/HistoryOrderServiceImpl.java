@@ -1,7 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.service.archive;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
@@ -10,6 +9,7 @@ import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryOrderRepository;
 import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,13 +26,13 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
     }
 
     @Override
-    public Page<HistoryOrder> findAllForTakeAway(Pageable pageable) {
-        return historyOrderRepository.findAllForTakeAway(pageable);
+    public List<HistoryOrder> findAllForTakeAway(Pageable pageable) {
+        return historyOrderRepository.findAllForTakeAway(pageable).stream().toList();
     }
 
     @Override
-    public Page<HistoryOrder> findAllDineIn(Pageable pageable) {
-        return historyOrderRepository.findAllDineIn(pageable);
+    public List<HistoryOrder> findAllDineIn(Pageable pageable) {
+        return historyOrderRepository.findAllDineIn(pageable).stream().toList();
     }
 
     @Override
@@ -48,8 +48,13 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
     }
 
     @Override
-    public List<HistoryOrder> findFinalizedByDate(String date, boolean forTakeAway) {
-        return historyOrderRepository.findByDate(date, forTakeAway);
+    public List<HistoryOrder> findDineInByDate(Pageable pageable, LocalDate startDate, LocalDate endDate) {
+        return historyOrderRepository.findDineInByDates(pageable, startDate, endDate).stream().toList();
+    }
+
+    @Override
+    public List<HistoryOrder> findTakeAwayByDate(Pageable pageable, LocalDate startDate, LocalDate endDate) {
+        return historyOrderRepository.findTakeAwayByDates(pageable, startDate, endDate).stream().toList();
     }
 
     @Override

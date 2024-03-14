@@ -85,7 +85,7 @@ class OrderControllerTest {
     @Test
     @WithMockUser(roles = "WAITER")
     @org.junit.jupiter.api.Order(5)
-    public void shouldGetAllDinInOrders() throws Exception {
+    public void shouldGetAllDineInOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchObjects("/api/restaurant/orders/dine-in", Order.class);
         assertFalse(orders.stream().anyMatch(Order::isForTakeAway));
         assertEquals(3, orders.size());

@@ -280,12 +280,17 @@ INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve
 VALUES (222, 2, 3, false);
 INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve)
 VALUES (333, 3, 2, false);
+INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve)
+VALUES (444, 2, 3, false);
+INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve)
+VALUES (555, 3, 2, false);
 
 INSERT INTO history_orders (id,
                             bill_requested,
                             take_away,
                             is_resolved,
                             order_number,
+                            order_date,
                             order_time,
                             is_paid,
                             payment_method,
@@ -293,12 +298,13 @@ INSERT INTO history_orders (id,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (12, false, false, true, 1, '2024-01-29 08:29:20.738823', true, 'card', null, false, 1, 1);
+VALUES (12, false, false, true, 1, '2024-01-29', '08:29:20.738823', true, 'card', null, false, 1, 1);
 INSERT INTO history_orders (id,
                             bill_requested,
                             take_away,
                             is_resolved,
                             order_number,
+                            order_date,
                             order_time,
                             is_paid,
                             payment_method,
@@ -306,12 +312,44 @@ INSERT INTO history_orders (id,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (13, true, false, true, 322, '2024-01-29 08:29:20.738823', true, 'cash', null, false, 1, 2);
+VALUES (13, true, false, true, 322, '2024-02-21', '08:29:20.738823', true, 'cash', null, false, 1, 2);
+INSERT INTO history_orders (id,
+                            bill_requested,
+                            take_away,
+                            is_resolved,
+                            order_number,
+                            order_date,
+                            order_time,
+                            is_paid,
+                            payment_method,
+                            total_amount,
+                            `waiter_called`,
+                            restaurant_id,
+                            table_id)
+VALUES (14, false, true, true, 1, '2024-01-29', '08:29:20.738823', true, 'online', null, false, 1, 19);
+INSERT INTO history_orders (id,
+                            bill_requested,
+                            take_away,
+                            is_resolved,
+                            order_number,
+                            order_date,
+                            order_time,
+                            is_paid,
+                            payment_method,
+                            total_amount,
+                            `waiter_called`,
+                            restaurant_id,
+                            table_id)
+VALUES (15, false, true, true, 322, '2024-02-21', '08:29:20.738823', true, 'online', null, false, 1, 19);
 
 INSERT INTO history_orders_history_ordered_items (history_order_id, history_ordered_items_id)
 VALUES (12, 222);
 INSERT INTO history_orders_history_ordered_items (history_order_id, history_ordered_items_id)
 VALUES (13, 333);
+INSERT INTO history_orders_history_ordered_items (history_order_id, history_ordered_items_id)
+VALUES (14, 444);
+INSERT INTO history_orders_history_ordered_items (history_order_id, history_ordered_items_id)
+VALUES (15, 555);
 
 INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, table_id, time)
 VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', 5, '16:00:00');

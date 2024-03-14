@@ -11,6 +11,8 @@ import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -23,7 +25,9 @@ public class HistoryOrder {
 
     public HistoryOrder(Long id,
                         RestaurantTable restaurantTable,
-                        Restaurant restaurant, String orderTime,
+                        Restaurant restaurant,
+                        LocalDate orderDate,
+                        LocalTime orderTime,
                         String paymentMethod,
                         BigDecimal totalAmount,
                         boolean paid,
@@ -35,6 +39,7 @@ public class HistoryOrder {
         this.id = id;
         this.restaurantTable = restaurantTable;
         this.restaurant = restaurant;
+        this.orderDate = orderDate;
         this.orderTime = orderTime;
         this.paymentMethod = paymentMethod;
         this.totalAmount = totalAmount;
@@ -59,9 +64,13 @@ public class HistoryOrder {
     @NotNull
     private Restaurant restaurant;
 
-    @Column(name = "order_time", length = 50, nullable = false)
+    @Column(nullable = false)
     @NotNull
-    private String orderTime;
+    private LocalDate orderDate;
+
+    @Column(nullable = false)
+    @NotNull
+    private LocalTime orderTime;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<HistoryOrderedItem> historyOrderedItems;

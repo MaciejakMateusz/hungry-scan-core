@@ -62,6 +62,24 @@ public class ApiRequestUtils {
         return objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
     }
 
+    public <T> List<T> fetchObjects(String endpointUrl,Map<String, Object> requestParams, Class<T> itemType) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(requestParams);
+
+        MvcResult result = mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        return objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
+    }
+
     /**
      * Fetches an object from the specified endpoint URL and converts it into the provided item type.
      *

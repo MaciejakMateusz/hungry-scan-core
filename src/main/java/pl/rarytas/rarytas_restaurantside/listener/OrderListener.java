@@ -12,7 +12,6 @@ import pl.rarytas.rarytas_restaurantside.entity.Order;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Getter
@@ -24,11 +23,9 @@ public class OrderListener {
 
     @PrePersist
     private void prePersist(final Order order) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
-        String nowString = dtf.format(LocalDateTime.now());
         LocalDateTime now = LocalDateTime.now();
         setLastOrderDate(now);
-        order.setOrderTime(nowString);
+        order.setOrderTime(now);
         orderCounter++;
         order.setOrderNumber(orderCounter);
     }
