@@ -29,7 +29,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Restaurant findById(Integer id) throws LocalizedException {
         return restaurantRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.restaurantService.restaurantNotExist", id));
+                        "error.restaurantService.restaurantNotFound", id));
     }
 
     @Override

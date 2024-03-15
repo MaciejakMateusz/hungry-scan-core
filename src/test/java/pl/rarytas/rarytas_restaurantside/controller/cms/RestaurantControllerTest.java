@@ -62,7 +62,7 @@ public class RestaurantControllerTest {
     @Order(3)
     void shouldShowRestaurantById() throws Exception {
         Restaurant restaurant =
-                apiRequestUtils.getObjectExpect200("/api/cms/restaurants/show", 1, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 1, Restaurant.class);
         assertEquals("Rarytas", restaurant.getName());
     }
 
@@ -112,7 +112,7 @@ public class RestaurantControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", restaurant);
 
         Restaurant persistedRestaurant =
-                apiRequestUtils.getObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
         assertEquals("Real Greek Carbonara", persistedRestaurant.getName());
         assertEquals("Korfantego 123", persistedRestaurant.getAddress());
     }
@@ -143,13 +143,13 @@ public class RestaurantControllerTest {
     @Order(11)
     void shouldUpdateRestaurant() throws Exception {
         Restaurant existingRestaurant =
-                apiRequestUtils.getObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
         existingRestaurant.setName("Salty Foots");
 
         apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", existingRestaurant);
 
         Restaurant updatedRestaurant =
-                apiRequestUtils.getObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
         assertEquals("Salty Foots", updatedRestaurant.getName());
     }
 
@@ -170,7 +170,7 @@ public class RestaurantControllerTest {
     @Order(13)
     void shouldNotUpdateIncorrectRestaurant() throws Exception {
         Restaurant existingRestaurant =
-                apiRequestUtils.getObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
         existingRestaurant.setName("");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/add", existingRestaurant);
@@ -184,7 +184,7 @@ public class RestaurantControllerTest {
     @Order(14)
     void shouldRemoveRestaurant() throws Exception {
         Restaurant existingRestaurant =
-                apiRequestUtils.getObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
 
         apiRequestUtils.postAndExpect200("/api/cms/restaurants/remove", existingRestaurant);
 

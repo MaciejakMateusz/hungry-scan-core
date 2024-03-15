@@ -55,14 +55,14 @@ public class OrderServiceImpl implements OrderService {
     public Order findById(Long id) throws LocalizedException {
         return orderRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.orderService.general.orderNotfound", id));
+                        "error.orderService.general.orderNotFound", id));
     }
 
     @Override
     public Order findByTableNumber(Integer tableNumber) throws LocalizedException {
         return orderRepository.findNewestOrderByTableNumber(tableNumber)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.orderService.general.orderNotfoundByTable", tableNumber));
+                        "error.orderService.general.orderNotFoundByTable", tableNumber));
     }
 
     @Override

@@ -22,7 +22,7 @@ public class OrderedItem implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
     private MenuItem menuItem;
 

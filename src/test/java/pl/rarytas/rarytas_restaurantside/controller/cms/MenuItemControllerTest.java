@@ -64,7 +64,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = {"COOK"})
     @Order(3)
     void shouldShowMenuItemById() throws Exception {
-        MenuItem menuItem = apiRequestUtils.getObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
+        MenuItem menuItem = apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
         assertEquals("Roladki z bakłażana z feta i suszonymi pomidorami", menuItem.getName());
     }
 
@@ -114,7 +114,7 @@ class MenuItemControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem, getFile());
 
         MenuItem persistedMenuItem =
-                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
         assertEquals("Sample Item", persistedMenuItem.getName());
         assertEquals("Sample description.", persistedMenuItem.getDescription());
         assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
@@ -130,7 +130,7 @@ class MenuItemControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
         MenuItem persistedMenuItem =
-                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
         assertEquals("Sample Item", persistedMenuItem.getName());
         assertEquals("Sample description.", persistedMenuItem.getDescription());
         assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
@@ -185,7 +185,7 @@ class MenuItemControllerTest {
     @Order(13)
     void shouldUpdateExistingMenuItem() throws Exception {
         MenuItem persistedMenuItem =
-                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
         persistedMenuItem.setName("Updated Item");
         persistedMenuItem.setDescription("Updated description.");
         persistedMenuItem.setPrice(BigDecimal.valueOf(15.22));
@@ -193,7 +193,7 @@ class MenuItemControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem, getFile());
 
         MenuItem updatedMenuItem =
-                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
         assertEquals("Updated Item", updatedMenuItem.getName());
         assertEquals("Updated description.", updatedMenuItem.getDescription());
         assertEquals(BigDecimal.valueOf(15.22), updatedMenuItem.getPrice());
@@ -205,7 +205,7 @@ class MenuItemControllerTest {
     @Order(14)
     void shouldRemoveMenuItem() throws Exception {
         MenuItem menuItem =
-                apiRequestUtils.getObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
 
         apiRequestUtils.postAndExpect200("/api/cms/items/remove", menuItem);
 

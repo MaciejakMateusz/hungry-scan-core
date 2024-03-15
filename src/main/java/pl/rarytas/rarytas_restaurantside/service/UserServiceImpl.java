@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Integer id) throws LocalizedException {
         return userRepository.findById(id)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.userService.userNotExist", id));
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.userService.userNotFound", id));
     }
 
     @Override

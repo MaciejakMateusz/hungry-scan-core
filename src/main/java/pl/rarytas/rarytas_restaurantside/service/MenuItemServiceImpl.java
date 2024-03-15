@@ -49,7 +49,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     @Override
     public MenuItem findById(Integer id) throws LocalizedException {
         return menuItemRepository.findById(id)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.menuItemService.menuItemNotExist", id));
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.menuItemService.menuItemNotFound", id));
     }
 
     @Override

@@ -14,11 +14,11 @@ import java.util.List;
 @RequestMapping("/api/restaurantTables")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
 @PreAuthorize("isAuthenticated()")
-public class RestaurantTableRestController {
+public class RestaurantTableController {
 
     private final RestaurantTableService restaurantTableService;
 
-    public RestaurantTableRestController(RestaurantTableService restaurantTableService) {
+    public RestaurantTableController(RestaurantTableService restaurantTableService) {
         this.restaurantTableService = restaurantTableService;
     }
 

@@ -142,7 +142,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(11)
     void shouldShowUserById() throws Exception {
-        User user = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 5, User.class);
+        User user = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 5, User.class);
         assertEquals("owner", user.getUsername());
     }
 
@@ -191,7 +191,7 @@ class AdminManagementControllerTest {
         User user = createUser();
         apiRequestUtils.postAndExpect200("/api/admin/users/add", user);
 
-        User persistedUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
+        User persistedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
         assertEquals("exampleUser", persistedUser.getUsername());
     }
 
@@ -282,12 +282,12 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(23)
     void shouldUpdateUser() throws Exception {
-        User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
+        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
         existingUser.setEmail("updated@email.com");
 
         apiRequestUtils.postAndExpect200("/api/admin/users/update", existingUser);
 
-        User updatedUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
+        User updatedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
         assertEquals("updated@email.com", updatedUser.getEmail());
     }
 
@@ -307,7 +307,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(25)
     void shouldNotUpdateIncorrectUser() throws Exception {
-        User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
+        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
         existingUser.setEmail("updated@emailcom");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/update", existingUser);
@@ -320,7 +320,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(26)
     void shouldRemoveUser() throws Exception {
-        User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 6, User.class);
+        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
 
         apiRequestUtils.postAndExpect200("/api/admin/users/remove", existingUser);
 
@@ -346,7 +346,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(28)
     void shouldNotSelfRemove() throws Exception {
-        User existingUser = apiRequestUtils.getObjectExpect200("/api/admin/users/show", 2, User.class);
+        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 2, User.class);
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/remove", existingUser, status().isBadRequest());

@@ -1,18 +1,18 @@
 package pl.rarytas.rarytas_restaurantside.service.interfaces;
 
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface OrderedItemService {
     List<OrderedItem> findAll();
 
-    Optional<OrderedItem> findById(Long id);
+    OrderedItem findById(Long id) throws LocalizedException;
 
     void delete(OrderedItem orderedItem);
 
     void saveAll(List<OrderedItem> orderedItems);
 
-    void update(Long id, boolean isReadyToServe);
+    void toggleIsReadyToServe(Long id);
 }

@@ -289,7 +289,7 @@ public class ApiRequestUtils {
      * @return An instance of the deserialized class.
      * @throws Exception If an error occurs during the request execution or deserialization process.
      */
-    public <T, R> R getObjectExpect200(String endpoint, T object, Class<R> classType) throws Exception {
+    public <T, R> R postObjectExpect200(String endpoint, T object, Class<R> classType) throws Exception {
         Map<String, Object> responseParams =
                 postAndReturnResponseBody(endpoint, object, status().isOk());
         String paramName = classType.getSimpleName().toLowerCase();

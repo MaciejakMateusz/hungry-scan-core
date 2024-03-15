@@ -6,12 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
+import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 import pl.rarytas.rarytas_restaurantside.repository.OrderedItemRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -20,11 +21,13 @@ public class OrderedItemServiceImpl implements OrderedItemService {
     private final OrderedItemRepository orderedItemRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final OrderRepository orderRepository;
+    private final ExceptionHelper exceptionHelper;
 
-    public OrderedItemServiceImpl(OrderedItemRepository orderedItemRepository, SimpMessagingTemplate messagingTemplate, OrderRepository orderRepository) {
+    public OrderedItemServiceImpl(OrderedItemRepository orderedItemRepository, SimpMessagingTemplate messagingTemplate, OrderRepository orderRepository, ExceptionHelper exceptionHelper) {
         this.orderedItemRepository = orderedItemRepository;
         this.messagingTemplate = messagingTemplate;
         this.orderRepository = orderRepository;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
@@ -33,8 +36,9 @@ public class OrderedItemServiceImpl implements OrderedItemService {
     }
 
     @Override
-    public Optional<OrderedItem> findById(Long id) {
-        return orderedItemRepository.findById(id);
+    public OrderedItem findById(Long id) throws LocalizedException {
+        return orderedItemRepository.findById(id).orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                "error.orderedItemService.orderedItemNotFound", id));
     }
 
     @Override
@@ -50,12 +54,19 @@ public class OrderedItemServiceImpl implements OrderedItemService {
 
     @Override
     @Transactional
-    public void update(Long id, boolean isReadyToServe) {
-        OrderedItem orderedItem = findById(id).orElseThrow();
-        orderedItem.setReadyToServe(isReadyToServe);
+    public void toggleIsReadyToServe(Long id) {
+        OrderedItem orderedItem;
+        try {
+            orderedItem = findById(id);
+        } catch (LocalizedException e) {
+            log.error(e.getLocalizedMessage());
+            return;
+        }
+        orderedItem.setReadyToServe(!orderedItem.isReadyToServe());
         orderedItemRepository.saveAndFlush(orderedItem);
         orderedItemRepository.refresh(orderedItem);
         List<Order> orders = orderRepository.findAllDineIn();
         messagingTemplate.convertAndSend("/topic/restaurant-orders", orders);
     }
+
 }

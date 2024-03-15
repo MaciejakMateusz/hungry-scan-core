@@ -54,7 +54,7 @@ public class OrderServiceHelper {
 
     public void assertOrderExistsElseThrow(Long id) throws LocalizedException {
         if (!orderRepository.existsById(id)) {
-            exceptionHelper.throwLocalizedMessage("error.orderService.general.orderNotfound", id);
+            exceptionHelper.throwLocalizedMessage("error.orderService.general.orderNotFound", id);
         }
     }
 

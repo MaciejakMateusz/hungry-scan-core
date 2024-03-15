@@ -62,7 +62,7 @@ class CategoryControllerTest {
     @WithMockUser(roles = {"COOK"})
     @Order(3)
     void shouldShowCategoryById() throws Exception {
-        Category category = apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 4, Category.class);
+        Category category = apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 4, Category.class);
         assertEquals("Zupy", category.getName());
     }
 
@@ -112,7 +112,7 @@ class CategoryControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
 
         Category persistedCategory =
-                apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
         assertEquals("Food", persistedCategory.getName());
         assertEquals("Good foot.", persistedCategory.getDescription());
     }
@@ -176,13 +176,13 @@ class CategoryControllerTest {
     @Order(12)
     void shouldUpdateCategory() throws Exception {
         Category existingCategory =
-                apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
         existingCategory.setName("Foot");
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
-                apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
         assertEquals("Foot", updatedCategory.getName());
     }
 
@@ -203,7 +203,7 @@ class CategoryControllerTest {
     @Order(14)
     void shouldNotUpdateIncorrectCategory() throws Exception {
         Category existingCategory =
-                apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
         existingCategory.setName("");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", existingCategory);
@@ -217,7 +217,7 @@ class CategoryControllerTest {
     @Order(15)
     void shouldRemoveCategory() throws Exception {
         Category existingCategory =
-                apiRequestUtils.getObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/remove", existingCategory);
 

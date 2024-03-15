@@ -103,7 +103,7 @@ class OrderControllerTest {
     @org.junit.jupiter.api.Order(7)
     public void shouldGetByTableNumber() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/table-number", 2, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/table-number", 2, Order.class);
         assertEquals("cash", order.getPaymentMethod());
     }
 
@@ -121,7 +121,7 @@ class OrderControllerTest {
     @org.junit.jupiter.api.Order(9)
     public void shouldGetById() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 2, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2, Order.class);
         assertEquals(322, order.getOrderNumber());
     }
 
@@ -161,7 +161,7 @@ class OrderControllerTest {
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order);
 
         Order persistedOrder =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
 
         assertNotNull(persistedOrder);
         assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
@@ -182,7 +182,7 @@ class OrderControllerTest {
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/take-away", order);
 
         Order persistedOrder =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
 
         assertNotNull(persistedOrder);
         assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
@@ -196,7 +196,7 @@ class OrderControllerTest {
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order);
 
         Order persistedOrder =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
 
         assertNotNull(persistedOrder);
         assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
@@ -206,13 +206,13 @@ class OrderControllerTest {
 
     private void shouldRequestBillAndUpdateOrder() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
         assertNotNull(order);
 
         apiRequestUtils.patchAndExpect200("/api/restaurant/orders/request-bill", order);
 
         Order updatedOrder =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
         assertNotNull(updatedOrder);
         assertTrue(updatedOrder.isBillRequested());
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
@@ -221,7 +221,7 @@ class OrderControllerTest {
 
     private void shouldNotRequestBillSecondTime() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
         assertNotNull(order);
         assertThrows(ServletException.class, () ->
                 apiRequestUtils.patchAndExpect200("/api/restaurant/orders/request-bill", order)
@@ -230,7 +230,7 @@ class OrderControllerTest {
 
     private void shouldNotCallWaiterWithBillRequested() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
         assertNotNull(order);
         assertThrows(ServletException.class, () ->
                 apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", order)
@@ -244,7 +244,7 @@ class OrderControllerTest {
         apiRequestUtils.patchAndExpect200("/api/restaurant/orders", moreDishes);
 
         Order updatedOrder =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
         assertNotNull(updatedOrder);
 
         BigDecimal newItemsAmount = orderProcessor.countTotalAmount(moreDishes.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
@@ -257,7 +257,7 @@ class OrderControllerTest {
 
     private void shouldCallWaiter() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
         assertNotNull(order);
 
         apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", order);
@@ -271,7 +271,7 @@ class OrderControllerTest {
 
     private void shouldNotRequestBillWhenWaiterCalled() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
         assertNotNull(order);
         assertThrows(ServletException.class, () ->
                 apiRequestUtils.patchAndExpect200("/api/restaurant/orders/request-bill", order));
@@ -279,7 +279,7 @@ class OrderControllerTest {
 
     private void shouldNotCallWaiterSecondTime() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
         assertNotNull(order);
         assertThrows(Exception.class, () ->
                 apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", order));
@@ -288,14 +288,14 @@ class OrderControllerTest {
     private void shouldResolveWaiterCall() throws Exception {
         apiRequestUtils.patchAndExpect200("/api/restaurant/orders/resolve-call", 7L);
         Order updatedOrder =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
 
         assertFalse(updatedOrder.isWaiterCalled());
     }
 
     private void shouldFinalizeDineIn() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
         assertNotNull(order);
 
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-dine-in", 7);
@@ -308,7 +308,7 @@ class OrderControllerTest {
 
     private void shouldFinalizeTakeAway() throws Exception {
         Order order =
-                apiRequestUtils.getObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
         assertNotNull(order);
         assertTrue(order.isForTakeAway());
 

@@ -144,7 +144,7 @@ class HistoryOrderControllerTest {
     @org.junit.jupiter.api.Order(10)
     public void shouldGetById() throws Exception {
         HistoryOrder historyOrder =
-                apiRequestUtils.getObjectExpect200(
+                apiRequestUtils.postObjectExpect200(
                         "/api/restaurant/history-orders/show", 13, HistoryOrder.class);
         assertEquals("cash", historyOrder.getPaymentMethod());
     }

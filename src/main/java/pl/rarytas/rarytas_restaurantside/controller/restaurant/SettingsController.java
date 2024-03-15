@@ -13,11 +13,11 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.SettingsService;
 @RestController
 @RequestMapping("/api/settings")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
-public class SettingsRestController {
+public class SettingsController {
 
     private final SettingsService settingsService;
 
-    public SettingsRestController(SettingsService settingsService) {
+    public SettingsController(SettingsService settingsService) {
         this.settingsService = settingsService;
     }
 

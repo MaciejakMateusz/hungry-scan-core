@@ -32,8 +32,8 @@ public class ResponseHelper {
      * @return ResponseEntity with appropriate response code and body containing parameters map.
      */
     public <ENTITY> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
-                                                                 BindingResult br,
-                                                                 Consumer<ENTITY> saveFunction) {
+                                                                      BindingResult br,
+                                                                      Consumer<ENTITY> saveFunction) {
         return br.hasErrors() ? createErrorResponse(br) : acceptAndCreateSuccessResponse(saveFunction, entity);
     }
 
@@ -50,10 +50,19 @@ public class ResponseHelper {
      */
 
     public <ENTITY, P> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
-                                                                    P p,
-                                                                    BindingResult br,
-                                                                    BiConsumer<ENTITY, P> saveFunction) {
+                                                                         P p,
+                                                                         BindingResult br,
+                                                                         BiConsumer<ENTITY, P> saveFunction) {
         return br.hasErrors() ? createErrorResponse(br) : saveAndCreateSuccessResponse(saveFunction, entity, p);
+    }
+
+    public <E> ResponseEntity<Map<String, Object>> buildResponse(E entities, Consumer<E> saveFunction) {
+        try {
+            saveFunction.accept(entities);
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -131,8 +140,8 @@ public class ResponseHelper {
     }
 
     private <ENTITY, PARAM> ResponseEntity<Map<String, Object>> saveAndCreateSuccessResponse(BiConsumer<ENTITY, PARAM> saveFunction,
-                                                                                         ENTITY entity,
-                                                                                         PARAM param) {
+                                                                                             ENTITY entity,
+                                                                                             PARAM param) {
         saveFunction.accept(entity, param);
         return ResponseEntity.ok().body(new HashMap<>());
     }
