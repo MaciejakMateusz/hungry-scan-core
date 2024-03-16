@@ -113,14 +113,14 @@ public class OrderedItemControllerTest {
                         "/api/restaurant/ordered-items/show", 5, OrderedItem.class);
         assertFalse(orderedItem.isReadyToServe());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items", 5);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items/toggle-item", 5);
 
         OrderedItem readyOrderedItem =
                 apiRequestUtils.postObjectExpect200(
                         "/api/restaurant/ordered-items/show", 5, OrderedItem.class);
         assertTrue(readyOrderedItem.isReadyToServe());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items", 5);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items/toggle-item", 5);
         orderedItem =
                 apiRequestUtils.postObjectExpect200(
                         "/api/restaurant/ordered-items/show", 5, OrderedItem.class);
@@ -132,7 +132,7 @@ public class OrderedItemControllerTest {
     void shouldNotAllowUnauthorizedAccessToToggleIsReadyToServe() throws Exception {
         Long id = 6L;
         ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(patch("/api/restaurant/ordered-items")
+        mockMvc.perform(patch("/api/restaurant/ordered-items/toggle-item")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(id)))
                 .andExpect(status().isUnauthorized());

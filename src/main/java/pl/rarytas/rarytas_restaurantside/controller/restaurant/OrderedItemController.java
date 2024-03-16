@@ -42,7 +42,7 @@ public class OrderedItemController {
         return responseHelper.buildResponse(orderedItems, orderedItemService::saveAll);
     }
 
-    @PatchMapping
+    @PatchMapping("/toggle-item")
     public ResponseEntity<Map<String, Object>> toggleReadyToServe(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, orderedItemService::toggleIsReadyToServe);
     }
