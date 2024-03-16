@@ -128,7 +128,8 @@ public class ResponseHelper {
     }
 
     private <ENTITY> ResponseEntity<Map<String, Object>> createSuccessResponse(ENTITY entity) {
-        String paramName = entity.getClass().getSimpleName().toLowerCase();
+        String simpleClassName = entity.getClass().getSimpleName();
+        String paramName = Character.toLowerCase(simpleClassName.charAt(0)) + simpleClassName.substring(1);
         Map<String, Object> params = Map.of(paramName, entity);
         return ResponseEntity.ok(params);
     }

@@ -118,8 +118,8 @@ public class OrderProcessor {
          *
          * @return The restaurant table.
          */
-        private RestaurantTable getRestaurantTable() {
-            return restaurantTableService.findById(restaurantTableId).orElseThrow();
+        private RestaurantTable getRestaurantTable() throws LocalizedException {
+            return restaurantTableService.findById(restaurantTableId);
         }
 
         /**

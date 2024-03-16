@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
         if (existsByUsername(user.getUsername()) && !user.getUsername().equals(modifiedUser.getUsername())) {
             return "userNameExists";
-        } else if(existsByEmail(user.getEmail()) && !user.getEmail().equals(modifiedUser.getEmail())) {
+        } else if (existsByEmail(user.getEmail()) && !user.getEmail().equals(modifiedUser.getEmail())) {
             return "emailExists";
         }
         return "";

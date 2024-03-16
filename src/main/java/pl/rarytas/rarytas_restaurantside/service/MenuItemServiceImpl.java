@@ -30,7 +30,7 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Override
     public void save(MenuItem menuItem, MultipartFile file) {
-        if(Objects.nonNull(file)) {
+        if (Objects.nonNull(file)) {
             try {
                 fileStorageService.storeFile(file);
             } catch (IOException e) {

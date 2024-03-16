@@ -1,69 +1,105 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
-import org.junit.jupiter.api.MethodOrderer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RestaurantTableControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private RestaurantTableService restaurantTableService;
 
     @Autowired
     ApiRequestUtils apiRequestUtils;
 
-    @Test
-    public void shouldGetAllFromDB() {
-        List<RestaurantTable> tables = restaurantTableService.findAll();
-        assertEquals(19, tables.size());
-    }
+    @Autowired
+    MockMvc mockMvc;
 
     @Test
+    @WithMockUser(roles = "WAITER")
     public void shouldGetAllFromEndpoint() throws Exception {
         List<RestaurantTable> restaurantTables =
                 apiRequestUtils.fetchObjects(
-                        "/api/restaurantTables", RestaurantTable.class);
+                        "/api/restaurant/tables", RestaurantTable.class);
 
         assertEquals(19, restaurantTables.size());
     }
 
     @Test
-    public void shouldGetByIdFromDB() {
-        RestaurantTable table = restaurantTableService.findById(5).orElse(new RestaurantTable());
+    void shouldNotAllowUnauthorizedAccessToTables() throws Exception {
+        mockMvc.perform(get("/api/restaurant/tables"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "COOK")
+    public void shouldGetByIdFromEndpoint() throws Exception {
+        RestaurantTable table =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 5, RestaurantTable.class);
+        assertTrue(table.isActive());
         assertEquals(5, table.getId());
     }
 
     @Test
-    public void shouldGetByIdFromEndpoint() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/restaurantTables/5")).andReturn();
-        String actualTableJson = result.getResponse().getContentAsString();
-        assertTrue(actualTableJson.contains("\"id\":5"));
+    void shouldNotAllowUnauthorizedAccessToShowTable() throws Exception {
+        Integer id = 12;
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(post("/api/restaurant/tables/show")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(id)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "WAITER")
+    void shouldToggleTableActivation() throws Exception {
+        RestaurantTable table2 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 2, RestaurantTable.class);
+        assertFalse(table2.isActive());
+
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/toggle", 2);
+
+        RestaurantTable activatedTable2 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 2, RestaurantTable.class);
+        assertTrue(activatedTable2.isActive());
+
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/toggle", 2);
+
+        RestaurantTable deactivatedTable2 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 2, RestaurantTable.class);
+        assertFalse(deactivatedTable2.isActive());
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToToggleTableActivation() throws Exception {
+        Integer id = 2;
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(patch("/api/restaurant/tables/toggle")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(id)))
+                .andExpect(status().isUnauthorized());
     }
 }

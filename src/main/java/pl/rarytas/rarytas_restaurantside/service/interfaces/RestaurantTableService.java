@@ -5,12 +5,16 @@ import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface RestaurantTableService {
+
     List<RestaurantTable> findAll();
 
-    Optional<RestaurantTable> findById(Integer id);
+    RestaurantTable findById(Integer id) throws LocalizedException;
+
+    void save(RestaurantTable restaurantTable);
+
+    void toggleActivation(Integer id);
 
     void bookTable(Booking booking) throws LocalizedException;
 

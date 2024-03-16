@@ -292,7 +292,8 @@ public class ApiRequestUtils {
     public <T, R> R postObjectExpect200(String endpoint, T object, Class<R> classType) throws Exception {
         Map<String, Object> responseParams =
                 postAndReturnResponseBody(endpoint, object, status().isOk());
-        String paramName = classType.getSimpleName().toLowerCase();
+        String simpleClassName = classType.getSimpleName();
+        String paramName = Character.toLowerCase(simpleClassName.charAt(0)) + simpleClassName.substring(1);
         return deserializeObject(responseParams.get(paramName), classType);
     }
 

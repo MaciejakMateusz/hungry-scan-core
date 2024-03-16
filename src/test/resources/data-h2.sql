@@ -169,7 +169,7 @@ VALUES (3, false);
 INSERT INTO restaurant_tables (id, is_active)
 VALUES (4, false);
 INSERT INTO restaurant_tables (id, is_active)
-VALUES (5, false);
+VALUES (5, true);
 INSERT INTO restaurant_tables (id, is_active)
 VALUES (6, false);
 INSERT INTO restaurant_tables (id, is_active)

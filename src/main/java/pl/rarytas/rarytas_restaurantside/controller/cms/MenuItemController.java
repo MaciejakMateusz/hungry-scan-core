@@ -47,14 +47,14 @@ public class MenuItemController {
     @PostMapping(value = "/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> add(@RequestParam(required = false) MultipartFile file,
-                                                       @RequestBody @Valid MenuItem menuItem,
-                                                       BindingResult br) {
+                                                   @RequestBody @Valid MenuItem menuItem,
+                                                   BindingResult br) {
         return responseHelper.buildResponse(menuItem, file, br, menuItemService::save);
     }
 
     @PostMapping("/remove")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String , Object>> remove(@RequestBody MenuItem menuItem) {
+    public ResponseEntity<Map<String, Object>> remove(@RequestBody MenuItem menuItem) {
         menuItemService.delete(menuItem);
         return ResponseEntity.ok(new HashMap<>());
     }
