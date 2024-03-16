@@ -198,6 +198,36 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
+     * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
+     *
+     * @param endpointUrl The URL endpoint to send the POST request to.
+     * @param object      The object to be serialized and sent as the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @param <T>         The type of the object being sent in the request body.
+     * @return A Map representing the response body, with String keys and Object values.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T> Map<String, Object> patchAndReturnResponseBody(String endpointUrl,
+                                                             T object,
+                                                             ResultMatcher matcher) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        ResultActions resultActions = mockMvc.perform(patch(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(matcher)
+                .andDo(print());
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+        };
+        return objectMapper.readValue(responseBody, typeReference);
+    }
+
+    /**
      * Sends a POST request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      *
@@ -272,7 +302,7 @@ public class ApiRequestUtils {
      *
      * @return An ObjectMapper instance prepared with JavaTimeModule.
      */
-    private ObjectMapper prepObjMapper() {
+    public ObjectMapper prepObjMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
@@ -321,6 +351,21 @@ public class ApiRequestUtils {
     public <T> Map<?, ?> postAndExpectErrors(String url, T t) throws Exception {
         Map<String, Object> responseParams =
                 postAndReturnResponseBody(url, t, status().isBadRequest());
+        return (Map<?, ?>) responseParams.get("errors");
+    }
+
+    /**
+     * Performs a PATCH request to the specified URL with the provided object and expects error responses.
+     *
+     * @param url The URL to which the POST request will be sent.
+     * @param t   The object to be sent as part of the request.
+     * @param <T> The type of the object.
+     * @return A map containing error responses received from the server.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> Map<?, ?> patchAndExpectErrors(String url, T t) throws Exception {
+        Map<String, Object> responseParams =
+                patchAndReturnResponseBody(url, t, status().isBadRequest());
         return (Map<?, ?>) responseParams.get("errors");
     }
 
