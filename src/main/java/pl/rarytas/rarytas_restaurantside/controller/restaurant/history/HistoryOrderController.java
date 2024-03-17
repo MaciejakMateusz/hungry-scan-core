@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
-import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
 
 import java.util.Map;
 

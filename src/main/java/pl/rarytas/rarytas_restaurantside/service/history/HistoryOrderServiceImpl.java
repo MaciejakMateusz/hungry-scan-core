@@ -1,14 +1,14 @@
-package pl.rarytas.rarytas_restaurantside.service.archive;
+package pl.rarytas.rarytas_restaurantside.service.history;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryOrderRepository;
-import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
+import pl.rarytas.rarytas_restaurantside.repository.history.HistoryOrderRepository;
+import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
 
 import java.time.LocalDate;
 
@@ -46,6 +46,7 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
     public Long countAll() {
         return historyOrderRepository.count();
     }
+
 
     @Override
     public Page<HistoryOrder> findDineInByDate(Pageable pageable, LocalDate dateFrom, LocalDate dateTo) {

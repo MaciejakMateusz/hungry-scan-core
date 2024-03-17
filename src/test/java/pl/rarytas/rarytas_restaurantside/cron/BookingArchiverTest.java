@@ -8,12 +8,14 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryBooking;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryBooking;
 import pl.rarytas.rarytas_restaurantside.repository.BookingRepository;
-import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryBookingRepository;
+import pl.rarytas.rarytas_restaurantside.repository.history.HistoryBookingRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -54,7 +56,9 @@ class BookingArchiverTest {
         bookingArchiver.checkAndArchive();
         Set<Booking> expiredBookings = bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(EXPIRATION_TIME));
         assertTrue(expiredBookings.isEmpty());
-        Set<HistoryBooking> archiveBookings = historyBookingRepository.findAllByDate(LocalDate.of(2024, 2, 23));
+        LocalDate testDate = LocalDate.of(2024, 2, 23);
+        Page<HistoryBooking> archiveBookings =
+                historyBookingRepository.findAllByDateBetween(PageRequest.of(0, 20), testDate, testDate);
         assertFalse(archiveBookings.isEmpty());
     }
 }

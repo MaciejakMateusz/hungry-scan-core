@@ -1,11 +1,11 @@
-package pl.rarytas.rarytas_restaurantside.repository.archive;
+package pl.rarytas.rarytas_restaurantside.repository.history;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 
 import java.time.LocalDate;
 

@@ -12,9 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
+import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.ArchiveDataService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 

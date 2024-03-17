@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
 import java.util.HashMap;

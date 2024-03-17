@@ -13,10 +13,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
+import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
 import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
@@ -113,7 +113,7 @@ class OrderServiceImplTest {
     @org.junit.jupiter.api.Order(1)
     void shouldCallWaiter() throws LocalizedException {
         Order existingOrder = orderService.findById(1L);
-        assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime());
+        assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime().toString());
 
         orderService.callWaiter(existingOrder);
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
@@ -136,7 +136,7 @@ class OrderServiceImplTest {
     @Transactional
     void shouldDelete() throws LocalizedException {
         Order existingOrder = orderService.findById(1L);
-        assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime());
+        assertEquals("2024-01-29 08:29:20.738823", existingOrder.getOrderTime().toString());
         orderService.delete(existingOrder);
         assertThrows(LocalizedException.class, () -> orderService.findById(1L));
     }

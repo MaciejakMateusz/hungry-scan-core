@@ -1,10 +1,10 @@
-package pl.rarytas.rarytas_restaurantside.service.archive;
+package pl.rarytas.rarytas_restaurantside.service.history;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrderedItem;
-import pl.rarytas.rarytas_restaurantside.repository.archive.HistoryOrderedItemRepository;
-import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderedItemService;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrderedItem;
+import pl.rarytas.rarytas_restaurantside.repository.history.HistoryOrderedItemRepository;
+import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderedItemService;
 
 import java.util.List;
 import java.util.Optional;

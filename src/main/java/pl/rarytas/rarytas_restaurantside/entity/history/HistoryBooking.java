@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.entity.archive;
+package pl.rarytas.rarytas_restaurantside.entity.history;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -21,7 +21,7 @@ import java.time.LocalTime;
 public class HistoryBooking {
 
     public HistoryBooking(Booking booking) {
-        this.id = Long.valueOf(booking.getId());
+        this.id = booking.getId();
         this.date = booking.getDate();
         this.time = booking.getTime();
         this.expirationTime = booking.getExpirationTime();

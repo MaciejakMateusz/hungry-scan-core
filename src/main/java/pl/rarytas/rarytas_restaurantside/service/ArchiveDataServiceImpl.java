@@ -3,11 +3,11 @@ package pl.rarytas.rarytas_restaurantside.service;
 import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrderedItem;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryWaiterCall;
-import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryOrderService;
-import pl.rarytas.rarytas_restaurantside.service.archive.interfaces.HistoryWaiterCallService;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrderedItem;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryWaiterCall;
+import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
+import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryWaiterCallService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.ArchiveDataService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
 

@@ -1,8 +1,8 @@
-package pl.rarytas.rarytas_restaurantside.service.archive.interfaces;
+package pl.rarytas.rarytas_restaurantside.service.history.interfaces;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.rarytas.rarytas_restaurantside.entity.archive.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
 import java.time.LocalDate;

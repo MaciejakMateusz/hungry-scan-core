@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.entity.archive;
+package pl.rarytas.rarytas_restaurantside.entity.history;
 
 import jakarta.persistence.*;
 import lombok.Getter;
