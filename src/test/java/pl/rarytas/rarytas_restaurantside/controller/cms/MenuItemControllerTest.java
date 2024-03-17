@@ -6,23 +6,18 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -103,44 +98,27 @@ class MenuItemControllerTest {
     void shouldAddNewMenuItem() throws Exception {
         MenuItem menuItem = createMenuItem();
 
-        apiRequestUtils.multipartAndExpect200("/api/cms/items/add", menuItem, getFile());
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
         MenuItem persistedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
         assertEquals("Sample Item", persistedMenuItem.getName());
         assertEquals("Sample description.", persistedMenuItem.getDescription());
         assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
-        assertEquals("sample.png", persistedMenuItem.getImageName());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @Order(9)
-    void shouldAddNewMenuItemWithoutFile() throws Exception {
-        MenuItem menuItem = createMenuItem();
-
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
-
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
-        assertEquals("Sample Item", persistedMenuItem.getName());
-        assertEquals("Sample description.", persistedMenuItem.getDescription());
-        assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
-        assertNull(persistedMenuItem.getImageName());
+        assertEquals("/public/assets/sample.png", persistedMenuItem.getImageName());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(10)
+    @Order(9)
     void shouldNotAllowUnauthorizedAccessToItemsAdd() throws Exception {
         MenuItem menuItem = createMenuItem();
-        MockMultipartFile file = getFile();
-        apiRequestUtils.multipartAndExpect("/api/cms/items/add", menuItem, file, status().isForbidden());
+        apiRequestUtils.postAndExpect("/api/cms/items/add", menuItem, status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @Order(11)
+    @Order(10)
     void shouldNotAddWithIncorrectName() throws Exception {
         MenuItem menuItem = createMenuItem();
         menuItem.setName("");
@@ -153,7 +131,7 @@ class MenuItemControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @Order(12)
+    @Order(11)
     void shouldNotAddWithIncorrectDescription() throws Exception {
         MenuItem menuItem = createMenuItem();
         menuItem.setDescription("Meme");
@@ -166,29 +144,30 @@ class MenuItemControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @Order(13)
+    @Order(12)
     void shouldUpdateExistingMenuItem() throws Exception {
         MenuItem persistedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
         persistedMenuItem.setName("Updated Item");
         persistedMenuItem.setDescription("Updated description.");
         persistedMenuItem.setPrice(BigDecimal.valueOf(15.22));
+        persistedMenuItem.setImageName("/public/assets/updated.png");
 
-        apiRequestUtils.multipartAndExpect200("/api/cms/items/add", persistedMenuItem, getFile());
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
 
         MenuItem updatedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
         assertEquals("Updated Item", updatedMenuItem.getName());
         assertEquals("Updated description.", updatedMenuItem.getDescription());
         assertEquals(BigDecimal.valueOf(15.22), updatedMenuItem.getPrice());
-        assertEquals("sample.png", updatedMenuItem.getImageName());
+        assertEquals("/public/assets/updated.png", updatedMenuItem.getImageName());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
-    @Order(14)
+    @Order(13)
     void shouldDeleteMenuItem() throws Exception {
-        apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", 42);
+        apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", 41);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -208,18 +187,7 @@ class MenuItemControllerTest {
         menuItem.setName("Sample Item");
         menuItem.setDescription("Sample description.");
         menuItem.setPrice(BigDecimal.valueOf(10.99));
+        menuItem.setImageName("/public/assets/sample.png");
         return menuItem;
-    }
-
-    private MockMultipartFile getFile() throws IOException {
-        Path path = Paths.get("src/test/resources/images/sample.png");
-        byte[] pngBytes = Files.readAllBytes(path);
-
-        return new MockMultipartFile(
-                "file",
-                "sample.png",
-                MediaType.IMAGE_PNG_VALUE,
-                pngBytes
-        );
     }
 }

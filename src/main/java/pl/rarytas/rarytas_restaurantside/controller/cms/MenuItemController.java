@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
@@ -47,10 +46,9 @@ public class MenuItemController {
 
     @PostMapping(value = "/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> add(@RequestParam(required = false) MultipartFile file,
-                                                   @RequestBody @Valid MenuItem menuItem,
+    public ResponseEntity<Map<String, Object>> add(@RequestBody @Valid MenuItem menuItem,
                                                    BindingResult br) {
-        return responseHelper.buildResponse(menuItem, file, br, menuItemService::save);
+        return responseHelper.buildResponse(menuItem, br, menuItemService::save);
     }
 
     @DeleteMapping("/delete")

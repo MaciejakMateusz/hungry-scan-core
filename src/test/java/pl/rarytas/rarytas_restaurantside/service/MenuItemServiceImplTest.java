@@ -15,7 +15,6 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,34 +42,46 @@ public class MenuItemServiceImplTest {
     @Test
     @Order(2)
     public void shouldInsertNew() throws LocalizedException {
-        MenuItem newMenuItem = createMenuItem("Burger", 2, "Z mięsem wegańskim", "Bułka, mięso sojowe, sałata, ogórek konserwowy, chrzan żurawinowy", BigDecimal.valueOf(20.00));
-        menuItemService.save(newMenuItem, null);
+        MenuItem newMenuItem = createMenuItem(
+                "Burger",
+                2,
+                "Z mięsem wegańskim",
+                "Bułka, mięso sojowe, " + "sałata, ogórek konserwowy, chrzan żurawinowy",
+                BigDecimal.valueOf(20.00),
+                "/public/assets/burger.png");
+        menuItemService.save(newMenuItem);
         MenuItem menuItem = menuItemService.findById(newMenuItem.getId());
         assertEquals(newMenuItem.getId(), menuItem.getId());
     }
 
     @Test
     public void shouldNotInsertNew() throws LocalizedException {
-        MenuItem menuItem = createMenuItem("Cheeseburger", 3, "Z mięsem i serem wegańskim.", "Bułka, mięso sojowe, sałata, ogórek konserwowy, chrzan żurawinowy.", BigDecimal.valueOf(21.00));
+        MenuItem menuItem = createMenuItem(
+                "Cheeseburger",
+                3,
+                "Z mięsem i serem wegańskim.",
+                "Bułka, mięso sojowe, sałata, " + "ogórek konserwowy, chrzan żurawinowy.",
+                BigDecimal.valueOf(21.00),
+                "/public/assets/cheeseburger.png");
 
         menuItem.setName("");
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem, null));
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setName(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem, null));
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setName("Test");
         menuItem.setPrice(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem, null));
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setPrice(BigDecimal.valueOf(0.5));
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem, null));
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setDescription("");
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem, null));
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setDescription(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem, null));
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
     }
 
     @Test
@@ -78,9 +89,11 @@ public class MenuItemServiceImplTest {
     public void shouldUpdate() throws LocalizedException {
         MenuItem existingMenuItem = menuItemService.findById(41);
         existingMenuItem.setName("Burger wege");
-        menuItemService.save(existingMenuItem, null);
+        existingMenuItem.setImageName("/public/assets/wege-burger.png");
+        menuItemService.save(existingMenuItem);
         MenuItem updatedMenuItem = menuItemService.findById(41);
         assertEquals("Burger wege", updatedMenuItem.getName());
+        assertEquals("/public/assets/wege-burger.png", updatedMenuItem.getImageName());
     }
 
     @Test
@@ -89,7 +102,7 @@ public class MenuItemServiceImplTest {
         MenuItem menuItem = menuItemService.findById(41);
         assertEquals("Burger wege", menuItem.getName());
         menuItemService.delete(41);
-        assertThrows(NoSuchElementException.class, () -> menuItemService.findById(41));
+        assertThrows(LocalizedException.class, () -> menuItemService.findById(41));
     }
 
     private List<MenuItem> getMenuItems() {
@@ -100,13 +113,15 @@ public class MenuItemServiceImplTest {
                                     int categoryId,
                                     String description,
                                     String ingredients,
-                                    BigDecimal price) throws LocalizedException {
+                                    BigDecimal price,
+                                    String imageName) throws LocalizedException {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(name);
         menuItem.setCategory(categoryService.findById(categoryId));
         menuItem.setDescription(description);
         menuItem.setIngredients(ingredients);
         menuItem.setPrice(price);
+        menuItem.setImageName(imageName);
         return menuItem;
     }
 }

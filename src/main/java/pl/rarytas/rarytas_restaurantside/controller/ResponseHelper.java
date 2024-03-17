@@ -15,7 +15,6 @@ import pl.rarytas.rarytas_restaurantside.utility.TriFunction;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 
 /**
@@ -39,24 +38,6 @@ public class ResponseHelper {
                                                                       BindingResult br,
                                                                       ThrowingConsumer<ENTITY> saveFunction) {
         return br.hasErrors() ? createErrorResponse(br) : acceptAndCreateSuccessResponse(saveFunction, entity);
-    }
-
-    /**
-     * Creates ResponseEntity based on provided parameters.
-     * If BindingResult has no errors it persists passed entity in database.
-     *
-     * @param entity       Entity to persist in database.
-     * @param p            Additional parameter to pass into service method.
-     * @param br           BindingResult created by using @Valid next to entity object in method parameters.
-     *                     For example (@Valid User entity, BindingResult br) - br will hold errors if they occurred.
-     * @param saveFunction Behaviour to pass from a given service. For example userService::save
-     * @return ResponseEntity with appropriate response code and body containing parameters map.
-     */
-    public <ENTITY, P> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
-                                                                         P p,
-                                                                         BindingResult br,
-                                                                         BiConsumer<ENTITY, P> saveFunction) {
-        return br.hasErrors() ? createErrorResponse(br) : saveAndCreateSuccessResponse(saveFunction, entity, p);
     }
 
     /**
@@ -151,13 +132,6 @@ public class ResponseHelper {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("exceptionMsg", e.getMessage()));
         }
-        return ResponseEntity.ok().body(new HashMap<>());
-    }
-
-    private <ENTITY, PARAM> ResponseEntity<Map<String, Object>> saveAndCreateSuccessResponse(BiConsumer<ENTITY, PARAM> saveFunction,
-                                                                                             ENTITY entity,
-                                                                                             PARAM param) {
-        saveFunction.accept(entity, param);
         return ResponseEntity.ok().body(new HashMap<>());
     }
 

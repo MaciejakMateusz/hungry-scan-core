@@ -6,7 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Utility class designed to simplify making HTTP requests to REST APIs in unit tests.
- * It provides methods for fetching objects, posting objects, patching objects, and handling multipart requests.
+ * It provides methods for fetching, posting, patching and deleting entities.
  */
 @Component
 public class ApiRequestUtils {
@@ -327,32 +326,6 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Posts a multipart request to the specified endpoint URL with the provided entity, file, and matcher.
-     *
-     * @param endpointUrl The URL endpoint to which the multipart request will be sent.
-     * @param entity      The entity to be sent as part of the request payload.
-     * @param file        The MockMultipartFile object representing the file to be sent in the multipart request.
-     * @param matcher     The ResultMatcher object to validate the response received from the server.
-     * @throws Exception If an error occurs during the request execution.
-     */
-    public <ENTITY> void multipartAndExpect(String endpointUrl,
-                                            ENTITY entity,
-                                            MockMultipartFile file,
-                                            ResultMatcher matcher) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
-        String jsonRequest = objectMapper.writeValueAsString(entity);
-
-        mockMvc.perform(multipart(endpointUrl)
-                        .file(file)
-                        .param("file", file.getOriginalFilename())
-                        .content(jsonRequest)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(matcher)
-                .andDo(print());
-    }
-
-    /**
      * Prepares and returns an ObjectMapper instance with JavaTimeModule registered.
      *
      * @return An ObjectMapper instance prepared with JavaTimeModule.
@@ -483,18 +456,5 @@ public class ApiRequestUtils {
      */
     public <T> void deleteAndExpect200(String url, T t) throws Exception {
         deleteAndExpect(url, t, status().isOk());
-    }
-
-    /**
-     * Performs a multipart POST request to the specified URL with the provided entity and file,
-     * expecting a successful (200) response.
-     *
-     * @param url    The URL to which the POST request will be sent.
-     * @param entity The entity to be sent as part of the request.
-     * @param file   The file to be sent as part of the request.
-     * @throws Exception If an error occurs during the request.
-     */
-    public <ENTITY> void multipartAndExpect200(String url, ENTITY entity, MockMultipartFile file) throws Exception {
-        multipartAndExpect(url, entity, file, status().isOk());
     }
 }
