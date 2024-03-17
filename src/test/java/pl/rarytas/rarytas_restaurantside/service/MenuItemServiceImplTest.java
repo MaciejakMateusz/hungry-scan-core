@@ -88,7 +88,7 @@ public class MenuItemServiceImplTest {
     public void shouldDelete() throws LocalizedException {
         MenuItem menuItem = menuItemService.findById(41);
         assertEquals("Burger wege", menuItem.getName());
-        menuItemService.delete(menuItem);
+        menuItemService.delete(41);
         assertThrows(NoSuchElementException.class, () -> menuItemService.findById(41));
     }
 

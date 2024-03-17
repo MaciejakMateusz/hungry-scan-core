@@ -188,10 +188,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(14)
     void shouldDeleteMenuItem() throws Exception {
-        MenuItem menuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
-
-        apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", menuItem);
+        apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", 42);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -203,7 +200,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = "COOK")
     @Order(15)
     void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {
-        apiRequestUtils.deleteAndExpect("/api/cms/items/delete", new MenuItem(), status().isForbidden());
+        apiRequestUtils.deleteAndExpect("/api/cms/items/delete", 15, status().isForbidden());
     }
 
     private MenuItem createMenuItem() {

@@ -168,10 +168,7 @@ public class RestaurantControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(14)
     void shouldRemoveRestaurant() throws Exception {
-        Restaurant existingRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
-
-        apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete", existingRestaurant);
+        apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete", 3);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -184,7 +181,7 @@ public class RestaurantControllerTest {
     @Order(15)
     void shouldNotAllowUnauthorizedAccessToDeleteRestaurant() throws Exception {
         apiRequestUtils.deleteAndExpect(
-                "/api/cms/restaurants/delete", new Restaurant(), status().isForbidden());
+                "/api/cms/restaurants/delete", 2, status().isForbidden());
     }
 
     private Restaurant createRestaurant() {

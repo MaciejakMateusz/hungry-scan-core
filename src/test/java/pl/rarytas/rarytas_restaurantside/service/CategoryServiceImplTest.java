@@ -101,16 +101,14 @@ class CategoryServiceImplTest {
     @Test
     @Order(4)
     public void shouldDelete() throws LocalizedException {
-        Category category = categoryService.findById(9);
-        categoryService.delete(category);
+        categoryService.delete(9);
         assertThrows(LocalizedException.class, () -> categoryService.findById(9));
     }
 
     @Test
     @Order(5)
-    public void shouldNotDelete() throws LocalizedException {
-        Category category = categoryService.findById(1);
-        assertThrows(DataIntegrityViolationException.class, () -> categoryService.delete(category));
+    public void shouldNotDelete() {
+        assertThrows(DataIntegrityViolationException.class, () -> categoryService.delete(1));
     }
 
     private List<Category> getCategories() {
