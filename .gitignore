@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+src/main/resources/images/menu/*
 
 ### STS ###
 .apt_generated
@@ -28,7 +29,9 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-!**/src/main/resources/images/menu/*
 
 ### VS Code ###
 .vscode/
+
+### TODO helper ###
+src/main/java/pl/rarytas/rarytas_restaurantside/utility/ToDo.java
