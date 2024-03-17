@@ -12,5 +12,5 @@ public interface RestaurantService {
 
     void save(Restaurant restaurant);
 
-    void delete(Restaurant restaurant);
+    void delete(Integer id) throws LocalizedException;
 }

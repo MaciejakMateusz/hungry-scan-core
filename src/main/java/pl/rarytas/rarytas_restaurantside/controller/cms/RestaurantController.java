@@ -11,7 +11,6 @@ import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,9 +53,8 @@ public class RestaurantController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> delete(@RequestBody Restaurant restaurant) {
-        restaurantService.delete(restaurant);
-        return ResponseEntity.ok(new HashMap<>());
+    public ResponseEntity<Map<String, Object>> delete(@RequestBody Integer id) {
+        return responseHelper.buildResponse(id, restaurantService::delete);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

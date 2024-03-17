@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 
 /**
@@ -53,7 +52,6 @@ public class ResponseHelper {
      * @param saveFunction Behaviour to pass from a given service. For example userService::save
      * @return ResponseEntity with appropriate response code and body containing parameters map.
      */
-
     public <ENTITY, P> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
                                                                          P p,
                                                                          BindingResult br,
@@ -61,9 +59,16 @@ public class ResponseHelper {
         return br.hasErrors() ? createErrorResponse(br) : saveAndCreateSuccessResponse(saveFunction, entity, p);
     }
 
-    public <E> ResponseEntity<Map<String, Object>> buildResponse(E entities, Consumer<E> saveFunction) {
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param t        Object to accept by the consumer.
+     * @param consumer Behaviour to pass from a given service. For example bookingService::delete
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <T> ResponseEntity<Map<String, Object>> buildResponse(T t, ThrowingConsumer<T> consumer) {
         try {
-            saveFunction.accept(entities);
+            consumer.accept(t);
         } catch (Exception e) {
             return createErrorResponse(e);
         }

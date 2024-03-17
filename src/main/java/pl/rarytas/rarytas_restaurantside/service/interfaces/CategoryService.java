@@ -12,5 +12,5 @@ public interface CategoryService {
 
     void save(Category category);
 
-    void delete(Category category);
+    void delete(Integer id) throws LocalizedException;
 }

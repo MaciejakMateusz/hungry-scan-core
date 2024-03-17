@@ -53,7 +53,8 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     @Override
-    public void delete(MenuItem menuItem) {
-        menuItemRepository.delete(menuItem);
+    public void delete(Integer id) throws LocalizedException {
+        MenuItem existingMenuItem = findById(id);
+        menuItemRepository.delete(existingMenuItem);
     }
 }

@@ -38,7 +38,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public void delete(Restaurant restaurant) {
-        restaurantRepository.delete(restaurant);
+    public void delete(Integer id) throws LocalizedException {
+        Restaurant existingRestaurant = findById(id);
+        restaurantRepository.delete(existingRestaurant);
     }
 }

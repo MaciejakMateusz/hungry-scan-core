@@ -13,7 +13,7 @@ public interface BookingService {
 
     void save(Booking booking) throws LocalizedException;
 
-    void delete(Booking booking);
+    void delete(Long id) throws LocalizedException;
 
     Page<Booking> findAllByDateBetween(Pageable pageable, LocalDate dateFrom, LocalDate dateTo);
 

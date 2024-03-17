@@ -112,8 +112,7 @@ public class AdminManagementController {
             params.put("illegalRemoval", true);
             return ResponseEntity.badRequest().body(params);
         }
-        userService.delete(user);
-        return ResponseEntity.ok(params);
+        return responseHelper.buildResponse(user.getId(), userService::delete);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

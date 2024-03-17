@@ -13,5 +13,5 @@ public interface MenuItemService {
 
     MenuItem findById(Integer id) throws LocalizedException;
 
-    void delete(MenuItem menuItem);
+    void delete(Integer id) throws LocalizedException;
 }

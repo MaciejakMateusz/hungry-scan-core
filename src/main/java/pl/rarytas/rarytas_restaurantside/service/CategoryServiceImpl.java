@@ -40,7 +40,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void delete(Category category) {
-        categoryRepository.delete(category);
+    public void delete(Integer id) throws LocalizedException {
+        Category existingCategory = findById(id);
+        categoryRepository.delete(existingCategory);
     }
 }

@@ -19,7 +19,7 @@ public interface UserService {
 
     void save(User user);
 
-    void delete(User user);
+    void delete(Integer id) throws LocalizedException;
 
     boolean existsByEmail(String email);
 

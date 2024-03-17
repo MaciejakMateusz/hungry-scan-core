@@ -56,8 +56,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void delete(Booking booking) {
-        bookingRepository.delete(booking);
+    public void delete(Long id) throws LocalizedException {
+        Booking existingBooking = findById(id);
+        bookingRepository.delete(existingBooking);
     }
 
     @Override
