@@ -1,13 +1,11 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +18,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -42,7 +39,7 @@ public class RestaurantControllerTest {
     @Order(1)
     void shouldGetAllRestaurants() throws Exception {
         List<Restaurant> restaurants =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/cms/restaurants", Restaurant.class);
 
         assertEquals(2, restaurants.size());
@@ -53,8 +50,7 @@ public class RestaurantControllerTest {
     @Test
     @Order(2)
     void shouldNotAllowUnauthorizedAccessToRestaurants() throws Exception {
-        mockMvc.perform(get("/api/cms/restaurants"))
-                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/cms/restaurants")).andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -69,12 +65,7 @@ public class RestaurantControllerTest {
     @Test
     @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowRestaurant() throws Exception {
-        Integer id = 2;
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/restaurants/show")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isUnauthorized());
+        apiRequestUtils.postAndExpect("/api/cms/restaurants/show", 2, status().isUnauthorized());
     }
 
     @Test
@@ -99,8 +90,7 @@ public class RestaurantControllerTest {
     @WithMockUser(roles = "COOK")
     @Order(7)
     void shouldNotAllowUnauthorizedAccessToNewRestaurantObject() throws Exception {
-        mockMvc.perform(get("/api/cms/restaurants/add"))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/cms/restaurants/add")).andExpect(status().isForbidden());
     }
 
     @Test
@@ -122,7 +112,7 @@ public class RestaurantControllerTest {
     @Order(9)
     void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
         Restaurant restaurant = createRestaurant();
-        apiRequestUtils.postObject("/api/cms/restaurants/add", restaurant, status().isForbidden());
+        apiRequestUtils.postAndExpect("/api/cms/restaurants/add", restaurant, status().isForbidden());
     }
 
     @Test
@@ -157,12 +147,7 @@ public class RestaurantControllerTest {
     @WithMockUser(roles = "WAITER")
     @Order(12)
     void shouldNotAllowUnauthorizedAccessToUpdateRestaurant() throws Exception {
-        Restaurant restaurant = new Restaurant();
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/restaurants/add")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(restaurant)))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.postAndExpect("/api/cms/restaurants/add", new Restaurant(), status().isForbidden());
     }
 
     @Test
@@ -186,7 +171,7 @@ public class RestaurantControllerTest {
         Restaurant existingRestaurant =
                 apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
 
-        apiRequestUtils.postAndExpect200("/api/cms/restaurants/remove", existingRestaurant);
+        apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete", existingRestaurant);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -197,13 +182,9 @@ public class RestaurantControllerTest {
     @Test
     @WithMockUser(roles = "COOK")
     @Order(15)
-    void shouldNotAllowUnauthorizedAccessToRemoveRestaurant() throws Exception {
-        Restaurant restaurant = new Restaurant();
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/restaurants/remove")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(restaurant)))
-                .andExpect(status().isForbidden());
+    void shouldNotAllowUnauthorizedAccessToDeleteRestaurant() throws Exception {
+        apiRequestUtils.deleteAndExpect(
+                "/api/cms/restaurants/delete", new Restaurant(), status().isForbidden());
     }
 
     private Restaurant createRestaurant() {

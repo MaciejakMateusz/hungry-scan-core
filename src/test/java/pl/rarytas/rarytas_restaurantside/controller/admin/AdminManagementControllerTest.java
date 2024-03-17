@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -44,7 +43,7 @@ class AdminManagementControllerTest {
     @Order(1)
     public void shouldGetAllUsers() throws Exception {
         List<User> users =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/admin/users", User.class);
 
         assertEquals(5, users.size());
@@ -65,7 +64,7 @@ class AdminManagementControllerTest {
     @Order(3)
     public void shouldGetWaiters() throws Exception {
         List<User> users =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/admin/users/waiters", User.class);
 
         assertEquals(2, users.size());
@@ -85,7 +84,7 @@ class AdminManagementControllerTest {
     @Order(5)
     public void shouldGetCooks() throws Exception {
         List<User> users =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/admin/users/cooks", User.class);
 
         assertEquals(1, users.size());
@@ -104,7 +103,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(7)
     public void shouldGetManagers() throws Exception {
-        List<User> users = apiRequestUtils.fetchObjects(
+        List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/managers", User.class);
 
         assertEquals(2, users.size());
@@ -123,7 +122,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Order(9)
     public void shouldGetAdmins() throws Exception {
-        List<User> users = apiRequestUtils.fetchObjects(
+        List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/admins", User.class);
 
         assertEquals(2, users.size());
@@ -200,7 +199,7 @@ class AdminManagementControllerTest {
     @Order(17)
     void shouldNotAllowUnauthorizedToAddUser() throws Exception {
         User user = createUser();
-        apiRequestUtils.postObject("/api/admin/users/add", user, status().isForbidden());
+        apiRequestUtils.postAndExpect("/api/admin/users/add", user, status().isForbidden());
     }
 
     @Test
@@ -285,7 +284,7 @@ class AdminManagementControllerTest {
         User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
         existingUser.setEmail("updated@email.com");
 
-        apiRequestUtils.postAndExpect200("/api/admin/users/update", existingUser);
+        apiRequestUtils.patchAndExpect200("/api/admin/users/update", existingUser);
 
         User updatedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
         assertEquals("updated@email.com", updatedUser.getEmail());
@@ -297,7 +296,7 @@ class AdminManagementControllerTest {
     void shouldNotAllowUnauthorizedAccessToUpdateUser() throws Exception {
         User user = new User();
         ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/admin/users/update")
+        mockMvc.perform(patch("/api/admin/users/update")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isForbidden());
@@ -310,7 +309,7 @@ class AdminManagementControllerTest {
         User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
         existingUser.setEmail("updated@emailcom");
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/update", existingUser);
+        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/admin/users/update", existingUser);
 
         assertEquals(1, errors.size());
         assertEquals("Niepoprawny format adresu email", errors.get("email"));
@@ -322,7 +321,7 @@ class AdminManagementControllerTest {
     void shouldRemoveUser() throws Exception {
         User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
 
-        apiRequestUtils.postAndExpect200("/api/admin/users/remove", existingUser);
+        apiRequestUtils.deleteAndExpect200("/api/admin/users/delete", existingUser);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -336,7 +335,7 @@ class AdminManagementControllerTest {
     void shouldNotAllowUnauthorizedAccessToRemoveUser() throws Exception {
         User user = new User();
         ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/admin/users/remove")
+        mockMvc.perform(delete("/api/admin/users/delete")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isForbidden());
@@ -348,8 +347,8 @@ class AdminManagementControllerTest {
     void shouldNotSelfRemove() throws Exception {
         User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 2, User.class);
         Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/remove", existingUser, status().isBadRequest());
+                apiRequestUtils.deleteAndReturnResponseBody(
+                        "/api/admin/users/delete", existingUser, status().isBadRequest());
         assertTrue((Boolean) responseBody.get("illegalRemoval"));
     }
 

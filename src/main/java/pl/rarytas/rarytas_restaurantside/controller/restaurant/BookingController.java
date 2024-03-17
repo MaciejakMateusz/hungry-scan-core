@@ -1,53 +1,63 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
-import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
 
 import java.time.LocalDate;
-import java.time.temporal.WeekFields;
-import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
 
-@Controller
-@RequestMapping("/restaurant/bookings")
+@RestController
+@RequestMapping("/api/restaurant/bookings")
 public class BookingController {
 
     private final BookingService bookingService;
+    private final ResponseHelper responseHelper;
 
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingService bookingService, ResponseHelper responseHelper) {
         this.bookingService = bookingService;
+        this.responseHelper = responseHelper;
     }
 
-    @GetMapping
-    public String bookings(Model model) {
-        model.addAttribute("booking", new Booking());
-        return "restaurant/bookings/bookings";
+    @PostMapping("/show")
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
+        return responseHelper.getResponseEntity(id, bookingService::findById);
     }
 
     @PostMapping
-    public String save(@Valid Booking booking, BindingResult br, Model model) throws LocalizedException {
-        if (br.hasErrors()) {
-            return "restaurant/bookings/bookings";
-        }
-        bookingService.save(booking);
-        model.addAttribute("isBooked", true);
-        return "restaurant/bookings/bookings";
+    public ResponseEntity<Map<String, Object>> save(@RequestBody @Valid Booking booking, BindingResult br) {
+        return responseHelper.buildResponse(booking, br, bookingService::save);
     }
 
-    @ModelAttribute("weeklyBookings")
-    private Set<Booking> getWeeklyBookings() {
-        int year = LocalDate.now().getYear();
-        int week = LocalDate.now().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-        return bookingService.findAllByWeek(year, week);
+    //TODO add DELETE method and implement service method to remove bookings
+
+    @PostMapping("/date")
+    public ResponseEntity<Page<Booking>> getByDate(@RequestBody Map<String, Object> requestBody) {
+        return responseHelper.getEntitiesByDateRange(requestBody, bookingService::findAllByDateBetween);
     }
 
+    @GetMapping("/count-all")
+    public ResponseEntity<Long> countAll() {
+        return ResponseEntity.ok(bookingService.countAll());
+    }
+
+    @PostMapping("/count-dates")
+    public ResponseEntity<Long> countByDateBetween(@RequestBody LocalDate dateFrom,
+                                                   @RequestBody LocalDate dateTo) {
+        return ResponseEntity.ok(bookingService.countByDateBetween(dateFrom, dateTo));
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> options() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Allow", "GET, POST, OPTIONS");
+        return new ResponseEntity<>(headers, HttpStatus.OK);
+    }
 }

@@ -1,13 +1,18 @@
 package pl.rarytas.rarytas_restaurantside.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import pl.rarytas.rarytas_restaurantside.utility.ThrowingConsumer;
 import pl.rarytas.rarytas_restaurantside.utility.ThrowingFunction;
+import pl.rarytas.rarytas_restaurantside.utility.TriFunction;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -33,7 +38,7 @@ public class ResponseHelper {
      */
     public <ENTITY> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
                                                                       BindingResult br,
-                                                                      Consumer<ENTITY> saveFunction) {
+                                                                      ThrowingConsumer<ENTITY> saveFunction) {
         return br.hasErrors() ? createErrorResponse(br) : acceptAndCreateSuccessResponse(saveFunction, entity);
     }
 
@@ -134,9 +139,13 @@ public class ResponseHelper {
         return ResponseEntity.ok(params);
     }
 
-    private <ENTITY> ResponseEntity<Map<String, Object>> acceptAndCreateSuccessResponse(Consumer<ENTITY> saveFunction,
+    private <ENTITY> ResponseEntity<Map<String, Object>> acceptAndCreateSuccessResponse(ThrowingConsumer<ENTITY> saveFunction,
                                                                                         ENTITY entity) {
-        saveFunction.accept(entity);
+        try {
+            saveFunction.accept(entity);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("exceptionMsg", e.getMessage()));
+        }
         return ResponseEntity.ok().body(new HashMap<>());
     }
 
@@ -145,5 +154,25 @@ public class ResponseHelper {
                                                                                              PARAM param) {
         saveFunction.accept(entity, param);
         return ResponseEntity.ok().body(new HashMap<>());
+    }
+
+    /**
+     * Retrieves a paginated collection of entities filtered by date range.
+     *
+     * @param requestBody Map containing request parameters.
+     * @param getByDate   Function to fetch entities by date range.
+     * @param <T>         Type of entities.
+     * @return ResponseEntity containing the paginated collection of entities.
+     */
+    public <T> ResponseEntity<Page<T>> getEntitiesByDateRange(
+            Map<String, Object> requestBody,
+            TriFunction<Pageable, LocalDate, LocalDate, Page<T>> getByDate) {
+        Integer pageNumber = (Integer) requestBody.get("pageNumber");
+        Integer pageSize = (Integer) requestBody.get("pageSize");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        LocalDate startDate = LocalDate.parse((CharSequence) requestBody.get("dateFrom"));
+        LocalDate endDate = LocalDate.parse((CharSequence) requestBody.get("dateTo"));
+        Page<T> entities = getByDate.apply(pageable, startDate, endDate);
+        return ResponseEntity.ok(entities);
     }
 }

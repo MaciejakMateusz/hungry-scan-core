@@ -50,7 +50,7 @@ public class OrderedItemController {
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Allow", "POST, PATCH, GET");
+        headers.add("Allow", "GET, POST, PATCH, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

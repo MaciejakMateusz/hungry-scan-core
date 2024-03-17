@@ -38,7 +38,7 @@ public class Order {
     @NotNull
     private LocalDateTime orderTime;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderedItem> orderedItems;
 
     @Column(name = "payment_method")

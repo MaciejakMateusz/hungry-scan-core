@@ -13,9 +13,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,14 +36,17 @@ public class OrderedItemControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    ApiRequestUtils apiRequestUtils;
+    private ApiRequestUtils apiRequestUtils;
+
+    @Autowired
+    private MenuItemService menuItemService;
 
     @Test
     @WithMockUser(roles = "WAITER")
     @Order(1)
     public void shouldGetAllFromEndpoint() throws Exception {
         List<OrderedItem> orderedItems =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/restaurant/ordered-items", OrderedItem.class);
         assertEquals(4, orderedItems.size());
         assertEquals(4, orderedItems.get(3).getQuantity());
@@ -85,11 +89,12 @@ public class OrderedItemControllerTest {
         apiRequestUtils.postAndExpect200("/api/restaurant/ordered-items", orderedItems);
 
         List<OrderedItem> persistedOrderedItems =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/restaurant/ordered-items", OrderedItem.class);
 
         assertEquals(9, persistedOrderedItems.size());
-        assertEquals("Good foot.", persistedOrderedItems.get(5).getMenuItem().getName());
+        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami",
+                persistedOrderedItems.get(5).getMenuItem().getName());
         assertEquals(2, persistedOrderedItems.get(5).getQuantity());
     }
 
@@ -143,7 +148,7 @@ public class OrderedItemControllerTest {
         int i = 5;
         while (i > 0) {
             OrderedItem orderedItem = new OrderedItem();
-            orderedItem.setMenuItem(createMenuItem());
+            orderedItem.setMenuItem(getMenuItem());
             orderedItem.setQuantity(2);
             orderedItems.add(orderedItem);
             i--;
@@ -151,11 +156,13 @@ public class OrderedItemControllerTest {
         return orderedItems;
     }
 
-    private MenuItem createMenuItem() {
-        MenuItem menuItem = new MenuItem();
-        menuItem.setName("Good foot.");
-        menuItem.setDescription("Foot is good.");
-        menuItem.setPrice(BigDecimal.valueOf(12.00));
+    private MenuItem getMenuItem() {
+        MenuItem menuItem;
+        try {
+            menuItem = menuItemService.findById(13);
+        } catch (LocalizedException e) {
+            throw new RuntimeException(e);
+        }
         return menuItem;
     }
 }

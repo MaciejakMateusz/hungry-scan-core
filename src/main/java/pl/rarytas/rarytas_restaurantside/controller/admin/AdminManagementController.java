@@ -3,6 +3,8 @@ package pl.rarytas.rarytas_restaurantside.controller.admin;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -88,7 +90,7 @@ public class AdminManagementController {
         return ResponseEntity.ok(params);
     }
 
-    @PostMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody User user, BindingResult br) throws LocalizedException {
         Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
@@ -102,7 +104,7 @@ public class AdminManagementController {
         }
     }
 
-    @PostMapping("/remove")
+    @DeleteMapping("/delete")
     public ResponseEntity<Map<String, Object>> delete(@RequestBody User user, Principal principal) {
         Map<String, Object> params = new HashMap<>();
         User currentAdmin = userService.findByUsername(principal.getName());
@@ -112,6 +114,13 @@ public class AdminManagementController {
         }
         userService.delete(user);
         return ResponseEntity.ok(params);
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> options() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Allow", "GET, POST, PATCH, DELETE, OPTIONS");
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
     private ResponseEntity<Map<String, Object>> badRequestWithErrors(BindingResult br) {

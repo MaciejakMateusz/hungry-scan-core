@@ -38,7 +38,7 @@ public class RestaurantTableControllerTest {
     @WithMockUser(roles = "WAITER")
     public void shouldGetAllFromEndpoint() throws Exception {
         List<RestaurantTable> restaurantTables =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/restaurant/tables", RestaurantTable.class);
 
         assertEquals(19, restaurantTables.size());

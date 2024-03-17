@@ -1,5 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -94,5 +96,12 @@ public class OrderController {
     @PostMapping("/finalize-take-away")
     public ResponseEntity<Map<String, Object>> finalizeTakeAwayOrder(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, orderService::finishTakeAway);
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> options() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Allow", "GET, POST, PATCH, OPTIONS");
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

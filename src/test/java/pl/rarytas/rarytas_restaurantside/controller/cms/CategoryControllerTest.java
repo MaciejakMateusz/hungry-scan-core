@@ -1,13 +1,11 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +18,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -42,7 +39,7 @@ class CategoryControllerTest {
     @Order(1)
     void shouldGetAllCategories() throws Exception {
         List<Category> categories =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/cms/categories", Category.class);
 
         assertEquals(8, categories.size());
@@ -54,27 +51,22 @@ class CategoryControllerTest {
     @Test
     @Order(2)
     void shouldNotAllowUnauthorizedAccessToCategories() throws Exception {
-        mockMvc.perform(get("/api/cms/categories"))
-                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/cms/categories")).andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = {"COOK"})
     @Order(3)
     void shouldShowCategoryById() throws Exception {
-        Category category = apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 4, Category.class);
+        Category category = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 4, Category.class);
         assertEquals("Zupy", category.getName());
     }
 
     @Test
     @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
-        Integer id = 4;
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/categories/show")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isUnauthorized());
+        apiRequestUtils.postAndExpect("/api/cms/categories/show", 4, status().isUnauthorized());
     }
 
     @Test
@@ -122,7 +114,7 @@ class CategoryControllerTest {
     @Order(9)
     void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
         Category category = createCategory();
-        apiRequestUtils.postObject("/api/cms/categories/add", category, status().isForbidden());
+        apiRequestUtils.postAndExpect("/api/cms/categories/add", category, status().isForbidden());
     }
 
     @Test
@@ -190,12 +182,7 @@ class CategoryControllerTest {
     @WithMockUser(roles = "WAITER")
     @Order(13)
     void shouldNotAllowUnauthorizedAccessToUpdateCategory() throws Exception {
-        Category category = new Category();
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/categories/add")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(category)))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.postAndExpect("/api/cms/categories/add", new Category(), status().isForbidden());
     }
 
     @Test
@@ -219,7 +206,7 @@ class CategoryControllerTest {
         Category existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
 
-        apiRequestUtils.postAndExpect200("/api/cms/categories/remove", existingCategory);
+        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", existingCategory);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -231,12 +218,7 @@ class CategoryControllerTest {
     @WithMockUser(roles = "COOK")
     @Order(16)
     void shouldNotAllowUnauthorizedAccessToRemoveCategory() throws Exception {
-        Category category = new Category();
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/categories/remove")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(category)))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", new Category(), status().isForbidden());
     }
 
     private Category createCategory() {

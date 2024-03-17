@@ -54,7 +54,7 @@ class OrderControllerTest {
     @WithMockUser(roles = "WAITER")
     @org.junit.jupiter.api.Order(1)
     public void shouldGetAllOrders() throws Exception {
-        List<Order> orders = apiRequestUtils.fetchObjects("/api/restaurant/orders", Order.class);
+        List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders", Order.class);
         assertFalse(orders.stream().anyMatch(Order::isPaid));
         assertEquals(3, orders.size());
     }
@@ -70,7 +70,7 @@ class OrderControllerTest {
     @WithMockUser(roles = "WAITER")
     @org.junit.jupiter.api.Order(3)
     public void shouldGetAllTakeAwayOrders() throws Exception {
-        List<Order> orders = apiRequestUtils.fetchObjects("/api/restaurant/orders/take-away", Order.class);
+        List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/take-away", Order.class);
         assertFalse(orders.stream().anyMatch(order -> !order.isForTakeAway()));
         assertEquals(1, orders.size());
     }
@@ -86,7 +86,7 @@ class OrderControllerTest {
     @WithMockUser(roles = "WAITER")
     @org.junit.jupiter.api.Order(5)
     public void shouldGetAllDineInOrders() throws Exception {
-        List<Order> orders = apiRequestUtils.fetchObjects("/api/restaurant/orders/dine-in", Order.class);
+        List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/dine-in", Order.class);
         assertFalse(orders.stream().anyMatch(Order::isForTakeAway));
         assertEquals(3, orders.size());
     }

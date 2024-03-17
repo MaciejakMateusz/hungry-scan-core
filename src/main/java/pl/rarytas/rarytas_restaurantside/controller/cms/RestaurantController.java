@@ -1,6 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -50,10 +52,17 @@ public class RestaurantController {
         return responseHelper.buildResponse(restaurant, br, restaurantService::save);
     }
 
-    @PostMapping("/remove")
+    @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> remove(@RequestBody Restaurant restaurant) {
+    public ResponseEntity<Map<String, Object>> delete(@RequestBody Restaurant restaurant) {
         restaurantService.delete(restaurant);
         return ResponseEntity.ok(new HashMap<>());
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> options() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Allow", "GET, POST, DELETE, OPTIONS");
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

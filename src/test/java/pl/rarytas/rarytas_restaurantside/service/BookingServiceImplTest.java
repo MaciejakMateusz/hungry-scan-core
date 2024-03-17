@@ -7,6 +7,8 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
@@ -15,7 +17,6 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,7 +44,8 @@ class BookingServiceImplTest {
                 "Maciejak",
                 3);
         bookingService.save(booking);
-        Set<Booking> foundBookings = bookingService.findAllByDate(bookingDate);
+        Page<Booking> foundBookings =
+                bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
         assertFalse(foundBookings.isEmpty());
     }
 
@@ -70,7 +72,8 @@ class BookingServiceImplTest {
                 "Makaron",
                 2);
         bookingService.save(booking);
-        Set<Booking> foundBookings = bookingService.findAllByDate(bookingDate);
+        Page<Booking> foundBookings =
+                bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
         assertFalse(foundBookings.isEmpty());
     }
 

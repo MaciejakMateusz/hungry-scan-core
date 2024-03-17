@@ -1,10 +1,10 @@
 package pl.rarytas.rarytas_restaurantside.controller.auth;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,5 +27,12 @@ public class AuthController {
     @PreAuthorize("hasRole('ADMIN')")
     public boolean adminAuth() {
         return true;
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> options() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Allow", "GET, OPTIONS");
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

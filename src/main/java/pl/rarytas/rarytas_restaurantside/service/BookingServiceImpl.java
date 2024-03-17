@@ -1,6 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
@@ -13,7 +15,6 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
 import pl.rarytas.rarytas_restaurantside.utility.BookingValidator;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -35,6 +36,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public Booking findById(Long id) throws LocalizedException {
+        return bookingRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.bookingService.bookingNotFound", id));
+    }
+
+    @Override
     @Transactional
     public void save(Booking booking) throws LocalizedException {
         if (bookingValidator.isValidBooking(booking)) {
@@ -53,12 +61,18 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Set<Booking> findAllByWeek(int year, int week) {
-        return bookingRepository.findAllByWeek(year, week);
+    public Page<Booking> findAllByDateBetween(Pageable pageable, LocalDate dateFrom, LocalDate dateTo) {
+        return bookingRepository.findAllByDateBetween(pageable, dateFrom, dateTo);
     }
 
     @Override
-    public Set<Booking> findAllByDate(LocalDate date) {
-        return bookingRepository.findAllByDate(date);
+    public Long countAll() {
+        return bookingRepository.count();
     }
+
+    @Override
+    public Long countByDateBetween(LocalDate dateFrom, LocalDate dateTo) {
+        return bookingRepository.countAllByDateBetween(dateFrom, dateTo);
+    }
+
 }

@@ -11,19 +11,19 @@ import java.time.LocalDate;
 
 public interface HistoryOrderRepository extends JpaRepository<HistoryOrder, Long> {
 
-    @Query(value = "SELECT ho FROM HistoryOrder ho WHERE ho.forTakeAway = false")
+    @Query("SELECT ho FROM HistoryOrder ho WHERE ho.forTakeAway = false")
     Page<HistoryOrder> findAllDineIn(Pageable pageable);
 
-    @Query(value = "SELECT ho FROM HistoryOrder ho WHERE ho.forTakeAway = true")
+    @Query("SELECT ho FROM HistoryOrder ho WHERE ho.forTakeAway = true")
     Page<HistoryOrder> findAllForTakeAway(Pageable pageable);
 
-    @Query(value = "SELECT ho FROM HistoryOrder ho WHERE ho.orderDate BETWEEN :startDate AND :endDate AND ho.forTakeAway = false")
+    @Query("SELECT ho FROM HistoryOrder ho WHERE ho.orderDate BETWEEN :dateFrom AND :dateTo AND ho.forTakeAway = false")
     Page<HistoryOrder> findDineInByDates(Pageable pageable,
-                                         @Param("startDate") LocalDate startDate,
-                                         @Param("endDate") LocalDate endDate);
+                                         @Param("dateFrom") LocalDate dateFrom,
+                                         @Param("dateTo") LocalDate dateTo);
 
-    @Query(value = "SELECT ho FROM HistoryOrder ho WHERE ho.orderDate BETWEEN :startDate AND :endDate AND ho.forTakeAway = true")
+    @Query("SELECT ho FROM HistoryOrder ho WHERE ho.orderDate BETWEEN :dateFrom AND :dateTo AND ho.forTakeAway = true")
     Page<HistoryOrder> findTakeAwayByDates(Pageable pageable,
-                                           @Param("startDate") LocalDate startDate,
-                                           @Param("endDate") LocalDate endDate);
+                                           @Param("dateFrom") LocalDate dateFrom,
+                                           @Param("dateTo") LocalDate dateTo);
 }

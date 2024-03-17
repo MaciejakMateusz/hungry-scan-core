@@ -3,6 +3,7 @@ package pl.rarytas.rarytas_restaurantside.testSupport;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -12,7 +13,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -42,15 +42,15 @@ public class ApiRequestUtils {
 
 
     /**
-     * Fetches a list of objects from the specified endpoint.
+     * Fetches a List<T> collection of objects from the specified endpoint.
      *
      * @param endpointUrl The URL of the endpoint to fetch from.
      * @param itemType    The type of objects to fetch.
      * @param <T>         The type of objects to fetch.
-     * @return A list of objects fetched from the endpoint.
+     * @return A List of objects fetched from the endpoint.
      * @throws Exception If an error occurs during the request.
      */
-    public <T> List<T> fetchObjects(String endpointUrl, Class<T> itemType) throws Exception {
+    public <T> List<T> fetchAsList(String endpointUrl, Class<T> itemType) throws Exception {
         MvcResult result = mockMvc.perform(get(endpointUrl)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -61,10 +61,20 @@ public class ApiRequestUtils {
         String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
         ObjectMapper objectMapper = prepObjMapper();
-        return objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
+        return objectMapper.readValue(jsonResponse,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
     }
 
-    public <T> List<T> fetchObjects(String endpointUrl, Map<String, Object> requestParams, Class<T> itemType) throws Exception {
+    /**
+     * Fetches a Page<T> collection from the specified endpoint.
+     *
+     * @param endpointUrl The URL of the endpoint to fetch from.
+     * @param itemType    The type of objects to fetch.
+     * @param <T>         The type of objects to fetch.
+     * @return A Page of objects fetched from the endpoint.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> Page<T> fetchAsPage(String endpointUrl, Map<String, Object> requestParams, Class<T> itemType) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(requestParams);
 
@@ -79,8 +89,10 @@ public class ApiRequestUtils {
         MockHttpServletResponse response = result.getResponse();
         String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
-        return objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
+        return objectMapper.readValue(jsonResponse,
+                objectMapper.getTypeFactory().constructParametricType(Page.class, itemType));
     }
+
 
     /**
      * Fetches an object from the specified endpoint URL and converts it into the provided item type.
@@ -155,7 +167,7 @@ public class ApiRequestUtils {
      * @param <T>         The generic type of the object to be posted.
      * @throws Exception If an error occurs during the posting or matching of the response.
      */
-    public <T> void postObject(String endpointUrl, T object, ResultMatcher matcher) throws Exception {
+    public <T> void postAndExpect(String endpointUrl, T object, ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
@@ -210,8 +222,8 @@ public class ApiRequestUtils {
      * @throws Exception If there are any errors during the request or response handling.
      */
     public <T> Map<String, Object> patchAndReturnResponseBody(String endpointUrl,
-                                                             T object,
-                                                             ResultMatcher matcher) throws Exception {
+                                                              T object,
+                                                              ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
@@ -228,25 +240,33 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a POST request to the specified endpoint URL with the provided object as the request body.
+     * Sends a DELETE request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
      *
-     * @param endpointUrl The URL endpoint to send the PATCH request to.
+     * @param endpointUrl The URL endpoint to send the POST request to.
      * @param object      The object to be serialized and sent as the request body.
      * @param matcher     The ResultMatcher to apply to the response.
+     * @param <T>         The type of the object being sent in the request body.
+     * @return A Map representing the response body, with String keys and Object values.
      * @throws Exception If there are any errors during the request or response handling.
      */
-    public <T> void postAndExpect(String endpointUrl,
-                                  T object,
-                                  ResultMatcher matcher) throws Exception {
+    public <T> Map<String, Object> deleteAndReturnResponseBody(String endpointUrl,
+                                                               T object,
+                                                               ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
-        mockMvc.perform(post(endpointUrl)
+        ResultActions resultActions = mockMvc.perform(delete(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(matcher)
                 .andDo(print());
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+        };
+        return objectMapper.readValue(responseBody, typeReference);
     }
 
     /**
@@ -272,20 +292,42 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Posts a multipart request to the specified endpoint URL with the provided MenuItem object, file, and matcher.
+     * Sends a DELETE request to the specified endpoint URL with the provided object as the request body.
+     * Expects a certain result based on the provided ResultMatcher.
+     *
+     * @param endpointUrl The URL endpoint to send the DELETE request to.
+     * @param object      The object to be serialized and sent as the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T> void deleteAndExpect(String endpointUrl,
+                                    T object,
+                                    ResultMatcher matcher) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        mockMvc.perform(delete(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(matcher)
+                .andDo(print());
+    }
+
+    /**
+     * Posts a multipart request to the specified endpoint URL with the provided entity, file, and matcher.
      *
      * @param endpointUrl The URL endpoint to which the multipart request will be sent.
-     * @param menuItem    The MenuItem object to be sent as part of the request payload.
+     * @param entity      The entity to be sent as part of the request payload.
      * @param file        The MockMultipartFile object representing the file to be sent in the multipart request.
      * @param matcher     The ResultMatcher object to validate the response received from the server.
      * @throws Exception If an error occurs during the request execution.
      */
-    public void postMultipartRequest(String endpointUrl,
-                                     MenuItem menuItem,
-                                     MockMultipartFile file,
-                                     ResultMatcher matcher) throws Exception {
+    public <ENTITY> void multipartAndExpect(String endpointUrl,
+                                            ENTITY entity,
+                                            MockMultipartFile file,
+                                            ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
-        String jsonRequest = objectMapper.writeValueAsString(menuItem);
+        String jsonRequest = objectMapper.writeValueAsString(entity);
 
         mockMvc.perform(multipart(endpointUrl)
                         .file(file)
@@ -305,6 +347,7 @@ public class ApiRequestUtils {
     public ObjectMapper prepObjMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new PageModule());
         return objectMapper;
     }
 
@@ -418,15 +461,27 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Performs a multipart POST request to the specified URL with the provided menu item and file,
-     * expecting a successful (200) response.
+     * Performs a DELETE request to the specified URL with the provided object and expects a successful (200) response.
      *
-     * @param url      The URL to which the POST request will be sent.
-     * @param menuItem The menu item to be sent as part of the request.
-     * @param file     The file to be sent as part of the request.
+     * @param url The URL to which the DELETE request will be sent.
+     * @param t   The object to be sent as part of the request.
+     * @param <T> The type of the object.
      * @throws Exception If an error occurs during the request.
      */
-    public void postAndExpect200(String url, MenuItem menuItem, MockMultipartFile file) throws Exception {
-        postMultipartRequest(url, menuItem, file, status().isOk());
+    public <T> void deleteAndExpect200(String url, T t) throws Exception {
+        deleteAndExpect(url, t, status().isOk());
+    }
+
+    /**
+     * Performs a multipart POST request to the specified URL with the provided entity and file,
+     * expecting a successful (200) response.
+     *
+     * @param url    The URL to which the POST request will be sent.
+     * @param entity The entity to be sent as part of the request.
+     * @param file   The file to be sent as part of the request.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <ENTITY> void multipartAndExpect200(String url, ENTITY entity, MockMultipartFile file) throws Exception {
+        multipartAndExpect(url, entity, file, status().isOk());
     }
 }

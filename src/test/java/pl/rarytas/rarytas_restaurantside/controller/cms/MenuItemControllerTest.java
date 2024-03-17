@@ -1,6 +1,5 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -46,7 +45,7 @@ class MenuItemControllerTest {
     @Order(1)
     void shouldGetAllMenuItems() throws Exception {
         List<MenuItem> menuItems =
-                apiRequestUtils.fetchObjects(
+                apiRequestUtils.fetchAsList(
                         "/api/cms/items", MenuItem.class);
 
         assertEquals(40, menuItems.size());
@@ -56,8 +55,7 @@ class MenuItemControllerTest {
     @Test
     @Order(2)
     void shouldNotAllowUnauthorizedAccessToMenuItems() throws Exception {
-        mockMvc.perform(get("/api/cms/items"))
-                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/cms/items")).andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -71,12 +69,7 @@ class MenuItemControllerTest {
     @Test
     @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowMenuItem() throws Exception {
-        Integer id = 4;
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/items/show")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isUnauthorized());
+        apiRequestUtils.postAndExpect("/api/cms/items/show", 4, status().isUnauthorized());
     }
 
     @Test
@@ -101,8 +94,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = "COOK")
     @Order(7)
     void shouldNotAllowUnauthorizedAccessToNewMenuItemObject() throws Exception {
-        mockMvc.perform(get("/api/cms/items/add"))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/cms/items/add")).andExpect(status().isForbidden());
     }
 
     @Test
@@ -111,7 +103,7 @@ class MenuItemControllerTest {
     void shouldAddNewMenuItem() throws Exception {
         MenuItem menuItem = createMenuItem();
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem, getFile());
+        apiRequestUtils.multipartAndExpect200("/api/cms/items/add", menuItem, getFile());
 
         MenuItem persistedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
@@ -143,15 +135,7 @@ class MenuItemControllerTest {
     void shouldNotAllowUnauthorizedAccessToItemsAdd() throws Exception {
         MenuItem menuItem = createMenuItem();
         MockMultipartFile file = getFile();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        mockMvc.perform(multipart("/api/cms/items/add")
-                        .file(file)
-                        .param("file", file.getOriginalFilename())
-                        .content(objectMapper.writeValueAsString(menuItem))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isForbidden());
+        apiRequestUtils.multipartAndExpect("/api/cms/items/add", menuItem, file, status().isForbidden());
     }
 
     @Test
@@ -190,7 +174,7 @@ class MenuItemControllerTest {
         persistedMenuItem.setDescription("Updated description.");
         persistedMenuItem.setPrice(BigDecimal.valueOf(15.22));
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem, getFile());
+        apiRequestUtils.multipartAndExpect200("/api/cms/items/add", persistedMenuItem, getFile());
 
         MenuItem updatedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
@@ -203,11 +187,11 @@ class MenuItemControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(14)
-    void shouldRemoveMenuItem() throws Exception {
+    void shouldDeleteMenuItem() throws Exception {
         MenuItem menuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 42, MenuItem.class);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/remove", menuItem);
+        apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", menuItem);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -219,12 +203,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = "COOK")
     @Order(15)
     void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {
-        MenuItem menuItem = new MenuItem();
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/cms/items/remove")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(menuItem)))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.deleteAndExpect("/api/cms/items/delete", new MenuItem(), status().isForbidden());
     }
 
     private MenuItem createMenuItem() {
