@@ -356,6 +356,28 @@ VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', 5, '16:00:00');
 INSERT INTO restaurant_tables_bookings (restaurant_table_id, bookings_id)
 VALUES (5, 1);
 
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
+VALUES (50, '2024-02-19', '19:00:00', 1, 'Alan', 2, '16:00:00');
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
+VALUES (51, '2024-02-21', '19:00:00', 3, 'Gibson', 10, '16:00:00');
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
+VALUES (52, '2024-02-23', '19:00:00', 2, 'Fire', 11, '16:00:00');
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
+VALUES (53, '2024-02-25', '19:00:00', 4, 'Water', 13, '16:00:00');
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
+VALUES (54, '2024-02-27', '19:00:00', 2, 'Earth', 5, '16:00:00');
+
+INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
+VALUES (2, 50);
+INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
+VALUES (10, 51);
+INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
+VALUES (11, 52);
+INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
+VALUES (13, 53);
+INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
+VALUES (5, 54);
+
 INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity)
 VALUES (1, 3, '07:00:00', '23:00:00', 1, 120);
 

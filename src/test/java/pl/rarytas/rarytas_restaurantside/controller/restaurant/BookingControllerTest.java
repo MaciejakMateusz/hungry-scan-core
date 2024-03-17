@@ -49,7 +49,7 @@ class BookingControllerTest {
     @Test
     @Order(3)
     @WithMockUser(roles = "COOK")
-    public void runPostPatchTestsInSequence() throws Exception {
+    public void testInSequence() throws Exception {
         shouldSaveNewBooking(2L);
         shouldSaveNewBooking(3L);
         shouldSaveNewBooking(4L);
