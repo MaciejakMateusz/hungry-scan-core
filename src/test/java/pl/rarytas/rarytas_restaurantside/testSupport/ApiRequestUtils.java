@@ -147,13 +147,26 @@ public class ApiRequestUtils {
      * Fetches from the specified endpoint URL and expects an unauthorized response according to the provided matcher.
      *
      * @param endpointUrl The URL endpoint from which to fetch.
-     * @param matcher     The expected result matcher for the unauthorized response.
      * @throws Exception If an error occurs during the fetching or matching of the response.
      */
-    public void fetchAndExpectUnauthorized(String endpointUrl, ResultMatcher matcher) throws Exception {
+    public void fetchAndExpectUnauthorized(String endpointUrl) throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(endpointUrl)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(matcher)
+                .andExpect(status().isUnauthorized())
+                .andDo(print())
+                .andReturn();
+    }
+
+    /**
+     * Fetches from the specified endpoint URL and expects an unauthorized response according to the provided matcher.
+     *
+     * @param endpointUrl The URL endpoint from which to fetch.
+     * @throws Exception If an error occurs during the fetching or matching of the response.
+     */
+    public void fetchAndExpectForbidden(String endpointUrl) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden())
                 .andDo(print())
                 .andReturn();
     }

@@ -32,7 +32,6 @@ public class Booking {
     private LocalTime time;
 
     @Column(nullable = false)
-    @NotNull
     private LocalTime expirationTime;
 
     @Column(nullable = false)

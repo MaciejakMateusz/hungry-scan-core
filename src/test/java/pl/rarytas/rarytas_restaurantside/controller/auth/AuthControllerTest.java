@@ -12,7 +12,6 @@ import org.springframework.test.context.TestPropertySource;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,7 +32,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldNotAuthorizeForRestaurantModule() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/auth/restaurant", status().is(401));
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/auth/restaurant");
     }
 
     @Test
@@ -46,7 +45,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = {"WAITER", "COOK"})
     public void shouldNotAuthorizeForCmsModule() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/auth/cms", status().is(403));
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/cms");
     }
 
     @Test
@@ -59,6 +58,6 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = {"WAITER", "COOK", "MANAGER"})
     public void shouldNotAuthorizeForAdminPanelModule() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/auth/admin", status().is(403));
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/admin");
     }
 }

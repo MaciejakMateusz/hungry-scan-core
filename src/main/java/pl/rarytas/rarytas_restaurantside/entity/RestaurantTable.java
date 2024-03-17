@@ -26,4 +26,10 @@ public class RestaurantTable {
     private Set<Booking> bookings;
 
     private boolean isActive;
+
+    public void removeBooking(Booking booking) {
+        if (!bookings.isEmpty()) {
+            bookings.remove(booking);
+        }
+    }
 }

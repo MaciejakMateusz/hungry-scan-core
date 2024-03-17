@@ -58,6 +58,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void delete(Long id) throws LocalizedException {
         Booking existingBooking = findById(id);
+        removeBookingForTable(existingBooking);
         bookingRepository.delete(existingBooking);
     }
 
@@ -76,4 +77,11 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.countAllByDateBetween(dateFrom, dateTo);
     }
 
+    private void removeBookingForTable(Booking existingBooking) throws LocalizedException {
+        RestaurantTable table = restaurantTableRepository.findById(existingBooking.getTableId())
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.bookingService.bookingNotFound", existingBooking.getId()));
+        table.removeBooking(existingBooking);
+        restaurantTableRepository.save(table);
+    }
 }

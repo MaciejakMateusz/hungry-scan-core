@@ -54,8 +54,9 @@ public class BookingController {
     }
 
     @PostMapping("/count-dates")
-    public ResponseEntity<Long> countByDateBetween(@RequestBody LocalDate dateFrom,
-                                                   @RequestBody LocalDate dateTo) {
+    public ResponseEntity<Long> countByDateBetween(@RequestBody Map<String, LocalDate> requestBody) {
+        LocalDate dateFrom = requestBody.get("dateFrom");
+        LocalDate dateTo = requestBody.get("dateTo");
         return ResponseEntity.ok(bookingService.countByDateBetween(dateFrom, dateTo));
     }
 

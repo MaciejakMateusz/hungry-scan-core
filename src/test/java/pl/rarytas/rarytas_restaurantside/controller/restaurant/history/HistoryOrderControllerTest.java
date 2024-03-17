@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.restaurant;
+package pl.rarytas.rarytas_restaurantside.controller.restaurant.history;
 
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
