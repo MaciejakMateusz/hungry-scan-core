@@ -278,6 +278,9 @@ VALUES (3, 3);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id)
 VALUES (4, 4);
 
+INSERT INTO waiter_calls(call_time, is_resolved, resolved_time, order_id)
+VALUES ('2024-01-29 08:41:20.738823', true, '2024-01-29 08:43:20.738823', 4);
+
 INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve)
 VALUES (222, 2, 3, false);
 INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve)

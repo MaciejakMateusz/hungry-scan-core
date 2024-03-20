@@ -108,8 +108,8 @@ public class OrderServiceImpl implements OrderService {
         orderHelper.prepareForFinalizingDineIn(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
         dataTransferServiceImpl.archiveOrder(existingOrder);
-        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
         delete(existingOrder);
+        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }
 
     @Override
@@ -119,8 +119,8 @@ public class OrderServiceImpl implements OrderService {
         orderHelper.prepareForFinalizingTakeAway(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
         dataTransferServiceImpl.archiveOrder(existingOrder);
-        messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
         delete(existingOrder);
+        messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
     }
 
     @Override
@@ -152,6 +152,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void delete(Order order) {
         orderRepository.delete(order);
+        orderRepository.refresh(order);
     }
 
     private void addItemsToOrder(Order existingOrder, List<OrderedItem> newItems) {
