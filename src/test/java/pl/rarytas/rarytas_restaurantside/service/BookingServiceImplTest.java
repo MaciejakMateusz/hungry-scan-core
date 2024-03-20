@@ -18,8 +18,7 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest
@@ -47,6 +46,9 @@ class BookingServiceImplTest {
         Page<Booking> foundBookings =
                 bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
         assertFalse(foundBookings.isEmpty());
+        assertEquals(2, foundBookings.getContent().stream().findFirst().orElseThrow().getId());
+        assertEquals("Maciejak", foundBookings.getContent().stream().findFirst().orElseThrow().getSurname());
+        assertEquals(3, foundBookings.getContent().stream().findFirst().orElseThrow().getTableId());
     }
 
     @Test
@@ -78,6 +80,7 @@ class BookingServiceImplTest {
     }
 
     @Test
+    @Order(4)
     void shouldNotBookTableBeforeOpening() {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -90,6 +93,7 @@ class BookingServiceImplTest {
     }
 
     @Test
+    @Order(5)
     void shouldNotBookTableAfterClosing() {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -103,6 +107,7 @@ class BookingServiceImplTest {
 
     @Test
     @Transactional
+    @Order(6)
     void shouldNotLetBookTwoTablesAtOnce() throws LocalizedException {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking1 = createBooking(
@@ -119,6 +124,17 @@ class BookingServiceImplTest {
                 12);
         bookingService.save(booking1);
         assertThrows(LocalizedException.class, () -> bookingService.save(booking2));
+    }
+
+    @Test
+    @Order(7)
+    public void shouldRemoveBooking() throws LocalizedException {
+        Booking foundBooking = bookingService.findById(2L);
+        assertNotNull(foundBooking);
+
+        bookingService.delete(2L);
+
+        assertThrows(LocalizedException.class, () -> bookingService.findById(2L));
     }
 
     private Booking createBooking(LocalDate date,
