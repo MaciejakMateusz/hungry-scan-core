@@ -42,6 +42,11 @@ class CategoryServiceImplTest {
     }
 
     @Test
+    void shouldNotFindById() {
+        assertThrows(LocalizedException.class, () -> categoryService.findById(321));
+    }
+
+    @Test
     @Order(1)
     public void shouldReturnAll() {
         List<Category> categories = List.of(
@@ -85,7 +90,7 @@ class CategoryServiceImplTest {
                 Elevate your dining experience with our artisanal desserts, where sweetness meets innovation. Savor the velvety textures, decadent flavors, and artistic presentations that transform each dessert into a work of edible art. From traditional favorites to avant-garde creations, our dessert collection is a testament to the creativity and skill of our culinary artisans.
                 Not just a meal, but a sensorial experience, our food category goes beyond nourishment, offering a symphony of tastes and aromas that transport you to gastronomic bliss. Imbued with a commitment to quality and culinary excellence, our offerings are designed to redefine your dining experience, leaving an indelible mark on your culinary memories. Embrace the extraordinary, savor the exceptional – welcome to a world where food is an art form, and every bite tells a story.
                 """);
-        assertThrows(DataIntegrityViolationException.class, () -> categoryService.save(category));
+        assertThrows(ConstraintViolationException.class, () -> categoryService.save(category));
     }
 
     @Test
