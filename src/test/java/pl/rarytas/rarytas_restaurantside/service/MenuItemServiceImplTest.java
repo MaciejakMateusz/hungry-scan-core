@@ -105,6 +105,12 @@ public class MenuItemServiceImplTest {
         assertThrows(LocalizedException.class, () -> menuItemService.findById(41));
     }
 
+    @Test
+    @Order(5)
+    public void shouldNotFindById() {
+        assertThrows(LocalizedException.class, () -> menuItemService.findById(321));
+    }
+
     private List<MenuItem> getMenuItems() {
         return menuItemService.findAll();
     }
