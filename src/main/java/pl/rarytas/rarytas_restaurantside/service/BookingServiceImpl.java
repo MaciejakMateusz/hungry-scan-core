@@ -47,8 +47,12 @@ public class BookingServiceImpl implements BookingService {
     public void save(Booking booking) throws LocalizedException {
         if (bookingValidator.isValidBooking(booking)) {
             bookingRepository.saveAndFlush(booking);
-            RestaurantTable table = restaurantTableRepository.findById(booking.getTableId()).orElseThrow();
-            table.getBookings().add(booking);
+
+            RestaurantTable table = restaurantTableRepository.findById(booking.getTableId())
+                    .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                            "error.restaurantTableService.tableNotFound", booking.getTableId()));
+
+            table.addBooking(booking);
             restaurantTableRepository.save(table);
         } else {
             exceptionHelper.throwLocalizedMessage("error.bookingService.general.bookingCollides");

@@ -142,6 +142,20 @@ public class ApiRequestUtils {
         return prepObjMapper().readValue(jsonResponse, itemType);
     }
 
+    public <R> R fetchObjectWithParam(String endpointUrl, Class<R> itemType) throws Exception {
+        MvcResult result = mockMvc.perform(get(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        return prepObjMapper().readValue(jsonResponse, itemType);
+    }
+
     /**
      * Fetches from the specified endpoint URL and expects an unauthorized response according to the provided matcher.
      *

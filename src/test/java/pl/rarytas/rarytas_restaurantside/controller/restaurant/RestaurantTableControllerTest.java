@@ -58,6 +58,7 @@ public class RestaurantTableControllerTest {
                         "/api/restaurant/tables/show", 5, RestaurantTable.class);
         assertTrue(table.isActive());
         assertEquals(5, table.getId());
+        assertEquals("58d77e24-6b8c-41a9-b24c-a67602deacdd", table.getToken());
     }
 
     @Test

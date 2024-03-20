@@ -16,8 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -167,12 +166,16 @@ class MenuItemControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(13)
     void shouldDeleteMenuItem() throws Exception {
+        MenuItem menuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
+        assertNotNull(menuItem);
+
         apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", 41);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/items/show", 42, status().isBadRequest());
-        assertEquals("Danie z podanym ID = 42 nie istnieje.", responseBody.get("exceptionMsg"));
+                        "/api/cms/items/show", 41, status().isBadRequest());
+        assertEquals("Danie z podanym ID = 41 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test

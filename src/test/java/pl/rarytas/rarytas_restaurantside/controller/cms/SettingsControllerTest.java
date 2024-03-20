@@ -108,6 +108,8 @@ class SettingsControllerTest {
         settings.setLanguage(Language.PL);
         settings.setOpeningTime(LocalTime.of(10, 30));
         settings.setClosingTime(LocalTime.of(22, 0));
+        settings.setCustomerSessionTime(3L);
+        settings.setEmployeeSessionTime(20L);
         return settings;
     }
 }

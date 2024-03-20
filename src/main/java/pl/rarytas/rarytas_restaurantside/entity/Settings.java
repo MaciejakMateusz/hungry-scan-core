@@ -36,5 +36,13 @@ public class Settings {
 
     @NotNull
     @Column(nullable = false)
+    private Long employeeSessionTime;
+
+    @NotNull
+    @Column(nullable = false)
+    private Long customerSessionTime;
+
+    @NotNull
+    @Column(nullable = false)
     private Short capacity;
 }

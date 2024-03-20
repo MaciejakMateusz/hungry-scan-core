@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.JwtService;
 
 import java.security.Key;
 import java.util.Date;
@@ -16,25 +17,40 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtService {
+public class JwtServiceImp implements JwtService {
 
     private final Environment environment;
 
-    public JwtService(Environment environment) {
+    public JwtServiceImp(Environment environment) {
         this.environment = environment;
     }
 
+    @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    @Override
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    @Override
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    @Override
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    @Override
+    public String generateToken(String username, long hoursToExpire) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username, hoursToExpire);
     }
 
     private Claims extractAllClaims(String token) {
@@ -50,18 +66,8 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
-    public String GenerateToken(String username) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
-    }
-
-    private String createToken(Map<String, Object> claims, String username) {
-        long expirationTimeMillis = System.currentTimeMillis() + (20 * 60 * 60 * 1000);
+    private String createToken(Map<String, Object> claims, String username, long hoursToExpire) {
+        long expirationTimeMillis = System.currentTimeMillis() + (hoursToExpire * 60 * 60 * 1000); // 20 hours
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -75,4 +81,5 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(environment.getProperty("JWT_SECRET"));
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
 }

@@ -41,6 +41,13 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     }
 
     @Override
+    public RestaurantTable findByToken(String token) throws LocalizedException {
+        return restaurantTableRepository.findByToken(token)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.general.accessDenied"));
+    }
+
+    @Override
     public void save(RestaurantTable restaurantTable) {
         restaurantTableRepository.save(restaurantTable);
     }

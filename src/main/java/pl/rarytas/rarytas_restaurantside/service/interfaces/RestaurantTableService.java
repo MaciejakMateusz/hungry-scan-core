@@ -12,6 +12,8 @@ public interface RestaurantTableService {
 
     RestaurantTable findById(Integer id) throws LocalizedException;
 
+    RestaurantTable findByToken(String token) throws LocalizedException;
+
     void save(RestaurantTable restaurantTable);
 
     void toggleActivation(Integer id);

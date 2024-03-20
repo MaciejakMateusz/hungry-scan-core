@@ -25,7 +25,7 @@ public interface UserService {
 
     boolean existsByUsername(String username);
 
-    boolean isModifiedUserValid(User user) throws LocalizedException;
+    boolean isUpdatedUserValid(User user) throws LocalizedException;
 
     String getErrorParam(User user) throws LocalizedException;
 

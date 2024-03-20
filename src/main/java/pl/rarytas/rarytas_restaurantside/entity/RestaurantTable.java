@@ -1,6 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,8 +21,8 @@ public class RestaurantTable {
     @Id
     private Integer id;
 
-    @Column(length = 50, name = "customer_name")
-    private String customerName;
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<User> users;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Booking> bookings;
@@ -31,9 +32,21 @@ public class RestaurantTable {
 
     private boolean isActive;
 
+    @Column(length = 36, nullable = false)
+    @NotNull
+    private String token;
+
     public void removeBooking(Booking booking) {
-        if (!bookings.isEmpty()) {
-            bookings.remove(booking);
+        if (!this.bookings.isEmpty()) {
+            this.bookings.remove(booking);
         }
+    }
+
+    public void addBooking(Booking booking) {
+        this.bookings.add(booking);
+    }
+
+    public void addCustomer(User user) {
+        this.users.add(user);
     }
 }

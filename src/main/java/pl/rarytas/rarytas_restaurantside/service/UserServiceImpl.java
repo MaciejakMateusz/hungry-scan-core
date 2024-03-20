@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isModifiedUserValid(User user) throws LocalizedException {
+    public boolean isUpdatedUserValid(User user) throws LocalizedException {
         return "".equals(getErrorParam(user));
     }
 

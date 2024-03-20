@@ -15,8 +15,7 @@ import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -205,8 +204,9 @@ class CategoryControllerTest {
     void shouldRemoveCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+        assertNotNull(existingCategory);
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", existingCategory);
+        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 9);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -218,7 +218,7 @@ class CategoryControllerTest {
     @WithMockUser(roles = "COOK")
     @Order(16)
     void shouldNotAllowUnauthorizedAccessToRemoveCategory() throws Exception {
-        apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", new Category(), status().isForbidden());
+        apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isForbidden());
     }
 
     private Category createCategory() {

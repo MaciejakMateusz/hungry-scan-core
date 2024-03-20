@@ -96,7 +96,7 @@ public class AdminManagementController {
         if (br.hasErrors()) {
             return badRequestWithErrors(br);
         }
-        if (userService.isModifiedUserValid(user)) {
+        if (userService.isUpdatedUserValid(user)) {
             userService.save(user);
             return ResponseEntity.ok(params);
         } else {

@@ -15,8 +15,7 @@ import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -168,6 +167,10 @@ public class RestaurantControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Order(14)
     void shouldRemoveRestaurant() throws Exception {
+        Restaurant restaurant =
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+        assertNotNull(restaurant);
+
         apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete", 3);
 
         Map<String, Object> responseBody =

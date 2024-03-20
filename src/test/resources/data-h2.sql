@@ -160,44 +160,44 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (1, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (2, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (3, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (4, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (5, true);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (6, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (7, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (8, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (9, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (10, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (11, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (12, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (13, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (14, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (15, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (16, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (17, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (18, false);
-INSERT INTO restaurant_tables (id, is_active)
-VALUES (19, false);
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (1, false, '19436a86-e200-400d-aa2e-da4686805d00');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (2, false, '79d8684f-333e-4275-a317-fa06d46fa6b6');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (3, false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (4, false, '5afb9629-990a-4934-87f2-793b1aa2f35e');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (5, true, '58d77e24-6b8c-41a9-b24c-a67602deacdd');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (6, false, '59ebc00c-b580-4dff-9788-2df90b1d4bba');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (7, false, 'ef303854-6faa-4615-8d47-6f3686086586');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (8, false, '97cba027-ae47-4c42-8828-f4b3b3506d0c');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (9, false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (10, false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (11, false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (12, false, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (13, false, '6696c583-a312-4b24-9716-430826ad1e96');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (14, false, 'a65896cb-805d-4d7b-849b-1d53e78f3191');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (15, false, '65b6bb94-da99-4ced-8a94-5860fe95e708');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (16, false, '2fd07320-a841-48ad-9f3f-35b307014b2a');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (17, false, '3740c35f-5759-4eb8-ab00-cb3807707235');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (18, false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf');
+INSERT INTO restaurant_tables (id, is_active, token)
+VALUES (19, false, '96fb4431-af22-48f4-9e4c-40b5774d9ab2');
 
 INSERT INTO role (id, name, displayed_name)
 VALUES (1, 'ROLE_WAITER', 'Kelner');
@@ -207,6 +207,8 @@ INSERT INTO role (id, name, displayed_name)
 VALUES (3, 'ROLE_MANAGER', 'Menadżer');
 INSERT INTO role (id, name, displayed_name)
 VALUES (4, 'ROLE_COOK', 'Kucharz');
+INSERT INTO role (id, name, displayed_name)
+VALUES (5, 'ROLE_CUSTOMER', 'Klient');
 
 
 INSERT INTO ordered_items (quantity, menu_item_id, is_ready_to_serve)
@@ -378,8 +380,8 @@ VALUES (13, 53);
 INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
 VALUES (5, 54);
 
-INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity)
-VALUES (1, 3, '07:00:00', '23:00:00', 1, 120);
+INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity, customer_session_time, employee_session_time)
+VALUES (1, 3, '07:00:00', '23:00:00', 1, 120, 3, 20);
 
 INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname)
 VALUES ('2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
