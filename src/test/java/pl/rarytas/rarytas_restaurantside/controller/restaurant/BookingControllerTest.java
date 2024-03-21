@@ -8,7 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
@@ -25,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BookingControllerTest {
 
     @Autowired
@@ -33,7 +34,6 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(1)
     public void shouldGetById() throws Exception {
         Booking booking =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/bookings/show", 1, Booking.class);
@@ -41,14 +41,14 @@ class BookingControllerTest {
     }
 
     @Test
-    @Order(2)
     public void shouldNotAllowUnauthorizedAccessToBookingById() throws Exception {
         apiRequestUtils.postAndExpect("/api/restaurant/bookings/show", 1, status().isUnauthorized());
     }
 
     @Test
-    @Order(3)
     @WithMockUser(roles = "COOK")
+    @Transactional
+    @Rollback
     public void testInSequence() throws Exception {
         shouldSaveNewBooking(2L);
         shouldSaveNewBooking(3L);
@@ -104,7 +104,6 @@ class BookingControllerTest {
     }
 
     @Test
-    @Order(4)
     public void shouldNotAllowAccessWithoutAuthorization() throws Exception {
         Booking booking = createBooking(12L);
         Map<String, Object> requestParams = getPageableAndDateRanges();
