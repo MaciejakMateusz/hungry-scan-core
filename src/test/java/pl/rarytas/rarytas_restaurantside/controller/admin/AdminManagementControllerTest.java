@@ -1,7 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.controller.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -9,8 +10,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Role;
 import pl.rarytas.rarytas_restaurantside.entity.User;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
@@ -29,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AdminManagementControllerTest {
 
     @Autowired
@@ -40,7 +42,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(1)
     public void shouldGetAllUsers() throws Exception {
         List<User> users =
                 apiRequestUtils.fetchAsList(
@@ -53,7 +54,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(2)
     void shouldNotAllowUnauthorizedAccessToUsers() throws Exception {
         mockMvc.perform(get("/api/admin/users"))
                 .andExpect(status().isForbidden());
@@ -61,7 +61,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(3)
     public void shouldGetWaiters() throws Exception {
         List<User> users =
                 apiRequestUtils.fetchAsList(
@@ -73,7 +72,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(4)
     void shouldNotAllowUnauthorizedAccessToWaiters() throws Exception {
         mockMvc.perform(get("/api/admin/users/waiters"))
                 .andExpect(status().isForbidden());
@@ -81,7 +79,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(5)
     public void shouldGetCooks() throws Exception {
         List<User> users =
                 apiRequestUtils.fetchAsList(
@@ -93,7 +90,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(6)
     void shouldNotAllowUnauthorizedAccessToCooks() throws Exception {
         mockMvc.perform(get("/api/admin/users/waiters"))
                 .andExpect(status().isForbidden());
@@ -101,7 +97,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(7)
     public void shouldGetManagers() throws Exception {
         List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/managers", User.class);
@@ -112,7 +107,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(8)
     void shouldNotAllowUnauthorizedAccessToManagers() throws Exception {
         mockMvc.perform(get("/api/admin/users/managers"))
                 .andExpect(status().isForbidden());
@@ -120,7 +114,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(9)
     public void shouldGetAdmins() throws Exception {
         List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/admins", User.class);
@@ -131,7 +124,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(10)
     void shouldNotAllowUnauthorizedAccessToAdmins() throws Exception {
         mockMvc.perform(get("/api/admin/users/admins"))
                 .andExpect(status().isForbidden());
@@ -139,7 +131,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(11)
     void shouldShowUserById() throws Exception {
         User user = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 5, User.class);
         assertEquals("owner", user.getUsername());
@@ -147,7 +138,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(12)
     void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
         Integer id = 4;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -159,7 +149,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(13)
     void shouldNotShowUserById() throws Exception {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -169,7 +158,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(14)
     void shouldGetNewUserObject() throws Exception {
         Object user = apiRequestUtils.fetchObject("/api/admin/users/add", User.class);
         assertInstanceOf(User.class, user);
@@ -177,7 +165,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(15)
     void shouldNotAllowUnauthorizedAccessToNewUserObject() throws Exception {
         mockMvc.perform(get("/api/admin/users/add"))
                 .andExpect(status().isForbidden());
@@ -185,7 +172,8 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(16)
+    @Rollback
+    @Transactional
     void shouldAddNewUser() throws Exception {
         User user = createUser();
         apiRequestUtils.postAndExpect200("/api/admin/users/add", user);
@@ -196,7 +184,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(17)
     void shouldNotAllowUnauthorizedToAddUser() throws Exception {
         User user = createUser();
         apiRequestUtils.postAndExpect("/api/admin/users/add", user, status().isForbidden());
@@ -204,7 +191,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(18)
     void shouldNotAddWithIncorrectEmail() throws Exception {
         User user = createUser();
         user.setEmail("mordo@gmailcom");
@@ -217,7 +203,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(19)
     void shouldNotAddWithIncorrectUsername() throws Exception {
         User user = createUser();
         user.setUsername("ex");
@@ -232,7 +217,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(20)
     void shouldNotAddWithIncorrectPassword() throws Exception {
         User user = createUser();
         user.setPassword("example123");
@@ -248,7 +232,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(21)
     void shouldNotAddWithExistingEmail() throws Exception {
         User user = createUser();
         user.setUsername("mleczyk");
@@ -263,7 +246,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(22)
     void shouldNotAddWithNotMatchingPasswords() throws Exception {
         User user = createUser();
         user.setUsername("ExampleUser2");
@@ -279,20 +261,20 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(23)
+    @Rollback
+    @Transactional
     void shouldUpdateUser() throws Exception {
-        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
+        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 3, User.class);
         existingUser.setEmail("updated@email.com");
 
         apiRequestUtils.patchAndExpect200("/api/admin/users/update", existingUser);
 
-        User updatedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
+        User updatedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 3, User.class);
         assertEquals("updated@email.com", updatedUser.getEmail());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(24)
     void shouldNotAllowUnauthorizedAccessToUpdateUser() throws Exception {
         User user = new User();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -304,10 +286,9 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(25)
     void shouldNotUpdateIncorrectUser() throws Exception {
-        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
-        existingUser.setEmail("updated@emailcom");
+        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 3, User.class);
+        existingUser.setEmail("wronk@email");
 
         Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/admin/users/update", existingUser);
 
@@ -317,21 +298,22 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
-    @Order(26)
+    @Rollback
+    @Transactional
     void shouldRemoveUser() throws Exception {
-        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
+        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 4, User.class);
+        assertNotNull(existingUser);
 
         apiRequestUtils.deleteAndExpect200("/api/admin/users/delete", existingUser);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/show", 6, status().isBadRequest());
-        assertEquals("Użytkownik z podanym ID = 6 nie istnieje.", responseBody.get("exceptionMsg"));
+                        "/api/admin/users/show", 4, status().isBadRequest());
+        assertEquals("Użytkownik z podanym ID = 4 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(27)
     void shouldNotAllowUnauthorizedAccessToRemoveUser() throws Exception {
         User user = new User();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -343,7 +325,6 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
-    @Order(28)
     void shouldNotSelfRemove() throws Exception {
         User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 2, User.class);
         Map<String, Object> responseBody =
