@@ -55,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
             table.addBooking(booking);
             restaurantTableRepository.save(table);
         } else {
-            exceptionHelper.throwLocalizedMessage("error.bookingService.general.bookingCollides");
+            exceptionHelper.throwLocalizedMessage("error.bookingService.bookingCollides");
         }
     }
 

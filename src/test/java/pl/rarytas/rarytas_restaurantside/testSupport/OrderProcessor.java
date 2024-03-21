@@ -62,17 +62,16 @@ public class OrderProcessor {
     /**
      * Creates take-away order based on provided parameters.
      *
-     * @param tableNumber The number of the table where the order is placed.
      * @param menuItemIds The list of IDs of menu items to be included in the order.
      * @return The created order.
      */
-    public Order createTakeAwayOrder(Integer tableNumber, List<Integer> menuItemIds) throws LocalizedException {
+    public Order createTakeAwayOrder(List<Integer> menuItemIds) throws LocalizedException {
         return new CreateOrder(
                 restaurantService,
                 restaurantTableService,
                 menuItemService,
                 1,
-                tableNumber,
+                19,
                 menuItemIds,
                 true).createOrder();
     }

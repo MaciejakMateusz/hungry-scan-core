@@ -54,13 +54,13 @@ public class OrderServiceHelper {
 
     public void assertOrderExistsElseThrow(Long id) throws LocalizedException {
         if (!orderRepository.existsById(id)) {
-            exceptionHelper.throwLocalizedMessage("error.orderService.general.orderNotFound", id);
+            exceptionHelper.throwLocalizedMessage("error.orderService.orderNotFound", id);
         }
     }
 
     private void assertIsNotResolvedElseThrow(Order existingOrder) throws LocalizedException {
         if (!existingOrder.isResolved()) {
-            exceptionHelper.throwLocalizedMessage("error.orderService.general.orderExistsForTable", existingOrder.getId());
+            exceptionHelper.throwLocalizedMessage("error.orderService.orderExistsForTable", existingOrder.getId());
         }
     }
 
@@ -77,6 +77,6 @@ public class OrderServiceHelper {
     }
 
     private void throwAlreadyRequested(Order existingOrder) throws LocalizedException {
-        exceptionHelper.throwLocalizedMessage("error.orderService.general.alreadyRequested", existingOrder.getId());
+        exceptionHelper.throwLocalizedMessage("error.orderService.alreadyRequested", existingOrder.getId());
     }
 }

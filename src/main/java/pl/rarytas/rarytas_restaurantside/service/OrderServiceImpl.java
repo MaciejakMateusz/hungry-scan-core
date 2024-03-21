@@ -3,8 +3,8 @@ package pl.rarytas.rarytas_restaurantside.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
@@ -56,32 +56,28 @@ public class OrderServiceImpl implements OrderService {
     public Order findById(Long id) throws LocalizedException {
         return orderRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.orderService.general.orderNotFound", id));
+                        "error.orderService.orderNotFound", id));
     }
 
     @Override
     public Order findByTableNumber(Integer tableNumber) throws LocalizedException {
         return orderRepository.findNewestOrderByTableNumber(tableNumber)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.orderService.general.orderNotFoundByTable", tableNumber));
+                        "error.orderService.orderNotFoundByTable", tableNumber));
     }
 
     @Override
+    @Transactional
     public void save(Order order) throws LocalizedException {
         if (orderHelper.orderExistsForGivenTable(order)) {
+            exceptionHelper.throwLocalizedMessage("error.orderService.orderExistsForTable");
             return;
         }
         saveRefreshAndNotify(order);
     }
 
     @Override
-    public void orderMoreDishes(Order order) throws LocalizedException {
-        Order existingOrder = findById(order.getId());
-        addItemsToOrder(existingOrder, order.getOrderedItems());
-        saveRefreshAndNotify(existingOrder);
-    }
-
-    @Override
+    @Transactional
     public void saveTakeAway(Order order) {
         orderRepository.save(order);
         orderRepository.refresh(order);
@@ -89,20 +85,26 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void requestBill(Order order) throws LocalizedException {
-        orderHelper.assertOrderExistsElseThrow(order.getId());
-        Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
+    @Transactional
+    public void orderMoreDishes(Order order) throws LocalizedException {
+        Order existingOrder = findById(order.getId());
+        existingOrder.addToOrderedItems(order.getOrderedItems());
+        saveRefreshAndNotify(existingOrder);
+    }
+
+    @Override
+    public void requestBill(Long id, String paymentMethod) throws LocalizedException {
+        Order existingOrder = findById(id);
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
         orderHelper.assertBillNotRequestedElseThrow(existingOrder);
         existingOrder.setBillRequested(true);
-        existingOrder.setPaymentMethod(order.getPaymentMethod());
+        existingOrder.setPaymentMethod(paymentMethod);
         orderRepository.saveAndFlush(existingOrder);
         messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }
 
     @Override
     public void finish(Long id) throws LocalizedException {
-        orderHelper.assertOrderExistsElseThrow(id);
         Order existingOrder = findById(id);
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
         orderHelper.prepareForFinalizingDineIn(existingOrder);
@@ -114,7 +116,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void finishTakeAway(Long id) throws LocalizedException {
-        orderHelper.assertOrderExistsElseThrow(id);
         Order existingOrder = findById(id);
         orderHelper.prepareForFinalizingTakeAway(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
@@ -124,9 +125,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void callWaiter(Order order) throws LocalizedException {
-        orderHelper.assertOrderExistsElseThrow(order.getId());
-        Order existingOrder = orderRepository.findById(order.getId()).orElseThrow();
+    public void callWaiter(Long id) throws LocalizedException {
+        Order existingOrder = findById(id);
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
         orderHelper.assertBillNotRequestedElseThrow(existingOrder);
         existingOrder.setWaiterCalled(true);
@@ -142,7 +142,10 @@ public class OrderServiceImpl implements OrderService {
         orderHelper.assertOrderExistsElseThrow(id);
         Order order = orderRepository.findById(id).orElseThrow();
         order.setWaiterCalled(false);
-        WaiterCall waiterCall = waiterCallServiceImpl.findByOrderAndResolved(order, false).orElseThrow();
+
+        WaiterCall waiterCall = waiterCallServiceImpl.findByOrderAndResolved(order, false)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.orderService.waiterCallNotFound"));
+
         waiterCall.setOrder(order);
         waiterCall.setResolved(true);
         orderRepository.saveAndFlush(order);
@@ -152,16 +155,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void delete(Order order) {
         orderRepository.delete(order);
-        orderRepository.refresh(order);
-    }
-
-    private void addItemsToOrder(Order existingOrder, List<OrderedItem> newItems) {
-        existingOrder.getOrderedItems().addAll(newItems);
     }
 
     private void saveRefreshAndNotify(Order order) {
         orderRepository.saveAndFlush(order);
-        orderRepository.refresh(order);
         messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }
 }

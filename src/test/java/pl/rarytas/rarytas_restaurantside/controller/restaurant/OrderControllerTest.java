@@ -1,6 +1,5 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -16,7 +15,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
 
@@ -40,9 +38,6 @@ class OrderControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private OrderService orderService;
 
     @Autowired
     private OrderProcessor orderProcessor;
@@ -172,12 +167,16 @@ class OrderControllerTest {
     private void shouldNotSaveOrderForOccupiedTable() throws Exception {
         Order order = orderProcessor.createDineInOrder(12, List.of(5, 1, 22));
 
-        assertThrows(ServletException.class, () ->
-                apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order));
+        Map<?, ?> errors =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/restaurant/orders/dine-in", order, status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Stolik posiada już zamówienie.", errors.get("exceptionMsg"));
     }
 
     public void shouldSaveNewTakeAwayOrder() throws Exception {
-        Order order = orderProcessor.createTakeAwayOrder(19, List.of(3, 10, 22, 33));
+        Order order = orderProcessor.createTakeAwayOrder(List.of(3, 10, 22, 33));
 
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/take-away", order);
 
@@ -209,7 +208,8 @@ class OrderControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
         assertNotNull(order);
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/request-bill", order);
+        apiRequestUtils.patchAndExpect(
+                "/api/restaurant/orders/request-bill", 5L, "cash", status().isOk());
 
         Order updatedOrder =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
@@ -223,18 +223,28 @@ class OrderControllerTest {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
         assertNotNull(order);
-        assertThrows(ServletException.class, () ->
-                apiRequestUtils.patchAndExpect200("/api/restaurant/orders/request-bill", order)
-        );
+
+        Map<?, ?> errors =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/restaurant/orders/request-bill", 5L, "card", status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Zamówienie z podanym ID = 5 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+                errors.get("exceptionMsg"));
     }
 
     private void shouldNotCallWaiterWithBillRequested() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
         assertNotNull(order);
-        assertThrows(ServletException.class, () ->
-                apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", order)
-        );
+
+        Map<? ,?> errors =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/restaurant/orders/call-waiter", 5L, status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Zamówienie z podanym ID = 5 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+                errors.get("exceptionMsg"));
     }
 
     private void shouldOrderMoreDishes() throws Exception {
@@ -258,31 +268,37 @@ class OrderControllerTest {
     private void shouldCallWaiter() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
-        assertNotNull(order);
+        assertFalse(order.isWaiterCalled());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", order);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", 7L);
 
-        Order updatedOrder = orderService.findById(7L);
-        assertNotNull(updatedOrder);
+        Order updatedOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
         assertTrue(updatedOrder.isWaiterCalled());
-        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
-                orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()));
     }
 
     private void shouldNotRequestBillWhenWaiterCalled() throws Exception {
-        Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
-        assertNotNull(order);
-        assertThrows(ServletException.class, () ->
-                apiRequestUtils.patchAndExpect200("/api/restaurant/orders/request-bill", order));
+        Map<?, ?> errors =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/restaurant/orders/request-bill", 7L, "card", status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Zamówienie z podanym ID = 7 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+                errors.get("exceptionMsg"));
     }
 
     private void shouldNotCallWaiterSecondTime() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
         assertNotNull(order);
-        assertThrows(Exception.class, () ->
-                apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", order));
+
+        Map<? ,?> errors =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/restaurant/orders/call-waiter", 7L, status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Zamówienie z podanym ID = 7 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+                errors.get("exceptionMsg"));
     }
 
     private void shouldResolveWaiterCall() throws Exception {
@@ -308,11 +324,11 @@ class OrderControllerTest {
 
     private void shouldFinalizeTakeAway() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
         assertNotNull(order);
         assertTrue(order.isForTakeAway());
 
-        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-take-away", 6);
+        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-take-away", 6L);
 
         Map<?, ?> errors =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -326,10 +342,10 @@ class OrderControllerTest {
         Order order = orderProcessor.createDineInOrder(12, List.of(4, 12, 15));
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/dine-in", order);
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/take-away", order);
-        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/request-bill", order);
-        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/call-waiter", order);
-        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/resolve-call", 111);
-        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-dine-in", 111);
-        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-take-away", 111);
+        apiRequestUtils.patchAndExpect("/api/restaurant/orders/request-bill", 6L, "cash", status().isUnauthorized());
+        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/call-waiter", 111L);
+        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/resolve-call", 111L);
+        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-dine-in", 111L);
+        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-take-away", 111L);
     }
 }

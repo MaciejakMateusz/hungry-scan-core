@@ -7,10 +7,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,32 +53,28 @@ public class OrderController {
 
     @PostMapping("/take-away")
     public ResponseEntity<Map<String, Object>> saveTakeAwayOrder(@RequestBody Order order) {
-        orderService.saveTakeAway(order);
-        return ResponseEntity.ok(new HashMap<>());
+        return responseHelper.buildResponse(order, orderService::saveTakeAway);
     }
 
     @PostMapping("/dine-in")
-    public ResponseEntity<Map<String, Object>> saveDineInOrder(@RequestBody Order order) throws LocalizedException {
-        orderService.save(order);
-        return ResponseEntity.ok(new HashMap<>());
+    public ResponseEntity<Map<String, Object>> saveDineInOrder(@RequestBody Order order) {
+        return responseHelper.buildResponse(order, orderService::save);
     }
 
     @PatchMapping
-    public ResponseEntity<Map<String, Object>> orderMoreDishes(@RequestBody Order order) throws LocalizedException {
-        orderService.orderMoreDishes(order);
-        return ResponseEntity.ok(new HashMap<>());
+    public ResponseEntity<Map<String, Object>> orderMoreDishes(@RequestBody Order order) {
+        return responseHelper.buildResponse(order, orderService::orderMoreDishes);
     }
 
     @PatchMapping("/request-bill")
-    public ResponseEntity<Map<String, Object>> requestBill(@RequestBody Order order) throws LocalizedException {
-        orderService.requestBill(order);
-        return ResponseEntity.ok(new HashMap<>());
+    public ResponseEntity<Map<String, Object>> requestBill(@RequestParam Long id,
+                                                           @RequestParam String paymentMethod) {
+        return responseHelper.buildResponse(id, paymentMethod, orderService::requestBill);
     }
 
     @PatchMapping("/call-waiter")
-    public ResponseEntity<Map<String, Object>> callWaiter(@RequestBody Order order) throws LocalizedException {
-        orderService.callWaiter(order);
-        return ResponseEntity.ok(new HashMap<>());
+    public ResponseEntity<Map<String, Object>> callWaiter(@RequestBody Long id) {
+        return responseHelper.buildResponse(id, orderService::callWaiter);
     }
 
     @PatchMapping("/resolve-call")

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import pl.rarytas.rarytas_restaurantside.utility.ThrowingBiConsumer;
 import pl.rarytas.rarytas_restaurantside.utility.ThrowingConsumer;
 import pl.rarytas.rarytas_restaurantside.utility.ThrowingFunction;
 import pl.rarytas.rarytas_restaurantside.utility.TriFunction;
@@ -50,6 +51,23 @@ public class ResponseHelper {
     public <T> ResponseEntity<Map<String, Object>> buildResponse(T t, ThrowingConsumer<T> consumer) {
         try {
             consumer.accept(t);
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param t        Object to accept by the consumer.
+     * @param r        Object to accept by the consumer.
+     * @param consumer Behaviour to pass from a given service. For example bookingService::delete
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <T, R> ResponseEntity<Map<String, Object>> buildResponse(T t, R r, ThrowingBiConsumer<T, R> consumer) {
+        try {
+            consumer.accept(t, r);
         } catch (Exception e) {
             return createErrorResponse(e);
         }

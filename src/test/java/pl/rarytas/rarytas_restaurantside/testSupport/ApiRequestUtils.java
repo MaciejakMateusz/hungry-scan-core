@@ -266,6 +266,36 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
+     * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
+     *
+     * @param endpointUrl The URL endpoint to send the POST request to.
+     * @param t           The object to be serialized and sent as the request body.
+     * @param r           The object to be serialized and sent as the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @param <T>         The type of the object being sent in the request body.
+     * @return A Map representing the response body, with String keys and Object values.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T, R> Map<String, Object> patchAndReturnResponseBody(String endpointUrl,
+                                                                 T t,
+                                                                 R r,
+                                                                 ResultMatcher matcher) throws Exception {
+        ResultActions resultActions = mockMvc.perform(patch(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("id", t.toString())
+                        .param("paymentMethod", r.toString()))
+                .andExpect(matcher)
+                .andDo(print());
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+        };
+        return prepObjMapper().readValue(responseBody, typeReference);
+    }
+
+    /**
      * Sends a DELETE request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      * Retrieves and returns the response body as a Map of String keys to Object values.
@@ -313,6 +343,28 @@ public class ApiRequestUtils {
         mockMvc.perform(patch(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
+                .andExpect(matcher)
+                .andDo(print());
+    }
+
+    /**
+     * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
+     * Expects a certain result based on the provided ResultMatcher.
+     *
+     * @param url    The URL endpoint to send the PATCH request to.
+     * @param t      The object to be serialized and sent as the request body.
+     * @param r      The object to be serialized and sent as the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T, R> void patchAndExpect(String url,
+                                      T t,
+                                      R r,
+                                      ResultMatcher matcher) throws Exception {
+        mockMvc.perform(patch(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("id", t.toString())
+                        .param("paymentMethod", r.toString()))
                 .andExpect(matcher)
                 .andDo(print());
     }

@@ -22,13 +22,13 @@ public interface OrderService {
 
     void saveTakeAway(Order order);
 
-    void requestBill(Order order) throws LocalizedException;
+    void requestBill(Long id, String paymentMethod) throws LocalizedException;
 
     void finish(Long id) throws LocalizedException;
 
     void finishTakeAway(Long id) throws LocalizedException;
 
-    void callWaiter(Order order) throws LocalizedException;
+    void callWaiter(Long id) throws LocalizedException;
 
     void resolveWaiterCall(Long id) throws LocalizedException;
 

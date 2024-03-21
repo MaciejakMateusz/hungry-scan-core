@@ -39,7 +39,7 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
     public HistoryOrder findById(Long id) throws LocalizedException {
         return historyOrderRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.orderService.general.orderNotFound", id));
+                        "error.orderService.orderNotFound", id));
     }
 
     @Override

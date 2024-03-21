@@ -76,6 +76,10 @@ public class Order {
         return sum;
     }
 
+    public void addToOrderedItems(List<OrderedItem> orderedItems) {
+        this.orderedItems.addAll(orderedItems);
+    }
+
     @Override
     public String toString() {
         return "Order{" +
