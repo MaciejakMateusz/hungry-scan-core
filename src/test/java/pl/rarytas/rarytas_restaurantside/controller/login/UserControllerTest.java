@@ -1,9 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller.login;
 
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -11,8 +9,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.dto.AuthRequestDTO;
 import pl.rarytas.rarytas_restaurantside.dto.JwtResponseDTO;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserControllerTest {
 
     @Autowired
@@ -47,7 +46,8 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @org.junit.jupiter.api.Order(1)
+    @Transactional
+    @Rollback
     void shouldAuthenticateAndLoginUser() throws Exception {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("mati", "Lubieplacki123!");
 
@@ -59,21 +59,22 @@ class UserControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(2)
     void shouldLoginAndReturnUnauthorized() throws Exception {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("iDoNotExist", "DoesNotMatter123!");
         apiRequestUtils.postAndExpectUnauthorized("/api/login", authRequestDTO);
     }
 
     @Test
-    @org.junit.jupiter.api.Order(3)
+    @Transactional
+    @Rollback
     void shouldAuthenticateForCollaborativeOrdering() throws Exception {
         shouldAuthenticateQrScanForTable1FirstCustomer();
         shouldAuthenticateQrScanForTable1SecondCustomer();
     }
 
     @Test
-    @org.junit.jupiter.api.Order(4)
+    @Transactional
+    @Rollback
     void shouldAuthenticateQrScanForTable6AndCallWaiter() throws Exception {
         RestaurantTable restaurantTable = restaurantTableService.findById(6);
         restaurantTable.setActive(true);
