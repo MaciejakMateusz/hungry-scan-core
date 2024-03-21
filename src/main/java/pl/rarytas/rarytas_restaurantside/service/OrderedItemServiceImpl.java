@@ -42,11 +42,6 @@ public class OrderedItemServiceImpl implements OrderedItemService {
     }
 
     @Override
-    public void delete(OrderedItem orderedItem) {
-        orderedItemRepository.delete(orderedItem);
-    }
-
-    @Override
     @Transactional
     public void saveAll(List<OrderedItem> orderedItems) {
         orderedItemRepository.saveAllAndFlush(orderedItems);

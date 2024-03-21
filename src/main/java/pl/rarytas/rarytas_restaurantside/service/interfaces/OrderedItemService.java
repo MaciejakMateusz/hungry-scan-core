@@ -10,8 +10,6 @@ public interface OrderedItemService {
 
     OrderedItem findById(Long id) throws LocalizedException;
 
-    void delete(OrderedItem orderedItem);
-
     void saveAll(List<OrderedItem> orderedItems);
 
     void toggleIsReadyToServe(Long id);
