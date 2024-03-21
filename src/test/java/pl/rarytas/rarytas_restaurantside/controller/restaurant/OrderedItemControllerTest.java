@@ -9,8 +9,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
@@ -29,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class OrderedItemControllerTest {
 
     @Autowired
@@ -43,7 +44,6 @@ public class OrderedItemControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(1)
     public void shouldGetAllFromEndpoint() throws Exception {
         List<OrderedItem> orderedItems =
                 apiRequestUtils.fetchAsList(
@@ -53,7 +53,6 @@ public class OrderedItemControllerTest {
     }
 
     @Test
-    @Order(2)
     void shouldNotAllowUnauthorizedAccessToOrderedItems() throws Exception {
         mockMvc.perform(get("/api/restaurant/ordered-items"))
                 .andExpect(status().isUnauthorized());
@@ -61,7 +60,6 @@ public class OrderedItemControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(3)
     public void shouldShowOrderedItemById() throws Exception {
         OrderedItem orderedItem =
                 apiRequestUtils.postObjectExpect200(
@@ -70,7 +68,6 @@ public class OrderedItemControllerTest {
     }
 
     @Test
-    @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowOrderedItem() throws Exception {
         Long id = 4L;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -82,7 +79,8 @@ public class OrderedItemControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(5)
+    @Transactional
+    @Rollback
     void shouldAddOrderedItems() throws Exception {
         List<OrderedItem> orderedItems = createOrderedItems();
 
@@ -99,7 +97,6 @@ public class OrderedItemControllerTest {
     }
 
     @Test
-    @Order(6)
     void shouldNotAllowUnauthorizedAccessToAddOrderedItems() throws Exception {
         List<OrderedItem> orderedItems = createOrderedItems();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -111,29 +108,29 @@ public class OrderedItemControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(7)
+    @Transactional
+    @Rollback
     void shouldToggleIsReadyToServe() throws Exception {
         OrderedItem orderedItem =
                 apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/ordered-items/show", 5, OrderedItem.class);
+                        "/api/restaurant/ordered-items/show", 4, OrderedItem.class);
         assertFalse(orderedItem.isReadyToServe());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items/toggle-item", 5);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items/toggle-item", 4);
 
         OrderedItem readyOrderedItem =
                 apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/ordered-items/show", 5, OrderedItem.class);
+                        "/api/restaurant/ordered-items/show", 4, OrderedItem.class);
         assertTrue(readyOrderedItem.isReadyToServe());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items/toggle-item", 5);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items/toggle-item", 4);
         orderedItem =
                 apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/ordered-items/show", 5, OrderedItem.class);
+                        "/api/restaurant/ordered-items/show", 4, OrderedItem.class);
         assertFalse(orderedItem.isReadyToServe());
     }
 
     @Test
-    @Order(4)
     void shouldNotAllowUnauthorizedAccessToToggleIsReadyToServe() throws Exception {
         Long id = 6L;
         ObjectMapper objectMapper = new ObjectMapper();
