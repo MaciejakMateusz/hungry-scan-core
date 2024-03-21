@@ -1,9 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant.history;
 
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -29,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class HistoryOrderControllerTest {
 
     @Autowired
@@ -40,7 +37,6 @@ class HistoryOrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(1)
     public void shouldGetDineInHistoryOrders() throws Exception {
         Map<String, Object> requestParams = Map.of("pageNumber", 0, "pageSize", 20);
         Page<HistoryOrder> historyOrders =
@@ -53,7 +49,6 @@ class HistoryOrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(2)
     public void shouldNotAllowUnauthorizedAccessToDineInHistoryOrders() {
         Map<String, Object> requestParams = Map.of("pageNumber", 0, "pageSize", 20);
         assertThrows(AssertionError.class, () -> apiRequestUtils.fetchAsPage(
@@ -62,7 +57,6 @@ class HistoryOrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(3)
     public void shouldGetAllTakeAwayHistoryOrders() throws Exception {
         Map<String, Object> requestParams = Map.of("pageNumber", 0, "pageSize", 20);
         Page<HistoryOrder> historyOrders =
@@ -75,7 +69,6 @@ class HistoryOrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(4)
     public void shouldNotAllowUnauthorizedAccessToTakeAwayOrders() {
         Map<String, Object> requestParams = Map.of("pageNumber", 0, "pageSize", 20);
 
@@ -85,14 +78,12 @@ class HistoryOrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(5)
     public void shouldCountAll() throws Exception {
         Long count = apiRequestUtils.fetchObject("/api/restaurant/history-orders/count", Long.class);
         assertEquals(4L, count);
     }
 
     @Test
-    @org.junit.jupiter.api.Order(6)
     public void shouldNotAllowUnauthorizedAccessToCountAll() {
         assertThrows(AssertionError.class, () ->
                 apiRequestUtils.fetchObject("/api/restaurant/history-orders/count", Long.class));
@@ -100,7 +91,6 @@ class HistoryOrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(7)
     public void shouldGetDineInByDate() throws Exception {
         Map<String, Object> requestParams = getPageableAndDateRanges();
 
@@ -115,7 +105,6 @@ class HistoryOrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(8)
     public void shouldGetTakeAwayByDate() throws Exception {
         Map<String, Object> requestParams = getPageableAndDateRanges();
         Page<HistoryOrder> historyOrders =
@@ -141,7 +130,6 @@ class HistoryOrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(10)
     public void shouldGetById() throws Exception {
         HistoryOrder historyOrder =
                 apiRequestUtils.postObjectExpect200(
@@ -150,7 +138,6 @@ class HistoryOrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(11)
     public void shouldNotAllowUnauthorizedAccessToHistoryOrderById() throws Exception {
         mockMvc.perform(post("/api/restaurant/history-orders/show")
                         .contentType(MediaType.APPLICATION_JSON)
