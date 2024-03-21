@@ -1,7 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -9,8 +10,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Settings;
 import pl.rarytas.rarytas_restaurantside.enums.Language;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
@@ -28,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SettingsControllerTest {
 
     @Autowired
@@ -39,7 +41,6 @@ class SettingsControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER"})
-    @Order(1)
     void shouldGetSettings() throws Exception {
         Settings settings =
                 apiRequestUtils.fetchObject(
@@ -53,7 +54,6 @@ class SettingsControllerTest {
 
     @Test
     @WithMockUser(roles = {"WAITER"})
-    @Order(2)
     void shouldNotAllowUnauthorizedAccessToSettings() throws Exception {
         mockMvc.perform(get("/api/cms/settings"))
                 .andExpect(status().isForbidden());
@@ -61,7 +61,8 @@ class SettingsControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(3)
+    @Transactional
+    @Rollback
     void shouldUpdateSettings() throws Exception {
         Settings settings = createSettings();
         apiRequestUtils.patchAndExpect200("/api/cms/settings", settings);
@@ -75,7 +76,6 @@ class SettingsControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(4)
     void shouldNotAllowUnauthorizedAccessToUpdateSettings() throws Exception {
         Settings settings = createSettings();
         ObjectMapper objectMapper = apiRequestUtils.prepObjMapper();
@@ -87,7 +87,6 @@ class SettingsControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(5)
     void shouldNotUpdateIncorrectSettings() throws Exception {
         Settings settings = createSettings();
         settings.setClosingTime(null);
