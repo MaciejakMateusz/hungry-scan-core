@@ -7,8 +7,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
@@ -24,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RestaurantControllerTest {
 
     @Autowired
@@ -35,7 +36,6 @@ public class RestaurantControllerTest {
 
     @Test
     @WithMockUser(roles = {"WAITER"})
-    @Order(1)
     void shouldGetAllRestaurants() throws Exception {
         List<Restaurant> restaurants =
                 apiRequestUtils.fetchAsList(
@@ -47,14 +47,12 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @Order(2)
     void shouldNotAllowUnauthorizedAccessToRestaurants() throws Exception {
         mockMvc.perform(get("/api/cms/restaurants")).andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = {"COOK"})
-    @Order(3)
     void shouldShowRestaurantById() throws Exception {
         Restaurant restaurant =
                 apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 1, Restaurant.class);
@@ -62,14 +60,12 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowRestaurant() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/restaurants/show", 2, status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = {"WAITER"})
-    @Order(5)
     void shouldNotShowRestaurantById() throws Exception {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -79,7 +75,6 @@ public class RestaurantControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @Order(6)
     void shouldGetNewRestaurantObject() throws Exception {
         Object restaurant = apiRequestUtils.fetchObject("/api/cms/restaurants/add", Restaurant.class);
         assertInstanceOf(Restaurant.class, restaurant);
@@ -87,14 +82,14 @@ public class RestaurantControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(7)
     void shouldNotAllowUnauthorizedAccessToNewRestaurantObject() throws Exception {
         mockMvc.perform(get("/api/cms/restaurants/add")).andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @Order(8)
+    @Transactional
+    @Rollback
     void shouldAddNewRestaurant() throws Exception {
         Restaurant restaurant = createRestaurant();
 
@@ -108,7 +103,6 @@ public class RestaurantControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(9)
     void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
         Restaurant restaurant = createRestaurant();
         apiRequestUtils.postAndExpect("/api/cms/restaurants/add", restaurant, status().isForbidden());
@@ -116,7 +110,6 @@ public class RestaurantControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(10)
     void shouldNotAddWithIncorrectName() throws Exception {
         Restaurant restaurant = createRestaurant();
         restaurant.setName("");
@@ -129,32 +122,31 @@ public class RestaurantControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(11)
+    @Transactional
+    @Rollback
     void shouldUpdateRestaurant() throws Exception {
         Restaurant existingRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
         existingRestaurant.setName("Salty Foots");
 
         apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", existingRestaurant);
 
         Restaurant updatedRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
         assertEquals("Salty Foots", updatedRestaurant.getName());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(12)
     void shouldNotAllowUnauthorizedAccessToUpdateRestaurant() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/restaurants/add", new Restaurant(), status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(13)
     void shouldNotUpdateIncorrectRestaurant() throws Exception {
         Restaurant existingRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
         existingRestaurant.setName("");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/add", existingRestaurant);
@@ -165,23 +157,23 @@ public class RestaurantControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
-    @Order(14)
+    @Transactional
+    @Rollback
     void shouldRemoveRestaurant() throws Exception {
         Restaurant restaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
         assertNotNull(restaurant);
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete", 3);
+        apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete", 2);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/restaurants/show", 3, status().isBadRequest());
-        assertEquals("Restauracja z podanym ID = 3 nie istnieje.", responseBody.get("exceptionMsg"));
+                        "/api/cms/restaurants/show", 2, status().isBadRequest());
+        assertEquals("Restauracja z podanym ID = 2 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(15)
     void shouldNotAllowUnauthorizedAccessToDeleteRestaurant() throws Exception {
         apiRequestUtils.deleteAndExpect(
                 "/api/cms/restaurants/delete", 2, status().isForbidden());
