@@ -1,9 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -11,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderControllerTest {
 
     @Autowired
@@ -47,7 +45,6 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(1)
     public void shouldGetAllOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders", Order.class);
         assertFalse(orders.stream().anyMatch(Order::isPaid));
@@ -55,7 +52,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(2)
     public void shouldNotAllowUnauthorizedAccessToOrders() throws Exception {
         mockMvc.perform(get("/api/restaurant/orders"))
                 .andExpect(status().isUnauthorized());
@@ -63,7 +59,6 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(3)
     public void shouldGetAllTakeAwayOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/take-away", Order.class);
         assertFalse(orders.stream().anyMatch(order -> !order.isForTakeAway()));
@@ -71,7 +66,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(4)
     public void shouldNotAllowUnauthorizedAccessToTakeAwayOrders() throws Exception {
         mockMvc.perform(get("/api/restaurant/orders/take-away"))
                 .andExpect(status().isUnauthorized());
@@ -79,7 +73,6 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(5)
     public void shouldGetAllDineInOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/dine-in", Order.class);
         assertFalse(orders.stream().anyMatch(Order::isForTakeAway));
@@ -87,7 +80,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(6)
     public void shouldNotAllowUnauthorizedAccessToDineInOrders() throws Exception {
         mockMvc.perform(get("/api/restaurant/orders/dine-in"))
                 .andExpect(status().isUnauthorized());
@@ -95,7 +87,6 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(7)
     public void shouldGetByTableNumber() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/table-number", 2, Order.class);
@@ -103,7 +94,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(8)
     public void shouldNotAllowUnauthorizedAccessToOrderByTableNumber() throws Exception {
         mockMvc.perform(post("/api/restaurant/orders/table-number")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -113,7 +103,6 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @org.junit.jupiter.api.Order(9)
     public void shouldGetById() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2, Order.class);
@@ -121,7 +110,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(10)
     public void shouldNotAllowUnauthorizedAccessToOrderById() throws Exception {
         mockMvc.perform(post("/api/restaurant/orders/show")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -130,9 +118,9 @@ class OrderControllerTest {
     }
 
     @Test
-    @Transactional
     @WithMockUser(roles = {"WAITER"})
-    @org.junit.jupiter.api.Order(11)
+    @Transactional
+    @Rollback
     public void launchPostPatchTestsInSequence() throws Exception {
         shouldSaveNewDineInOrder();
         shouldNotSaveOrderForOccupiedTable();
@@ -238,7 +226,7 @@ class OrderControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
         assertNotNull(order);
 
-        Map<? ,?> errors =
+        Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
                         "/api/restaurant/orders/call-waiter", 5L, status().isBadRequest());
 
@@ -292,7 +280,7 @@ class OrderControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
         assertNotNull(order);
 
-        Map<? ,?> errors =
+        Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
                         "/api/restaurant/orders/call-waiter", 7L, status().isBadRequest());
 
@@ -337,7 +325,6 @@ class OrderControllerTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(12)
     public void shouldNotAllowAccessWithoutAuthorization() throws Exception {
         Order order = orderProcessor.createDineInOrder(12, List.of(4, 12, 15));
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/dine-in", order);
