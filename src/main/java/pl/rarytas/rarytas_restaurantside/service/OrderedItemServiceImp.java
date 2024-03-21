@@ -16,14 +16,14 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class OrderedItemServiceImpl implements OrderedItemService {
+public class OrderedItemServiceImp implements OrderedItemService {
 
     private final OrderedItemRepository orderedItemRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final OrderRepository orderRepository;
     private final ExceptionHelper exceptionHelper;
 
-    public OrderedItemServiceImpl(OrderedItemRepository orderedItemRepository, SimpMessagingTemplate messagingTemplate, OrderRepository orderRepository, ExceptionHelper exceptionHelper) {
+    public OrderedItemServiceImp(OrderedItemRepository orderedItemRepository, SimpMessagingTemplate messagingTemplate, OrderRepository orderRepository, ExceptionHelper exceptionHelper) {
         this.orderedItemRepository = orderedItemRepository;
         this.messagingTemplate = messagingTemplate;
         this.orderRepository = orderRepository;

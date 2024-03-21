@@ -17,16 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class ArchiveDataServiceImpl implements ArchiveDataService {
+public class ArchiveDataServiceImp implements ArchiveDataService {
 
     private final HistoryOrderService historyOrderService;
     private final WaiterCallService waiterCallService;
     private final HistoryWaiterCallService historyWaiterCallService;
     private final ExceptionHelper exceptionHelper;
 
-    public ArchiveDataServiceImpl(HistoryOrderService historyOrderService,
-                                  WaiterCallService waiterCallService,
-                                  HistoryWaiterCallService historyWaiterCallService, ExceptionHelper exceptionHelper) {
+    public ArchiveDataServiceImp(HistoryOrderService historyOrderService,
+                                 WaiterCallService waiterCallService,
+                                 HistoryWaiterCallService historyWaiterCallService, ExceptionHelper exceptionHelper) {
         this.historyOrderService = historyOrderService;
         this.waiterCallService = waiterCallService;
         this.historyWaiterCallService = historyWaiterCallService;

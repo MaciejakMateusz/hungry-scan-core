@@ -14,12 +14,12 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
     private final ExceptionHelper exceptionHelper;
 
-    public UserServiceImpl(UserRepository userRepository, ExceptionHelper exceptionHelper) {
+    public UserServiceImp(UserRepository userRepository, ExceptionHelper exceptionHelper) {
         this.userRepository = userRepository;
         this.exceptionHelper = exceptionHelper;
     }

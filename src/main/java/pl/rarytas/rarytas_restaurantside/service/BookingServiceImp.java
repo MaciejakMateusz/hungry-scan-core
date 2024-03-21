@@ -18,17 +18,17 @@ import java.time.LocalDate;
 
 @Slf4j
 @Service
-public class BookingServiceImpl implements BookingService {
+public class BookingServiceImp implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final RestaurantTableRepository restaurantTableRepository;
     private final BookingValidator bookingValidator;
     private final ExceptionHelper exceptionHelper;
 
-    public BookingServiceImpl(BookingRepository bookingRepository,
-                              RestaurantTableRepository restaurantTableRepository,
-                              BookingValidator bookingValidator,
-                              ExceptionHelper exceptionHelper) {
+    public BookingServiceImp(BookingRepository bookingRepository,
+                             RestaurantTableRepository restaurantTableRepository,
+                             BookingValidator bookingValidator,
+                             ExceptionHelper exceptionHelper) {
         this.bookingRepository = bookingRepository;
         this.restaurantTableRepository = restaurantTableRepository;
         this.bookingValidator = bookingValidator;

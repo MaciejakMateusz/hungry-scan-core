@@ -12,11 +12,11 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class WaiterCallServiceImpl implements WaiterCallService {
+public class WaiterCallServiceImp implements WaiterCallService {
 
     private final WaiterCallRepository waiterCallRepository;
 
-    public WaiterCallServiceImpl(WaiterCallRepository waiterCallRepository) {
+    public WaiterCallServiceImp(WaiterCallRepository waiterCallRepository) {
         this.waiterCallRepository = waiterCallRepository;
     }
 

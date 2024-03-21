@@ -6,11 +6,11 @@ import pl.rarytas.rarytas_restaurantside.repository.SettingsRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.SettingsService;
 
 @Service
-public class SettingsServiceImpl implements SettingsService {
+public class SettingsServiceImp implements SettingsService {
 
     private final SettingsRepository settingsRepository;
 
-    public SettingsServiceImpl(SettingsRepository settingsRepository) {
+    public SettingsServiceImp(SettingsRepository settingsRepository) {
         this.settingsRepository = settingsRepository;
     }
 

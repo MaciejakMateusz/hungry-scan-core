@@ -10,12 +10,12 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 import java.util.List;
 
 @Service
-public class RestaurantServiceImpl implements RestaurantService {
+public class RestaurantServiceImp implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final ExceptionHelper exceptionHelper;
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, ExceptionHelper exceptionHelper) {
+    public RestaurantServiceImp(RestaurantRepository restaurantRepository, ExceptionHelper exceptionHelper) {
         this.restaurantRepository = restaurantRepository;
         this.exceptionHelper = exceptionHelper;
     }

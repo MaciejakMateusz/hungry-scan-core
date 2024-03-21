@@ -17,7 +17,7 @@ public class SpringDataUserDetailsService implements UserDetailsService {
 
     private final UserService userService;
 
-    public SpringDataUserDetailsService(UserServiceImpl userService) {
+    public SpringDataUserDetailsService(UserServiceImp userService) {
         this.userService = userService;
     }
 

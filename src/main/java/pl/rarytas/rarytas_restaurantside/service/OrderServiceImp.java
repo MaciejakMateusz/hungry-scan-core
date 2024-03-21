@@ -16,21 +16,21 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImp implements OrderService {
     private final OrderRepository orderRepository;
-    private final WaiterCallServiceImpl waiterCallServiceImpl;
+    private final WaiterCallServiceImp waiterCallServiceImp;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ArchiveDataServiceImpl dataTransferServiceImpl;
+    private final ArchiveDataServiceImp dataTransferServiceImpl;
     private final OrderServiceHelper orderHelper;
     private final ExceptionHelper exceptionHelper;
 
-    public OrderServiceImpl(OrderRepository orderRepository,
-                            WaiterCallServiceImpl waiterCallServiceImpl,
-                            SimpMessagingTemplate messagingTemplate,
-                            ArchiveDataServiceImpl dataTransferServiceImpl,
-                            OrderServiceHelper orderHelper, ExceptionHelper exceptionHelper) {
+    public OrderServiceImp(OrderRepository orderRepository,
+                           WaiterCallServiceImp waiterCallServiceImp,
+                           SimpMessagingTemplate messagingTemplate,
+                           ArchiveDataServiceImp dataTransferServiceImpl,
+                           OrderServiceHelper orderHelper, ExceptionHelper exceptionHelper) {
         this.orderRepository = orderRepository;
-        this.waiterCallServiceImpl = waiterCallServiceImpl;
+        this.waiterCallServiceImp = waiterCallServiceImp;
         this.messagingTemplate = messagingTemplate;
         this.dataTransferServiceImpl = dataTransferServiceImpl;
         this.orderHelper = orderHelper;
@@ -133,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
         WaiterCall waiterCall = new WaiterCall();
         waiterCall.setOrder(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
-        waiterCallServiceImpl.save(waiterCall);
+        waiterCallServiceImp.save(waiterCall);
         messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }
 
@@ -143,13 +143,13 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow();
         order.setWaiterCalled(false);
 
-        WaiterCall waiterCall = waiterCallServiceImpl.findByOrderAndResolved(order, false)
+        WaiterCall waiterCall = waiterCallServiceImp.findByOrderAndResolved(order, false)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.orderService.waiterCallNotFound"));
 
         waiterCall.setOrder(order);
         waiterCall.setResolved(true);
         orderRepository.saveAndFlush(order);
-        waiterCallServiceImpl.save(waiterCall);
+        waiterCallServiceImp.save(waiterCall);
     }
 
     @Override

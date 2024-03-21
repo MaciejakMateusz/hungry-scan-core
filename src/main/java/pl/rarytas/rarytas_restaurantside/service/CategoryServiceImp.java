@@ -12,12 +12,12 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceImp implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ExceptionHelper exceptionHelper;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, ExceptionHelper exceptionHelper) {
+    public CategoryServiceImp(CategoryRepository categoryRepository, ExceptionHelper exceptionHelper) {
         this.categoryRepository = categoryRepository;
         this.exceptionHelper = exceptionHelper;
     }

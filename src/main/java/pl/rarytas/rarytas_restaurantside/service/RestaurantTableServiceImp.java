@@ -15,13 +15,13 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class RestaurantTableServiceImpl implements RestaurantTableService {
+public class RestaurantTableServiceImp implements RestaurantTableService {
 
     private final RestaurantTableRepository restaurantTableRepository;
     private final BookingService bookingService;
     private final ExceptionHelper exceptionHelper;
 
-    public RestaurantTableServiceImpl(RestaurantTableRepository restaurantTableRepository, BookingService bookingService, ExceptionHelper exceptionHelper) {
+    public RestaurantTableServiceImp(RestaurantTableRepository restaurantTableRepository, BookingService bookingService, ExceptionHelper exceptionHelper) {
         this.restaurantTableRepository = restaurantTableRepository;
         this.bookingService = bookingService;
         this.exceptionHelper = exceptionHelper;

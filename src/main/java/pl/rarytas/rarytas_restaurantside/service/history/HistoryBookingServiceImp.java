@@ -12,12 +12,12 @@ import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryBooki
 import java.time.LocalDate;
 
 @Service
-public class HistoryBookingServiceImpl implements HistoryBookingService {
+public class HistoryBookingServiceImp implements HistoryBookingService {
 
     private final HistoryBookingRepository historyBookingRepository;
     private final ExceptionHelper exceptionHelper;
 
-    public HistoryBookingServiceImpl(HistoryBookingRepository historyBookingRepository, ExceptionHelper exceptionHelper) {
+    public HistoryBookingServiceImp(HistoryBookingRepository historyBookingRepository, ExceptionHelper exceptionHelper) {
         this.historyBookingRepository = historyBookingRepository;
         this.exceptionHelper = exceptionHelper;
     }

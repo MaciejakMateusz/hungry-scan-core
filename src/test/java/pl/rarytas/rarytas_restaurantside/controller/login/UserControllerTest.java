@@ -90,7 +90,7 @@ class UserControllerTest {
         Order order = orderService.findById(1L);
         assertFalse(order.isWaiterCalled());
 
-        String orderAsJsonString = apiRequestUtils.prepObjMapper().writeValueAsString(order);
+        String orderAsJsonString = apiRequestUtils.prepObjMapper().writeValueAsString(1);
 
         mockMvc.perform(patch("/api/restaurant/orders/call-waiter")
                         .contentType(MediaType.APPLICATION_JSON)

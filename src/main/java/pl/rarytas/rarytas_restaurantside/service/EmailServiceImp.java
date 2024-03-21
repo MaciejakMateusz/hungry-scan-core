@@ -17,16 +17,16 @@ import java.util.UUID;
 @Component
 @Getter
 @Setter
-public class EmailServiceImpl implements EmailService {
+public class EmailServiceImp implements EmailService {
 
     private final JavaMailSender emailSender;
-    private final UserServiceImpl userServiceImpl;
+    private final UserServiceImp userServiceImp;
     private static final String LOCAL_HOST = "http://localhost:8080/";
 
-    public EmailServiceImpl(JavaMailSender emailSender,
-                            UserServiceImpl userServiceImpl) {
+    public EmailServiceImp(JavaMailSender emailSender,
+                           UserServiceImp userServiceImp) {
         this.emailSender = emailSender;
-        this.userServiceImpl = userServiceImpl;
+        this.userServiceImp = userServiceImp;
     }
 
     @Override
@@ -47,9 +47,9 @@ public class EmailServiceImpl implements EmailService {
         message.setTo(to);
         message.setSubject("Restauracja Rarytas - jednorazowy link do zmiany hasła");
 
-        User user = userServiceImpl.findByUsername(to);
+        User user = userServiceImp.findByUsername(to);
         user.setToken(UUID.randomUUID().toString());
-        userServiceImpl.update(user);
+        userServiceImp.update(user);
 
         String link = determineBaseUrl() + "/login/" + user.getToken();
         message.setText("Twój link do zmiany hasła: " + link);
@@ -65,9 +65,9 @@ public class EmailServiceImpl implements EmailService {
         message.setTo(to);
         message.setSubject("Restauracja Rarytas - link aktywacyjny do konta");
 
-        User user = userServiceImpl.findByUsername(to);
+        User user = userServiceImp.findByUsername(to);
         user.setToken(UUID.randomUUID().toString());
-        userServiceImpl.update(user);
+        userServiceImp.update(user);
 
         String link = determineBaseUrl() + "/register/" + user.getToken();
         message.setText("Kliknij w ten link, aby aktywować swoje konto: " + link);

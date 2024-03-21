@@ -14,13 +14,13 @@ import java.time.LocalDate;
 
 @Service
 @Slf4j
-public class HistoryOrderServiceImpl implements HistoryOrderService {
+public class HistoryOrderServiceImp implements HistoryOrderService {
 
     private final HistoryOrderRepository historyOrderRepository;
     private final ExceptionHelper exceptionHelper;
 
-    public HistoryOrderServiceImpl(HistoryOrderRepository historyOrderRepository,
-                                   ExceptionHelper exceptionHelper) {
+    public HistoryOrderServiceImp(HistoryOrderRepository historyOrderRepository,
+                                  ExceptionHelper exceptionHelper) {
         this.historyOrderRepository = historyOrderRepository;
         this.exceptionHelper = exceptionHelper;
     }

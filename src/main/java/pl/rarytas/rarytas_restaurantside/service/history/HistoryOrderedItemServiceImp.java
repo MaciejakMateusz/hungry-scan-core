@@ -11,10 +11,10 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class HistoryOrderedItemServiceImpl implements HistoryOrderedItemService {
+public class HistoryOrderedItemServiceImp implements HistoryOrderedItemService {
     private final HistoryOrderedItemRepository historyOrderedItemRepository;
 
-    public HistoryOrderedItemServiceImpl(HistoryOrderedItemRepository historyOrderedItemRepository) {
+    public HistoryOrderedItemServiceImp(HistoryOrderedItemRepository historyOrderedItemRepository) {
         this.historyOrderedItemRepository = historyOrderedItemRepository;
     }
 

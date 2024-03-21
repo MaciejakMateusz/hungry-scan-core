@@ -11,11 +11,11 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class HistoryWaiterCallServiceImpl implements HistoryWaiterCallService {
+public class HistoryWaiterCallServiceImp implements HistoryWaiterCallService {
 
     private final HistoryWaiterCallRepository historyWaiterCallRepository;
 
-    public HistoryWaiterCallServiceImpl(HistoryWaiterCallRepository historyWaiterCallRepository) {
+    public HistoryWaiterCallServiceImp(HistoryWaiterCallRepository historyWaiterCallRepository) {
         this.historyWaiterCallRepository = historyWaiterCallRepository;
     }
 

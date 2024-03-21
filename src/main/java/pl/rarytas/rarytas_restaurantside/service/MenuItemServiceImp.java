@@ -12,12 +12,12 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class MenuItemServiceImpl implements MenuItemService {
+public class MenuItemServiceImp implements MenuItemService {
 
     private final MenuItemRepository menuItemRepository;
     private final ExceptionHelper exceptionHelper;
 
-    public MenuItemServiceImpl(MenuItemRepository menuItemRepository, ExceptionHelper exceptionHelper) {
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, ExceptionHelper exceptionHelper) {
         this.menuItemRepository = menuItemRepository;
         this.exceptionHelper = exceptionHelper;
     }
