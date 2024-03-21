@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryBooking;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.BookingRepository;
 import pl.rarytas.rarytas_restaurantside.repository.history.HistoryBookingRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
@@ -30,7 +31,7 @@ public class BookingArchiver {
 
     @Scheduled(initialDelay = 60000, fixedDelay = 60000 * 5)
     @Transactional
-    public void checkAndArchive() {
+    public void checkAndArchive() throws LocalizedException {
         Set<Booking> expiredBookings =
                 bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(EXPIRATION_TIME));
         for (Booking expiredBooking : expiredBookings) {

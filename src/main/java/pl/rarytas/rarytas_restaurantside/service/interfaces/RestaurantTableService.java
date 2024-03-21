@@ -16,9 +16,9 @@ public interface RestaurantTableService {
 
     void save(RestaurantTable restaurantTable);
 
-    void toggleActivation(Integer id);
+    void toggleActivation(Integer id) throws LocalizedException;
 
     void bookTable(Booking booking) throws LocalizedException;
 
-    void removeBooking(Booking booking);
+    void removeBooking(Booking booking) throws LocalizedException;
 }

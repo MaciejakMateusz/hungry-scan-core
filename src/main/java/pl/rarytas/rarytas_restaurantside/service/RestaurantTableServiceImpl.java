@@ -53,14 +53,8 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     }
 
     @Override
-    public void toggleActivation(Integer id) {
-        RestaurantTable table;
-        try {
-            table = findById(id);
-        } catch (LocalizedException e) {
-            log.error(e.getLocalizedMessage());
-            return;
-        }
+    public void toggleActivation(Integer id) throws LocalizedException {
+        RestaurantTable table = findById(id);
         table.setActive(!table.isActive());
         save(table);
     }
@@ -72,15 +66,9 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     }
 
     @Override
-    public void removeBooking(Booking booking) {
-        RestaurantTable table;
-        try {
-            table = findById(booking.getTableId());
-        } catch (LocalizedException e) {
-            log.error(e.getLocalizedMessage());
-            return;
-        }
-        table.getBookings().remove(booking);
+    public void removeBooking(Booking booking) throws LocalizedException {
+        RestaurantTable table = findById(booking.getTableId());
+        table.removeBooking(booking);
         restaurantTableRepository.saveAndFlush(table);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryBooking;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.BookingRepository;
 import pl.rarytas.rarytas_restaurantside.repository.history.HistoryBookingRepository;
 
@@ -52,7 +53,7 @@ class BookingArchiverTest {
     @Test
     @Order(2)
     @Transactional
-    void shouldCheckAndArchive() {
+    void shouldCheckAndArchive() throws LocalizedException {
         bookingArchiver.checkAndArchive();
         Set<Booking> expiredBookings = bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(EXPIRATION_TIME));
         assertTrue(expiredBookings.isEmpty());
