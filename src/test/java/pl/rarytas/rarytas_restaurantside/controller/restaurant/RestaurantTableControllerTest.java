@@ -10,8 +10,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
@@ -73,6 +75,8 @@ public class RestaurantTableControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    @Transactional
+    @Rollback
     void shouldToggleTableActivation() throws Exception {
         RestaurantTable table2 =
                 apiRequestUtils.postObjectExpect200(
