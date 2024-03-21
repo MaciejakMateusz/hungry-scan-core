@@ -1,14 +1,17 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 
@@ -24,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CategoryControllerTest {
 
     @Autowired
@@ -35,7 +37,6 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = {"WAITER"})
-    @Order(1)
     void shouldGetAllCategories() throws Exception {
         List<Category> categories =
                 apiRequestUtils.fetchAsList(
@@ -48,14 +49,12 @@ class CategoryControllerTest {
     }
 
     @Test
-    @Order(2)
     void shouldNotAllowUnauthorizedAccessToCategories() throws Exception {
         mockMvc.perform(get("/api/cms/categories")).andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = {"COOK"})
-    @Order(3)
     void shouldShowCategoryById() throws Exception {
         Category category = apiRequestUtils.postObjectExpect200(
                 "/api/cms/categories/show", 4, Category.class);
@@ -63,14 +62,12 @@ class CategoryControllerTest {
     }
 
     @Test
-    @Order(4)
     void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/categories/show", 4, status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = {"WAITER"})
-    @Order(5)
     void shouldNotShowCategoryById() throws Exception {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -80,7 +77,6 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @Order(6)
     void shouldGetNewCategoryObject() throws Exception {
         Object category = apiRequestUtils.fetchObject("/api/cms/categories/add", Category.class);
         assertInstanceOf(Category.class, category);
@@ -88,7 +84,6 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(7)
     void shouldNotAllowUnauthorizedAccessToNewCategoryObject() throws Exception {
         mockMvc.perform(get("/api/cms/categories/add"))
                 .andExpect(status().isForbidden());
@@ -96,7 +91,8 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    @Order(8)
+    @Transactional
+    @Rollback
     void shouldAddNewCategory() throws Exception {
         Category category = createCategory();
 
@@ -110,7 +106,6 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(9)
     void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
         Category category = createCategory();
         apiRequestUtils.postAndExpect("/api/cms/categories/add", category, status().isForbidden());
@@ -118,7 +113,6 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(10)
     void shouldNotAddWithIncorrectName() throws Exception {
         Category category = createCategory();
         category.setName("");
@@ -131,7 +125,6 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(11)
     void shouldNotAddWithTooLongDescription() throws Exception {
         Category category = createCategory();
         category.setDescription("""
@@ -164,32 +157,31 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(12)
+    @Transactional
+    @Rollback
     void shouldUpdateCategory() throws Exception {
         Category existingCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
         existingCategory.setName("Foot");
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
         assertEquals("Foot", updatedCategory.getName());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(13)
     void shouldNotAllowUnauthorizedAccessToUpdateCategory() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/categories/add", new Category(), status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    @Order(14)
     void shouldNotUpdateIncorrectCategory() throws Exception {
         Category existingCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
         existingCategory.setName("");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", existingCategory);
@@ -200,23 +192,23 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
-    @Order(15)
+    @Transactional
+    @Rollback
     void shouldRemoveCategory() throws Exception {
         Category existingCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
         assertNotNull(existingCategory);
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 9);
+        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 6);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/categories/show", 9, status().isBadRequest());
-        assertEquals("Kategoria z podanym ID = 9 nie istnieje.", responseBody.get("exceptionMsg"));
+                        "/api/cms/categories/show", 6, status().isBadRequest());
+        assertEquals("Kategoria z podanym ID = 6 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
     @WithMockUser(roles = "COOK")
-    @Order(16)
     void shouldNotAllowUnauthorizedAccessToRemoveCategory() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isForbidden());
     }
