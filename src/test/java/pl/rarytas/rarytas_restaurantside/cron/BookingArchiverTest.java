@@ -1,6 +1,5 @@
 package pl.rarytas.rarytas_restaurantside.cron;
 
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
@@ -44,15 +44,14 @@ class BookingArchiverTest {
     private BookingArchiver bookingArchiver;
 
     @Test
-    @Order(1)
     void shouldFindArchive() {
         Set<Booking> expiredBookings = bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(EXPIRATION_TIME));
         assertFalse(expiredBookings.isEmpty());
     }
 
     @Test
-    @Order(2)
     @Transactional
+    @Rollback
     void shouldCheckAndArchive() throws LocalizedException {
         bookingArchiver.checkAndArchive();
         Set<Booking> expiredBookings = bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(EXPIRATION_TIME));
