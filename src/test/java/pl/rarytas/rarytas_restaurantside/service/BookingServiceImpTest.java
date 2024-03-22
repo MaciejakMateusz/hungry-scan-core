@@ -1,7 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -9,7 +10,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
@@ -26,14 +29,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BookingServiceImpTest {
 
     @Autowired
     private BookingService bookingService;
 
     @Test
-    @Order(1)
+    @Transactional
+    @Rollback
     void shouldBookTable3() throws LocalizedException {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -46,17 +49,15 @@ class BookingServiceImpTest {
         Page<Booking> foundBookings =
                 bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
         assertFalse(foundBookings.isEmpty());
-        assertEquals(2, foundBookings.getContent().stream().findFirst().orElseThrow().getId());
         assertEquals("Maciejak", foundBookings.getContent().stream().findFirst().orElseThrow().getSurname());
         assertEquals(3, foundBookings.getContent().stream().findFirst().orElseThrow().getTableId());
     }
 
     @Test
-    @Order(2)
     void shouldNotBookTable3() {
         Booking booking = createBooking(
-                LocalDate.now().plusDays(2L),
-                LocalTime.of(14, 0),
+                LocalDate.of(2024, 2, 23),
+                LocalTime.of(19, 30),
                 (short) 3,
                 "Górecki",
                 3);
@@ -64,7 +65,8 @@ class BookingServiceImpTest {
     }
 
     @Test
-    @Order(3)
+    @Transactional
+    @Rollback
     void shouldBookTable2() throws LocalizedException {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -77,10 +79,10 @@ class BookingServiceImpTest {
         Page<Booking> foundBookings =
                 bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
         assertFalse(foundBookings.isEmpty());
+        assertEquals("Makaron", foundBookings.getContent().stream().findFirst().orElseThrow().getSurname());
     }
 
     @Test
-    @Order(4)
     void shouldNotBookTableBeforeOpening() {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -93,7 +95,6 @@ class BookingServiceImpTest {
     }
 
     @Test
-    @Order(5)
     void shouldNotBookTableAfterClosing() {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -107,8 +108,8 @@ class BookingServiceImpTest {
 
     @Test
     @Transactional
-    @Order(6)
-    void shouldNotLetBookTwoTablesAtOnce() throws LocalizedException {
+    @Rollback
+    void shouldNotLetBookATableTwice() throws LocalizedException {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking1 = createBooking(
                 bookingDate,
@@ -127,7 +128,8 @@ class BookingServiceImpTest {
     }
 
     @Test
-    @Order(7)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Rollback
     public void shouldRemoveBooking() throws LocalizedException {
         Booking foundBooking = bookingService.findById(2L);
         assertNotNull(foundBooking);

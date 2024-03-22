@@ -360,6 +360,10 @@ INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, table_id, time
 VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', 5, '16:00:00');
 INSERT INTO restaurant_tables_bookings (restaurant_table_id, bookings_id)
 VALUES (5, 1);
+INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, table_id, time)
+VALUES ('2024-02-28', '14:00:00', 2, 'Drugi', 5, '16:00:00');
+INSERT INTO restaurant_tables_bookings (restaurant_table_id, bookings_id)
+VALUES (8, 2);
 
 INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
 VALUES (50, '2024-02-19', '19:00:00', 1, 'Alan', 2, '16:00:00');
