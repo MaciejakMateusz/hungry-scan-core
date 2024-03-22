@@ -1,15 +1,15 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderServiceImpTest {
 
     @Autowired
@@ -45,19 +44,16 @@ class OrderServiceImpTest {
     OrderProcessor orderProcessor;
 
     @Test
-    @org.junit.jupiter.api.Order(1)
     void shouldFindAllNotPaid() {
-        assertEquals(3, orderService.findAll().size());
+        assertEquals(4, orderService.findAll().size());
     }
 
     @Test
-    @org.junit.jupiter.api.Order(2)
     void shouldFindAllTakeAway() {
         assertEquals(1, orderService.findAllTakeAway().size());
     }
 
     @Test
-    @org.junit.jupiter.api.Order(3)
     void shouldFindById() throws LocalizedException {
         Order order = orderService.findById(2L);
         int orderNumber = order.getOrderNumber();
@@ -65,14 +61,12 @@ class OrderServiceImpTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(4)
     void shouldNotFindById() {
         assertThrows(LocalizedException.class, () -> orderService.findById(23L));
     }
 
 
     @Test
-    @org.junit.jupiter.api.Order(5)
     void shouldFindByTableNumber() throws LocalizedException {
         Order order = orderService.findByTableNumber(5);
         int orderNumber = order.getOrderNumber();
@@ -80,39 +74,39 @@ class OrderServiceImpTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(6)
     void shouldNotFindByTableNumber() {
         assertThrows(LocalizedException.class, () -> orderService.findByTableNumber(15));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(7)
+    @Transactional
+    @Rollback
     void shouldSave() throws LocalizedException {
         Order order = orderProcessor.createDineInOrder(16, List.of(4, 15, 25));
         orderService.save(order);
 
-        Order persistedOrder = orderService.findById(5L);
+        Order persistedOrder = orderService.findById(6L);
 
         assertEquals(3, persistedOrder.getOrderedItems().size());
         assertEquals(16, persistedOrder.getRestaurantTable().getId());
     }
 
     @Test
-    @org.junit.jupiter.api.Order(8)
     void shouldNotSaveForTheSameTable() throws LocalizedException {
-        Order order = orderProcessor.createDineInOrder(16, List.of(1, 2, 33));
+        Order order = orderProcessor.createDineInOrder(1, List.of(1, 2, 33));
         assertThrows(LocalizedException.class, () -> orderService.save(order));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(9)
+    @Transactional
+    @Rollback
     void shouldSaveTakeAway() throws LocalizedException {
         Order order = orderProcessor.createTakeAwayOrder(List.of(4, 15, 25));
         order.setPaymentMethod("online");
         order.setPaid(true);
         orderService.saveTakeAway(order);
 
-        Order persistedOrder = orderService.findById(6L);
+        Order persistedOrder = orderService.findById(7L);
 
         assertEquals(3, persistedOrder.getOrderedItems().size());
         assertEquals(19, persistedOrder.getRestaurantTable().getId());
@@ -121,21 +115,21 @@ class OrderServiceImpTest {
     //TODO czy naprawdę nie ma przypadku, gdzie nie pozwolimy na zapisanie zamówienia na wynos?
 
     @Test
-    @org.junit.jupiter.api.Order(10)
+    @Transactional
+    @Rollback
     void shouldOrderMoreDishes() throws LocalizedException {
-        Order order = orderProcessor.createDineInOrder(16, List.of(12, 13, 14));
-        order.setId(5L);
+        Order order = orderProcessor.createDineInOrder(1, List.of(12, 13, 14));
+        order.setId(1L);
 
         orderService.orderMoreDishes(order);
 
-        Order persistedOrder = orderService.findById(5L);
+        Order persistedOrder = orderService.findById(1L);
 
-        assertEquals(6, persistedOrder.getOrderedItems().size());
-        assertEquals(16, persistedOrder.getRestaurantTable().getId());
+        assertEquals(4, persistedOrder.getOrderedItems().size());
+        assertEquals(1, persistedOrder.getRestaurantTable().getId());
     }
 
     @Test
-    @org.junit.jupiter.api.Order(11)
     void shouldNotOrderMoreDishes() throws LocalizedException {
         Order order = orderProcessor.createDineInOrder(16, List.of(12, 13, 14));
         order.setId(666L);
@@ -144,7 +138,8 @@ class OrderServiceImpTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(12)
+    @Transactional
+    @Rollback
     void shouldRequestBill() throws LocalizedException {
         Order order = orderService.findById(1L);
         assertFalse(order.isBillRequested());
@@ -157,19 +152,18 @@ class OrderServiceImpTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(13)
     void shouldNotRequestBillWithActiveRequest() {
-        assertThrows(LocalizedException.class, () -> orderService.requestBill(1L, PaymentMethod.CASH.name()));
+        assertThrows(LocalizedException.class, () -> orderService.requestBill(3L, PaymentMethod.CASH.name()));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(14)
     void shouldNotRequestBillWithActiveWaiterCall() {
-        assertThrows(LocalizedException.class, () -> orderService.requestBill(3L, PaymentMethod.CARD.name()));
+        assertThrows(LocalizedException.class, () -> orderService.requestBill(5L, PaymentMethod.CARD.name()));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(15)
+    @Transactional
+    @Rollback
     void shouldFinishAndArchive() throws LocalizedException {
         orderService.finish(2L);
 
@@ -182,75 +176,75 @@ class OrderServiceImpTest {
     }
 
     @Test
-    @org.junit.jupiter.api.Order(16)
     void shouldNotFinishAndArchive() {
         assertThrows(LocalizedException.class, () -> orderService.finish(15L));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(17)
+    @Transactional
+    @Rollback
     void shouldFinishAndArchiveTakeAway() throws LocalizedException {
-        orderService.finishTakeAway(6L);
+        orderService.finishTakeAway(4L);
 
-        HistoryOrder historyOrder = historyOrderService.findById(6L);
+        HistoryOrder historyOrder = historyOrderService.findById(4L);
         assertEquals(HistoryOrder.class, historyOrder.getClass());
         assertEquals("online", historyOrder.getPaymentMethod());
         assertTrue(historyOrder.isPaid());
 
-        assertThrows(LocalizedException.class, () -> orderService.findById(6L));
+        assertThrows(LocalizedException.class, () -> orderService.findById(4L));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(18)
     void shouldNotFinishAndArchiveTakeAway() {
         assertThrows(LocalizedException.class, () -> orderService.finishTakeAway(21L));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(19)
+    @Transactional
+    @Rollback
     void shouldCallWaiter() throws LocalizedException {
-        Order existingOrder = orderService.findById(5L);
-        assertNotNull(existingOrder);
-        assertEquals(6, existingOrder.getOrderedItems().size());
+        Order existingOrder = orderService.findById(1L);
+        assertFalse(existingOrder.isWaiterCalled());
 
-        orderService.callWaiter(5L);
+        orderService.callWaiter(1L);
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
         waiterCalls.forEach(waiterCall -> assertEquals(waiterCall.getOrder().toString(), existingOrder.toString()));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(20)
     void shouldNotCallWaiterWithActiveWaiterCall() {
         assertThrows(LocalizedException.class, () -> orderService.callWaiter(5L));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(21)
-    void shouldNotCallWaiterWithActiveBillRequest() throws LocalizedException {
-        Order order = orderProcessor.createDineInOrder(10, List.of(15, 17));
-        order.setBillRequested(true);
-        orderService.save(order); //persisted order's ID = 7
-        assertThrows(LocalizedException.class, () -> orderService.callWaiter(7L));
+    void shouldNotCallWaiterWithActiveBillRequest() {
+        assertThrows(LocalizedException.class, () -> orderService.callWaiter(2L));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(22)
+    @Transactional
+    @Rollback
     void shouldResolveWaiterCall() throws LocalizedException {
-        orderService.resolveWaiterCall(5L);
-        Order existingOrder = orderService.findById(1L);
+        Order existingOrder = orderService.findById(3L);
+        assertTrue(existingOrder.isWaiterCalled());
+
+        orderService.resolveWaiterCall(3L);
+
+        existingOrder = orderService.findById(3L);
+        assertFalse(existingOrder.isWaiterCalled());
 
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
         waiterCalls.forEach(waiterCall -> assertTrue(waiterCall.isResolved()));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(23)
     void shouldNotResolveWaiterCall() {
-        assertThrows(LocalizedException.class, () -> orderService.resolveWaiterCall(5L));
+        assertThrows(LocalizedException.class, () -> orderService.resolveWaiterCall(50L));
     }
 
     @Test
-    @org.junit.jupiter.api.Order(24)
+    @Transactional
+    @Rollback
     void shouldDelete() throws LocalizedException {
         Order existingOrder = orderService.findById(1L);
         assertEquals("2024-01-29T08:29:20.738823", existingOrder.getOrderTime().toString());

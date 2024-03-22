@@ -219,6 +219,8 @@ INSERT INTO ordered_items (quantity, menu_item_id, is_ready_to_serve)
 VALUES (2, 3, false);
 INSERT INTO ordered_items (quantity, menu_item_id, is_ready_to_serve)
 VALUES (4, 5, false);
+INSERT INTO ordered_items (quantity, menu_item_id, is_ready_to_serve)
+VALUES (2, 5, false);
 
 INSERT INTO orders (bill_requested,
                     take_away,
@@ -267,7 +269,19 @@ INSERT INTO orders (bill_requested,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, true, false, 6, '2024-01-29 08:29:20.738823', true, 'online', null, true, 1, 19);
+VALUES (false, true, false, 6, '2024-01-29 08:29:20.738823', true, 'online', null, false, 1, 19);
+INSERT INTO orders (bill_requested,
+                    take_away,
+                    is_resolved,
+                    order_number,
+                    order_time,
+                    is_paid,
+                    payment_method,
+                    total_amount,
+                    `waiter_called`,
+                    restaurant_id,
+                    table_id)
+VALUES (false, false, false, 7, '2024-01-29 08:29:20.738823', true, null, null, true, 1, 12);
 
 INSERT INTO orders_ordered_items (order_id, ordered_items_id)
 VALUES (1, 1);
@@ -277,9 +291,13 @@ INSERT INTO orders_ordered_items (order_id, ordered_items_id)
 VALUES (3, 3);
 INSERT INTO orders_ordered_items (order_id, ordered_items_id)
 VALUES (4, 4);
+INSERT INTO orders_ordered_items (order_id, ordered_items_id)
+VALUES (5, 5);
 
 INSERT INTO waiter_calls(call_time, is_resolved, resolved_time, order_id)
-VALUES ('2024-01-29 08:41:20.738823', true, '2024-01-29 08:43:20.738823', 4);
+VALUES ('2024-01-29 08:41:20.738823', false, '2024-01-29 08:43:20.738823', 3);
+INSERT INTO waiter_calls(call_time, is_resolved, resolved_time, order_id)
+VALUES ('2024-01-29 08:41:20.738823', false, '2024-01-29 08:43:20.738823', 5);
 
 INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve)
 VALUES (222, 2, 3, false);

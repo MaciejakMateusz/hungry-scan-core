@@ -139,8 +139,7 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public void resolveWaiterCall(Long id) throws LocalizedException {
-        orderHelper.assertOrderExistsElseThrow(id);
-        Order order = orderRepository.findById(id).orElseThrow();
+        Order order = findById(id);
         order.setWaiterCalled(false);
 
         WaiterCall waiterCall = waiterCallServiceImp.findByOrderAndResolved(order, false)
