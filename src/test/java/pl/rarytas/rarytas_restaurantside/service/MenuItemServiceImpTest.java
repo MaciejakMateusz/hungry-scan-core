@@ -1,13 +1,16 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
 import jakarta.validation.ConstraintViolationException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
@@ -24,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MenuItemServiceImpTest {
 
     @Autowired
@@ -34,13 +36,13 @@ public class MenuItemServiceImpTest {
     private MenuItemService menuItemService;
 
     @Test
-    @Order(1)
     public void shouldReturnAll() {
         assertEquals(40, getMenuItems().size());
     }
 
     @Test
-    @Order(2)
+    @Transactional
+    @Rollback
     public void shouldInsertNew() throws LocalizedException {
         MenuItem newMenuItem = createMenuItem(
                 "Burger",
@@ -51,7 +53,8 @@ public class MenuItemServiceImpTest {
                 "/public/assets/burger.png");
         menuItemService.save(newMenuItem);
         MenuItem menuItem = menuItemService.findById(newMenuItem.getId());
-        assertEquals(newMenuItem.getId(), menuItem.getId());
+        assertEquals("Z mięsem wegańskim", menuItem.getDescription());
+        assertEquals("/public/assets/burger.png", menuItem.getImageName());
     }
 
     @Test
@@ -85,28 +88,29 @@ public class MenuItemServiceImpTest {
     }
 
     @Test
-    @Order(3)
+    @Transactional
+    @Rollback
     public void shouldUpdate() throws LocalizedException {
-        MenuItem existingMenuItem = menuItemService.findById(41);
+        MenuItem existingMenuItem = menuItemService.findById(33);
         existingMenuItem.setName("Burger wege");
         existingMenuItem.setImageName("/public/assets/wege-burger.png");
         menuItemService.save(existingMenuItem);
-        MenuItem updatedMenuItem = menuItemService.findById(41);
+        MenuItem updatedMenuItem = menuItemService.findById(33);
         assertEquals("Burger wege", updatedMenuItem.getName());
         assertEquals("/public/assets/wege-burger.png", updatedMenuItem.getImageName());
     }
 
     @Test
-    @Order(4)
+    @Transactional
+    @Rollback
     public void shouldDelete() throws LocalizedException {
-        MenuItem menuItem = menuItemService.findById(41);
-        assertEquals("Burger wege", menuItem.getName());
-        menuItemService.delete(41);
+        MenuItem menuItem = menuItemService.findById(33);
+        assertEquals("Kanapki z nutellą i bananem", menuItem.getName());
+        menuItemService.delete(33);
         assertThrows(LocalizedException.class, () -> menuItemService.findById(41));
     }
 
     @Test
-    @Order(5)
     public void shouldNotFindById() {
         assertThrows(LocalizedException.class, () -> menuItemService.findById(321));
     }
