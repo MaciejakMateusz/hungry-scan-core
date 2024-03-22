@@ -8,7 +8,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
@@ -23,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CategoryServiceImpTest {
 
     @Autowired
@@ -47,7 +48,6 @@ class CategoryServiceImpTest {
     }
 
     @Test
-    @Order(1)
     public void shouldReturnAll() {
         List<Category> categories = List.of(
                 createCategory("Przystawki", "Rozpocznij swoją kulinarną podróż..."),
@@ -62,12 +62,13 @@ class CategoryServiceImpTest {
     }
 
     @Test
-    @Order(2)
+    @Transactional
+    @Rollback
     public void shouldInsertNew() throws LocalizedException {
         Category newCategory = createCategory("Tajskie", "Ostre, orientalne posiłki prosto z dalekiego kraju");
         categoryService.save(newCategory);
         Category category = categoryService.findById(newCategory.getId());
-        assertEquals(newCategory.getId(), category.getId());
+        assertEquals("Tajskie", category.getName());
     }
 
     @Test
@@ -94,24 +95,25 @@ class CategoryServiceImpTest {
     }
 
     @Test
-    @Order(3)
+    @Transactional
+    @Rollback
     public void shouldUpdate() throws LocalizedException {
-        Category existingCategory = categoryService.findById(9);
+        Category existingCategory = categoryService.findById(7);
         existingCategory.setName("Testowe jedzenie");
         categoryService.save(existingCategory);
-        Category updatedCategory = categoryService.findById(9);
+        Category updatedCategory = categoryService.findById(7);
         assertEquals("Testowe jedzenie", updatedCategory.getName());
     }
 
     @Test
-    @Order(4)
+    @Transactional
+    @Rollback
     public void shouldDelete() throws LocalizedException {
-        categoryService.delete(9);
-        assertThrows(LocalizedException.class, () -> categoryService.findById(9));
+        categoryService.delete(7);
+        assertThrows(LocalizedException.class, () -> categoryService.findById(7));
     }
 
     @Test
-    @Order(5)
     public void shouldNotDelete() {
         assertThrows(DataIntegrityViolationException.class, () -> categoryService.delete(1));
     }
