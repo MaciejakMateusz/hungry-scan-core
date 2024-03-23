@@ -4,20 +4,20 @@ import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.entity.Settings;
-import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
+import pl.rarytas.rarytas_restaurantside.repository.BookingRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.SettingsService;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Component
 public class BookingValidator {
 
-    private final RestaurantTableRepository restaurantTableRepository;
+    private final BookingRepository bookingRepository;
     private final SettingsService settingsService;
 
-    public BookingValidator(RestaurantTableRepository restaurantTableRepository, SettingsService settingsService) {
-        this.restaurantTableRepository = restaurantTableRepository;
+    public BookingValidator(BookingRepository bookingRepository, SettingsService settingsService) {
+        this.bookingRepository = bookingRepository;
         this.settingsService = settingsService;
     }
 
@@ -28,14 +28,19 @@ public class BookingValidator {
     }
 
     private boolean hasBookingCollision(Booking booking) {
-        RestaurantTable restaurantTable = restaurantTableRepository.findById(booking.getTableId()).orElseThrow();
-        Set<Booking> existingBookings = restaurantTable.getBookings();
-
-        return existingBookings.stream()
-                .anyMatch(existingBooking -> existingBooking.getDate().equals(booking.getDate()) &&
-                        (existingBooking.getTime().equals(booking.getTime()) ||
-                                isInBookingTimeRange(booking, existingBooking) ||
-                                bookingIntersects(booking, existingBooking)));
+        for (RestaurantTable restaurantTable : booking.getRestaurantTables()) {
+            List<Booking> existingBookings =
+                    bookingRepository.findAllByRestaurantTablesId(restaurantTable.getId());
+            boolean hasCollision = existingBookings.stream()
+                    .anyMatch(existingBooking -> existingBooking.getDate().equals(booking.getDate()) &&
+                            (existingBooking.getTime().equals(booking.getTime()) ||
+                                    isInBookingTimeRange(booking, existingBooking) ||
+                                    bookingIntersects(booking, existingBooking)));
+            if(hasCollision) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isInBookingTimeRange(Booking booking, Booking existingBooking) {

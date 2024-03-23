@@ -5,10 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryBooking;
-import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.BookingRepository;
 import pl.rarytas.rarytas_restaurantside.repository.history.HistoryBookingRepository;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,22 +19,21 @@ public class BookingArchiver {
 
     private final BookingRepository bookingRepository;
     private final HistoryBookingRepository historyBookingRepository;
-    private final RestaurantTableService restaurantTableService;
 
-    public BookingArchiver(BookingRepository bookingRepository, HistoryBookingRepository historyBookingRepository, RestaurantTableService restaurantTableService) {
+    public BookingArchiver(BookingRepository bookingRepository,
+                           HistoryBookingRepository historyBookingRepository) {
         this.bookingRepository = bookingRepository;
         this.historyBookingRepository = historyBookingRepository;
-        this.restaurantTableService = restaurantTableService;
     }
 
     @Scheduled(initialDelay = 60000, fixedDelay = 60000 * 5)
     @Transactional
-    public void checkAndArchive() throws LocalizedException {
+    public void checkAndArchive() {
         Set<Booking> expiredBookings =
                 bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(EXPIRATION_TIME));
         for (Booking expiredBooking : expiredBookings) {
-            historyBookingRepository.saveAndFlush(new HistoryBooking(expiredBooking));
-            restaurantTableService.removeBooking(expiredBooking);
+            HistoryBooking historyBooking = new HistoryBooking(expiredBooking);
+            historyBookingRepository.saveAndFlush(historyBooking);
             bookingRepository.delete(expiredBooking);
         }
     }

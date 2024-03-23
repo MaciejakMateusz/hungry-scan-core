@@ -10,16 +10,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
+import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,10 +33,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class BookingServiceImpTest {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private RestaurantTableService restaurantTableService;
 
     @Test
     @Transactional
@@ -50,7 +58,7 @@ class BookingServiceImpTest {
                 bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
         assertFalse(foundBookings.isEmpty());
         assertEquals("Maciejak", foundBookings.getContent().stream().findFirst().orElseThrow().getSurname());
-        assertEquals(3, foundBookings.getContent().stream().findFirst().orElseThrow().getTableId());
+        assertEquals((short) 2, foundBookings.getContent().stream().findFirst().orElseThrow().getNumOfPpl());
     }
 
     @Test
@@ -149,7 +157,14 @@ class BookingServiceImpTest {
         booking.setTime(time);
         booking.setNumOfPpl(numOfPpl);
         booking.setSurname(surname);
-        booking.setTableId(tableId);
+        RestaurantTable restaurantTable;
+        try {
+            restaurantTable = restaurantTableService.findById(tableId);
+        } catch (LocalizedException e) {
+            throw new RuntimeException(e);
+        }
+
+        booking.setRestaurantTables(Collections.singleton(restaurantTable));
         return booking;
     }
 }

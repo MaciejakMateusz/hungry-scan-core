@@ -8,9 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
+import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -27,7 +29,7 @@ public class HistoryBooking {
         this.expirationTime = booking.getExpirationTime();
         this.numOfPpl = booking.getNumOfPpl();
         this.surname = booking.getSurname();
-        this.tableId = booking.getTableId();
+        this.restaurantTables = booking.getRestaurantTables();
         this.numTablesBooked = booking.getNumTablesBooked();
     }
 
@@ -57,8 +59,8 @@ public class HistoryBooking {
     private String surname;
 
     @Column(nullable = false)
-    @NotNull
-    private Integer tableId;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<RestaurantTable> restaurantTables;
 
     private Byte numTablesBooked;
 }

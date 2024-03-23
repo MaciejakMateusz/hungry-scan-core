@@ -8,6 +8,7 @@ import pl.rarytas.rarytas_restaurantside.entity.Booking;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 public interface BookingRepository extends CustomRepository<Booking, Long> {
@@ -19,4 +20,6 @@ public interface BookingRepository extends CustomRepository<Booking, Long> {
                                      @Param("expirationTime") LocalTime expirationTime);
 
     Long countAllByDateBetween(LocalDate dateFrom, LocalDate dateTo);
+
+    List<Booking> findAllByRestaurantTablesId(Integer tableId);
 }

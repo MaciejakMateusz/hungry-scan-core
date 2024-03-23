@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import pl.rarytas.rarytas_restaurantside.annotation.CollectionNotEmpty;
 import pl.rarytas.rarytas_restaurantside.listener.BookingListener;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -44,8 +46,9 @@ public class Booking {
     private String surname;
 
     @Column(nullable = false)
-    @NotNull
-    private Integer tableId;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @CollectionNotEmpty
+    private Set<RestaurantTable> restaurantTables;
 
     private Byte numTablesBooked;
 }

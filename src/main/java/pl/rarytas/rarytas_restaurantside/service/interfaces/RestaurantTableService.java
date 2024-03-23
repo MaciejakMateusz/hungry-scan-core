@@ -1,6 +1,5 @@
 package pl.rarytas.rarytas_restaurantside.service.interfaces;
 
-import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
@@ -17,8 +16,4 @@ public interface RestaurantTableService {
     void save(RestaurantTable restaurantTable);
 
     void toggleActivation(Integer id) throws LocalizedException;
-
-    void bookTable(Booking booking) throws LocalizedException;
-
-    void removeBooking(Booking booking) throws LocalizedException;
 }

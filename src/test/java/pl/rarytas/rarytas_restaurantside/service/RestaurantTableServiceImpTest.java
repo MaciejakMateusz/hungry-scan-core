@@ -7,22 +7,15 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
-import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,10 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RestaurantTableServiceImpTest {
-
-
-    @Autowired
-    private BookingService bookingService;
 
     @Autowired
     private RestaurantTableService restaurantTableService;
@@ -110,66 +99,6 @@ public class RestaurantTableServiceImpTest {
     @Test
     void shouldNotToggle() {
         assertThrows(LocalizedException.class, () -> restaurantTableService.toggleActivation(55));
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void shouldBookTable() throws LocalizedException {
-        LocalDate bookingDate = LocalDate.now().plusDays(5L);
-        Booking booking = createBooking(
-                bookingDate,
-                LocalTime.of(12, 0),
-                (short) 2,
-                "Maciejak",
-                10);
-        restaurantTableService.bookTable(booking);
-        Page<Booking> foundBookings =
-                bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
-        assertFalse(foundBookings.isEmpty());
-    }
-
-    /**
-     * Testing deeper validation logic for bookings is contained within BookingServiceImplTest
-     **/
-    @Test
-    void shouldNotBookTable() {
-        LocalDate bookingDate = LocalDate.of(2024, 2, 23);
-        Booking booking = createBooking(
-                bookingDate,
-                LocalTime.of(16, 30),
-                (short) 4,
-                "Górecki",
-                5);
-        assertThrows(LocalizedException.class, () -> restaurantTableService.bookTable(booking));
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void shouldRemoveBooking() throws LocalizedException {
-        Set<Booking> bookings = restaurantTableService.findById(8).getBookings();
-        assertFalse(bookings.isEmpty());
-
-        Booking booking = bookingService.findById(2L);
-        restaurantTableService.removeBooking(booking);
-
-        bookings = restaurantTableService.findById(7).getBookings();
-        assertTrue(bookings.isEmpty());
-    }
-
-    private Booking createBooking(LocalDate date,
-                                  LocalTime time,
-                                  Short numOfPpl,
-                                  String surname,
-                                  int tableId) {
-        Booking booking = new Booking();
-        booking.setDate(date);
-        booking.setTime(time);
-        booking.setNumOfPpl(numOfPpl);
-        booking.setSurname(surname);
-        booking.setTableId(tableId);
-        return booking;
     }
 
     private RestaurantTable createRestaurantTable() {

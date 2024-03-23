@@ -374,36 +374,28 @@ VALUES (14, 444);
 INSERT INTO history_orders_history_ordered_items (history_order_id, history_ordered_items_id)
 VALUES (15, 555);
 
-INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, table_id, time)
-VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', 5, '16:00:00');
-INSERT INTO restaurant_tables_bookings (restaurant_table_id, bookings_id)
-VALUES (5, 1);
-INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, table_id, time)
-VALUES ('2024-02-28', '14:00:00', 2, 'Drugi', 5, '16:00:00');
-INSERT INTO restaurant_tables_bookings (restaurant_table_id, bookings_id)
-VALUES (8, 2);
+INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
+VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', '16:00:00');
+INSERT INTO bookings_restaurant_tables(booking_id, restaurant_tables_id) VALUES (1, 5);
+INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
+VALUES ('2024-02-28', '14:00:00', 2, 'Drugi', '16:00:00');
+INSERT INTO bookings_restaurant_tables(booking_id, restaurant_tables_id) VALUES (2, 7);
 
-INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
-VALUES (50, '2024-02-19', '19:00:00', 1, 'Alan', 2, '16:00:00');
-INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
-VALUES (51, '2024-02-21', '19:00:00', 3, 'Gibson', 10, '16:00:00');
-INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
-VALUES (52, '2024-02-23', '19:00:00', 2, 'Fire', 11, '16:00:00');
-INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
-VALUES (53, '2024-02-25', '19:00:00', 4, 'Water', 13, '16:00:00');
-INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, table_id, time)
-VALUES (54, '2024-02-27', '19:00:00', 2, 'Earth', 5, '16:00:00');
-
-INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
-VALUES (2, 50);
-INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
-VALUES (10, 51);
-INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
-VALUES (11, 52);
-INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
-VALUES (13, 53);
-INSERT INTO restaurant_tables_history_bookings (restaurant_table_id, history_bookings_id)
-VALUES (5, 54);
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
+VALUES (50, '2024-01-19', '19:00:00', 1, 'Alan', '16:00:00');
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (50, 2);
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
+VALUES (51, '2024-01-21', '19:00:00', 3, 'Gibson',  '16:00:00');
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (51, 10);
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
+VALUES (52, '2024-01-23', '19:00:00', 2, 'Fire',  '16:00:00');
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (52, 11);
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
+VALUES (53, '2024-01-25', '19:00:00', 4, 'Water',  '16:00:00');
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (53, 13);
+INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
+VALUES (54, '2024-01-27', '19:00:00', 2, 'Earth', '16:00:00');
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (54, 5);
 
 INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity, customer_session_time, employee_session_time)
 VALUES (1, 3, '07:00:00', '23:00:00', 1, 120, 3, 20);

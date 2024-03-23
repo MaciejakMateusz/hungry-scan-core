@@ -67,8 +67,8 @@ class HistoryBookingControllerTest {
     @WithMockUser(roles = "WAITER")
     public void shouldCountByDateBetween() throws Exception {
         Map<String, LocalDate> requestParams =
-                Map.of("dateFrom", LocalDate.of(2024, 2, 25),
-                        "dateTo", LocalDate.of(2024, 2, 27));
+                Map.of("dateFrom", LocalDate.of(2024, 1, 25),
+                        "dateTo", LocalDate.of(2024, 1, 27));
         Long count =
                 apiRequestUtils.postAndFetchObject(
                         "/api/restaurant/history-bookings/count-dates", requestParams, Long.class);
@@ -87,8 +87,8 @@ class HistoryBookingControllerTest {
         Map<String, Object> requestParams = new HashMap<>();
         requestParams.put("pageNumber", 0);
         requestParams.put("pageSize", 20);
-        requestParams.put("dateFrom", LocalDate.of(2024, 2, 19).toString());
-        requestParams.put("dateTo", LocalDate.of(2024, 2, 23).toString());
+        requestParams.put("dateFrom", LocalDate.of(2024, 1, 19).toString());
+        requestParams.put("dateTo", LocalDate.of(2024, 1, 23).toString());
         return requestParams;
     }
 }
