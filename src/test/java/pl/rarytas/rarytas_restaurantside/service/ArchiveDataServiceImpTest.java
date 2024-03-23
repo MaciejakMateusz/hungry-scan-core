@@ -7,6 +7,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class ArchiveDataServiceImpTest {
 
     @Autowired
@@ -51,15 +53,17 @@ class ArchiveDataServiceImpTest {
     @Transactional
     @Rollback
     void shouldArchiveOrder() throws LocalizedException {
-        Order existingOrder = orderService.findById(4L);
+        Order existingOrder = orderService.findById(5L);
+        existingOrder.setPaid(true);
+        existingOrder.setPaymentMethod("card");
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
         assertFalse(waiterCalls.isEmpty());
         assertEquals("2024-01-29T08:41:20.738823", waiterCalls.get(0).getCallTime().toString());
 
         archiveDataService.archiveOrder(existingOrder);
 
-        HistoryOrder historyOrder = historyOrderService.findById(4L);
-        assertEquals("online", historyOrder.getPaymentMethod());
+        HistoryOrder historyOrder = historyOrderService.findById(5L);
+        assertEquals("card", historyOrder.getPaymentMethod());
 
         List<HistoryWaiterCall> historyWaiterCalls = historyWaiterCallService.findAllByHistoryOrder(historyOrder);
         assertEquals("2024-01-29T08:41:20.738823", historyWaiterCalls.get(0).getCallTime().toString());

@@ -46,7 +46,7 @@ public class Booking {
     private String surname;
 
     @Column(nullable = false)
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @CollectionNotEmpty
     private Set<RestaurantTable> restaurantTables;
 

@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class OrderedItemControllerTest {
 
     @Autowired
@@ -48,7 +50,7 @@ public class OrderedItemControllerTest {
         List<OrderedItem> orderedItems =
                 apiRequestUtils.fetchAsList(
                         "/api/restaurant/ordered-items", OrderedItem.class);
-        assertEquals(4, orderedItems.size());
+        assertEquals(5, orderedItems.size());
         assertEquals(4, orderedItems.get(3).getQuantity());
     }
 
@@ -90,7 +92,7 @@ public class OrderedItemControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/restaurant/ordered-items", OrderedItem.class);
 
-        assertEquals(9, persistedOrderedItems.size());
+        assertEquals(10, persistedOrderedItems.size());
         assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami",
                 persistedOrderedItems.get(5).getMenuItem().getName());
         assertEquals(2, persistedOrderedItems.get(5).getQuantity());

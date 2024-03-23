@@ -59,7 +59,7 @@ public class HistoryBooking {
     private String surname;
 
     @Column(nullable = false)
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<RestaurantTable> restaurantTables;
 
     private Byte numTablesBooked;

@@ -281,7 +281,7 @@ INSERT INTO orders (bill_requested,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 7, '2024-01-29 08:29:20.738823', true, null, null, true, 1, 12);
+VALUES (false, false, false, 7, '2024-01-29 08:29:20.738823', false, null, null, true, 1, 12);
 
 INSERT INTO orders_ordered_items (order_id, ordered_items_id)
 VALUES (1, 1);

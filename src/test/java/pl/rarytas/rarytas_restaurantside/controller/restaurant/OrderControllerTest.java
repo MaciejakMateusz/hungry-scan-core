@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class OrderControllerTest {
 
     @Autowired
@@ -47,8 +49,8 @@ class OrderControllerTest {
     @WithMockUser(roles = "WAITER")
     public void shouldGetAllOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders", Order.class);
-        assertFalse(orders.stream().anyMatch(Order::isPaid));
-        assertEquals(3, orders.size());
+        assertFalse(orders.stream().anyMatch(Order::isResolved));
+        assertEquals(5, orders.size());
     }
 
     @Test
@@ -76,7 +78,7 @@ class OrderControllerTest {
     public void shouldGetAllDineInOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/dine-in", Order.class);
         assertFalse(orders.stream().anyMatch(Order::isForTakeAway));
-        assertEquals(3, orders.size());
+        assertEquals(4, orders.size());
     }
 
     @Test
@@ -139,15 +141,15 @@ class OrderControllerTest {
     }
 
     private void shouldSaveNewDineInOrder() throws Exception {
-        Order order = orderProcessor.createDineInOrder(12, List.of(4, 12, 15));
+        Order order = orderProcessor.createDineInOrder(15, List.of(4, 12, 15));
 
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order);
 
         Order persistedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
 
         assertNotNull(persistedOrder);
-        assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
+        assertEquals(15, order.getRestaurantTable().getId());
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
                 orderProcessor.countTotalAmount(persistedOrder.getOrderedItems()));
     }
@@ -169,7 +171,7 @@ class OrderControllerTest {
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/take-away", order);
 
         Order persistedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
 
         assertNotNull(persistedOrder);
         assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
@@ -183,7 +185,7 @@ class OrderControllerTest {
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order);
 
         Order persistedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
 
         assertNotNull(persistedOrder);
         assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
@@ -193,14 +195,14 @@ class OrderControllerTest {
 
     private void shouldRequestBillAndUpdateOrder() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
         assertNotNull(order);
 
         apiRequestUtils.patchAndExpect(
-                "/api/restaurant/orders/request-bill", 5L, "cash", status().isOk());
+                "/api/restaurant/orders/request-bill", 6L, "cash", status().isOk());
 
         Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
         assertNotNull(updatedOrder);
         assertTrue(updatedOrder.isBillRequested());
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
@@ -209,44 +211,46 @@ class OrderControllerTest {
 
     private void shouldNotRequestBillSecondTime() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
         assertNotNull(order);
 
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/request-bill", 5L, "card", status().isBadRequest());
+                        "/api/restaurant/orders/request-bill", 6L, "card", status().isBadRequest());
 
         assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 5 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+        assertEquals("Zamówienie z podanym ID = 6 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
                 errors.get("exceptionMsg"));
     }
 
     private void shouldNotCallWaiterWithBillRequested() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 5, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
         assertNotNull(order);
 
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/call-waiter", 5L, status().isBadRequest());
+                        "/api/restaurant/orders/call-waiter", 6L, status().isBadRequest());
 
         assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 5 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+        assertEquals("Zamówienie z podanym ID = 6 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
                 errors.get("exceptionMsg"));
     }
 
     private void shouldOrderMoreDishes() throws Exception {
         Order moreDishes = orderProcessor.createDineInOrder(12, List.of(2, 35));
-        moreDishes.setId(7L);
+        moreDishes.setId(8L);
 
         apiRequestUtils.patchAndExpect200("/api/restaurant/orders", moreDishes);
 
         Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
         assertNotNull(updatedOrder);
 
-        BigDecimal newItemsAmount = orderProcessor.countTotalAmount(moreDishes.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal newTotalAmount = orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal newItemsAmount =
+                orderProcessor.countTotalAmount(moreDishes.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal newTotalAmount =
+                orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
 
         assertEquals(BigDecimal.valueOf(40.00).setScale(2, RoundingMode.HALF_UP), newItemsAmount);
         assertEquals(BigDecimal.valueOf(136.25).setScale(2, RoundingMode.HALF_UP), newTotalAmount);
@@ -255,73 +259,73 @@ class OrderControllerTest {
 
     private void shouldCallWaiter() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
         assertFalse(order.isWaiterCalled());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", 7L);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", 8L);
 
         Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
         assertTrue(updatedOrder.isWaiterCalled());
     }
 
     private void shouldNotRequestBillWhenWaiterCalled() throws Exception {
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/request-bill", 7L, "card", status().isBadRequest());
+                        "/api/restaurant/orders/request-bill", 8L, "card", status().isBadRequest());
 
         assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 7 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+        assertEquals("Zamówienie z podanym ID = 8 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
                 errors.get("exceptionMsg"));
     }
 
     private void shouldNotCallWaiterSecondTime() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
         assertNotNull(order);
 
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/call-waiter", 7L, status().isBadRequest());
+                        "/api/restaurant/orders/call-waiter", 8L, status().isBadRequest());
 
         assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 7 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+        assertEquals("Zamówienie z podanym ID = 8 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
                 errors.get("exceptionMsg"));
     }
 
     private void shouldResolveWaiterCall() throws Exception {
-        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/resolve-call", 7L);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/resolve-call", 8L);
         Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
 
         assertFalse(updatedOrder.isWaiterCalled());
     }
 
     private void shouldFinalizeDineIn() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
         assertNotNull(order);
 
-        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-dine-in", 7);
+        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-dine-in", 8);
 
         Map<?, ?> errors =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/restaurant/orders/show", 7L, status().isBadRequest());
-        assertEquals("Zamówienie z podanym ID = 7 nie istnieje.", errors.get("exceptionMsg"));
+                        "/api/restaurant/orders/show", 8L, status().isBadRequest());
+        assertEquals("Zamówienie z podanym ID = 8 nie istnieje.", errors.get("exceptionMsg"));
     }
 
     private void shouldFinalizeTakeAway() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7L, Order.class);
         assertNotNull(order);
         assertTrue(order.isForTakeAway());
 
-        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-take-away", 6L);
+        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-take-away", 7L);
 
         Map<?, ?> errors =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/restaurant/orders/finalize-take-away", 6L, status().isBadRequest());
-        assertEquals("Zamówienie z podanym ID = 6 nie istnieje.", errors.get("exceptionMsg"));
+                        "/api/restaurant/orders/finalize-take-away", 7L, status().isBadRequest());
+        assertEquals("Zamówienie z podanym ID = 7 nie istnieje.", errors.get("exceptionMsg"));
     }
 
     @Test
