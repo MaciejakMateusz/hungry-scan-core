@@ -374,7 +374,10 @@ class OrderControllerTest {
         Order order = orderProcessor.createDineInOrder(12, List.of(4, 12, 15));
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/dine-in", order);
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/take-away", order);
-        apiRequestUtils.patchAndExpect("/api/restaurant/orders/request-bill", 6L, "cash", status().isUnauthorized());
+        apiRequestUtils.patchAndExpect(
+                "/api/restaurant/orders/request-bill", 6L, "cash", status().isUnauthorized());
+        apiRequestUtils.patchAndExpect(
+                "/api/restaurant/orders/tip", 6L, BigDecimal.valueOf(15), status().isUnauthorized());
         apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/call-waiter", 111L);
         apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/resolve-call", 111L);
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-dine-in", 111L);
