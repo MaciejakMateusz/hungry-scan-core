@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.utility;
+package pl.rarytas.rarytas_restaurantside.utility.interfaces;
 
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 

@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import pl.rarytas.rarytas_restaurantside.utility.ThrowingBiConsumer;
-import pl.rarytas.rarytas_restaurantside.utility.ThrowingConsumer;
-import pl.rarytas.rarytas_restaurantside.utility.ThrowingFunction;
-import pl.rarytas.rarytas_restaurantside.utility.TriFunction;
+import pl.rarytas.rarytas_restaurantside.utility.interfaces.ThrowingBiConsumer;
+import pl.rarytas.rarytas_restaurantside.utility.interfaces.ThrowingConsumer;
+import pl.rarytas.rarytas_restaurantside.utility.interfaces.ThrowingFunction;
+import pl.rarytas.rarytas_restaurantside.utility.interfaces.TriFunction;
 
 import java.time.LocalDate;
 import java.util.HashMap;
