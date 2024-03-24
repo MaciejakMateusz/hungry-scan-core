@@ -8,6 +8,7 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class OrderProcessor {
         for (OrderedItem orderedItem : orderedItems) {
             totalAmount = totalAmount.add(orderedItem.getMenuItem().getPrice());
         }
-        return totalAmount;
+        return totalAmount.setScale(2, RoundingMode.HALF_UP);
     }
 
     /**

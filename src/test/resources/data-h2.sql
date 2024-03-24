@@ -234,7 +234,7 @@ INSERT INTO orders (bill_requested,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 1, '2024-01-29 08:29:20.738823', false, null, null, null, false, 1, 1);
+VALUES (false, false, false, 1, '2024-01-29 08:29:20.738823', false, null, 44.00, 0.00, false, 1, 1);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -247,7 +247,7 @@ INSERT INTO orders (bill_requested,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (true, false, false, 322, '2024-01-29 08:29:20.738823', false, 'cash', null, null, false, 1, 2);
+VALUES (true, false, false, 322, '2024-01-29 08:29:20.738823', false, 'cash', 49.00, 0.00, false, 1, 2);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -260,7 +260,7 @@ INSERT INTO orders (bill_requested,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 421, '2024-01-29 08:29:20.738823', false, null, null, null, true, 1, 5);
+VALUES (false, false, false, 421, '2024-01-29 08:29:20.738823', false, null, 44.00, 0.00, true, 1, 5);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -273,7 +273,7 @@ INSERT INTO orders (bill_requested,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, true, false, 6, '2024-01-29 08:29:20.738823', true, 'online', null, null, false, 1, 19);
+VALUES (false, true, false, 6, '2024-01-29 08:29:20.738823', true, 'online', 67.96, 0.00, false, 1, 19);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -286,7 +286,7 @@ INSERT INTO orders (bill_requested,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 7, '2024-01-29 08:29:20.738823', false, null, null, null, true, 1, 12);
+VALUES (false, false, false, 7, '2024-01-29 08:29:20.738823', false, null, 84.95, 0.00, true, 1, 12);
 
 INSERT INTO orders_ordered_items (order_id, ordered_items_id)
 VALUES (1, 1);
@@ -322,12 +322,12 @@ INSERT INTO history_orders (id,
                             order_time,
                             is_paid,
                             payment_method,
-                            tip_amount,
                             total_amount,
+                            tip_amount,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (12, false, false, true, 1, '2024-01-29', '08:29:20.738823', true, 'card', null, null, false, 1, 1);
+VALUES (12, false, false, true, 1, '2024-01-29', '08:29:20.738823', true, 'card', 44.00, 0.00, false, 1, 1);
 INSERT INTO history_orders (id,
                             bill_requested,
                             take_away,
@@ -342,7 +342,7 @@ INSERT INTO history_orders (id,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (13, true, false, true, 322, '2024-02-21', '08:29:20.738823', true, 'cash', null, null, false, 1, 2);
+VALUES (13, true, false, true, 322, '2024-02-21', '08:29:20.738823', true, 'cash', 93.50, 20.00, false, 1, 2);
 INSERT INTO history_orders (id,
                             bill_requested,
                             take_away,
@@ -357,7 +357,7 @@ INSERT INTO history_orders (id,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (14, false, true, true, 1, '2024-01-29', '08:29:20.738823', true, 'online', null, null, false, 1, 19);
+VALUES (14, false, true, true, 1, '2024-01-29', '08:29:20.738823', true, 'online', 54.00, 10.00, false, 1, 19);
 INSERT INTO history_orders (id,
                             bill_requested,
                             take_away,
@@ -372,7 +372,7 @@ INSERT INTO history_orders (id,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (15, false, true, true, 322, '2024-02-21', '08:29:20.738823', true, 'online', null, null, false, 1, 19);
+VALUES (15, false, true, true, 322, '2024-02-21', '08:29:20.738823', true, 'online', 73.50, 0.00, false, 1, 19);
 
 INSERT INTO history_orders_history_ordered_items (history_order_id, history_ordered_items_id)
 VALUES (12, 222);

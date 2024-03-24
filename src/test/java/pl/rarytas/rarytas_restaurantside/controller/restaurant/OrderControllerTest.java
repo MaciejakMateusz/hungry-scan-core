@@ -1,7 +1,9 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
 import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
+import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderControllerTest {
 
     @Autowired
@@ -47,6 +50,7 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    @org.junit.jupiter.api.Order(1)
     public void shouldGetAllOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders", Order.class);
         assertFalse(orders.stream().anyMatch(Order::isResolved));
@@ -61,6 +65,7 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    @org.junit.jupiter.api.Order(2)
     public void shouldGetAllTakeAwayOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/take-away", Order.class);
         assertFalse(orders.stream().anyMatch(order -> !order.isForTakeAway()));
@@ -75,6 +80,7 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    @org.junit.jupiter.api.Order(3)
     public void shouldGetAllDineInOrders() throws Exception {
         List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/dine-in", Order.class);
         assertFalse(orders.stream().anyMatch(Order::isForTakeAway));
@@ -89,6 +95,7 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    @org.junit.jupiter.api.Order(4)
     public void shouldGetByTableNumber() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/table-number", 2, Order.class);
@@ -105,6 +112,7 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    @org.junit.jupiter.api.Order(5)
     public void shouldGetById() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2, Order.class);
@@ -123,27 +131,8 @@ class OrderControllerTest {
     @WithMockUser(roles = {"WAITER"})
     @Transactional
     @Rollback
-    public void launchPostPatchTestsInSequence() throws Exception {
-        shouldSaveNewDineInOrder();
-        shouldNotSaveOrderForOccupiedTable();
-        shouldSaveNewTakeAwayOrder();
-        shouldSaveNextDineInOrder();
-        shouldRequestBillAndUpdateOrder();
-        shouldNotRequestBillSecondTime();
-        shouldNotCallWaiterWithBillRequested();
-        shouldOrderMoreDishes();
-        shouldCallWaiter();
-        shouldNotRequestBillWhenWaiterCalled();
-        shouldNotCallWaiterSecondTime();
-        shouldResolveWaiterCall();
-        shouldFinalizeDineIn();
-        shouldFinalizeTakeAway();
-        shouldGiveTip();
-        shouldNotGiveZeroTip();
-        shouldNotGiveNegativeTip();
-    }
-
-    private void shouldSaveNewDineInOrder() throws Exception {
+    @org.junit.jupiter.api.Order(6)
+    public void shouldSaveNewDineInOrder() throws Exception {
         Order order = orderProcessor.createDineInOrder(15, List.of(4, 12, 15));
 
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order);
@@ -156,7 +145,12 @@ class OrderControllerTest {
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
     }
 
-    private void shouldNotSaveOrderForOccupiedTable() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(7)
+    public void shouldNotSaveOrderForOccupiedTable() throws Exception {
         Order order = orderProcessor.createDineInOrder(12, List.of(5, 1, 22));
 
         Map<?, ?> errors =
@@ -167,7 +161,12 @@ class OrderControllerTest {
         assertEquals("Stolik posiada już zamówienie.", errors.get("exceptionMsg"));
     }
 
-    private void shouldSaveNewTakeAwayOrder() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(8)
+    public void shouldSaveNewTakeAwayOrder() throws Exception {
         Order order = orderProcessor.createTakeAwayOrder(List.of(3, 10, 22, 33));
 
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/take-away", order);
@@ -180,7 +179,12 @@ class OrderControllerTest {
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
     }
 
-    private void shouldSaveNextDineInOrder() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(9)
+    public void shouldSaveNextDineInOrder() throws Exception {
         Order order = orderProcessor.createDineInOrder(10, List.of(7, 9, 22, 31));
 
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order);
@@ -193,177 +197,235 @@ class OrderControllerTest {
         assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
     }
 
-    private void shouldRequestBillAndUpdateOrder() throws Exception {
-        Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
-        assertNotNull(order);
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(10)
+    public void shouldRequestBill() throws Exception {
+        Order existingOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
+        assertFalse(existingOrder.isBillRequested());
+        assertNull(existingOrder.getPaymentMethod());
 
-        apiRequestUtils.patchAndExpect("/api/restaurant/orders/request-bill", 6L, "cash", status().isOk());
+        apiRequestUtils.patchAndExpect("/api/restaurant/orders/request-bill", 1L, "cash", status().isOk());
 
         Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
-        assertNotNull(updatedOrder);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
         assertTrue(updatedOrder.isBillRequested());
-        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), updatedOrder.getTotalAmount());
+        assertEquals("cash", updatedOrder.getPaymentMethod());
     }
 
-    private void shouldNotRequestBillSecondTime() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(11)
+    public void shouldNotRequestBillSecondTime() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2L, Order.class);
         assertNotNull(order);
 
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/request-bill", 6L, "card", status().isBadRequest());
+                        "/api/restaurant/orders/request-bill", 2L, "card", status().isBadRequest());
 
         assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 6 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+        assertEquals("Zamówienie z podanym ID = 2 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
                 errors.get("exceptionMsg"));
     }
 
-    private void shouldNotCallWaiterWithBillRequested() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(12)
+    public void shouldNotCallWaiterWithBillRequested() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2L, Order.class);
         assertNotNull(order);
 
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/call-waiter", 6L, status().isBadRequest());
+                        "/api/restaurant/orders/call-waiter", 2L, status().isBadRequest());
 
         assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 6 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+        assertEquals("Zamówienie z podanym ID = 2 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
                 errors.get("exceptionMsg"));
     }
 
-    private void shouldOrderMoreDishes() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(13)
+    public void shouldOrderMoreDishes() throws Exception {
         Order moreDishes = orderProcessor.createDineInOrder(12, List.of(2, 35));
-        moreDishes.setId(8L);
+        moreDishes.setId(1L);
 
         apiRequestUtils.patchAndExpect200("/api/restaurant/orders", moreDishes);
 
         Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
         assertNotNull(updatedOrder);
 
         BigDecimal newItemsAmount =
-                orderProcessor.countTotalAmount(moreDishes.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
+                orderProcessor.countTotalAmount(moreDishes.getOrderedItems());
         BigDecimal newTotalAmount = updatedOrder.getTotalAmount();
 
-        assertEquals(BigDecimal.valueOf(40.00).setScale(2, RoundingMode.HALF_UP), newItemsAmount);
-        assertEquals(BigDecimal.valueOf(136.25).setScale(2, RoundingMode.HALF_UP), newTotalAmount);
-        assertEquals(6, updatedOrder.getOrderedItems().size());
+        assertEquals(Money.of(40.00), newItemsAmount);
+        assertEquals(Money.of(84.00), newTotalAmount);
+        assertEquals(3, updatedOrder.getOrderedItems().size());
     }
 
-    private void shouldCallWaiter() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(14)
+    public void shouldCallWaiter() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1, Order.class);
         assertFalse(order.isWaiterCalled());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", 8L);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", 1L);
 
         Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1, Order.class);
         assertTrue(updatedOrder.isWaiterCalled());
     }
 
-    private void shouldNotRequestBillWhenWaiterCalled() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(15)
+    public void shouldNotRequestBillWhenWaiterCalled() throws Exception {
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/request-bill", 8L, "card", status().isBadRequest());
+                        "/api/restaurant/orders/request-bill", 3L, "card", status().isBadRequest());
 
         assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 8 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+        assertEquals("Zamówienie z podanym ID = 3 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
                 errors.get("exceptionMsg"));
     }
 
-    private void shouldNotCallWaiterSecondTime() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(16)
+    public void shouldNotCallWaiterSecondTime() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 3, Order.class);
         assertNotNull(order);
 
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/call-waiter", 8L, status().isBadRequest());
+                        "/api/restaurant/orders/call-waiter", 3L, status().isBadRequest());
 
         assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 8 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+        assertEquals("Zamówienie z podanym ID = 3 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
                 errors.get("exceptionMsg"));
     }
 
-    private void shouldResolveWaiterCall() throws Exception {
-        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/resolve-call", 8L);
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(17)
+    public void shouldResolveWaiterCall() throws Exception {
+        Order existingOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 3, Order.class);
+        assertTrue(existingOrder.isWaiterCalled());
+
+        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/resolve-call", 3L);
         Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 3, Order.class);
 
         assertFalse(updatedOrder.isWaiterCalled());
     }
 
-    private void shouldFinalizeDineIn() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(18)
+    public void shouldFinalizeDineIn() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
-        assertNotNull(order);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2, Order.class);
+        assertTrue(order.isBillRequested());
 
-        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-dine-in", 8);
+        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-dine-in", 2);
 
         Map<?, ?> errors =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/restaurant/orders/show", 8L, status().isBadRequest());
-        assertEquals("Zamówienie z podanym ID = 8 nie istnieje.", errors.get("exceptionMsg"));
+                        "/api/restaurant/orders/show", 2L, status().isBadRequest());
+        assertEquals("Zamówienie z podanym ID = 2 nie istnieje.", errors.get("exceptionMsg"));
     }
 
-    private void shouldFinalizeTakeAway() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(19)
+    public void shouldFinalizeTakeAway() throws Exception {
         Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7L, Order.class);
-        assertNotNull(order);
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 4L, Order.class);
         assertTrue(order.isForTakeAway());
 
-        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-take-away", 7L);
+        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-take-away", 4L);
 
         Map<?, ?> errors =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/restaurant/orders/finalize-take-away", 7L, status().isBadRequest());
-        assertEquals("Zamówienie z podanym ID = 7 nie istnieje.", errors.get("exceptionMsg"));
+                        "/api/restaurant/orders/finalize-take-away", 4L, status().isBadRequest());
+        assertEquals("Zamówienie z podanym ID = 4 nie istnieje.", errors.get("exceptionMsg"));
     }
 
-    private void shouldGiveTip() throws Exception {
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(20)
+    public void shouldGiveTip() throws Exception {
         Order existingOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
-        assertEquals(BigDecimal.valueOf(63.25), existingOrder.getTotalAmount());
-        assertEquals(BigDecimal.valueOf(0.0), existingOrder.getTipAmount());
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
+        assertEquals(Money.of(44.00), existingOrder.getTotalAmount());
+        assertEquals(Money.of(0.00), existingOrder.getTipAmount());
 
-        BigDecimal tipAmount = BigDecimal.valueOf(50);
+        BigDecimal tipAmount = Money.of(50.00);
         apiRequestUtils.patchAndExpect(
-                "/api/restaurant/orders/tip", 6L, tipAmount, status().isOk());
+                "/api/restaurant/orders/tip", 1L, tipAmount, status().isOk());
 
         existingOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
-        assertEquals(BigDecimal.valueOf(113.25), existingOrder.getTotalAmount());
-        assertEquals(BigDecimal.valueOf(50), existingOrder.getTipAmount());
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
+        assertEquals(Money.of(94.00), existingOrder.getTotalAmount());
+        assertEquals(tipAmount, existingOrder.getTipAmount());
     }
 
-    private void shouldNotGiveZeroTip() throws Exception {
-        Order existingOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
-        assertEquals(BigDecimal.valueOf(113.25), existingOrder.getTotalAmount());
-        assertEquals(BigDecimal.valueOf(50), existingOrder.getTipAmount());
-
-        BigDecimal tipAmount = BigDecimal.ZERO;
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(21)
+    public void shouldNotGiveZeroTip() throws Exception {
+        BigDecimal tipAmount = Money.of(0.00);
         Map<?, ?> errors = apiRequestUtils.patchAndReturnResponseBody(
-                "/api/restaurant/orders/tip", 6L, tipAmount, status().isBadRequest());
+                "/api/restaurant/orders/tip", 1L, tipAmount, status().isBadRequest());
 
         assertEquals(1, errors.size());
         assertEquals("Wysokość napiwku musi być większa od 0.", errors.get("exceptionMsg"));
     }
 
-    private void shouldNotGiveNegativeTip() throws Exception {
-        Order existingOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
-        assertEquals(BigDecimal.valueOf(113.25), existingOrder.getTotalAmount());
-        assertEquals(BigDecimal.valueOf(50), existingOrder.getTipAmount());
-
-        BigDecimal tipAmount = BigDecimal.valueOf(-50);
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    @org.junit.jupiter.api.Order(22)
+    public void shouldNotGiveNegativeTip() throws Exception {
+        BigDecimal tipAmount = Money.of(-50.00);
         Map<?, ?> errors = apiRequestUtils.patchAndReturnResponseBody(
-                "/api/restaurant/orders/tip", 6L, tipAmount, status().isBadRequest());
+                "/api/restaurant/orders/tip", 1L, tipAmount, status().isBadRequest());
 
         assertEquals(1, errors.size());
         assertEquals("Wysokość napiwku musi być większa od 0.", errors.get("exceptionMsg"));
@@ -377,7 +439,7 @@ class OrderControllerTest {
         apiRequestUtils.patchAndExpect(
                 "/api/restaurant/orders/request-bill", 6L, "cash", status().isUnauthorized());
         apiRequestUtils.patchAndExpect(
-                "/api/restaurant/orders/tip", 6L, BigDecimal.valueOf(15), status().isUnauthorized());
+                "/api/restaurant/orders/tip", 6L, Money.of(15.00), status().isUnauthorized());
         apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/call-waiter", 111L);
         apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/resolve-call", 111L);
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-dine-in", 111L);

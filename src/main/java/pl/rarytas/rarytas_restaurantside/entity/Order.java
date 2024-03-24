@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.listener.OrderListener;
+import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -49,11 +50,11 @@ public class Order {
 
     @Column(name = "total_amount")
     @DecimalMin(value = "0.00")
-    private BigDecimal totalAmount = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+    private BigDecimal totalAmount = Money.of(0.00);
 
     @Column(name = "tip_amount")
     @DecimalMin(value = "0.0")
-    private BigDecimal tipAmount = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+    private BigDecimal tipAmount = Money.of(0.00);
 
     @Column(name = "is_paid")
     private boolean paid;
@@ -75,6 +76,22 @@ public class Order {
 
     public void addToOrderedItems(List<OrderedItem> orderedItems) {
         this.orderedItems.addAll(orderedItems);
+    }
+
+    public BigDecimal getTotalAmount() {
+        return this.totalAmount.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal getTipAmount() {
+        return this.tipAmount.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void setTipAmount(BigDecimal tipAmount) {
+        this.tipAmount = tipAmount.setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override

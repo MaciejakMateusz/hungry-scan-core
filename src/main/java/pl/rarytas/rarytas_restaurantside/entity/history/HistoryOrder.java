@@ -33,7 +33,7 @@ public class HistoryOrder {
                         LocalTime orderTime,
                         String paymentMethod,
                         BigDecimal totalAmount,
-                        BigDecimal tip_amount,
+                        BigDecimal tipAmount,
                         boolean paid,
                         boolean forTakeAway,
                         boolean billRequested,
@@ -46,8 +46,8 @@ public class HistoryOrder {
         this.orderDate = orderDate;
         this.orderTime = orderTime;
         this.paymentMethod = paymentMethod;
-        this.totalAmount = totalAmount;
-        this.tipAmount = tip_amount;
+        setTotalAmount(totalAmount);
+        setTipAmount(tipAmount);
         this.paid = paid;
         this.forTakeAway = forTakeAway;
         this.billRequested = billRequested;
@@ -112,6 +112,14 @@ public class HistoryOrder {
 
     @OneToOne(cascade = CascadeType.MERGE)
     private Feedback feedback;
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void setTipAmount(BigDecimal tipAmount) {
+        this.tipAmount = tipAmount.setScale(2, RoundingMode.HALF_UP);
+    }
 
     @Override
     public String toString() {

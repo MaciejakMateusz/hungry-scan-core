@@ -23,7 +23,7 @@ public class OrderServiceHelper {
     }
 
     public BigDecimal calculateTotalAmount(Order order) {
-        BigDecimal sum = BigDecimal.valueOf(0).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal sum = Money.of(0.00);
         for (OrderedItem orderedItem : order.getOrderedItems()) {
             BigDecimal itemPrice = orderedItem.getMenuItem().getPrice();
             int quantity = orderedItem.getQuantity();
@@ -32,7 +32,7 @@ public class OrderServiceHelper {
         if(Objects.nonNull(order.getTipAmount())) {
             sum = sum.add(order.getTipAmount());
         }
-        return sum;
+        return sum.setScale(2, RoundingMode.HALF_UP);
     }
 
     public boolean orderExistsForGivenTable(Order order) throws LocalizedException {
