@@ -30,16 +30,6 @@ public class OrderListener {
         order.setOrderNumber(orderCounter);
     }
 
-    private void setLastOrderDate(LocalDateTime now) {
-        if (lastOrderDate == null || now.toLocalDate().isAfter(lastOrderDate)) {
-            LocalTime noon = LocalTime.of(12, 0); // 12:00 pm
-            if (now.toLocalTime().isAfter(noon)) {
-                orderCounter = 0;
-            }
-            lastOrderDate = now.toLocalDate();
-        }
-    }
-
     @PostPersist
     public void postPersist(final Order order) {
         log.info("New order received with ID: " + order.getId() + ", time of order: " + order.getOrderTime());
@@ -53,5 +43,15 @@ public class OrderListener {
     @PostRemove
     public void postRemove(final Order order) {
         log.info("Removed order with ID: " + order.getId());
+    }
+
+    private void setLastOrderDate(LocalDateTime now) {
+        if (lastOrderDate == null || now.toLocalDate().isAfter(lastOrderDate)) {
+            LocalTime noon = LocalTime.of(12, 0); // 12:00 pm
+            if (now.toLocalTime().isAfter(noon)) {
+                orderCounter = 0;
+            }
+            lastOrderDate = now.toLocalDate();
+        }
     }
 }

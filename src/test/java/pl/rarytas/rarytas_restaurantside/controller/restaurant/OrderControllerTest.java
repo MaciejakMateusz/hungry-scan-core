@@ -138,6 +138,9 @@ class OrderControllerTest {
         shouldResolveWaiterCall();
         shouldFinalizeDineIn();
         shouldFinalizeTakeAway();
+        shouldGiveTip();
+        shouldNotGiveZeroTip();
+        shouldNotGiveNegativeTip();
     }
 
     private void shouldSaveNewDineInOrder() throws Exception {
@@ -150,8 +153,7 @@ class OrderControllerTest {
 
         assertNotNull(persistedOrder);
         assertEquals(15, order.getRestaurantTable().getId());
-        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
-                orderProcessor.countTotalAmount(persistedOrder.getOrderedItems()));
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
     }
 
     private void shouldNotSaveOrderForOccupiedTable() throws Exception {
@@ -165,7 +167,7 @@ class OrderControllerTest {
         assertEquals("Stolik posiada już zamówienie.", errors.get("exceptionMsg"));
     }
 
-    public void shouldSaveNewTakeAwayOrder() throws Exception {
+    private void shouldSaveNewTakeAwayOrder() throws Exception {
         Order order = orderProcessor.createTakeAwayOrder(List.of(3, 10, 22, 33));
 
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/take-away", order);
@@ -174,9 +176,8 @@ class OrderControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
 
         assertNotNull(persistedOrder);
-        assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
-        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
-                orderProcessor.countTotalAmount(persistedOrder.getOrderedItems()));
+        assertEquals(order.getRestaurantTable().getId(), persistedOrder.getRestaurantTable().getId());
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
     }
 
     private void shouldSaveNextDineInOrder() throws Exception {
@@ -189,8 +190,7 @@ class OrderControllerTest {
 
         assertNotNull(persistedOrder);
         assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
-        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
-                orderProcessor.countTotalAmount(persistedOrder.getOrderedItems()));
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
     }
 
     private void shouldRequestBillAndUpdateOrder() throws Exception {
@@ -198,15 +198,13 @@ class OrderControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
         assertNotNull(order);
 
-        apiRequestUtils.patchAndExpect(
-                "/api/restaurant/orders/request-bill", 6L, "cash", status().isOk());
+        apiRequestUtils.patchAndExpect("/api/restaurant/orders/request-bill", 6L, "cash", status().isOk());
 
         Order updatedOrder =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
         assertNotNull(updatedOrder);
         assertTrue(updatedOrder.isBillRequested());
-        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()),
-                orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()));
+        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), updatedOrder.getTotalAmount());
     }
 
     private void shouldNotRequestBillSecondTime() throws Exception {
@@ -249,8 +247,7 @@ class OrderControllerTest {
 
         BigDecimal newItemsAmount =
                 orderProcessor.countTotalAmount(moreDishes.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal newTotalAmount =
-                orderProcessor.countTotalAmount(updatedOrder.getOrderedItems()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal newTotalAmount = updatedOrder.getTotalAmount();
 
         assertEquals(BigDecimal.valueOf(40.00).setScale(2, RoundingMode.HALF_UP), newItemsAmount);
         assertEquals(BigDecimal.valueOf(136.25).setScale(2, RoundingMode.HALF_UP), newTotalAmount);
@@ -326,6 +323,50 @@ class OrderControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/restaurant/orders/finalize-take-away", 7L, status().isBadRequest());
         assertEquals("Zamówienie z podanym ID = 7 nie istnieje.", errors.get("exceptionMsg"));
+    }
+
+    private void shouldGiveTip() throws Exception {
+        Order existingOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
+        assertEquals(BigDecimal.valueOf(63.25), existingOrder.getTotalAmount());
+        assertEquals(BigDecimal.valueOf(0.0), existingOrder.getTipAmount());
+
+        BigDecimal tipAmount = BigDecimal.valueOf(50);
+        apiRequestUtils.patchAndExpect(
+                "/api/restaurant/orders/tip", 6L, tipAmount, status().isOk());
+
+        existingOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
+        assertEquals(BigDecimal.valueOf(113.25), existingOrder.getTotalAmount());
+        assertEquals(BigDecimal.valueOf(50), existingOrder.getTipAmount());
+    }
+
+    private void shouldNotGiveZeroTip() throws Exception {
+        Order existingOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
+        assertEquals(BigDecimal.valueOf(113.25), existingOrder.getTotalAmount());
+        assertEquals(BigDecimal.valueOf(50), existingOrder.getTipAmount());
+
+        BigDecimal tipAmount = BigDecimal.ZERO;
+        Map<?, ?> errors = apiRequestUtils.patchAndReturnResponseBody(
+                "/api/restaurant/orders/tip", 6L, tipAmount, status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Wysokość napiwku musi być większa od 0.", errors.get("exceptionMsg"));
+    }
+
+    private void shouldNotGiveNegativeTip() throws Exception {
+        Order existingOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6L, Order.class);
+        assertEquals(BigDecimal.valueOf(113.25), existingOrder.getTotalAmount());
+        assertEquals(BigDecimal.valueOf(50), existingOrder.getTipAmount());
+
+        BigDecimal tipAmount = BigDecimal.valueOf(-50);
+        Map<?, ?> errors = apiRequestUtils.patchAndReturnResponseBody(
+                "/api/restaurant/orders/tip", 6L, tipAmount, status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Wysokość napiwku musi być większa od 0.", errors.get("exceptionMsg"));
     }
 
     @Test

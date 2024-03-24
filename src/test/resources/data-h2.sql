@@ -230,10 +230,11 @@ INSERT INTO orders (bill_requested,
                     is_paid,
                     payment_method,
                     total_amount,
+                    tip_amount,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 1, '2024-01-29 08:29:20.738823', false, null, null, false, 1, 1);
+VALUES (false, false, false, 1, '2024-01-29 08:29:20.738823', false, null, null, null, false, 1, 1);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -242,10 +243,11 @@ INSERT INTO orders (bill_requested,
                     is_paid,
                     payment_method,
                     total_amount,
+                    tip_amount,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (true, false, false, 322, '2024-01-29 08:29:20.738823', false, 'cash', null, false, 1, 2);
+VALUES (true, false, false, 322, '2024-01-29 08:29:20.738823', false, 'cash', null, null, false, 1, 2);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -254,10 +256,11 @@ INSERT INTO orders (bill_requested,
                     is_paid,
                     payment_method,
                     total_amount,
+                    tip_amount,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 421, '2024-01-29 08:29:20.738823', false, null, null, true, 1, 5);
+VALUES (false, false, false, 421, '2024-01-29 08:29:20.738823', false, null, null, null, true, 1, 5);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -266,10 +269,11 @@ INSERT INTO orders (bill_requested,
                     is_paid,
                     payment_method,
                     total_amount,
+                    tip_amount,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, true, false, 6, '2024-01-29 08:29:20.738823', true, 'online', null, false, 1, 19);
+VALUES (false, true, false, 6, '2024-01-29 08:29:20.738823', true, 'online', null, null, false, 1, 19);
 INSERT INTO orders (bill_requested,
                     take_away,
                     is_resolved,
@@ -278,10 +282,11 @@ INSERT INTO orders (bill_requested,
                     is_paid,
                     payment_method,
                     total_amount,
+                    tip_amount,
                     `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 7, '2024-01-29 08:29:20.738823', false, null, null, true, 1, 12);
+VALUES (false, false, false, 7, '2024-01-29 08:29:20.738823', false, null, null, null, true, 1, 12);
 
 INSERT INTO orders_ordered_items (order_id, ordered_items_id)
 VALUES (1, 1);
@@ -317,11 +322,12 @@ INSERT INTO history_orders (id,
                             order_time,
                             is_paid,
                             payment_method,
+                            tip_amount,
                             total_amount,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (12, false, false, true, 1, '2024-01-29', '08:29:20.738823', true, 'card', null, false, 1, 1);
+VALUES (12, false, false, true, 1, '2024-01-29', '08:29:20.738823', true, 'card', null, null, false, 1, 1);
 INSERT INTO history_orders (id,
                             bill_requested,
                             take_away,
@@ -332,10 +338,11 @@ INSERT INTO history_orders (id,
                             is_paid,
                             payment_method,
                             total_amount,
+                            tip_amount,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (13, true, false, true, 322, '2024-02-21', '08:29:20.738823', true, 'cash', null, false, 1, 2);
+VALUES (13, true, false, true, 322, '2024-02-21', '08:29:20.738823', true, 'cash', null, null, false, 1, 2);
 INSERT INTO history_orders (id,
                             bill_requested,
                             take_away,
@@ -346,10 +353,11 @@ INSERT INTO history_orders (id,
                             is_paid,
                             payment_method,
                             total_amount,
+                            tip_amount,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (14, false, true, true, 1, '2024-01-29', '08:29:20.738823', true, 'online', null, false, 1, 19);
+VALUES (14, false, true, true, 1, '2024-01-29', '08:29:20.738823', true, 'online', null, null, false, 1, 19);
 INSERT INTO history_orders (id,
                             bill_requested,
                             take_away,
@@ -360,10 +368,11 @@ INSERT INTO history_orders (id,
                             is_paid,
                             payment_method,
                             total_amount,
+                            tip_amount,
                             `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (15, false, true, true, 322, '2024-02-21', '08:29:20.738823', true, 'online', null, false, 1, 19);
+VALUES (15, false, true, true, 322, '2024-02-21', '08:29:20.738823', true, 'online', null, null, false, 1, 19);
 
 INSERT INTO history_orders_history_ordered_items (history_order_id, history_ordered_items_id)
 VALUES (12, 222);
@@ -376,28 +385,36 @@ VALUES (15, 555);
 
 INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
 VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', '16:00:00');
-INSERT INTO bookings_restaurant_tables(booking_id, restaurant_tables_id) VALUES (1, 5);
+INSERT INTO bookings_restaurant_tables(booking_id, restaurant_tables_id)
+VALUES (1, 5);
 INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
 VALUES ('2024-02-28', '14:00:00', 2, 'Drugi', '16:00:00');
-INSERT INTO bookings_restaurant_tables(booking_id, restaurant_tables_id) VALUES (2, 7);
+INSERT INTO bookings_restaurant_tables(booking_id, restaurant_tables_id)
+VALUES (2, 7);
 
 INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
 VALUES (50, '2024-01-19', '19:00:00', 1, 'Alan', '16:00:00');
-INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (50, 2);
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id)
+VALUES (50, 2);
 INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
-VALUES (51, '2024-01-21', '19:00:00', 3, 'Gibson',  '16:00:00');
-INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (51, 10);
+VALUES (51, '2024-01-21', '19:00:00', 3, 'Gibson', '16:00:00');
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id)
+VALUES (51, 10);
 INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
-VALUES (52, '2024-01-23', '19:00:00', 2, 'Fire',  '16:00:00');
-INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (52, 11);
+VALUES (52, '2024-01-23', '19:00:00', 2, 'Fire', '16:00:00');
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id)
+VALUES (52, 11);
 INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
-VALUES (53, '2024-01-25', '19:00:00', 4, 'Water',  '16:00:00');
-INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (53, 13);
+VALUES (53, '2024-01-25', '19:00:00', 4, 'Water', '16:00:00');
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id)
+VALUES (53, 13);
 INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, time)
 VALUES (54, '2024-01-27', '19:00:00', 2, 'Earth', '16:00:00');
-INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id) VALUES (54, 5);
+INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id)
+VALUES (54, 5);
 
-INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity, customer_session_time, employee_session_time)
+INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
+                      employee_session_time)
 VALUES (1, 3, '07:00:00', '23:00:00', 1, 120, 3, 20);
 
 INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname)

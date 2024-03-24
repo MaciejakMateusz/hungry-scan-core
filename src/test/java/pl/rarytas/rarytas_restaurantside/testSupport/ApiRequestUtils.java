@@ -285,7 +285,7 @@ public class ApiRequestUtils {
         ResultActions resultActions = mockMvc.perform(patch(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("id", t.toString())
-                        .param("paymentMethod", r.toString()))
+                        .param("value", r.toString()))
                 .andExpect(matcher)
                 .andDo(print());
 
@@ -364,7 +364,7 @@ public class ApiRequestUtils {
         mockMvc.perform(patch(url)
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("id", t.toString())
-                        .param("paymentMethod", r.toString()))
+                        .param("value", r.toString()))
                 .andExpect(matcher)
                 .andDo(print());
     }

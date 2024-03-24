@@ -1,8 +1,10 @@
 package pl.rarytas.rarytas_restaurantside.service.interfaces;
 
+import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderService {
@@ -21,6 +23,9 @@ public interface OrderService {
     void orderMoreDishes(Order order) throws LocalizedException;
 
     void saveTakeAway(Order order);
+
+    @Transactional
+    void tip(Long id, BigDecimal tipAmount) throws LocalizedException;
 
     void requestBill(Long id, String paymentMethod) throws LocalizedException;
 

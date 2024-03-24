@@ -1,6 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.listener.OrderListener;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,7 +48,12 @@ public class Order {
     private String paymentMethod;
 
     @Column(name = "total_amount")
-    private BigDecimal totalAmount;
+    @DecimalMin(value = "0.00")
+    private BigDecimal totalAmount = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+
+    @Column(name = "tip_amount")
+    @DecimalMin(value = "0.0")
+    private BigDecimal tipAmount = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
 
     @Column(name = "is_paid")
     private boolean paid;
@@ -65,16 +72,6 @@ public class Order {
 
     @Column(name = "order_number")
     private Integer orderNumber;
-
-    public BigDecimal getTotalAmount() {
-        BigDecimal sum = BigDecimal.valueOf(0);
-        for (OrderedItem orderedItem : this.getOrderedItems()) {
-            BigDecimal itemPrice = orderedItem.getMenuItem().getPrice();
-            int quantity = orderedItem.getQuantity();
-            sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
-        }
-        return sum;
-    }
 
     public void addToOrderedItems(List<OrderedItem> orderedItems) {
         this.orderedItems.addAll(orderedItems);

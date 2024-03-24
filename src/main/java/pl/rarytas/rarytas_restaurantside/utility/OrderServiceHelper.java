@@ -8,6 +8,8 @@ import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Objects;
 
 @Component
 public class OrderServiceHelper {
@@ -20,12 +22,15 @@ public class OrderServiceHelper {
         this.exceptionHelper = exceptionHelper;
     }
 
-    private BigDecimal calculateTotalAmount(Order order) {
-        BigDecimal sum = BigDecimal.valueOf(0);
+    public BigDecimal calculateTotalAmount(Order order) {
+        BigDecimal sum = BigDecimal.valueOf(0).setScale(2, RoundingMode.HALF_UP);
         for (OrderedItem orderedItem : order.getOrderedItems()) {
             BigDecimal itemPrice = orderedItem.getMenuItem().getPrice();
             int quantity = orderedItem.getQuantity();
             sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
+        }
+        if(Objects.nonNull(order.getTipAmount())) {
+            sum = sum.add(order.getTipAmount());
         }
         return sum;
     }
@@ -42,20 +47,12 @@ public class OrderServiceHelper {
     public void prepareForFinalizingDineIn(Order existingOrder) {
         existingOrder.setPaid(true);
         existingOrder.setResolved(true);
-        existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
         existingOrder.setBillRequested(true);
     }
 
     public void prepareForFinalizingTakeAway(Order existingOrder) {
         existingOrder.setPaid(true);
         existingOrder.setResolved(true);
-        existingOrder.setTotalAmount(calculateTotalAmount(existingOrder));
-    }
-
-    public void assertOrderExistsElseThrow(Long id) throws LocalizedException {
-        if (!orderRepository.existsById(id)) {
-            exceptionHelper.throwLocalizedMessage("error.orderService.orderNotFound", id);
-        }
     }
 
     private void assertIsNotResolvedElseThrow(Order existingOrder) throws LocalizedException {

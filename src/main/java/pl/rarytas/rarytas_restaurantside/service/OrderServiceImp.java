@@ -12,6 +12,7 @@ import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.utility.OrderServiceHelper;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -79,6 +80,7 @@ public class OrderServiceImp implements OrderService {
     @Override
     @Transactional
     public void saveTakeAway(Order order) {
+        order.setTotalAmount(orderHelper.calculateTotalAmount(order));
         orderRepository.save(order);
         orderRepository.refresh(order);
         messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
@@ -89,6 +91,17 @@ public class OrderServiceImp implements OrderService {
     public void orderMoreDishes(Order order) throws LocalizedException {
         Order existingOrder = findById(order.getId());
         existingOrder.addToOrderedItems(order.getOrderedItems());
+        saveRefreshAndNotify(existingOrder);
+    }
+
+    @Override
+    @Transactional
+    public void tip(Long id, BigDecimal tipAmount) throws LocalizedException {
+        if(tipAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            exceptionHelper.throwLocalizedMessage("error.orderService.invalidTipAmount");
+        }
+        Order existingOrder = findById(id);
+        existingOrder.setTipAmount(tipAmount);
         saveRefreshAndNotify(existingOrder);
     }
 
@@ -157,6 +170,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     private void saveRefreshAndNotify(Order order) {
+        order.setTotalAmount(orderHelper.calculateTotalAmount(order));
         orderRepository.saveAndFlush(order);
         messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
     }

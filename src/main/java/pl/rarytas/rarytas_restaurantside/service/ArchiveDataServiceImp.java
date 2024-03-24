@@ -35,7 +35,7 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
 
     @Override
     public void archiveOrder(Order order) throws LocalizedException {
-        if(!order.isPaid()) {
+        if (!order.isPaid()) {
             exceptionHelper.throwLocalizedMessage("error.archiveDataService.orderNotPaid", order.getId());
         }
         HistoryOrder historyOrder = mapOrderToHistoryOrder(order);
@@ -52,6 +52,7 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
                 order.getOrderTime().toLocalTime(),
                 order.getPaymentMethod(),
                 order.getTotalAmount(),
+                order.getTipAmount(),
                 order.isPaid(),
                 order.isForTakeAway(),
                 order.isBillRequested(),

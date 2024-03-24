@@ -1,6 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.entity.history;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -30,6 +32,7 @@ public class HistoryOrder {
                         LocalTime orderTime,
                         String paymentMethod,
                         BigDecimal totalAmount,
+                        BigDecimal tip_amount,
                         boolean paid,
                         boolean forTakeAway,
                         boolean billRequested,
@@ -43,6 +46,7 @@ public class HistoryOrder {
         this.orderTime = orderTime;
         this.paymentMethod = paymentMethod;
         this.totalAmount = totalAmount;
+        this.tipAmount = tip_amount;
         this.paid = paid;
         this.forTakeAway = forTakeAway;
         this.billRequested = billRequested;
@@ -80,7 +84,12 @@ public class HistoryOrder {
     private String paymentMethod;
 
     @Column(name = "total_amount")
+    @DecimalMin(value = "0.00")
     private BigDecimal totalAmount;
+
+    @Column(name = "tip_amount")
+    @DecimalMin(value = "0.00")
+    private BigDecimal tipAmount = BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_UP);
 
     @Column(name = "is_paid")
     private boolean paid;

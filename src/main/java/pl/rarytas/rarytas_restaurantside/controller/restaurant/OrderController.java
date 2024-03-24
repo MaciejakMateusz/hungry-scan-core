@@ -9,6 +9,7 @@ import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -66,10 +67,16 @@ public class OrderController {
         return responseHelper.buildResponse(order, orderService::orderMoreDishes);
     }
 
+    @PatchMapping("/tip")
+    public ResponseEntity<Map<String, Object>> tip(@RequestParam("id") Long id,
+                                                   @RequestParam("value") BigDecimal value) {
+        return responseHelper.buildResponse(id, value, orderService::tip);
+    }
+
     @PatchMapping("/request-bill")
-    public ResponseEntity<Map<String, Object>> requestBill(@RequestParam Long id,
-                                                           @RequestParam String paymentMethod) {
-        return responseHelper.buildResponse(id, paymentMethod, orderService::requestBill);
+    public ResponseEntity<Map<String, Object>> requestBill(@RequestParam("id") Long id,
+                                                           @RequestParam("value") String value) {
+        return responseHelper.buildResponse(id, value, orderService::requestBill);
     }
 
     @PatchMapping("/call-waiter")
