@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Role;
 import pl.rarytas.rarytas_restaurantside.entity.User;
-import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
+import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.util.Collections;
 import java.util.HashSet;

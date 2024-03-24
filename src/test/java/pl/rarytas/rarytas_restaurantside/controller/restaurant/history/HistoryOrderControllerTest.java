@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
-import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
+import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.util.HashMap;
 import java.util.Map;

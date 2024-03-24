@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Settings;
 import pl.rarytas.rarytas_restaurantside.enums.Language;
-import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
+import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.time.LocalTime;
 import java.util.Map;

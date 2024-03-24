@@ -12,7 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryBooking;
-import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
+import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.time.LocalDate;
 import java.util.HashMap;

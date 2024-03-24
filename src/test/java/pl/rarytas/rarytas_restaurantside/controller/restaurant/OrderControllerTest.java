@@ -17,8 +17,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
-import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
+import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
+import pl.rarytas.rarytas_restaurantside.test_utils.OrderProcessor;
 import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.math.BigDecimal;

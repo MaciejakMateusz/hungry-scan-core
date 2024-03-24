@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.testSupport;
+package pl.rarytas.rarytas_restaurantside.test_utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

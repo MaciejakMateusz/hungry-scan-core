@@ -13,7 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
-import pl.rarytas.rarytas_restaurantside.testSupport.ApiRequestUtils;
+import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.util.List;
 import java.util.Map;

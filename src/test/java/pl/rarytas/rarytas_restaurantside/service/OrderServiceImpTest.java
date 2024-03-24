@@ -19,7 +19,7 @@ import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
-import pl.rarytas.rarytas_restaurantside.testSupport.OrderProcessor;
+import pl.rarytas.rarytas_restaurantside.test_utils.OrderProcessor;
 
 import java.util.List;
 

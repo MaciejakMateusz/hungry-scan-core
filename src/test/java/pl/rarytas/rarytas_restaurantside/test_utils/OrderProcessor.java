@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.testSupport;
+package pl.rarytas.rarytas_restaurantside.test_utils;
 
 import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.*;

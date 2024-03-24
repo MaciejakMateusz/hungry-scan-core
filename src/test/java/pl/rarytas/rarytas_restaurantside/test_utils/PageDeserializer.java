@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.testSupport;
+package pl.rarytas.rarytas_restaurantside.test_utils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonTokenId;
