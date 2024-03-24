@@ -2,6 +2,7 @@ package pl.rarytas.rarytas_restaurantside.service.history.interfaces;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
@@ -22,4 +23,6 @@ public interface HistoryOrderService {
     Page<HistoryOrder> findTakeAwayByDate(Pageable pageable, LocalDate dateFrom, LocalDate dateTo);
 
     void save(HistoryOrder historyOrder);
+
+    void leaveFeedback(Feedback feedback) throws LocalizedException;
 }

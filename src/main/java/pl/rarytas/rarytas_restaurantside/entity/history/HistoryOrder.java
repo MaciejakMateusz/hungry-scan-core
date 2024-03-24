@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
+import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 
@@ -108,6 +109,9 @@ public class HistoryOrder {
 
     @Column(name = "order_number")
     private Integer orderNumber;
+
+    @OneToOne(cascade = CascadeType.MERGE)
+    private Feedback feedback;
 
     @Override
     public String toString() {

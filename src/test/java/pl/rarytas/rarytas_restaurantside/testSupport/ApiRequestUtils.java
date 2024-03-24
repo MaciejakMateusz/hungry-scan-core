@@ -444,9 +444,7 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the request.
      */
     public <T> Map<?, ?> postAndExpectErrors(String url, T t) throws Exception {
-        Map<String, Object> responseParams =
-                postAndReturnResponseBody(url, t, status().isBadRequest());
-        return (Map<?, ?>) responseParams.get("errors");
+        return postAndReturnResponseBody(url, t, status().isBadRequest());
     }
 
     /**
@@ -459,9 +457,7 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the request.
      */
     public <T> Map<?, ?> patchAndExpectErrors(String url, T t) throws Exception {
-        Map<String, Object> responseParams =
-                patchAndReturnResponseBody(url, t, status().isBadRequest());
-        return (Map<?, ?>) responseParams.get("errors");
+        return patchAndReturnResponseBody(url, t, status().isBadRequest());
     }
 
     /**

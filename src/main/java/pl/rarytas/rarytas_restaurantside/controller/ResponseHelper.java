@@ -35,7 +35,7 @@ public class ResponseHelper {
      * @param saveFunction Behaviour to pass from a given service. For example userService::save
      * @return ResponseEntity with appropriate response code and body containing parameters map.
      */
-    public <ENTITY> ResponseEntity<Map<String, Object>> buildResponse(ENTITY entity,
+    public <ENTITY> ResponseEntity<?> buildResponse(ENTITY entity,
                                                                       BindingResult br,
                                                                       ThrowingConsumer<ENTITY> saveFunction) {
         return br.hasErrors() ? createErrorResponse(br) : acceptAndCreateSuccessResponse(saveFunction, entity);
@@ -125,9 +125,8 @@ public class ResponseHelper {
         return fieldErrors;
     }
 
-    private ResponseEntity<Map<String, Object>> createErrorResponse(BindingResult br) {
-        Map<String, Object> params = Map.of("errors", getFieldErrors(br));
-        return ResponseEntity.badRequest().body(params);
+    private ResponseEntity<?> createErrorResponse(BindingResult br) {
+        return ResponseEntity.badRequest().body(getFieldErrors(br));
     }
 
     private ResponseEntity<Map<String, Object>> createErrorResponse(Exception e) {

@@ -48,7 +48,7 @@ public class CategoryController {
 
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody Category category, BindingResult br) {
+    public ResponseEntity<?> add(@Valid @RequestBody Category category, BindingResult br) {
         return responseHelper.buildResponse(category, br, categoryService::save);
     }
 

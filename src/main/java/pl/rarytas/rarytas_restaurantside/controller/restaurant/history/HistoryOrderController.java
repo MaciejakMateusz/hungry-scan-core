@@ -1,13 +1,16 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant.history;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
+import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
 
@@ -63,6 +66,11 @@ public class HistoryOrderController {
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, historyOrderService::findById);
+    }
+
+    @PatchMapping("/feedback")
+    public ResponseEntity<?> feedback(@RequestBody @Valid Feedback feedback, BindingResult br) {
+        return responseHelper.buildResponse(feedback, br ,historyOrderService::leaveFeedback);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

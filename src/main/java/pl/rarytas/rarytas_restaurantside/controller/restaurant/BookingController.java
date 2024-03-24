@@ -34,7 +34,7 @@ public class BookingController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> save(@RequestBody @Valid Booking booking, BindingResult br) {
+    public ResponseEntity<?> save(@RequestBody @Valid Booking booking, BindingResult br) {
         return responseHelper.buildResponse(booking, br, bookingService::save);
     }
 

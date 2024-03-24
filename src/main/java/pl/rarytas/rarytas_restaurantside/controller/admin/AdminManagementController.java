@@ -75,10 +75,10 @@ public class AdminManagementController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> add(@Valid @RequestBody User user, BindingResult br) {
+    public ResponseEntity<?> add(@Valid @RequestBody User user, BindingResult br) {
         Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
-            return badRequestWithErrors(br);
+            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         } else if (userService.existsByUsername(user.getUsername())) {
             return badRequestWithParam("usernameExists");
         } else if (userService.existsByEmail(user.getEmail())) {
@@ -91,10 +91,10 @@ public class AdminManagementController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody User user, BindingResult br) throws LocalizedException {
+    public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult br) throws LocalizedException {
         Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
-            return badRequestWithErrors(br);
+            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
         if (userService.isUpdatedUserValid(user)) {
             userService.save(user);
@@ -120,12 +120,6 @@ public class AdminManagementController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Allow", "GET, POST, PATCH, DELETE, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
-    }
-
-    private ResponseEntity<Map<String, Object>> badRequestWithErrors(BindingResult br) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("errors", responseHelper.getFieldErrors(br));
-        return ResponseEntity.badRequest().body(params);
     }
 
     private ResponseEntity<Map<String, Object>> badRequestWithParam(String paramName) {

@@ -11,8 +11,6 @@ import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Settings;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.SettingsService;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/cms/settings")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
@@ -33,7 +31,7 @@ public class SettingsController {
     }
 
     @PatchMapping
-    public ResponseEntity<Map<String, Object>> updateSettings(@RequestBody @Valid Settings settings, BindingResult br) {
+    public ResponseEntity<?> updateSettings(@RequestBody @Valid Settings settings, BindingResult br) {
         return responseHelper.buildResponse(settings, br, settingsService::save);
     }
 
