@@ -9,13 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryBooking;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryBookingService;
+import pl.rarytas.rarytas_restaurantside.utility.Constants;
 
 import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/restaurant/history-bookings")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
 public class HistoryBookingController {
 
     private final HistoryBookingService historyBookingService;

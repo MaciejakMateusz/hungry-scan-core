@@ -13,13 +13,13 @@ import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
+import pl.rarytas.rarytas_restaurantside.utility.Constants;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/restaurant/history-orders")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
-@PreAuthorize("isAuthenticated()")
 public class HistoryOrderController {
 
     private final HistoryOrderService historyOrderService;
@@ -30,6 +30,7 @@ public class HistoryOrderController {
         this.responseHelper = responseHelper;
     }
 
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @PostMapping("/dine-in")
     public ResponseEntity<Page<HistoryOrder>> getAllDineInHistoryOrders(@RequestBody Map<String, Integer> requestBody) {
         Integer pageNumber = requestBody.get("pageNumber");
@@ -39,6 +40,7 @@ public class HistoryOrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @PostMapping("/take-away")
     public ResponseEntity<Page<HistoryOrder>> getAllForTakeAwayHistoryOrders(@RequestBody Map<String, Object> requestBody) {
         int pageNumber = (int) requestBody.get("pageNumber");
@@ -48,26 +50,31 @@ public class HistoryOrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @GetMapping("/count")
     public ResponseEntity<Long> countAll() {
         return ResponseEntity.ok(historyOrderService.countAll());
     }
 
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @PostMapping("/dine-in/date")
     public ResponseEntity<Page<HistoryOrder>> getDineInByDate(@RequestBody Map<String, Object> requestBody) {
         return responseHelper.getEntitiesByDateRange(requestBody, historyOrderService::findDineInByDate);
     }
 
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @PostMapping("/take-away/date")
     public ResponseEntity<Page<HistoryOrder>> getTakeAwayByDate(@RequestBody Map<String, Object> requestBody) {
         return responseHelper.getEntitiesByDateRange(requestBody, historyOrderService::findTakeAwayByDate);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, historyOrderService::findById);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/feedback")
     public ResponseEntity<?> feedback(@RequestBody @Valid Feedback feedback, BindingResult br) {
         return responseHelper.buildResponse(feedback, br ,historyOrderService::leaveFeedback);

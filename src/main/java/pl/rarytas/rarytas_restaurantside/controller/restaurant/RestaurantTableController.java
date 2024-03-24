@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
+import pl.rarytas.rarytas_restaurantside.utility.Constants;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/restaurant/tables")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
-@PreAuthorize("isAuthenticated()")
 public class RestaurantTableController {
 
     private final RestaurantTableService restaurantTableService;
@@ -26,16 +26,19 @@ public class RestaurantTableController {
         this.responseHelper = responseHelper;
     }
 
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @GetMapping
     public ResponseEntity<List<RestaurantTable>> getAll() {
         return ResponseEntity.ok(restaurantTableService.findAll());
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::findById);
     }
 
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @PatchMapping("/toggle")
     public ResponseEntity<Map<String, Object>> toggleActivation(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::toggleActivation);

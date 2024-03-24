@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.BookingService;
+import pl.rarytas.rarytas_restaurantside.utility.Constants;
 
 import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/restaurant/bookings")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
 public class BookingController {
 
     private final BookingService bookingService;
