@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
@@ -106,7 +107,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public void requestBill(Long id, String paymentMethod) throws LocalizedException {
+    public void requestBill(Long id, PaymentMethod paymentMethod) throws LocalizedException {
         Order existingOrder = findById(id);
         orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
         orderHelper.assertBillNotRequestedElseThrow(existingOrder);

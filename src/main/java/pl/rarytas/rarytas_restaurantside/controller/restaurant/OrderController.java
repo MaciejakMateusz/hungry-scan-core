@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.utility.Constants;
 
@@ -86,8 +87,8 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/request-bill")
     public ResponseEntity<Map<String, Object>> requestBill(@RequestParam("id") Long id,
-                                                           @RequestParam("value") String value) {
-        return responseHelper.buildResponse(id, value, orderService::requestBill);
+                                                           @RequestParam("value") PaymentMethod paymentMethod) {
+        return responseHelper.buildResponse(id, paymentMethod, orderService::requestBill);
     }
 
     @PreAuthorize("isAuthenticated()")

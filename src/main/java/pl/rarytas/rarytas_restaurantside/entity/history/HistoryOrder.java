@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,7 +31,7 @@ public class HistoryOrder {
                         Restaurant restaurant,
                         LocalDate orderDate,
                         LocalTime orderTime,
-                        String paymentMethod,
+                        PaymentMethod paymentMethod,
                         BigDecimal totalAmount,
                         BigDecimal tipAmount,
                         boolean paid,
@@ -80,9 +80,8 @@ public class HistoryOrder {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<HistoryOrderedItem> historyOrderedItems;
 
-    @Column(name = "payment_method")
-    @PaymentMethod
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @Column(name = "total_amount")
     @DecimalMin(value = "0.00")

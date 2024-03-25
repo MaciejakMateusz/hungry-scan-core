@@ -17,6 +17,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 import pl.rarytas.rarytas_restaurantside.test_utils.OrderProcessor;
 import pl.rarytas.rarytas_restaurantside.utility.Money;
@@ -99,7 +100,7 @@ class OrderControllerTest {
     public void shouldGetByTableNumber() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/table-number", 2, Order.class);
-        assertEquals("cash", order.getPaymentMethod());
+        assertEquals(PaymentMethod.CASH, order.getPaymentMethod());
     }
 
     @Test
@@ -206,14 +207,15 @@ class OrderControllerTest {
         Order existingOrder =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
         assertFalse(existingOrder.isBillRequested());
-        assertNull(existingOrder.getPaymentMethod());
+        assertEquals(PaymentMethod.NONE, existingOrder.getPaymentMethod());
 
-        apiRequestUtils.patchAndExpect("/api/restaurant/orders/request-bill", 1L, "cash", status().isOk());
+        apiRequestUtils.patchAndExpect(
+                "/api/restaurant/orders/request-bill", 1L, PaymentMethod.CASH, status().isOk());
 
         Order updatedOrder =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
         assertTrue(updatedOrder.isBillRequested());
-        assertEquals("cash", updatedOrder.getPaymentMethod());
+        assertEquals(PaymentMethod.CASH, updatedOrder.getPaymentMethod());
     }
 
     @Test
@@ -228,7 +230,7 @@ class OrderControllerTest {
 
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/request-bill", 2L, "card", status().isBadRequest());
+                        "/api/restaurant/orders/request-bill", 2L, PaymentMethod.CARD, status().isBadRequest());
 
         assertEquals(1, errors.size());
         assertEquals("Zamówienie z podanym ID = 2 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
@@ -303,7 +305,7 @@ class OrderControllerTest {
     public void shouldNotRequestBillWhenWaiterCalled() throws Exception {
         Map<?, ?> errors =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/request-bill", 3L, "card", status().isBadRequest());
+                        "/api/restaurant/orders/request-bill", 3L, PaymentMethod.CARD, status().isBadRequest());
 
         assertEquals(1, errors.size());
         assertEquals("Zamówienie z podanym ID = 3 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
@@ -437,7 +439,7 @@ class OrderControllerTest {
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/dine-in", order);
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/take-away", order);
         apiRequestUtils.patchAndExpect(
-                "/api/restaurant/orders/request-bill", 6L, "cash", status().isUnauthorized());
+                "/api/restaurant/orders/request-bill", 6L, PaymentMethod.CASH, status().isUnauthorized());
         apiRequestUtils.patchAndExpect(
                 "/api/restaurant/orders/tip", 6L, Money.of(15.00), status().isUnauthorized());
         apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/call-waiter", 111L);

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import pl.rarytas.rarytas_restaurantside.annotation.PaymentMethod;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.listener.OrderListener;
 import pl.rarytas.rarytas_restaurantside.utility.Money;
 
@@ -44,9 +44,8 @@ public class Order {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderedItem> orderedItems;
 
-    @Column(name = "payment_method")
-    @PaymentMethod
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @Column(name = "total_amount")
     @DecimalMin(value = "0.00")

@@ -104,7 +104,7 @@ class OrderServiceImpTest {
     @Rollback
     void shouldSaveTakeAway() throws LocalizedException {
         Order order = orderProcessor.createTakeAwayOrder(List.of(4, 15, 25));
-        order.setPaymentMethod("online");
+        order.setPaymentMethod(PaymentMethod.ONLINE);
         order.setPaid(true);
         orderService.saveTakeAway(order);
 
@@ -146,7 +146,7 @@ class OrderServiceImpTest {
         Order order = orderService.findById(1L);
         assertFalse(order.isBillRequested());
 
-        order.setPaymentMethod(PaymentMethod.CARD.name());
+        order.setPaymentMethod(PaymentMethod.CARD);
         orderService.requestBill(order.getId(), order.getPaymentMethod());
 
         order = orderService.findById(1L);
@@ -155,12 +155,12 @@ class OrderServiceImpTest {
 
     @Test
     void shouldNotRequestBillWithActiveRequest() {
-        assertThrows(LocalizedException.class, () -> orderService.requestBill(3L, PaymentMethod.CASH.name()));
+        assertThrows(LocalizedException.class, () -> orderService.requestBill(3L, PaymentMethod.CASH));
     }
 
     @Test
     void shouldNotRequestBillWithActiveWaiterCall() {
-        assertThrows(LocalizedException.class, () -> orderService.requestBill(5L, PaymentMethod.CARD.name()));
+        assertThrows(LocalizedException.class, () -> orderService.requestBill(5L, PaymentMethod.CARD));
     }
 
     @Test
@@ -172,7 +172,7 @@ class OrderServiceImpTest {
         HistoryOrder historyOrder = historyOrderService.findById(2L);
         assertNotNull(historyOrder);
         assertEquals(HistoryOrder.class, historyOrder.getClass());
-        assertEquals("cash", historyOrder.getPaymentMethod());
+        assertEquals(PaymentMethod.CASH, historyOrder.getPaymentMethod());
 
         assertThrows(LocalizedException.class, () -> orderService.findById(2L));
     }
@@ -190,7 +190,7 @@ class OrderServiceImpTest {
 
         HistoryOrder historyOrder = historyOrderService.findById(4L);
         assertEquals(HistoryOrder.class, historyOrder.getClass());
-        assertEquals("online", historyOrder.getPaymentMethod());
+        assertEquals(PaymentMethod.ONLINE, historyOrder.getPaymentMethod());
         assertTrue(historyOrder.isPaid());
 
         assertThrows(LocalizedException.class, () -> orderService.findById(4L));

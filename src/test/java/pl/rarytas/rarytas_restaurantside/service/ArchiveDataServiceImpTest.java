@@ -15,6 +15,7 @@ import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryWaiterCall;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryWaiterCallService;
@@ -55,7 +56,7 @@ class ArchiveDataServiceImpTest {
     void shouldArchiveOrder() throws LocalizedException {
         Order existingOrder = orderService.findById(5L);
         existingOrder.setPaid(true);
-        existingOrder.setPaymentMethod("card");
+        existingOrder.setPaymentMethod(PaymentMethod.CARD);
         List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
         assertFalse(waiterCalls.isEmpty());
         assertEquals("2024-01-29T08:41:20.738823", waiterCalls.get(0).getCallTime().toString());
@@ -63,7 +64,7 @@ class ArchiveDataServiceImpTest {
         archiveDataService.archiveOrder(existingOrder);
 
         HistoryOrder historyOrder = historyOrderService.findById(5L);
-        assertEquals("card", historyOrder.getPaymentMethod());
+        assertEquals(PaymentMethod.CARD, historyOrder.getPaymentMethod());
 
         List<HistoryWaiterCall> historyWaiterCalls = historyWaiterCallService.findAllByHistoryOrder(historyOrder);
         assertEquals("2024-01-29T08:41:20.738823", historyWaiterCalls.get(0).getCallTime().toString());

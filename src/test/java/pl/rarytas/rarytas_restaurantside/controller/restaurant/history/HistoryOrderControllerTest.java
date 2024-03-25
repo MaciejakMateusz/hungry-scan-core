@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.util.HashMap;
@@ -139,7 +140,7 @@ class HistoryOrderControllerTest {
         HistoryOrder historyOrder =
                 apiRequestUtils.postObjectExpect200(
                         "/api/restaurant/history-orders/show", 13, HistoryOrder.class);
-        assertEquals("cash", historyOrder.getPaymentMethod());
+        assertEquals(PaymentMethod.CASH, historyOrder.getPaymentMethod());
     }
 
     @Test
