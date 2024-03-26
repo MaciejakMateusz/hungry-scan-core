@@ -12,13 +12,11 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
 import pl.rarytas.rarytas_restaurantside.test_utils.OrderProcessor;
 
 import java.util.List;
@@ -38,9 +36,6 @@ class OrderServiceImpTest {
 
     @Autowired
     private HistoryOrderService historyOrderService;
-
-    @Autowired
-    private WaiterCallService waiterCallService;
 
     @Autowired
     OrderProcessor orderProcessor;
@@ -142,30 +137,6 @@ class OrderServiceImpTest {
     @Test
     @Transactional
     @Rollback
-    void shouldRequestBill() throws LocalizedException {
-        Order order = orderService.findById(1L);
-        assertFalse(order.isBillRequested());
-
-        order.setPaymentMethod(PaymentMethod.CARD);
-        orderService.requestBill(order.getId(), order.getPaymentMethod());
-
-        order = orderService.findById(1L);
-        assertTrue(order.isBillRequested());
-    }
-
-    @Test
-    void shouldNotRequestBillWithActiveRequest() {
-        assertThrows(LocalizedException.class, () -> orderService.requestBill(3L, PaymentMethod.CASH));
-    }
-
-    @Test
-    void shouldNotRequestBillWithActiveWaiterCall() {
-        assertThrows(LocalizedException.class, () -> orderService.requestBill(5L, PaymentMethod.CARD));
-    }
-
-    @Test
-    @Transactional
-    @Rollback
     void shouldFinishAndArchive() throws LocalizedException {
         orderService.finish(2L);
 
@@ -199,49 +170,6 @@ class OrderServiceImpTest {
     @Test
     void shouldNotFinishAndArchiveTakeAway() {
         assertThrows(LocalizedException.class, () -> orderService.finishTakeAway(21L));
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void shouldCallWaiter() throws LocalizedException {
-        Order existingOrder = orderService.findById(1L);
-        assertFalse(existingOrder.isWaiterCalled());
-
-        orderService.callWaiter(1L);
-        List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
-        waiterCalls.forEach(waiterCall -> assertEquals(waiterCall.getOrder().toString(), existingOrder.toString()));
-    }
-
-    @Test
-    void shouldNotCallWaiterWithActiveWaiterCall() {
-        assertThrows(LocalizedException.class, () -> orderService.callWaiter(5L));
-    }
-
-    @Test
-    void shouldNotCallWaiterWithActiveBillRequest() {
-        assertThrows(LocalizedException.class, () -> orderService.callWaiter(2L));
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void shouldResolveWaiterCall() throws LocalizedException {
-        Order existingOrder = orderService.findById(3L);
-        assertTrue(existingOrder.isWaiterCalled());
-
-        orderService.resolveWaiterCall(3L);
-
-        existingOrder = orderService.findById(3L);
-        assertFalse(existingOrder.isWaiterCalled());
-
-        List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(existingOrder);
-        waiterCalls.forEach(waiterCall -> assertTrue(waiterCall.isResolved()));
-    }
-
-    @Test
-    void shouldNotResolveWaiterCall() {
-        assertThrows(LocalizedException.class, () -> orderService.resolveWaiterCall(50L));
     }
 
     @Test

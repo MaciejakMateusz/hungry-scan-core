@@ -1,5 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
@@ -80,7 +80,7 @@ public class RestaurantTableServiceImpTest {
         RestaurantTable restaurantTable = createRestaurantTable();
         restaurantTable.setId(21);
         restaurantTable.setToken(null);
-        assertThrows(TransactionSystemException.class, () -> restaurantTableService.save(restaurantTable));
+        assertThrows(ConstraintViolationException.class, () -> restaurantTableService.save(restaurantTable));
     }
 
     @Test

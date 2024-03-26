@@ -77,7 +77,7 @@ public class HistoryOrderController {
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/feedback")
     public ResponseEntity<?> feedback(@RequestBody @Valid Feedback feedback, BindingResult br) {
-        return responseHelper.buildResponse(feedback, br ,historyOrderService::leaveFeedback);
+        return responseHelper.buildResponse(feedback, br, historyOrderService::leaveFeedback);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

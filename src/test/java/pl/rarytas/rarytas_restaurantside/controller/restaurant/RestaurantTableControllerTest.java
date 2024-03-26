@@ -15,10 +15,13 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rarytas.rarytas_restaurantside.entity.Order;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -80,24 +83,24 @@ public class RestaurantTableControllerTest {
     @Transactional
     @Rollback
     void shouldToggleTableActivation() throws Exception {
-        RestaurantTable table2 =
+        RestaurantTable table3 =
                 apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/tables/show", 2, RestaurantTable.class);
-        assertFalse(table2.isActive());
+                        "/api/restaurant/tables/show", 3, RestaurantTable.class);
+        assertFalse(table3.isActive());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/toggle", 2);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/toggle", 3);
 
-        RestaurantTable activatedTable2 =
+        table3 =
                 apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/tables/show", 2, RestaurantTable.class);
-        assertTrue(activatedTable2.isActive());
+                        "/api/restaurant/tables/show", 3, RestaurantTable.class);
+        assertTrue(table3.isActive());
 
-        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/toggle", 2);
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/toggle", 3);
 
-        RestaurantTable deactivatedTable2 =
+        table3 =
                 apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/tables/show", 2, RestaurantTable.class);
-        assertFalse(deactivatedTable2.isActive());
+                        "/api/restaurant/tables/show", 3, RestaurantTable.class);
+        assertFalse(table3.isActive());
     }
 
     @Test
@@ -108,5 +111,126 @@ public class RestaurantTableControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(id)))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    public void shouldRequestBill() throws Exception {
+        RestaurantTable table1 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 1, RestaurantTable.class);
+        Order existingOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
+        assertFalse(table1.isBillRequested());
+        assertEquals(PaymentMethod.NONE, existingOrder.getPaymentMethod());
+
+        apiRequestUtils.patchAndExpect(
+                "/api/restaurant/tables/request-bill", 1L, PaymentMethod.CASH, status().isOk());
+
+        table1 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 1, RestaurantTable.class);
+        existingOrder =
+                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
+        assertTrue(table1.isBillRequested());
+        assertEquals(PaymentMethod.CASH, existingOrder.getPaymentMethod());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    public void shouldCallWaiter() throws Exception {
+        RestaurantTable table1 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 1, RestaurantTable.class);
+        assertFalse(table1.isWaiterCalled());
+
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/call-waiter", 1L);
+
+        table1 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 1, RestaurantTable.class);
+        assertTrue(table1.isWaiterCalled());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    public void shouldNotCallWaiterSecondTime() throws Exception {
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/call-waiter", 1L);
+
+        Map<?, ?> errors =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/restaurant/tables/call-waiter", 1L, status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Stolik z numerem = 1 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+                errors.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    public void shouldNotCallWaiterWithDeactivatedTable() throws Exception {
+        RestaurantTable table3 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 3, RestaurantTable.class);
+        assertFalse(table3.isActive());
+
+        Map<?, ?> errors =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/restaurant/tables/call-waiter", 3L, status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Stolik z numerem = 3 nie jest aktywny.",
+                errors.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    @Rollback
+    public void shouldResolveWaiterCall() throws Exception {
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/call-waiter", 1L);
+        RestaurantTable table1 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 1, RestaurantTable.class);
+        assertTrue(table1.isWaiterCalled());
+
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/resolve-call", 1L);
+
+        table1 =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/restaurant/tables/show", 1, RestaurantTable.class);
+        assertFalse(table1.isWaiterCalled());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    public void shouldNotRequestBillWhenWaiterCalled() throws Exception {
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/call-waiter", 1L);
+
+        Map<?, ?> errors =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/restaurant/tables/request-bill", 1L, PaymentMethod.CARD, status().isBadRequest());
+
+        assertEquals(1, errors.size());
+        assertEquals("Stolik z numerem = 1 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
+                errors.get("exceptionMsg"));
+    }
+
+    @Test
+    public void shouldNotAllowAccessWithoutAuthorization() throws Exception {
+        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/tables/call-waiter", 6L);
+        apiRequestUtils.patchAndExpect(
+                "/api/restaurant/tables/request-bill", 6L, PaymentMethod.CARD, status().isUnauthorized());
+        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/tables/resolve-call", 6L);
     }
 }

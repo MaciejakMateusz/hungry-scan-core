@@ -351,10 +351,10 @@ public class ApiRequestUtils {
      * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      *
-     * @param url    The URL endpoint to send the PATCH request to.
-     * @param t      The object to be serialized and sent as the request body.
-     * @param r      The object to be serialized and sent as the request body.
-     * @param matcher     The ResultMatcher to apply to the response.
+     * @param url     The URL endpoint to send the PATCH request to.
+     * @param t       The object to be serialized and sent as the request body.
+     * @param r       The object to be serialized and sent as the request body.
+     * @param matcher The ResultMatcher to apply to the response.
      * @throws Exception If there are any errors during the request or response handling.
      */
     public <T, R> void patchAndExpect(String url,

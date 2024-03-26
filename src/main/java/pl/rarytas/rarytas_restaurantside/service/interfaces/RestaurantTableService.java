@@ -1,6 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.service.interfaces;
 
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
 import java.util.List;
@@ -16,4 +17,10 @@ public interface RestaurantTableService {
     void save(RestaurantTable restaurantTable);
 
     void toggleActivation(Integer id) throws LocalizedException;
+
+    void callWaiter(Integer id) throws LocalizedException;
+
+    void resolveWaiterCall(Integer id) throws LocalizedException;
+
+    void requestBill(Integer id, PaymentMethod paymentMethod) throws LocalizedException;
 }

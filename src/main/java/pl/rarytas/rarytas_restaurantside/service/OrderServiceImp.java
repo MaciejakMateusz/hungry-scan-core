@@ -5,8 +5,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
-import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
@@ -20,19 +18,16 @@ import java.util.List;
 @Slf4j
 public class OrderServiceImp implements OrderService {
     private final OrderRepository orderRepository;
-    private final WaiterCallServiceImp waiterCallServiceImp;
     private final SimpMessagingTemplate messagingTemplate;
     private final ArchiveDataServiceImp dataTransferServiceImpl;
     private final OrderServiceHelper orderHelper;
     private final ExceptionHelper exceptionHelper;
 
     public OrderServiceImp(OrderRepository orderRepository,
-                           WaiterCallServiceImp waiterCallServiceImp,
                            SimpMessagingTemplate messagingTemplate,
                            ArchiveDataServiceImp dataTransferServiceImpl,
                            OrderServiceHelper orderHelper, ExceptionHelper exceptionHelper) {
         this.orderRepository = orderRepository;
-        this.waiterCallServiceImp = waiterCallServiceImp;
         this.messagingTemplate = messagingTemplate;
         this.dataTransferServiceImpl = dataTransferServiceImpl;
         this.orderHelper = orderHelper;
@@ -98,7 +93,7 @@ public class OrderServiceImp implements OrderService {
     @Override
     @Transactional
     public void tip(Long id, BigDecimal tipAmount) throws LocalizedException {
-        if(tipAmount.compareTo(BigDecimal.ZERO) <= 0) {
+        if (tipAmount.compareTo(BigDecimal.ZERO) <= 0) {
             exceptionHelper.throwLocalizedMessage("error.orderService.invalidTipAmount");
         }
         Order existingOrder = findById(id);
@@ -107,20 +102,8 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public void requestBill(Long id, PaymentMethod paymentMethod) throws LocalizedException {
-        Order existingOrder = findById(id);
-        orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
-        orderHelper.assertBillNotRequestedElseThrow(existingOrder);
-        existingOrder.setBillRequested(true);
-        existingOrder.setPaymentMethod(paymentMethod);
-        orderRepository.saveAndFlush(existingOrder);
-        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
-    }
-
-    @Override
     public void finish(Long id) throws LocalizedException {
         Order existingOrder = findById(id);
-        orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
         orderHelper.prepareForFinalizingDineIn(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
         dataTransferServiceImpl.archiveOrder(existingOrder);
@@ -136,33 +119,6 @@ public class OrderServiceImp implements OrderService {
         dataTransferServiceImpl.archiveOrder(existingOrder);
         delete(existingOrder);
         messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
-    }
-
-    @Override
-    public void callWaiter(Long id) throws LocalizedException {
-        Order existingOrder = findById(id);
-        orderHelper.assertWaiterNotCalledElseThrow(existingOrder);
-        orderHelper.assertBillNotRequestedElseThrow(existingOrder);
-        existingOrder.setWaiterCalled(true);
-        WaiterCall waiterCall = new WaiterCall();
-        waiterCall.setOrder(existingOrder);
-        orderRepository.saveAndFlush(existingOrder);
-        waiterCallServiceImp.save(waiterCall);
-        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
-    }
-
-    @Override
-    public void resolveWaiterCall(Long id) throws LocalizedException {
-        Order order = findById(id);
-        order.setWaiterCalled(false);
-
-        WaiterCall waiterCall = waiterCallServiceImp.findByOrderAndResolved(order, false)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.orderService.waiterCallNotFound"));
-
-        waiterCall.setOrder(order);
-        waiterCall.setResolved(true);
-        orderRepository.saveAndFlush(order);
-        waiterCallServiceImp.save(waiterCall);
     }
 
     @Override

@@ -55,9 +55,7 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
                 order.getTipAmount(),
                 order.isPaid(),
                 order.isForTakeAway(),
-                order.isBillRequested(),
                 order.isResolved(),
-                order.isWaiterCalled(),
                 order.getOrderNumber());
 
         List<HistoryOrderedItem> transferredItems = new ArrayList<>();

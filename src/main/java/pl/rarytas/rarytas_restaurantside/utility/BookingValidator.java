@@ -36,7 +36,7 @@ public class BookingValidator {
                             (existingBooking.getTime().equals(booking.getTime()) ||
                                     isInBookingTimeRange(booking, existingBooking) ||
                                     bookingIntersects(booking, existingBooking)));
-            if(hasCollision) {
+            if (hasCollision) {
                 return true;
             }
         }

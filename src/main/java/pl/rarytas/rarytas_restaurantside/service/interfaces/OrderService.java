@@ -1,7 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.service.interfaces;
 
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 
 import java.math.BigDecimal;
@@ -26,15 +25,9 @@ public interface OrderService {
 
     void tip(Long id, BigDecimal tipAmount) throws LocalizedException;
 
-    void requestBill(Long id, PaymentMethod paymentMethod) throws LocalizedException;
-
     void finish(Long id) throws LocalizedException;
 
     void finishTakeAway(Long id) throws LocalizedException;
-
-    void callWaiter(Long id) throws LocalizedException;
-
-    void resolveWaiterCall(Long id) throws LocalizedException;
 
     void delete(Order order);
 }

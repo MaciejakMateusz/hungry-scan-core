@@ -47,7 +47,7 @@ public class RestaurantController {
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Restaurant restaurant,
-                                                   BindingResult br) {
+                                 BindingResult br) {
         return responseHelper.buildResponse(restaurant, br, restaurantService::save);
     }
 

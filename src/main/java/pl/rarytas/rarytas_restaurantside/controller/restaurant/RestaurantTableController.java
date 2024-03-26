@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 import pl.rarytas.rarytas_restaurantside.utility.Constants;
 
@@ -42,6 +43,25 @@ public class RestaurantTableController {
     @PatchMapping("/toggle")
     public ResponseEntity<Map<String, Object>> toggleActivation(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::toggleActivation);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/request-bill")
+    public ResponseEntity<Map<String, Object>> requestBill(@RequestParam("id") Integer id,
+                                                           @RequestParam("value") PaymentMethod paymentMethod) {
+        return responseHelper.buildResponse(id, paymentMethod, restaurantTableService::requestBill);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/call-waiter")
+    public ResponseEntity<Map<String, Object>> callWaiter(@RequestBody Integer id) {
+        return responseHelper.buildResponse(id, restaurantTableService::callWaiter);
+    }
+
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+    @PatchMapping("/resolve-call")
+    public ResponseEntity<Map<String, Object>> resolveWaiterCall(@RequestBody Integer id) {
+        return responseHelper.getResponseEntity(id, restaurantTableService::resolveWaiterCall);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

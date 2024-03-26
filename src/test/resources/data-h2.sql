@@ -160,44 +160,44 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (1, false, '19436a86-e200-400d-aa2e-da4686805d00');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (2, false, '79d8684f-333e-4275-a317-fa06d46fa6b6');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (3, false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (4, false, '5afb9629-990a-4934-87f2-793b1aa2f35e');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (5, true, '58d77e24-6b8c-41a9-b24c-a67602deacdd');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (6, false, '59ebc00c-b580-4dff-9788-2df90b1d4bba');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (7, false, 'ef303854-6faa-4615-8d47-6f3686086586');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (8, false, '97cba027-ae47-4c42-8828-f4b3b3506d0c');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (9, false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (10, false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (11, false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (12, false, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (13, false, '6696c583-a312-4b24-9716-430826ad1e96');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (14, false, 'a65896cb-805d-4d7b-849b-1d53e78f3191');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (15, false, '65b6bb94-da99-4ced-8a94-5860fe95e708');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (16, false, '2fd07320-a841-48ad-9f3f-35b307014b2a');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (17, false, '3740c35f-5759-4eb8-ab00-cb3807707235');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (18, false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf');
-INSERT INTO restaurant_tables (id, is_active, token)
-VALUES (19, false, '96fb4431-af22-48f4-9e4c-40b5774d9ab2');
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (1, true, '19436a86-e200-400d-aa2e-da4686805d00', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (2, true, '79d8684f-333e-4275-a317-fa06d46fa6b6', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (3, false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (4, false, '5afb9629-990a-4934-87f2-793b1aa2f35e', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (5, true, '58d77e24-6b8c-41a9-b24c-a67602deacdd', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (6, false, '59ebc00c-b580-4dff-9788-2df90b1d4bba', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (7, false, 'ef303854-6faa-4615-8d47-6f3686086586', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (8, false, '97cba027-ae47-4c42-8828-f4b3b3506d0c', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (9, false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (10, false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (11, false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (12, true, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (13, false, '6696c583-a312-4b24-9716-430826ad1e96', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (14, false, 'a65896cb-805d-4d7b-849b-1d53e78f3191', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (15, false, '65b6bb94-da99-4ced-8a94-5860fe95e708', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (16, false, '2fd07320-a841-48ad-9f3f-35b307014b2a', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (17, false, '3740c35f-5759-4eb8-ab00-cb3807707235', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (18, false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf', false, false);
+INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested)
+VALUES (19, true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false);
 
 INSERT INTO role (id, name, displayed_name)
 VALUES (1, 'ROLE_WAITER', 'Kelner');
@@ -222,8 +222,7 @@ VALUES (4, 5, false);
 INSERT INTO ordered_items (quantity, menu_item_id, is_ready_to_serve)
 VALUES (2, 5, false);
 
-INSERT INTO orders (bill_requested,
-                    take_away,
+INSERT INTO orders (take_away,
                     is_resolved,
                     order_number,
                     order_time,
@@ -231,12 +230,10 @@ INSERT INTO orders (bill_requested,
                     payment_method,
                     total_amount,
                     tip_amount,
-                    `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 1, '2024-01-29 08:29:20.738823', false, 'NONE', 44.00, 0.00, false, 1, 1);
-INSERT INTO orders (bill_requested,
-                    take_away,
+VALUES (false, false, 1, '2024-01-29 08:29:20.738823', false, 'NONE', 44.00, 0.00, 1, 1);
+INSERT INTO orders (take_away,
                     is_resolved,
                     order_number,
                     order_time,
@@ -244,12 +241,10 @@ INSERT INTO orders (bill_requested,
                     payment_method,
                     total_amount,
                     tip_amount,
-                    `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (true, false, false, 322, '2024-01-29 08:29:20.738823', false, 'CASH', 49.00, 0.00, false, 1, 2);
-INSERT INTO orders (bill_requested,
-                    take_away,
+VALUES (false, false, 322, '2024-01-29 08:29:20.738823', false, 'CASH', 49.00, 0.00, 1, 2);
+INSERT INTO orders (take_away,
                     is_resolved,
                     order_number,
                     order_time,
@@ -257,12 +252,10 @@ INSERT INTO orders (bill_requested,
                     payment_method,
                     total_amount,
                     tip_amount,
-                    `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 421, '2024-01-29 08:29:20.738823', false, 'NONE', 44.00, 0.00, true, 1, 5);
-INSERT INTO orders (bill_requested,
-                    take_away,
+VALUES (false, false, 421, '2024-01-29 08:29:20.738823', false, 'NONE', 44.00, 0.00, 1, 5);
+INSERT INTO orders (take_away,
                     is_resolved,
                     order_number,
                     order_time,
@@ -270,12 +263,10 @@ INSERT INTO orders (bill_requested,
                     payment_method,
                     total_amount,
                     tip_amount,
-                    `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, true, false, 6, '2024-01-29 08:29:20.738823', true, 'ONLINE', 67.96, 0.00, false, 1, 19);
-INSERT INTO orders (bill_requested,
-                    take_away,
+VALUES (true, false, 6, '2024-01-29 08:29:20.738823', true, 'ONLINE', 67.96, 0.00, 1, 19);
+INSERT INTO orders (take_away,
                     is_resolved,
                     order_number,
                     order_time,
@@ -283,10 +274,9 @@ INSERT INTO orders (bill_requested,
                     payment_method,
                     total_amount,
                     tip_amount,
-                    `waiter_called`,
                     restaurant_id,
                     table_id)
-VALUES (false, false, false, 7, '2024-01-29 08:29:20.738823', false, 'NONE', 84.95, 0.00, true, 1, 12);
+VALUES (false, false, 7, '2024-01-29 08:29:20.738823', false, 'NONE', 84.95, 0.00, 1, 12);
 
 INSERT INTO orders_ordered_items (order_id, ordered_items_id)
 VALUES (1, 1);
@@ -314,7 +304,6 @@ INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve
 VALUES (555, 3, 2, false);
 
 INSERT INTO history_orders (id,
-                            bill_requested,
                             take_away,
                             is_resolved,
                             order_number,
@@ -324,12 +313,10 @@ INSERT INTO history_orders (id,
                             payment_method,
                             total_amount,
                             tip_amount,
-                            `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (12, false, false, true, 1, '2024-01-29', '08:29:20.738823', true, 'CARD', 44.00, 0.00, false, 1, 1);
+VALUES (12, false, true, 1, '2024-01-29', '08:29:20.738823', true, 'CARD', 44.00, 0.00, 1, 1);
 INSERT INTO history_orders (id,
-                            bill_requested,
                             take_away,
                             is_resolved,
                             order_number,
@@ -339,12 +326,10 @@ INSERT INTO history_orders (id,
                             payment_method,
                             total_amount,
                             tip_amount,
-                            `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (13, true, false, true, 322, '2024-02-21', '08:29:20.738823', true, 'CASH', 93.50, 20.00, false, 1, 2);
+VALUES (13, false, true, 322, '2024-02-21', '08:29:20.738823', true, 'CASH', 93.50, 20.00, 1, 2);
 INSERT INTO history_orders (id,
-                            bill_requested,
                             take_away,
                             is_resolved,
                             order_number,
@@ -354,12 +339,10 @@ INSERT INTO history_orders (id,
                             payment_method,
                             total_amount,
                             tip_amount,
-                            `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (14, false, true, true, 1, '2024-01-29', '08:29:20.738823', true, 'ONLINE', 54.00, 10.00, false, 1, 19);
+VALUES (14, true, true, 1, '2024-01-29', '08:29:20.738823', true, 'ONLINE', 54.00, 10.00, 1, 19);
 INSERT INTO history_orders (id,
-                            bill_requested,
                             take_away,
                             is_resolved,
                             order_number,
@@ -369,10 +352,9 @@ INSERT INTO history_orders (id,
                             payment_method,
                             total_amount,
                             tip_amount,
-                            `waiter_called`,
                             restaurant_id,
                             table_id)
-VALUES (15, false, true, true, 322, '2024-02-21', '08:29:20.738823', true, 'ONLINE', 73.50, 0.00, false, 1, 19);
+VALUES (15, true, true, 322, '2024-02-21', '08:29:20.738823', true, 'ONLINE', 73.50, 0.00, 1, 19);
 
 INSERT INTO history_orders_history_ordered_items (history_order_id, history_ordered_items_id)
 VALUES (12, 222);

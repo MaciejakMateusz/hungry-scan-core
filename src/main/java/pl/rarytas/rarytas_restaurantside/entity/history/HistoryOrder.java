@@ -36,9 +36,7 @@ public class HistoryOrder {
                         BigDecimal tipAmount,
                         boolean paid,
                         boolean forTakeAway,
-                        boolean billRequested,
                         boolean isResolved,
-                        boolean waiterCalled,
                         Integer orderNumber) {
         this.id = id;
         this.restaurantTable = restaurantTable;
@@ -50,9 +48,7 @@ public class HistoryOrder {
         setTipAmount(tipAmount);
         this.paid = paid;
         this.forTakeAway = forTakeAway;
-        this.billRequested = billRequested;
         this.isResolved = isResolved;
-        this.waiterCalled = waiterCalled;
         this.orderNumber = orderNumber;
     }
 
@@ -97,14 +93,8 @@ public class HistoryOrder {
     @Column(name = "take_away")
     private boolean forTakeAway;
 
-    @Column(name = "bill_requested")
-    private boolean billRequested;
-
     @Column(name = "is_resolved")
     private boolean isResolved;
-
-    @Column(name = "waiter_called")
-    private boolean waiterCalled;
 
     @Column(name = "order_number")
     private Integer orderNumber;

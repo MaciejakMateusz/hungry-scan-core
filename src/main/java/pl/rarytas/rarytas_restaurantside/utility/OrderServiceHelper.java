@@ -29,7 +29,7 @@ public class OrderServiceHelper {
             int quantity = orderedItem.getQuantity();
             sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
         }
-        if(Objects.nonNull(order.getTipAmount())) {
+        if (Objects.nonNull(order.getTipAmount())) {
             sum = sum.add(order.getTipAmount());
         }
         return sum.setScale(2, RoundingMode.HALF_UP);
@@ -47,7 +47,6 @@ public class OrderServiceHelper {
     public void prepareForFinalizingDineIn(Order existingOrder) {
         existingOrder.setPaid(true);
         existingOrder.setResolved(true);
-        existingOrder.setBillRequested(true);
     }
 
     public void prepareForFinalizingTakeAway(Order existingOrder) {
@@ -59,21 +58,5 @@ public class OrderServiceHelper {
         if (!existingOrder.isResolved()) {
             exceptionHelper.throwLocalizedMessage("error.orderService.orderExistsForTable", existingOrder.getId());
         }
-    }
-
-    public void assertWaiterNotCalledElseThrow(Order existingOrder) throws LocalizedException {
-        if (existingOrder.isWaiterCalled()) {
-            throwAlreadyRequested(existingOrder);
-        }
-    }
-
-    public void assertBillNotRequestedElseThrow(Order existingOrder) throws LocalizedException {
-        if (existingOrder.isBillRequested()) {
-            throwAlreadyRequested(existingOrder);
-        }
-    }
-
-    private void throwAlreadyRequested(Order existingOrder) throws LocalizedException {
-        exceptionHelper.throwLocalizedMessage("error.orderService.alreadyRequested", existingOrder.getId());
     }
 }

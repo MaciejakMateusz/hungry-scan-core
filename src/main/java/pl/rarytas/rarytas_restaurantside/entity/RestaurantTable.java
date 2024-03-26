@@ -25,6 +25,12 @@ public class RestaurantTable {
 
     private boolean isActive;
 
+    @Column(name = "bill_requested")
+    private boolean billRequested;
+
+    @Column(name = "waiter_called")
+    private boolean waiterCalled;
+
     @Column(length = 36, nullable = false)
     @NotNull
     private String token;

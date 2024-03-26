@@ -47,7 +47,7 @@ public class MenuItemController {
     @PostMapping(value = "/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> add(@RequestBody @Valid MenuItem menuItem,
-                                                   BindingResult br) {
+                                 BindingResult br) {
         return responseHelper.buildResponse(menuItem, br, menuItemService::save);
     }
 

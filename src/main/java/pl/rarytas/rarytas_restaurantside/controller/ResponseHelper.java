@@ -36,8 +36,8 @@ public class ResponseHelper {
      * @return ResponseEntity with appropriate response code and body containing parameters map.
      */
     public <ENTITY> ResponseEntity<?> buildResponse(ENTITY entity,
-                                                                      BindingResult br,
-                                                                      ThrowingConsumer<ENTITY> saveFunction) {
+                                                    BindingResult br,
+                                                    ThrowingConsumer<ENTITY> saveFunction) {
         return br.hasErrors() ? createErrorResponse(br) : acceptAndCreateSuccessResponse(saveFunction, entity);
     }
 

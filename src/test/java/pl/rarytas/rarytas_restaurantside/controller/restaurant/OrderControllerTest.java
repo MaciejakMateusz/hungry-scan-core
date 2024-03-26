@@ -202,64 +202,6 @@ class OrderControllerTest {
     @WithMockUser(roles = {"WAITER"})
     @Transactional
     @Rollback
-    @org.junit.jupiter.api.Order(10)
-    public void shouldRequestBill() throws Exception {
-        Order existingOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
-        assertFalse(existingOrder.isBillRequested());
-        assertEquals(PaymentMethod.NONE, existingOrder.getPaymentMethod());
-
-        apiRequestUtils.patchAndExpect(
-                "/api/restaurant/orders/request-bill", 1L, PaymentMethod.CASH, status().isOk());
-
-        Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
-        assertTrue(updatedOrder.isBillRequested());
-        assertEquals(PaymentMethod.CASH, updatedOrder.getPaymentMethod());
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER"})
-    @Transactional
-    @Rollback
-    @org.junit.jupiter.api.Order(11)
-    public void shouldNotRequestBillSecondTime() throws Exception {
-        Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2L, Order.class);
-        assertNotNull(order);
-
-        Map<?, ?> errors =
-                apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/request-bill", 2L, PaymentMethod.CARD, status().isBadRequest());
-
-        assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 2 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
-                errors.get("exceptionMsg"));
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER"})
-    @Transactional
-    @Rollback
-    @org.junit.jupiter.api.Order(12)
-    public void shouldNotCallWaiterWithBillRequested() throws Exception {
-        Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2L, Order.class);
-        assertNotNull(order);
-
-        Map<?, ?> errors =
-                apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/call-waiter", 2L, status().isBadRequest());
-
-        assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 2 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
-                errors.get("exceptionMsg"));
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER"})
-    @Transactional
-    @Rollback
     @org.junit.jupiter.api.Order(13)
     public void shouldOrderMoreDishes() throws Exception {
         Order moreDishes = orderProcessor.createDineInOrder(12, List.of(2, 35));
@@ -284,79 +226,11 @@ class OrderControllerTest {
     @WithMockUser(roles = {"WAITER"})
     @Transactional
     @Rollback
-    @org.junit.jupiter.api.Order(14)
-    public void shouldCallWaiter() throws Exception {
-        Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1, Order.class);
-        assertFalse(order.isWaiterCalled());
-
-        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/call-waiter", 1L);
-
-        Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1, Order.class);
-        assertTrue(updatedOrder.isWaiterCalled());
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER"})
-    @Transactional
-    @Rollback
-    @org.junit.jupiter.api.Order(15)
-    public void shouldNotRequestBillWhenWaiterCalled() throws Exception {
-        Map<?, ?> errors =
-                apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/request-bill", 3L, PaymentMethod.CARD, status().isBadRequest());
-
-        assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 3 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
-                errors.get("exceptionMsg"));
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER"})
-    @Transactional
-    @Rollback
-    @org.junit.jupiter.api.Order(16)
-    public void shouldNotCallWaiterSecondTime() throws Exception {
-        Order order =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 3, Order.class);
-        assertNotNull(order);
-
-        Map<?, ?> errors =
-                apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/restaurant/orders/call-waiter", 3L, status().isBadRequest());
-
-        assertEquals(1, errors.size());
-        assertEquals("Zamówienie z podanym ID = 3 posiada aktywne wezwanie kelnera lub prośbę o rachunek.",
-                errors.get("exceptionMsg"));
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER"})
-    @Transactional
-    @Rollback
-    @org.junit.jupiter.api.Order(17)
-    public void shouldResolveWaiterCall() throws Exception {
-        Order existingOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 3, Order.class);
-        assertTrue(existingOrder.isWaiterCalled());
-
-        apiRequestUtils.patchAndExpect200("/api/restaurant/orders/resolve-call", 3L);
-        Order updatedOrder =
-                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 3, Order.class);
-
-        assertFalse(updatedOrder.isWaiterCalled());
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER"})
-    @Transactional
-    @Rollback
     @org.junit.jupiter.api.Order(18)
     public void shouldFinalizeDineIn() throws Exception {
         Order order =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2, Order.class);
-        assertTrue(order.isBillRequested());
+        assertNotNull(order);
 
         apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-dine-in", 2);
 
@@ -439,11 +313,7 @@ class OrderControllerTest {
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/dine-in", order);
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/take-away", order);
         apiRequestUtils.patchAndExpect(
-                "/api/restaurant/orders/request-bill", 6L, PaymentMethod.CASH, status().isUnauthorized());
-        apiRequestUtils.patchAndExpect(
                 "/api/restaurant/orders/tip", 6L, Money.of(15.00), status().isUnauthorized());
-        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/call-waiter", 111L);
-        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/orders/resolve-call", 111L);
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-dine-in", 111L);
         apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-take-away", 111L);
     }
