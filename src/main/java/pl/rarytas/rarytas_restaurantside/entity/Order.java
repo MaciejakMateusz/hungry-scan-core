@@ -52,7 +52,7 @@ public class Order {
     private BigDecimal totalAmount = Money.of(0.00);
 
     @Column(name = "tip_amount")
-    @DecimalMin(value = "0.0")
+    @DecimalMin(value = "0.00")
     private BigDecimal tipAmount = Money.of(0.00);
 
     @Column(name = "is_paid")

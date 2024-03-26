@@ -125,6 +125,26 @@ public class ResponseHelper {
         return fieldErrors;
     }
 
+    /**
+     * Retrieves a paginated collection of entities filtered by date range.
+     *
+     * @param requestBody Map containing request parameters.
+     * @param getByDate   Function to fetch entities by date range.
+     * @param <T>         Type of entities.
+     * @return ResponseEntity containing the paginated collection of entities.
+     */
+    public <T> ResponseEntity<Page<T>> getEntitiesByDateRange(
+            Map<String, Object> requestBody,
+            TriFunction<Pageable, LocalDate, LocalDate, Page<T>> getByDate) {
+        Integer pageNumber = (Integer) requestBody.get("pageNumber");
+        Integer pageSize = (Integer) requestBody.get("pageSize");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        LocalDate startDate = LocalDate.parse((CharSequence) requestBody.get("dateFrom"));
+        LocalDate endDate = LocalDate.parse((CharSequence) requestBody.get("dateTo"));
+        Page<T> entities = getByDate.apply(pageable, startDate, endDate);
+        return ResponseEntity.ok(entities);
+    }
+
     private ResponseEntity<?> createErrorResponse(BindingResult br) {
         return ResponseEntity.badRequest().body(getFieldErrors(br));
     }
@@ -150,25 +170,5 @@ public class ResponseHelper {
             return ResponseEntity.badRequest().body(Map.of("exceptionMsg", e.getMessage()));
         }
         return ResponseEntity.ok().body(new HashMap<>());
-    }
-
-    /**
-     * Retrieves a paginated collection of entities filtered by date range.
-     *
-     * @param requestBody Map containing request parameters.
-     * @param getByDate   Function to fetch entities by date range.
-     * @param <T>         Type of entities.
-     * @return ResponseEntity containing the paginated collection of entities.
-     */
-    public <T> ResponseEntity<Page<T>> getEntitiesByDateRange(
-            Map<String, Object> requestBody,
-            TriFunction<Pageable, LocalDate, LocalDate, Page<T>> getByDate) {
-        Integer pageNumber = (Integer) requestBody.get("pageNumber");
-        Integer pageSize = (Integer) requestBody.get("pageSize");
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        LocalDate startDate = LocalDate.parse((CharSequence) requestBody.get("dateFrom"));
-        LocalDate endDate = LocalDate.parse((CharSequence) requestBody.get("dateTo"));
-        Page<T> entities = getByDate.apply(pageable, startDate, endDate);
-        return ResponseEntity.ok(entities);
     }
 }

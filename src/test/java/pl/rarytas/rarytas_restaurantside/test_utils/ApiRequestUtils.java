@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Component
 public class ApiRequestUtils {
 
-    private final MockMvc mockMvc;
+    protected final MockMvc mockMvc;
 
     /**
      * Constructor to initialize the ApiRequestUtils with a MockMvc instance.

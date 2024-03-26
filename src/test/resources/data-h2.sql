@@ -422,7 +422,8 @@ VALUES ('2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
         '$2a$10$z/0edEimosa3QjYYxjiHuO8bNZHfI3jxDVwqDNd5bc2vCr5TERDz6', '2024-02-02 20:54:41.531670', 'mati', null,
         'Mati', '+48 123 123 123', 'Memek');
 INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname)
-VALUES ('2024-01-20 19:09:00.000000', 'admin@example.com', 1, 'admin_password', '2024-02-04 07:50:29.047589', 'admin',
+VALUES ('2024-01-20 19:09:00.000000', 'admin@example.com', 1,
+        '$2a$04$OI8NalP4M4rxpRFgVR3eO.8C/6hmP.AdYadtTPd3BLHm3zx3wLLWm', '2024-02-04 07:50:29.047589', 'admin',
         null, '', '', '');
 INSERT INTO users (created, email, enabled, password, updated, username, token, name, phone_number, surname)
 VALUES ('2024-01-24 19:06:36.680304', 'netka@test.com', 1,
