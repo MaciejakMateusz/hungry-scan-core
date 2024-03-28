@@ -16,7 +16,7 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Long bookingId;
+    private Long orderId;
 
     @Min(1)
     @Max(5)

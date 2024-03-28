@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -67,8 +68,20 @@ public class Order {
     @Column(name = "order_number")
     private Integer orderNumber;
 
-    public void addToOrderedItems(List<OrderedItem> orderedItems) {
-        this.orderedItems.addAll(orderedItems);
+    public void addToOrderedItems(List<OrderedItem> newItems) {
+        for (OrderedItem newItem : newItems) {
+            boolean found = false;
+            for (OrderedItem existingItem : this.orderedItems) {
+                if (Objects.equals(existingItem.getMenuItem().getId(), newItem.getMenuItem().getId())) {
+                    existingItem.setQuantity(existingItem.getQuantity() + 1);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                this.orderedItems.add(newItem);
+            }
+        }
     }
 
     public BigDecimal getTotalAmount() {

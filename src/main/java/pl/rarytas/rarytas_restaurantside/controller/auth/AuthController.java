@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     @GetMapping("/restaurant")
-    @PreAuthorize("hasAnyRole('WAITER', 'COOK', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public boolean restaurantAuth() {
         return true;
     }

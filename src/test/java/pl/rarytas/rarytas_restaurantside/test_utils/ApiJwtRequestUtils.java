@@ -50,11 +50,29 @@ public class ApiJwtRequestUtils extends ApiRequestUtils {
                 .andReturn();
     }
 
+    public <T, R> void patchAndExpect(String url,
+                                      T t,
+                                      R r,
+                                      String jwt,
+                                      ResultMatcher matcher) throws Exception {
+        mockMvc.perform(patch(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .param("id", t.toString())
+                        .param("value", r.toString()))
+                .andExpect(matcher)
+                .andDo(print());
+    }
+
     public <T> void postAndExpect200(String url, T t, String jwt) throws Exception {
         postAndExpect(url, t, jwt, status().isOk());
     }
 
     public <T> void patchAndExpect200(String url, T t, String jwt) throws Exception {
         patchAndExpect(url, t, jwt, status().isOk());
+    }
+
+    public <T, R> void patchAndExpect200(String url, T t, R r, String jwt) throws Exception {
+        patchAndExpect(url, t, r, jwt, status().isOk());
     }
 }

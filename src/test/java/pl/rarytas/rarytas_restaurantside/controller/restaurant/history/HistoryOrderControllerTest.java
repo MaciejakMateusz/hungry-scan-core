@@ -199,7 +199,7 @@ class HistoryOrderControllerTest {
 
     private Feedback createFeedback(Long bookingId, Integer food, Integer service, String comment) {
         Feedback feedback = new Feedback();
-        feedback.setBookingId(bookingId);
+        feedback.setOrderId(bookingId);
         feedback.setFood(food);
         feedback.setService(service);
         feedback.setComment(comment);

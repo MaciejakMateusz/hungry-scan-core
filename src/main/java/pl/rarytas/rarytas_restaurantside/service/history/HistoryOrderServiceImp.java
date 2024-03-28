@@ -66,7 +66,7 @@ public class HistoryOrderServiceImp implements HistoryOrderService {
 
     @Override
     public void leaveFeedback(Feedback feedback) throws LocalizedException {
-        HistoryOrder existingOrder = findById(feedback.getBookingId());
+        HistoryOrder existingOrder = findById(feedback.getOrderId());
         existingOrder.setFeedback(feedback);
         save(existingOrder);
     }

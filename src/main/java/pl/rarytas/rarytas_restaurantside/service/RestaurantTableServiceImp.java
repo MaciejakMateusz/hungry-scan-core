@@ -87,7 +87,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         validateTableAction(restaurantTable);
         notifyRelatedOrder(id, paymentMethod);
         restaurantTable.setBillRequested(true);
-
+        save(restaurantTable);
         messagingTemplate.convertAndSend("/topic/tables", findAll());
     }
 
