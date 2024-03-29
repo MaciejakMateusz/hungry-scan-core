@@ -401,11 +401,11 @@ class OrderingFlowTest {
         user.setEmail(email);
         user.setPassword(password);
         user.setRepeatedPassword(password);
-        user.setRoles(new HashSet<>(Collections.singletonList(createRole(roleName))));
+        user.setRoles(new HashSet<>(Collections.singletonList(getRoleByName(roleName))));
         return user;
     }
 
-    private Role createRole(String roleName) {
+    private Role getRoleByName(String roleName) {
         return roleService.findByName(roleName);
     }
 }
