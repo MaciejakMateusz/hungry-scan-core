@@ -25,7 +25,7 @@ public class OrderServiceHelper {
     public BigDecimal calculateTotalAmount(Order order) {
         BigDecimal sum = Money.of(0.00);
         for (OrderedItem orderedItem : order.getOrderedItems()) {
-            BigDecimal itemPrice = orderedItem.getMenuItem().getPrice();
+            BigDecimal itemPrice = orderedItem.getMenuItemVariant().getPrice();
             int quantity = orderedItem.getQuantity();
             sum = sum.add(itemPrice.multiply(BigDecimal.valueOf(quantity)));
         }

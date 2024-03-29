@@ -62,7 +62,7 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
         order.getOrderedItems().forEach(orderedItem -> {
             HistoryOrderedItem historyOrderedItem = new HistoryOrderedItem();
             historyOrderedItem.setId(orderedItem.getId());
-            historyOrderedItem.setMenuItem(orderedItem.getMenuItem());
+            historyOrderedItem.setMenuItemVariant(orderedItem.getMenuItemVariant());
             historyOrderedItem.setQuantity(orderedItem.getQuantity());
             transferredItems.add(historyOrderedItem);
         });

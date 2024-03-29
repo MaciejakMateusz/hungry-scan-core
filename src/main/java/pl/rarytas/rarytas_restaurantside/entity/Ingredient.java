@@ -1,7 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -11,20 +10,18 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Slf4j
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
-@Table(name = "menu_items")
+@Table(name = "ingredients")
 @Entity
-public class MenuItem {
+public class Ingredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,18 +31,13 @@ public class MenuItem {
     @NotBlank
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @JsonIgnore
-    private Category category;
+    @Column(nullable = false)
+    @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
+    @NotNull
+    private BigDecimal price;
 
-    @Column(length = 500)
-    @SizeIfNotEmpty
-    @NotBlank
-    private String description;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<MenuItemVariant> variants;
+    @Column(name = "is_available", nullable = false)
+    private boolean isAvailable = true;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
@@ -53,17 +45,15 @@ public class MenuItem {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
 
-    private String imageName;
-
     @PrePersist
     public void prePersist() {
         this.created = LocalDateTime.now();
-        log.info("Time of creation has been set to: " + LocalDateTime.now());
+        log.info("Time of ingredient creation has been set to: " + LocalDateTime.now());
     }
 
     @PreUpdate
     public void preUpdate() {
         this.updated = LocalDateTime.now();
-        log.info("Time of update has been set to: " + LocalDateTime.now());
+        log.info("Time of ingredient update has been set to: " + LocalDateTime.now());
     }
 }

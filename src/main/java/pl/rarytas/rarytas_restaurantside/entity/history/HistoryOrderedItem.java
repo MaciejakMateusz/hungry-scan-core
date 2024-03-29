@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.entity.MenuItemVariant;
 
 import java.io.Serializable;
 
@@ -22,7 +23,7 @@ public class HistoryOrderedItem implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
-    private MenuItem menuItem;
+    private MenuItemVariant menuItemVariant;
 
     @Column(nullable = false)
     @Min(value = 1, message = "Ilość musi wynosić minimum 1")

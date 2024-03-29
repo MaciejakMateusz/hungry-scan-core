@@ -72,7 +72,7 @@ public class Order {
         for (OrderedItem newItem : newItems) {
             boolean found = false;
             for (OrderedItem existingItem : this.orderedItems) {
-                if (Objects.equals(existingItem.getMenuItem().getId(), newItem.getMenuItem().getId())) {
+                if (Objects.equals(existingItem.getMenuItemVariant().getId(), newItem.getMenuItemVariant().getId())) {
                     existingItem.setQuantity(existingItem.getQuantity() + 1);
                     found = true;
                     break;

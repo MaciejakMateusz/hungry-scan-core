@@ -49,6 +49,8 @@ public class OrderedItemServiceImp implements OrderedItemService {
 
     @Override
     @Transactional
+    @Deprecated
+    //TODO metoda do wywalenia
     public void toggleIsReadyToServe(Long id) {
         OrderedItem orderedItem;
         try {
@@ -57,7 +59,7 @@ public class OrderedItemServiceImp implements OrderedItemService {
             log.error(e.getLocalizedMessage());
             return;
         }
-        orderedItem.setReadyToServe(!orderedItem.isReadyToServe());
+//        orderedItem.setReadyToServe(!orderedItem.isReadyToServe());
         orderedItemRepository.saveAndFlush(orderedItem);
         orderedItemRepository.refresh(orderedItem);
         List<Order> orders = orderRepository.findAllDineIn();

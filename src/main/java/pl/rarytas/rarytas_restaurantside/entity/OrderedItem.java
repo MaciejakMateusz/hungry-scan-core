@@ -23,13 +23,11 @@ public class OrderedItem implements Serializable {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
-    private MenuItem menuItem;
+    @JoinColumn(name = "menu_item_variant_id", referencedColumnName = "id")
+    private MenuItemVariant menuItemVariant;
 
     @Column(nullable = false)
     @Min(value = 1, message = "Ilość musi wynosić minimum 1")
     @NotNull
     private Integer quantity;
-
-    boolean isReadyToServe;
 }
