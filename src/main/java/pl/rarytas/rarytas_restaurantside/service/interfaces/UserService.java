@@ -13,6 +13,8 @@ public interface UserService {
 
     void update(User user);
 
+    List<User> findAll();
+
     Page<User> findAll(Pageable pageable);
 
     User findById(Integer id) throws LocalizedException;

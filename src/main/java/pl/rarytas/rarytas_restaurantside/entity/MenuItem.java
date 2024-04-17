@@ -12,9 +12,12 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
+import pl.rarytas.rarytas_restaurantside.listener.GeneralListener;
+import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
@@ -22,6 +25,7 @@ import java.util.Set;
 @Setter
 @ToString
 @EqualsAndHashCode
+@EntityListeners(GeneralListener.class)
 @Table(name = "menu_items")
 @Entity
 public class MenuItem {
@@ -29,6 +33,8 @@ public class MenuItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    private String imageName;
 
     @Column(nullable = false, length = 200)
     @NotBlank
@@ -44,8 +50,30 @@ public class MenuItem {
     @NotBlank
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<MenuItemVariant> variants;
+    @Column(nullable = false)
+    @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
+    @NotNull
+    private BigDecimal price = Money.of(0.00);
+
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private Set<Label> labels = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private Set<Allergen> allergens = new HashSet<>();
+
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private Set<Ingredient> ingredients = new HashSet<>();
+
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private Set<Ingredient> additionalIngredients = new HashSet<>();
+
+    private boolean isAvailable = true;
+
+    private boolean isNew;
+
+    private boolean isBestseller;
+
+    private Integer counter = 0;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
@@ -53,17 +81,19 @@ public class MenuItem {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
 
-    private String imageName;
-
-    @PrePersist
-    public void prePersist() {
-        this.created = LocalDateTime.now();
-        log.info("Time of creation has been set to: " + LocalDateTime.now());
+    public void addLabel(Label label) {
+        this.labels.add(label);
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updated = LocalDateTime.now();
-        log.info("Time of update has been set to: " + LocalDateTime.now());
+    public void addAlergen(Allergen allergen) {
+        this.allergens.add(allergen);
+    }
+
+    public void addIngredient(Ingredient ingredient) {
+        this.ingredients.add(ingredient);
+    }
+
+    public void addAdditionalIngredient(Ingredient additionalIngredient) {
+        this.additionalIngredients.add(additionalIngredient);
     }
 }

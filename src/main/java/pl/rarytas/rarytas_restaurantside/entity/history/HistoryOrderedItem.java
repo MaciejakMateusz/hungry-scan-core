@@ -6,10 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.entity.Ingredient;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItemVariant;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,6 +25,20 @@ public class HistoryOrderedItem implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
     private MenuItemVariant menuItemVariant;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "history_ordered_item_additional_ingredients",
+            joinColumns = @JoinColumn(name = "history_ordered_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
+    private Set<Ingredient> additionalIngredients;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "history_ordered_item_excluded_ingredients",
+            joinColumns = @JoinColumn(name = "history_ordered_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
+    private Set<Ingredient> excludedIngredients;
+
+    private String comment;
 
     @Column(nullable = false)
     @Min(value = 1, message = "Ilość musi wynosić minimum 1")

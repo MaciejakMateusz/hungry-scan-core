@@ -2,7 +2,6 @@ package pl.rarytas.rarytas_restaurantside.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -10,8 +9,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import pl.rarytas.rarytas_restaurantside.listener.GeneralListener;
+import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 @Table(name = "ingredients")
+@EntityListeners(GeneralListener.class)
 @Entity
 public class Ingredient {
 
@@ -32,11 +35,10 @@ public class Ingredient {
     private String name;
 
     @Column(nullable = false)
-    @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
     @NotNull
-    private BigDecimal price;
+    private BigDecimal price = Money.of(0.00);
 
-    @Column(name = "is_available", nullable = false)
+    @Column(nullable = false)
     private boolean isAvailable = true;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -45,15 +47,12 @@ public class Ingredient {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
 
-    @PrePersist
-    public void prePersist() {
-        this.created = LocalDateTime.now();
-        log.info("Time of ingredient creation has been set to: " + LocalDateTime.now());
+    public BigDecimal getPrice() {
+        return this.price.setScale(2, RoundingMode.HALF_UP);
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updated = LocalDateTime.now();
-        log.info("Time of ingredient update has been set to: " + LocalDateTime.now());
+    public void setPrice(BigDecimal totalAmount) {
+        this.price = totalAmount.setScale(2, RoundingMode.HALF_UP);
     }
+
 }

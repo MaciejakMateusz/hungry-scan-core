@@ -1,7 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -11,6 +10,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CategoryControllerTest {
 
     @Autowired
@@ -36,6 +37,12 @@ class CategoryControllerTest {
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
+
+    @Order(1)
+    @Sql("/data-h2.sql")
+    @Test
+    void init() {
+    }
 
     @Test
     @WithMockUser(roles = {"WAITER"})
@@ -154,7 +161,7 @@ class CategoryControllerTest {
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", category);
 
         assertEquals(1, errors.size());
-        assertEquals("Długość musi wynosić od 0 do 300", errors.get("description"));
+        assertEquals("Długość musi wynosić od 0 do 300.", errors.get("description"));
     }
 
     @Test

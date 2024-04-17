@@ -7,10 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.Restaurant;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
-import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,36 +25,26 @@ import java.util.List;
 public class HistoryOrder {
 
     public HistoryOrder(Long id,
-                        RestaurantTable restaurantTable,
                         Restaurant restaurant,
+                        RestaurantTable restaurantTable,
                         LocalDate orderDate,
                         LocalTime orderTime,
-                        PaymentMethod paymentMethod,
                         BigDecimal totalAmount,
-                        BigDecimal tipAmount,
-                        boolean paid,
-                        boolean forTakeAway,
-                        boolean isResolved,
-                        Integer orderNumber) {
+                        boolean isResolved) {
         this.id = id;
-        this.restaurantTable = restaurantTable;
         this.restaurant = restaurant;
+        this.restaurantTable = restaurantTable;
         this.orderDate = orderDate;
         this.orderTime = orderTime;
-        this.paymentMethod = paymentMethod;
         setTotalAmount(totalAmount);
-        setTipAmount(tipAmount);
-        this.paid = paid;
-        this.forTakeAway = forTakeAway;
         this.isResolved = isResolved;
-        this.orderNumber = orderNumber;
     }
 
     @Id
     private Long id;
 
     @JoinColumn(name = "table_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @NotNull
     private RestaurantTable restaurantTable;
 
@@ -76,52 +64,15 @@ public class HistoryOrder {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<HistoryOrderedItem> historyOrderedItems;
 
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
-
-    @Column(name = "total_amount")
     @DecimalMin(value = "0.00")
     private BigDecimal totalAmount;
 
-    @Column(name = "tip_amount")
-    @DecimalMin(value = "0.00")
-    private BigDecimal tipAmount = BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_UP);
+    private boolean isForTakeAway;
 
-    @Column(name = "is_paid")
-    private boolean paid;
-
-    @Column(name = "take_away")
-    private boolean forTakeAway;
-
-    @Column(name = "is_resolved")
     private boolean isResolved;
-
-    @Column(name = "order_number")
-    private Integer orderNumber;
-
-    @OneToOne(cascade = CascadeType.MERGE)
-    private Feedback feedback;
 
     public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    public void setTipAmount(BigDecimal tipAmount) {
-        this.tipAmount = tipAmount.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", restaurantTable=" + restaurantTable +
-                ", restaurant=" + restaurant +
-                ", orderTime=" + orderTime +
-                ", orderedItems=" + historyOrderedItems +
-                ", paymentMethod='" + paymentMethod + '\'' +
-                ", totalAmount=" + totalAmount +
-                ", isPaid=" + paid +
-                '}';
     }
 
 }

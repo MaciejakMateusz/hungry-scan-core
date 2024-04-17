@@ -21,22 +21,22 @@ public class BookingListener {
 
     @PostPersist
     public void postPersist(final Booking booking) {
-        log.info("New booking received with ID: "
-                + booking.getId() + ", date of order: "
-                + booking.getDate() + ", time of order: "
-                + booking.getTime());
+        log.info("New booking received with ID: {}, date of order: {}, time of order: {}",
+                booking.getId(),
+                booking.getDate(), booking.getTime());
     }
 
     @PostUpdate
     public void postUpdate(final Booking booking) {
-        log.info("Updated booking with ID: " + booking.getId() +
-                ", date of order: " + booking.getDate() +
-                ", time of order: " + booking.getTime());
+        log.info("Updated booking with ID: {}, date of order: {}, time of order: {}",
+                booking.getId(),
+                booking.getDate(),
+                booking.getTime());
     }
 
     @PostRemove
     public void postRemove(final Booking booking) {
-        log.info("Removed booking with ID: " + booking.getId());
+        log.info("Removed booking with ID: {}", booking.getId());
     }
 
 }

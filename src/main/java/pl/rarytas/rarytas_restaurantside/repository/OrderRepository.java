@@ -1,23 +1,18 @@
 package pl.rarytas.rarytas_restaurantside.repository;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
-import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 
 import java.util.List;
-import java.util.Optional;
 
+@Repository
 public interface OrderRepository extends CustomRepository<Order, Long> {
 
-    @Query(value = "SELECT o FROM Order o WHERE o.forTakeAway = false")
+    @Query(value = "SELECT o FROM Order o WHERE o.isForTakeAway = false")
     List<Order> findAllDineIn();
 
-    @Query(value = "SELECT o FROM Order o WHERE o.forTakeAway = true")
+    @Query(value = "SELECT o FROM Order o WHERE o.isForTakeAway = true")
     List<Order> findAllTakeAway();
 
-    @Query(value = "SELECT * FROM orders WHERE table_id = :tableNumber ORDER BY id DESC LIMIT 1", nativeQuery = true)
-    Optional<Order> findNewestOrderByTableNumber(@Param("tableNumber") Integer tableNumber);
-
-    boolean existsByRestaurantTable(RestaurantTable restaurantTable);
 }

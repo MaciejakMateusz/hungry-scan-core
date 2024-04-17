@@ -10,10 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.dto.AuthRequestDTO;
 import pl.rarytas.rarytas_restaurantside.dto.JwtResponseDTO;
-import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
-import pl.rarytas.rarytas_restaurantside.entity.Role;
-import pl.rarytas.rarytas_restaurantside.entity.Settings;
-import pl.rarytas.rarytas_restaurantside.entity.User;
+import pl.rarytas.rarytas_restaurantside.entity.*;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.*;
 
@@ -69,19 +66,22 @@ public class UserController {
         RestaurantTable restaurantTable = getRestaurantTable(token);
         if (restaurantTable.isActive()) {
             String randomUUID = UUID.randomUUID().toString();
-            persistTableAndUser(randomUUID, restaurantTable);
+            String accessToken = jwtService.generateToken(randomUUID.substring(1, 13),
+                    settings.getEmployeeSessionTime());
+            persistTableAndUser(new JwtToken(accessToken), randomUUID, restaurantTable);
             return JwtResponseDTO
                     .builder()
-                    .accessToken(jwtService.generateToken(randomUUID.substring(1, 13),
-                            settings.getEmployeeSessionTime())).build();
+                    .accessToken(accessToken)
+                    .build();
         } else {
             throw new LocalizedException("Table not activated");
         }
     }
 
-    private void persistTableAndUser(String uuid, RestaurantTable restaurantTable) {
+    private void persistTableAndUser(JwtToken jwtToken, String uuid, RestaurantTable restaurantTable) {
         String username = uuid.substring(1, 13);
-        userService.save(createTempCustomer(username));
+        boolean isFirstCustomer = restaurantTable.getUsers().isEmpty();
+        userService.save(createTempCustomer(jwtToken, username, isFirstCustomer));
         User customer = userService.findByUsername(username);
         restaurantTable.addCustomer(customer);
         restaurantTableService.save(restaurantTable);
@@ -97,13 +97,14 @@ public class UserController {
         return restaurantTable;
     }
 
-    private User createTempCustomer(String username) {
+    private User createTempCustomer(JwtToken jwtToken, String username, boolean isFirstCustomer) {
         User customer = new User();
         customer.setUsername(username);
         customer.setEmail(username + "@temp.it");
         customer.setPassword(UUID.randomUUID().toString());
-        Role role = roleService.findByName("ROLE_CUSTOMER");
+        Role role = roleService.findByName(isFirstCustomer ? "ROLE_CUSTOMER" : "ROLE_CUSTOMER_READONLY");
         customer.setRoles(new HashSet<>(Collections.singletonList(role)));
+        customer.setJwtToken(jwtToken);
         return customer;
     }
 

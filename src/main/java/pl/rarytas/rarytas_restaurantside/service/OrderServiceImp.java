@@ -4,32 +4,38 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
+import pl.rarytas.rarytas_restaurantside.repository.MenuItemRepository;
 import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.ArchiveDataService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderService;
 import pl.rarytas.rarytas_restaurantside.utility.OrderServiceHelper;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 @Slf4j
 public class OrderServiceImp implements OrderService {
+
     private final OrderRepository orderRepository;
+    private final MenuItemRepository menuItemRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ArchiveDataServiceImp dataTransferServiceImpl;
+    private final ArchiveDataService dataTransferService;
     private final OrderServiceHelper orderHelper;
     private final ExceptionHelper exceptionHelper;
 
-    public OrderServiceImp(OrderRepository orderRepository,
+    public OrderServiceImp(OrderRepository orderRepository, MenuItemRepository menuItemRepository,
                            SimpMessagingTemplate messagingTemplate,
-                           ArchiveDataServiceImp dataTransferServiceImpl,
+                           ArchiveDataService dataTransferService,
                            OrderServiceHelper orderHelper, ExceptionHelper exceptionHelper) {
         this.orderRepository = orderRepository;
+        this.menuItemRepository = menuItemRepository;
         this.messagingTemplate = messagingTemplate;
-        this.dataTransferServiceImpl = dataTransferServiceImpl;
+        this.dataTransferService = dataTransferService;
         this.orderHelper = orderHelper;
         this.exceptionHelper = exceptionHelper;
     }
@@ -57,58 +63,19 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public Order findByTableNumber(Integer tableNumber) throws LocalizedException {
-        return orderRepository.findNewestOrderByTableNumber(tableNumber)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.orderService.orderNotFoundByTable", tableNumber));
-    }
-
-    @Override
     @Transactional
-    public void save(Order order) throws LocalizedException {
-        if (orderHelper.orderExistsForGivenTable(order)) {
-            exceptionHelper.throwLocalizedMessage("error.orderService.orderExistsForTable");
-            return;
-        }
+    public void saveDineIn(Order order) throws LocalizedException {
         saveRefreshAndNotify(order);
     }
 
     @Override
     @Transactional
-    public void saveTakeAway(Order order) {
+    public void saveTakeAway(Order order) throws LocalizedException {
         order.setTotalAmount(orderHelper.calculateTotalAmount(order));
         orderRepository.save(order);
         orderRepository.refresh(order);
         messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
-    }
-
-    @Override
-    @Transactional
-    public void orderMoreDishes(Order order) throws LocalizedException {
-        Order existingOrder = findById(order.getId());
-        existingOrder.addToOrderedItems(order.getOrderedItems());
-        saveRefreshAndNotify(existingOrder);
-    }
-
-    @Override
-    @Transactional
-    public void tip(Long id, BigDecimal tipAmount) throws LocalizedException {
-        if (tipAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            exceptionHelper.throwLocalizedMessage("error.orderService.invalidTipAmount");
-        }
-        Order existingOrder = findById(id);
-        existingOrder.setTipAmount(tipAmount);
-        saveRefreshAndNotify(existingOrder);
-    }
-
-    @Override
-    public void finish(Long id) throws LocalizedException {
-        Order existingOrder = findById(id);
-        orderHelper.prepareForFinalizingDineIn(existingOrder);
-        orderRepository.saveAndFlush(existingOrder);
-        dataTransferServiceImpl.archiveOrder(existingOrder);
-        delete(existingOrder);
-        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
+        updateMenuItemsCounterStatistics(order);
     }
 
     @Override
@@ -116,8 +83,7 @@ public class OrderServiceImp implements OrderService {
         Order existingOrder = findById(id);
         orderHelper.prepareForFinalizingTakeAway(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
-        dataTransferServiceImpl.archiveOrder(existingOrder);
-        delete(existingOrder);
+        dataTransferService.archiveOrder(existingOrder);
         messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
     }
 
@@ -126,9 +92,39 @@ public class OrderServiceImp implements OrderService {
         orderRepository.delete(order);
     }
 
-    private void saveRefreshAndNotify(Order order) {
+    private void saveRefreshAndNotify(Order order) throws LocalizedException {
         order.setTotalAmount(orderHelper.calculateTotalAmount(order));
+        linkMenuItemsToOrderedItems(order);
         orderRepository.saveAndFlush(order);
         messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
+        updateMenuItemsCounterStatistics(order);
+    }
+
+    private void linkMenuItemsToOrderedItems(Order order) throws LocalizedException {
+        for (OrderedItem orderedItem : order.getOrderedItems()) {
+            Integer variantId = orderedItem.getMenuItemVariant().getId();
+            MenuItem menuItem = getMenuItemByVariantId(variantId);
+            orderedItem.setMenuItem(menuItem);
+        }
+    }
+
+    private void updateMenuItemsCounterStatistics(Order order) throws LocalizedException {
+        for (OrderedItem orderedItem : order.getOrderedItems()) {
+            MenuItem menuItem = getMenuItemById(orderedItem.getMenuItem().getId());
+            menuItem.setCounter(menuItem.getCounter() + orderedItem.getQuantity());
+            menuItemRepository.saveAndFlush(menuItem);
+        }
+    }
+
+    private MenuItem getMenuItemByVariantId(Integer variantId) throws LocalizedException {
+        return menuItemRepository.findByVariantId(variantId)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuItemService.menuItemNotFoundByVariant", variantId));
+    }
+
+    private MenuItem getMenuItemById(Integer id) throws LocalizedException {
+        return menuItemRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuItemService.menuItemNotFound", id));
     }
 }

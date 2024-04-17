@@ -22,13 +22,11 @@ public class WaiterCall {
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
-    @Column(name = "call_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime callTime;
 
-    @Column(name = "resolved_time")
     private LocalDateTime resolvedTime;
 
-    @Column(name = "is_resolved", nullable = false)
     private boolean isResolved = false;
 
     @PrePersist

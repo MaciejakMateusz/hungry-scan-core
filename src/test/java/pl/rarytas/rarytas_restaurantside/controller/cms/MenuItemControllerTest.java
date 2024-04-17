@@ -1,7 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -11,12 +10,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
+import pl.rarytas.rarytas_restaurantside.test_utils.MenuItemFactory;
+import pl.rarytas.rarytas_restaurantside.utility.Money;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -30,13 +32,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MenuItemControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    ApiRequestUtils apiRequestUtils;
+    private ApiRequestUtils apiRequestUtils;
+
+    @Autowired
+    private MenuItemFactory menuItemFactory;
+
+    @Order(1)
+    @Sql("/data-h2.sql")
+    @Test
+    void init() {
+    }
 
     @Test
     @WithMockUser(roles = {"WAITER"})
@@ -45,7 +57,7 @@ class MenuItemControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/items", MenuItem.class);
 
-        assertEquals(40, menuItems.size());
+        assertEquals(30, menuItems.size());
         assertEquals("Krewetki marynowane w cytrynie", menuItems.get(0).getName());
     }
 
@@ -98,10 +110,13 @@ class MenuItemControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
         MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 41, MenuItem.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 31, MenuItem.class);
         assertEquals("Sample Item", persistedMenuItem.getName());
-        assertEquals("Sample description.", persistedMenuItem.getDescription());
-        assertEquals(BigDecimal.valueOf(10.99), persistedMenuItem.getPrice());
+        assertEquals("Sample description", persistedMenuItem.getDescription());
+        assertEquals(5, persistedMenuItem.getIngredients().size());
+        assertEquals(5, persistedMenuItem.getAdditionalIngredients().size());
+        assertEquals(1, persistedMenuItem.getAllergens().size());
+        assertEquals(2, persistedMenuItem.getLabels().size());
         assertEquals("/public/assets/sample.png", persistedMenuItem.getImageName());
     }
 
@@ -145,7 +160,6 @@ class MenuItemControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
         persistedMenuItem.setName("Updated Item");
         persistedMenuItem.setDescription("Updated description.");
-        persistedMenuItem.setPrice(BigDecimal.valueOf(15.22));
         persistedMenuItem.setImageName("/public/assets/updated.png");
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
@@ -154,7 +168,6 @@ class MenuItemControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
         assertEquals("Updated Item", updatedMenuItem.getName());
         assertEquals("Updated description.", updatedMenuItem.getDescription());
-        assertEquals(BigDecimal.valueOf(15.22), updatedMenuItem.getPrice());
         assertEquals("/public/assets/updated.png", updatedMenuItem.getImageName());
     }
 
@@ -181,12 +194,11 @@ class MenuItemControllerTest {
         apiRequestUtils.deleteAndExpect("/api/cms/items/delete", 15, status().isForbidden());
     }
 
-    private MenuItem createMenuItem() {
-        MenuItem menuItem = new MenuItem();
-        menuItem.setName("Sample Item");
-        menuItem.setDescription("Sample description.");
-        menuItem.setPrice(BigDecimal.valueOf(10.99));
-        menuItem.setImageName("/public/assets/sample.png");
-        return menuItem;
+    private MenuItem createMenuItem() throws LocalizedException {
+        return menuItemFactory.createMenuItem(
+                "Sample Item",
+                "Sample description",
+                Money.of(23.55));
     }
+
 }

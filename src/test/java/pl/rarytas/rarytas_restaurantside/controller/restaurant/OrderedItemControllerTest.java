@@ -15,16 +15,16 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.entity.MenuItemVariant;
 import pl.rarytas.rarytas_restaurantside.entity.OrderedItem;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemVariantService;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,7 +43,7 @@ public class OrderedItemControllerTest {
     private ApiRequestUtils apiRequestUtils;
 
     @Autowired
-    private MenuItemService menuItemService;
+    private MenuItemVariantService variantService;
 
     @Test
     @WithMockUser(roles = "WAITER")
@@ -95,7 +95,7 @@ public class OrderedItemControllerTest {
 
         assertEquals(10, persistedOrderedItems.size());
         assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami",
-                persistedOrderedItems.get(5).getMenuItem().getName());
+                persistedOrderedItems.get(5).getMenuItemVariant().getName());
         assertEquals(2, persistedOrderedItems.get(5).getQuantity());
     }
 
@@ -107,30 +107,6 @@ public class OrderedItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(orderedItems)))
                 .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @WithMockUser(roles = "COOK")
-    @Transactional
-    @Rollback
-    void shouldToggleIsReadyToServe() throws Exception {
-        OrderedItem orderedItem =
-                apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/ordered-items/show", 4, OrderedItem.class);
-        assertFalse(orderedItem.isReadyToServe());
-
-        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items/toggle-item", 4);
-
-        OrderedItem readyOrderedItem =
-                apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/ordered-items/show", 4, OrderedItem.class);
-        assertTrue(readyOrderedItem.isReadyToServe());
-
-        apiRequestUtils.patchAndExpect200("/api/restaurant/ordered-items/toggle-item", 4);
-        orderedItem =
-                apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/ordered-items/show", 4, OrderedItem.class);
-        assertFalse(orderedItem.isReadyToServe());
     }
 
     @Test
@@ -148,7 +124,7 @@ public class OrderedItemControllerTest {
         int i = 5;
         while (i > 0) {
             OrderedItem orderedItem = new OrderedItem();
-            orderedItem.setMenuItem(getMenuItem());
+            orderedItem.setMenuItemVariant(getMenuItemVariant());
             orderedItem.setQuantity(2);
             orderedItems.add(orderedItem);
             i--;
@@ -156,13 +132,13 @@ public class OrderedItemControllerTest {
         return orderedItems;
     }
 
-    private MenuItem getMenuItem() {
-        MenuItem menuItem;
+    private MenuItemVariant getMenuItemVariant() {
+        MenuItemVariant variant;
         try {
-            menuItem = menuItemService.findById(13);
+            variant = variantService.findById(13);
         } catch (LocalizedException e) {
             throw new RuntimeException(e);
         }
-        return menuItem;
+        return variant;
     }
 }

@@ -7,13 +7,20 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
+import pl.rarytas.rarytas_restaurantside.listener.OrderedItemListener;
+import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
+@EntityListeners(value = OrderedItemListener.class)
 @Table(name = "ordered_items")
 @Entity
 public class OrderedItem implements Serializable {
@@ -23,11 +30,29 @@ public class OrderedItem implements Serializable {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
+    private MenuItem menuItem;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "menu_item_variant_id", referencedColumnName = "id")
     private MenuItemVariant menuItemVariant;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "ordered_item_additional_ingredients",
+            joinColumns = @JoinColumn(name = "ordered_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
+    private Set<Ingredient> additionalIngredients = new HashSet<>();
+
+    @Length(max = 255)
+    private String additionalComment;
 
     @Column(nullable = false)
     @Min(value = 1, message = "Ilość musi wynosić minimum 1")
     @NotNull
     private Integer quantity;
+
+    private BigDecimal price = Money.of(0.00);
+
+    private boolean paid;
+
 }

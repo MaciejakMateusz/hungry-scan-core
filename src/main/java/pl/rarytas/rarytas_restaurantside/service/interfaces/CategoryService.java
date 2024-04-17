@@ -6,7 +6,10 @@ import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import java.util.List;
 
 public interface CategoryService {
+
     List<Category> findAll();
+
+    List<Category> findAllAvailable();
 
     Category findById(Integer id) throws LocalizedException;
 

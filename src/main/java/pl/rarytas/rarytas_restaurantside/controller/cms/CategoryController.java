@@ -30,8 +30,14 @@ public class CategoryController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Category>> list() {
+    public ResponseEntity<List<Category>> getAll() {
         return ResponseEntity.ok(categoryService.findAll());
+    }
+
+    @GetMapping("/available")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Category>> availableCategories() {
+        return ResponseEntity.ok(categoryService.findAllAvailable());
     }
 
     @PostMapping("/show")

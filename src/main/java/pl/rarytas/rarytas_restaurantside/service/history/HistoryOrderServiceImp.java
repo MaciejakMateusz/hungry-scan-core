@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
 import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
@@ -64,10 +63,4 @@ public class HistoryOrderServiceImp implements HistoryOrderService {
         historyOrderRepository.save(historyOrder);
     }
 
-    @Override
-    public void leaveFeedback(Feedback feedback) throws LocalizedException {
-        HistoryOrder existingOrder = findById(feedback.getOrderId());
-        existingOrder.setFeedback(feedback);
-        save(existingOrder);
-    }
 }

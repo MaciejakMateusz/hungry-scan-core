@@ -45,4 +45,6 @@ public class Settings {
     @NotNull
     @Column(nullable = false)
     private Short capacity;
+
+    private boolean isOrderCommentAllowed;
 }

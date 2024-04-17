@@ -48,10 +48,10 @@ public class EmailServiceImp implements EmailService {
         message.setSubject("Restauracja Rarytas - jednorazowy link do zmiany hasła");
 
         User user = userServiceImp.findByUsername(to);
-        user.setToken(UUID.randomUUID().toString());
+        user.setEmailToken(UUID.randomUUID().toString());
         userServiceImp.update(user);
 
-        String link = determineBaseUrl() + "/login/" + user.getToken();
+        String link = determineBaseUrl() + "/login/" + user.getEmailToken();
         message.setText("Twój link do zmiany hasła: " + link);
 
         emailSender.send(message);
@@ -66,10 +66,10 @@ public class EmailServiceImp implements EmailService {
         message.setSubject("Restauracja Rarytas - link aktywacyjny do konta");
 
         User user = userServiceImp.findByUsername(to);
-        user.setToken(UUID.randomUUID().toString());
+        user.setEmailToken(UUID.randomUUID().toString());
         userServiceImp.update(user);
 
-        String link = determineBaseUrl() + "/register/" + user.getToken();
+        String link = determineBaseUrl() + "/register/" + user.getEmailToken();
         message.setText("Kliknij w ten link, aby aktywować swoje konto: " + link);
 
         emailSender.send(message);

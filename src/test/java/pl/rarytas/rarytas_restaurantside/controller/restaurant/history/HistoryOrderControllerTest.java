@@ -11,13 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import pl.rarytas.rarytas_restaurantside.entity.Feedback;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
-import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.util.HashMap;
@@ -140,7 +136,7 @@ class HistoryOrderControllerTest {
         HistoryOrder historyOrder =
                 apiRequestUtils.postObjectExpect200(
                         "/api/restaurant/history-orders/show", 13, HistoryOrder.class);
-        assertEquals(PaymentMethod.CASH, historyOrder.getPaymentMethod());
+        assertNotNull(historyOrder);
     }
 
     @Test
@@ -149,61 +145,6 @@ class HistoryOrderControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("2"))
                 .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @WithMockUser(roles = "CUSTOMER")
-    @Transactional
-    @Rollback
-    public void shouldLeaveFeedback() throws Exception {
-        HistoryOrder existingOrder =
-                apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/history-orders/show", 13L, HistoryOrder.class);
-        assertNull(existingOrder.getFeedback());
-
-        Feedback feedback = createFeedback(
-                13L,
-                4,
-                3,
-                "Carbonara bez smaku a kelner był trochę nieuprzejmy.");
-
-        apiRequestUtils.patchAndExpect("/api/restaurant/history-orders/feedback", feedback, status().isOk());
-
-        existingOrder =
-                apiRequestUtils.postObjectExpect200(
-                        "/api/restaurant/history-orders/show", 13L, HistoryOrder.class);
-        assertEquals(4, existingOrder.getFeedback().getFood());
-        assertEquals(3, existingOrder.getFeedback().getService());
-        assertEquals("Carbonara bez smaku a kelner był trochę nieuprzejmy.",
-                existingOrder.getFeedback().getComment());
-    }
-
-    @Test
-    @WithMockUser(roles = "CUSTOMER")
-    @Transactional
-    @Rollback
-    public void shouldNotAllowToLeaveFeedback() throws Exception {
-        Feedback feedback = createFeedback(
-                51L,
-                6,
-                -4,
-                null);
-
-        Map<?, ?> errors = apiRequestUtils.patchAndReturnResponseBody(
-                "/api/restaurant/history-orders/feedback", feedback, status().isBadRequest());
-
-        assertEquals(2, errors.size());
-        assertEquals("Wartość musi być równa lub większa od 1.", errors.get("service"));
-        assertEquals("Wartość musi być równa lub mniejsza od 5.", errors.get("food"));
-    }
-
-    private Feedback createFeedback(Long bookingId, Integer food, Integer service, String comment) {
-        Feedback feedback = new Feedback();
-        feedback.setOrderId(bookingId);
-        feedback.setFood(food);
-        feedback.setService(service);
-        feedback.setComment(comment);
-        return feedback;
     }
 
     private Map<String, Object> getPageableAndDateRanges() {

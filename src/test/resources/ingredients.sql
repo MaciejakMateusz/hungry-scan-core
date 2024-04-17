@@ -1,0 +1,10 @@
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Pomidory', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Cebula', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Czosnek', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Oliwa z oliwek', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Bazylia', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Mozzarella', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Makaron penne', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Mięso mielone', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Papryka', '2024-03-30', '10.00');
+INSERT INTO ingredients(created, is_available, name, updated, price_modifier) VALUE ('2024-03-30', 1, 'Ser parmezan', '2024-03-30', '10.00');

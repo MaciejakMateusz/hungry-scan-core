@@ -17,4 +17,6 @@ public interface JwtService {
     Boolean validateToken(String token, UserDetails userDetails);
 
     String generateToken(String username, long hoursToExpire);
+
+    Boolean isTokenExpired(String token);
 }

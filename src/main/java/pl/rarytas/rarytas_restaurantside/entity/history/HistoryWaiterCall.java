@@ -19,13 +19,13 @@ public class HistoryWaiterCall {
     @JoinColumn(name = "history_order_id", referencedColumnName = "id")
     private HistoryOrder historyOrder;
 
-    @Column(name = "call_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime callTime;
 
-    @Column(name = "resolved_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime resolvedTime;
 
-    @Column(name = "is_resolved", nullable = false)
+    @Column(nullable = false)
     private boolean isResolved = false;
 
 }

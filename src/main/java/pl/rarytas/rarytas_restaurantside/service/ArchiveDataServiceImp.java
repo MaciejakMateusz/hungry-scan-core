@@ -2,13 +2,15 @@ package pl.rarytas.rarytas_restaurantside.service;
 
 import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.entity.OrderSummary;
 import pl.rarytas.rarytas_restaurantside.entity.WaiterCall;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrder;
+import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrderSummary;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryOrderedItem;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryWaiterCall;
-import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
-import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
+import pl.rarytas.rarytas_restaurantside.repository.OrderSummaryRepository;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderService;
+import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryOrderSummaryService;
 import pl.rarytas.rarytas_restaurantside.service.history.interfaces.HistoryWaiterCallService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.ArchiveDataService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.WaiterCallService;
@@ -20,43 +22,67 @@ import java.util.List;
 public class ArchiveDataServiceImp implements ArchiveDataService {
 
     private final HistoryOrderService historyOrderService;
+    private final HistoryOrderSummaryService historyOrderSummaryService;
+    private final OrderSummaryRepository orderSummaryRepository;
     private final WaiterCallService waiterCallService;
     private final HistoryWaiterCallService historyWaiterCallService;
-    private final ExceptionHelper exceptionHelper;
 
     public ArchiveDataServiceImp(HistoryOrderService historyOrderService,
+                                 HistoryOrderSummaryService historyOrderSummaryService,
+                                 OrderSummaryRepository orderSummaryRepository,
                                  WaiterCallService waiterCallService,
-                                 HistoryWaiterCallService historyWaiterCallService, ExceptionHelper exceptionHelper) {
+                                 HistoryWaiterCallService historyWaiterCallService) {
         this.historyOrderService = historyOrderService;
+        this.historyOrderSummaryService = historyOrderSummaryService;
+        this.orderSummaryRepository = orderSummaryRepository;
         this.waiterCallService = waiterCallService;
         this.historyWaiterCallService = historyWaiterCallService;
-        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
-    public void archiveOrder(Order order) throws LocalizedException {
-        if (!order.isPaid()) {
-            exceptionHelper.throwLocalizedMessage("error.archiveDataService.orderNotPaid", order.getId());
-        }
+    public void archiveSummary(OrderSummary orderSummary) {
+        HistoryOrderSummary historyOrderSummary = mapSummaryToHistorySummary(orderSummary);
+        historyOrderSummaryService.save(historyOrderSummary);
+        orderSummaryRepository.delete(orderSummary);
+    }
+
+    @Override
+    public void archiveOrder(Order order) {
         HistoryOrder historyOrder = mapOrderToHistoryOrder(order);
         historyOrderService.save(historyOrder);
         transferWaiterCallDataToHistory(order, historyOrder);
     }
 
+    private HistoryOrderSummary mapSummaryToHistorySummary(OrderSummary orderSummary) {
+        HistoryOrderSummary historyOrderSummary = new HistoryOrderSummary(
+                orderSummary.getId(),
+                orderSummary.getRestaurantTable(),
+                orderSummary.getRestaurant(),
+                orderSummary.getInitialOrderTime().toLocalDate(),
+                orderSummary.getInitialOrderTime().toLocalTime(),
+                orderSummary.getTipAmount(),
+                orderSummary.getTotalAmount(),
+                orderSummary.isPaid(),
+                orderSummary.getPaymentMethod()
+        );
+        List<HistoryOrder> historyOrders = new ArrayList<>();
+        for (Order order : orderSummary.getOrders()) {
+            HistoryOrder historyOrder = mapOrderToHistoryOrder(order);
+            historyOrders.add(historyOrder);
+        }
+        historyOrderSummary.setHistoryOrders(historyOrders);
+        return historyOrderSummary;
+    }
+
     private HistoryOrder mapOrderToHistoryOrder(Order order) {
         HistoryOrder historyOrder = new HistoryOrder(
                 order.getId(),
-                order.getRestaurantTable(),
                 order.getRestaurant(),
+                order.getRestaurantTable(),
                 order.getOrderTime().toLocalDate(),
                 order.getOrderTime().toLocalTime(),
-                order.getPaymentMethod(),
                 order.getTotalAmount(),
-                order.getTipAmount(),
-                order.isPaid(),
-                order.isForTakeAway(),
-                order.isResolved(),
-                order.getOrderNumber());
+                order.isResolved());
 
         List<HistoryOrderedItem> transferredItems = new ArrayList<>();
         order.getOrderedItems().forEach(orderedItem -> {

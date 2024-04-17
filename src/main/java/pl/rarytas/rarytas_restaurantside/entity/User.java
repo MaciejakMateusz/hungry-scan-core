@@ -50,7 +50,10 @@ public class User {
     private String repeatedPassword;
 
     @Column(length = 36)
-    private String token;
+    private String emailToken;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private JwtToken jwtToken;
 
     private LocalDateTime created;
     private LocalDateTime updated;
@@ -68,12 +71,12 @@ public class User {
         this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());
         log.info("Password has been successfully encrypted.");
         this.created = LocalDateTime.now();
-        log.info("Creation date has been set to : " + this.created);
+        log.info("Creation date has been set to : {}", this.created);
     }
 
     @PreUpdate
     private void preUpdate() {
         this.updated = LocalDateTime.now();
-        log.info("Date of edition has been set to : " + this.updated);
+        log.info("Date of edition has been set to : {}", this.updated);
     }
 }

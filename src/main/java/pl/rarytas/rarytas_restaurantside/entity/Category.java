@@ -1,5 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
+import pl.rarytas.rarytas_restaurantside.listener.GeneralListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
+@EntityListeners(GeneralListener.class)
 @Table(name = "categories")
 @Entity
 public class Category {
@@ -34,18 +37,13 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private List<MenuItem> menuItems;
 
+    private boolean isAvailable = true;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
-
-    @PrePersist
-    private void prePersist() {
-        this.created = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    private void preUpdate() {
-        this.updated = LocalDateTime.now();
-    }
 
     @Override
     public String toString() {

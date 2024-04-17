@@ -28,6 +28,11 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
+    public List<Category> findAllAvailable() {
+        return categoryRepository.findAllAvailable();
+    }
+
+    @Override
     public Category findById(Integer id) throws LocalizedException {
         return categoryRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(

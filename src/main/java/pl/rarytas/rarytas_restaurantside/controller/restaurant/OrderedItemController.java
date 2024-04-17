@@ -33,7 +33,7 @@ public class OrderedItemController {
         return ResponseEntity.ok(orderedItemService.findAll());
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, orderedItemService::findById);

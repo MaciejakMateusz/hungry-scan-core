@@ -53,6 +53,11 @@ public class JwtServiceImp implements JwtService {
         return createToken(claims, username, hoursToExpire);
     }
 
+    @Override
+    public Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
@@ -60,10 +65,6 @@ public class JwtServiceImp implements JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
     }
 
     private String createToken(Map<String, Object> claims, String username, long hoursToExpire) {

@@ -3,7 +3,7 @@ package pl.rarytas.rarytas_restaurantside.test_utils;
 import org.springframework.stereotype.Component;
 import pl.rarytas.rarytas_restaurantside.entity.*;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemVariantService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
@@ -20,12 +20,12 @@ public class OrderProcessor {
 
     private final RestaurantService restaurantService;
     private final RestaurantTableService restaurantTableService;
-    private final MenuItemService menuItemService;
+    private final MenuItemVariantService variantService;
 
-    public OrderProcessor(RestaurantService restaurantService, RestaurantTableService restaurantTableService, MenuItemService menuItemService) {
+    public OrderProcessor(RestaurantService restaurantService, RestaurantTableService restaurantTableService, MenuItemVariantService variantService) {
         this.restaurantService = restaurantService;
         this.restaurantTableService = restaurantTableService;
-        this.menuItemService = menuItemService;
+        this.variantService = variantService;
     }
 
     /**
@@ -37,7 +37,7 @@ public class OrderProcessor {
     public BigDecimal countTotalAmount(List<OrderedItem> orderedItems) {
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (OrderedItem orderedItem : orderedItems) {
-            totalAmount = totalAmount.add(orderedItem.getMenuItem().getPrice());
+            totalAmount = totalAmount.add(orderedItem.getMenuItemVariant().getPrice());
         }
         return totalAmount.setScale(2, RoundingMode.HALF_UP);
     }
@@ -46,17 +46,17 @@ public class OrderProcessor {
      * Creates dine-in order based on provided parameters.
      *
      * @param tableNumber The number of the table where the order is placed.
-     * @param menuItemIds The list of IDs of menu items to be included in the order.
+     * @param variantsIds The list of IDs of menu item variants to be included in the order.
      * @return The created order.
      */
-    public Order createDineInOrder(Integer tableNumber, List<Integer> menuItemIds) throws LocalizedException {
+    public Order createDineInOrder(Integer tableNumber, List<Integer> variantsIds) throws LocalizedException {
         return new CreateOrder(
                 restaurantService,
                 restaurantTableService,
-                menuItemService,
+                variantService,
                 1,
                 tableNumber,
-                menuItemIds,
+                variantsIds,
                 false).createOrder();
     }
 
@@ -70,7 +70,7 @@ public class OrderProcessor {
         return new CreateOrder(
                 restaurantService,
                 restaurantTableService,
-                menuItemService,
+                variantService,
                 1,
                 19,
                 menuItemIds,
@@ -84,10 +84,10 @@ public class OrderProcessor {
     private record CreateOrder(
             RestaurantService restaurantService,
             RestaurantTableService restaurantTableService,
-            MenuItemService menuItemService,
+            MenuItemVariantService variantService,
             Integer restaurantId,
             Integer restaurantTableId,
-            List<Integer> menuItemIds,
+            List<Integer> variantsIds,
             boolean isForTakeAway) {
 
         /**
@@ -100,7 +100,8 @@ public class OrderProcessor {
             order.setRestaurant(getRestaurant());
             order.setRestaurantTable(getRestaurantTable());
             order.setOrderedItems(createOrderedItems());
-            order.setForTakeAway(isForTakeAway);
+//            order.setIsForTakeAway(isForTakeAway);
+            //TODO czy order może być na wynos? Czy robimy do tego osobną encję?
             return order;
         }
 
@@ -128,12 +129,12 @@ public class OrderProcessor {
          * @return The list of ordered items.
          */
         private List<OrderedItem> createOrderedItems() {
-            List<MenuItem> menuItems = getMenuItems();
+            List<MenuItemVariant> variants = getMenuItemVariants();
             List<OrderedItem> orderedItems = new ArrayList<>();
 
-            menuItems.forEach(menuItem -> {
+            variants.forEach(menuItem -> {
                 OrderedItem orderedItem = new OrderedItem();
-                orderedItem.setMenuItem(menuItem);
+                orderedItem.setMenuItemVariant(menuItem);
                 orderedItem.setQuantity(1); // Default quantity assumed to be 1
                 orderedItems.add(orderedItem);
             });
@@ -141,22 +142,22 @@ public class OrderProcessor {
         }
 
         /**
-         * Retrieves the menu items associated with this order.
+         * Retrieves the menu item variants associated with this order.
          *
-         * @return The list of menu items.
+         * @return The list of menu item variants.
          */
-        private List<MenuItem> getMenuItems() {
-            List<MenuItem> menuItems = new ArrayList<>();
-            this.menuItemIds.forEach(id -> {
-                MenuItem menuItem;
+        private List<MenuItemVariant> getMenuItemVariants() {
+            List<MenuItemVariant> variants = new ArrayList<>();
+            this.variantsIds.forEach(id -> {
+                MenuItemVariant variant;
                 try {
-                    menuItem = menuItemService.findById(id);
+                    variant = variantService.findById(id);
                 } catch (LocalizedException e) {
                     throw new RuntimeException(e);
                 }
-                menuItems.add(menuItem);
+                variants.add(variant);
             });
-            return menuItems;
+            return variants;
         }
     }
 }

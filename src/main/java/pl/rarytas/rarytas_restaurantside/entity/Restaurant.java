@@ -1,10 +1,12 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import pl.rarytas.rarytas_restaurantside.listener.GeneralListener;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @EqualsAndHashCode
 @Table(name = "restaurants")
+@EntityListeners(GeneralListener.class)
 @Entity
 public class Restaurant {
 
@@ -26,18 +29,11 @@ public class Restaurant {
     @Column(length = 300)
     private String address;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
-
-    @PrePersist
-    private void prePersist() {
-        this.created = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    private void preUpdate() {
-        this.updated = LocalDateTime.now();
-    }
 
     @Override
     public String toString() {

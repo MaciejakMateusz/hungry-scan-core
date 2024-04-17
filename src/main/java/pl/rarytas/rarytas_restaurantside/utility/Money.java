@@ -10,4 +10,8 @@ public class Money {
     public static BigDecimal of(double value) {
         return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP);
     }
+
+    public static BigDecimal of(BigDecimal value) {
+        return value.setScale(2, RoundingMode.HALF_UP);
+    }
 }

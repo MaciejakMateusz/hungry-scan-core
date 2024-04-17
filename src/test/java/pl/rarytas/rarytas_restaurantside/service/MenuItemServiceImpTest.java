@@ -17,7 +17,6 @@ import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +38,7 @@ public class MenuItemServiceImpTest {
 
     @Test
     public void shouldReturnAll() {
-        assertEquals(40, getMenuItems().size());
+        assertEquals(30, getMenuItems().size());
     }
 
     @Test
@@ -50,8 +49,6 @@ public class MenuItemServiceImpTest {
                 "Burger",
                 2,
                 "Z mięsem wegańskim",
-                "Bułka, mięso sojowe, " + "sałata, ogórek konserwowy, chrzan żurawinowy",
-                BigDecimal.valueOf(20.00),
                 "/public/assets/burger.png");
         menuItemService.save(newMenuItem);
         MenuItem menuItem = menuItemService.findById(newMenuItem.getId());
@@ -65,21 +62,12 @@ public class MenuItemServiceImpTest {
                 "Cheeseburger",
                 3,
                 "Z mięsem i serem wegańskim.",
-                "Bułka, mięso sojowe, sałata, " + "ogórek konserwowy, chrzan żurawinowy.",
-                BigDecimal.valueOf(21.00),
                 "/public/assets/cheeseburger.png");
 
         menuItem.setName("");
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setName(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
-
-        menuItem.setName("Test");
-        menuItem.setPrice(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
-
-        menuItem.setPrice(BigDecimal.valueOf(0.5));
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setDescription("");
@@ -124,15 +112,11 @@ public class MenuItemServiceImpTest {
     private MenuItem createMenuItem(String name,
                                     int categoryId,
                                     String description,
-                                    String ingredients,
-                                    BigDecimal price,
                                     String imageName) throws LocalizedException {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(name);
         menuItem.setCategory(categoryService.findById(categoryId));
         menuItem.setDescription(description);
-        menuItem.setIngredients(ingredients);
-        menuItem.setPrice(price);
         menuItem.setImageName(imageName);
         return menuItem;
     }

@@ -12,9 +12,15 @@ public interface RestaurantTableService {
 
     RestaurantTable findById(Integer id) throws LocalizedException;
 
+    RestaurantTable findByNumber(Integer number) throws LocalizedException;
+
     RestaurantTable findByToken(String token) throws LocalizedException;
 
+    void createNew(RestaurantTable restaurantTable) throws LocalizedException;
+
     void save(RestaurantTable restaurantTable);
+
+    void delete(Integer id) throws LocalizedException;
 
     void toggleActivation(Integer id) throws LocalizedException;
 
@@ -23,4 +29,5 @@ public interface RestaurantTableService {
     void resolveWaiterCall(Integer id) throws LocalizedException;
 
     void requestBill(Integer id, PaymentMethod paymentMethod) throws LocalizedException;
+
 }

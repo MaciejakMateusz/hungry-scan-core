@@ -1,8 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -13,6 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Settings;
@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SettingsControllerTest {
 
     @Autowired
@@ -41,12 +42,18 @@ class SettingsControllerTest {
     @Autowired
     private ApiRequestUtils apiRequestUtils;
 
+    @Order(1)
+    @Sql("/data-h2.sql")
     @Test
-    @WithMockUser(roles = {"MANAGER"})
+    void init() {
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"})
     void shouldGetSettings() throws Exception {
         Settings settings =
                 apiRequestUtils.fetchObject(
-                        "/api/cms/settings", Settings.class);
+                        "/api/admin/settings", Settings.class);
 
         assertEquals(3, settings.getBookingDuration());
         assertEquals(LocalTime.of(7, 0), settings.getOpeningTime());
@@ -57,7 +64,7 @@ class SettingsControllerTest {
     @Test
     @WithMockUser(roles = {"WAITER"})
     void shouldNotAllowUnauthorizedAccessToSettings() throws Exception {
-        mockMvc.perform(get("/api/cms/settings"))
+        mockMvc.perform(get("/api/admin/settings"))
                 .andExpect(status().isForbidden());
     }
 
@@ -67,7 +74,7 @@ class SettingsControllerTest {
     @Rollback
     void shouldUpdateSettings() throws Exception {
         Settings settings = createSettings();
-        apiRequestUtils.patchAndExpect200("/api/cms/settings", settings);
+        apiRequestUtils.patchAndExpect200("/api/admin/settings", settings);
 
         assertEquals(2, settings.getBookingDuration());
         assertEquals(LocalTime.of(10, 30), settings.getOpeningTime());
@@ -81,7 +88,7 @@ class SettingsControllerTest {
     void shouldNotAllowUnauthorizedAccessToUpdateSettings() throws Exception {
         Settings settings = createSettings();
         ObjectMapper objectMapper = apiRequestUtils.prepObjMapper();
-        mockMvc.perform(patch("/api/cms/settings")
+        mockMvc.perform(patch("/api/admin/settings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(settings)))
                 .andExpect(status().isForbidden());
@@ -94,7 +101,7 @@ class SettingsControllerTest {
         settings.setClosingTime(null);
         settings.setLanguage(null);
 
-        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/cms/settings", settings);
+        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/admin/settings", settings);
 
         assertEquals(2, errors.size());
         assertEquals("Pole nie może być puste", errors.get("closingTime"));

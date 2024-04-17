@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.cms;
+package pl.rarytas.rarytas_restaurantside.controller.admin;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -12,9 +12,9 @@ import pl.rarytas.rarytas_restaurantside.entity.Settings;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.SettingsService;
 
 @RestController
-@RequestMapping("/api/cms/settings")
+@RequestMapping("/api/admin/settings")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
-@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN')")
 public class SettingsController {
 
     private final SettingsService settingsService;

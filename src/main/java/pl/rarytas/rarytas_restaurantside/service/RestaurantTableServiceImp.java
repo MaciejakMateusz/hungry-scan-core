@@ -3,16 +3,18 @@ package pl.rarytas.rarytas_restaurantside.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import pl.rarytas.rarytas_restaurantside.entity.Order;
+import pl.rarytas.rarytas_restaurantside.entity.OrderSummary;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.repository.OrderRepository;
+import pl.rarytas.rarytas_restaurantside.repository.OrderSummaryRepository;
 import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
+import pl.rarytas.rarytas_restaurantside.repository.UserRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 import pl.rarytas.rarytas_restaurantside.utility.Money;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
@@ -20,14 +22,18 @@ import java.util.List;
 public class RestaurantTableServiceImp implements RestaurantTableService {
 
     private final RestaurantTableRepository restaurantTableRepository;
-    private final OrderRepository orderRepository;
-    private final ExceptionHelper exceptionHelper;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepository;
+    protected final OrderSummaryRepository orderSummaryRepository;
+    protected final ExceptionHelper exceptionHelper;
+    protected final SimpMessagingTemplate messagingTemplate;
 
-    public RestaurantTableServiceImp(RestaurantTableRepository restaurantTableRepository, OrderRepository orderRepository,
-                                     ExceptionHelper exceptionHelper, SimpMessagingTemplate messagingTemplate) {
+    public RestaurantTableServiceImp(RestaurantTableRepository restaurantTableRepository, UserRepository userRepository,
+                                     OrderSummaryRepository orderSummaryRepository,
+                                     ExceptionHelper exceptionHelper,
+                                     SimpMessagingTemplate messagingTemplate) {
         this.restaurantTableRepository = restaurantTableRepository;
-        this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
+        this.orderSummaryRepository = orderSummaryRepository;
         this.exceptionHelper = exceptionHelper;
         this.messagingTemplate = messagingTemplate;
     }
@@ -46,10 +52,23 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
+    public RestaurantTable findByNumber(Integer number) throws LocalizedException {
+        return restaurantTableRepository.findByNumber(number)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantTableService.tableWithNumberNotFound", number));
+    }
+
+    @Override
     public RestaurantTable findByToken(String token) throws LocalizedException {
         return restaurantTableRepository.findByToken(token)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.general.accessDenied"));
+    }
+
+    @Override
+    public void createNew(RestaurantTable restaurantTable) throws LocalizedException {
+        validateTableCreation(restaurantTable);
+        restaurantTableRepository.save(restaurantTable);
     }
 
     @Override
@@ -58,10 +77,21 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
+    public void delete(Integer id) throws LocalizedException {
+        RestaurantTable restaurantTable = findById(id);
+        restaurantTableRepository.delete(restaurantTable);
+    }
+
+    @Override
     public void toggleActivation(Integer id) throws LocalizedException {
         RestaurantTable table = findById(id);
-        table.setActive(!table.isActive());
-        save(table);
+        if (isToggleValid(table)) {
+            removeUsersAccess(table);
+            table.setActive(!table.isActive());
+            save(table);
+        } else {
+            exceptionHelper.throwLocalizedMessage("error.restaurantTableService.tableNotPaid", id);
+        }
     }
 
     @Override
@@ -85,24 +115,45 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     public void requestBill(Integer id, PaymentMethod paymentMethod) throws LocalizedException {
         RestaurantTable restaurantTable = findById(id);
         validateTableAction(restaurantTable);
-        notifyRelatedOrder(id, paymentMethod);
+        notifyRelatedOrderSummary(id, paymentMethod);
         restaurantTable.setBillRequested(true);
         save(restaurantTable);
         messagingTemplate.convertAndSend("/topic/tables", findAll());
     }
 
-    private void notifyRelatedOrder(Integer tableNumber, PaymentMethod paymentMethod) throws LocalizedException {
-        Order existingOrder = orderRepository.findNewestOrderByTableNumber(tableNumber)
+    private void notifyRelatedOrderSummary(Integer tableNumber, PaymentMethod paymentMethod) throws LocalizedException {
+        OrderSummary existingSummary = orderSummaryRepository.findFirstByRestaurantTableId(tableNumber)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.orderService.orderNotFoundByTable", tableNumber));
+                        "error.orderSummaryService.summaryNotFound", tableNumber));
 
-        if (Money.of(0.00).equals(existingOrder.getTotalAmount())) {
+        if (Money.of(0.00).equals(existingSummary.getTotalAmount())) {
             exceptionHelper.throwLocalizedMessage("error.orderService.illegalBillRequest");
         }
 
-        existingOrder.setPaymentMethod(paymentMethod);
-        orderRepository.saveAndFlush(existingOrder);
-        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
+        existingSummary.setPaymentMethod(paymentMethod);
+        orderSummaryRepository.saveAndFlush(existingSummary);
+        messagingTemplate.convertAndSend("/topic/summaries", findAll());
+    }
+
+    private void removeUsersAccess(RestaurantTable table) {
+        userRepository.deleteAll(table.getUsers());
+        table.setUsers(new HashSet<>());
+    }
+
+    private boolean isToggleValid(RestaurantTable table) {
+        if (table.isActive()) {
+            OrderSummary orderSummary = getSummaryForTable(table.getId());
+            if (orderSummary.getOrders().isEmpty()) {
+                return true;
+            }
+            return orderSummary.isPaid();
+        }
+        return true;
+    }
+
+    private OrderSummary getSummaryForTable(Integer id) {
+        return orderSummaryRepository.findFirstByRestaurantTableId(id)
+                .orElse(null);
     }
 
     private void validateTableAction(RestaurantTable rt) throws LocalizedException {
@@ -129,7 +180,15 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         }
     }
 
+    private void validateTableCreation(RestaurantTable restaurantTable) throws LocalizedException {
+        Integer tableNumber = restaurantTable.getNumber();
+        if (restaurantTableRepository.existsByNumber(tableNumber)) {
+            exceptionHelper.throwLocalizedMessage("error.restaurantTableService.tableNumberExists", tableNumber);
+        }
+    }
+
     private void throwAlreadyRequested(RestaurantTable rt) throws LocalizedException {
         exceptionHelper.throwLocalizedMessage("error.restaurantTableService.alreadyRequested", rt.getId());
     }
+
 }
