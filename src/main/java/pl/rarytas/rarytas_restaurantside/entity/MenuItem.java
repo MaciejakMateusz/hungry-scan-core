@@ -1,7 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -40,10 +39,7 @@ public class MenuItem {
     @NotBlank
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @JsonIgnore
-    private Category category;
+    private Integer categoryId;
 
     @Column(length = 500)
     @SizeIfNotEmpty

@@ -12,5 +12,7 @@ public interface MenuItemService {
 
     MenuItem findById(Integer id) throws LocalizedException;
 
+    void changeCategory(Integer itemId, Integer categoryId) throws LocalizedException;
+
     void delete(Integer id) throws LocalizedException;
 }

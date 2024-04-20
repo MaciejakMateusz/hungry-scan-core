@@ -206,6 +206,37 @@ VALUES ('Makaron z pesto bazyliowym', 6,
         'Makaron spaghetti z pysznym pesto bazyliowym, parmezanem i prażonymi orzechami.', null, null, false, false,
         true, 23.00);
 
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 1);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 2);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 3);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 4);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 5);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 6);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 7);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 8);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 9);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 10);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 11);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 12);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 13);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 14);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 15);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 16);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 17);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 18);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 19);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 20);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 21);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 22);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 23);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 24);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 25);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 26);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 27);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 28);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 29);
+INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 30);
+
 INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, 'Z szpinakiem', '20.00', null);
 INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)

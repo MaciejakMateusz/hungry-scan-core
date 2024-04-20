@@ -14,7 +14,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.util.List;
@@ -29,9 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class MenuItemServiceImpTest {
-
-    @Autowired
-    private CategoryService categoryService;
 
     @Autowired
     private MenuItemService menuItemService;
@@ -57,7 +53,7 @@ public class MenuItemServiceImpTest {
     }
 
     @Test
-    public void shouldNotInsertNew() throws LocalizedException {
+    public void shouldNotInsertNew() {
         MenuItem menuItem = createMenuItem(
                 "Cheeseburger",
                 3,
@@ -110,12 +106,12 @@ public class MenuItemServiceImpTest {
     }
 
     private MenuItem createMenuItem(String name,
-                                    int categoryId,
+                                    Integer categoryId,
                                     String description,
-                                    String imageName) throws LocalizedException {
+                                    String imageName) {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(name);
-        menuItem.setCategory(categoryService.findById(categoryId));
+        menuItem.setCategoryId(categoryId);
         menuItem.setDescription(description);
         menuItem.setImageName(imageName);
         return menuItem;

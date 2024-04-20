@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.util.List;
@@ -49,6 +50,17 @@ public class MenuItemController {
     public ResponseEntity<?> add(@RequestBody @Valid MenuItem menuItem,
                                  BindingResult br) {
         return responseHelper.buildResponse(menuItem, br, menuItemService::save);
+    }
+
+    @PatchMapping(value = "/change-category")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> changeCategory(@RequestParam Integer itemId, @RequestParam Integer categoryId) {
+        try {
+            menuItemService.changeCategory(itemId, categoryId);
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete")
