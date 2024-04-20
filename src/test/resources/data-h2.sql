@@ -294,10 +294,10 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO sections(id, name, created, updated) VALUES (1, 'Sekcja 1', NOW(), null);
-INSERT INTO sections(id, name, created, updated) VALUES (2, 'Sekcja 2', NOW(), null);
-INSERT INTO sections(id, name, created, updated) VALUES (3, 'Piętro II', NOW(), null);
-INSERT INTO sections(id, name, created, updated) VALUES (4, 'Loża VIP', NOW(), null);
+INSERT INTO zones(name, created, updated, display_order) VALUES ('Sekcja 1', NOW(), null, 1);
+INSERT INTO zones(name, created, updated, display_order) VALUES ('Sekcja 2', NOW(), null, 2);
+INSERT INTO zones(name, created, updated, display_order) VALUES ('Piętro II', NOW(), null, 4);
+INSERT INTO zones(name, created, updated, display_order) VALUES ('Loża VIP', NOW(), null, 3);
 
 INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
 VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 4, 1);
@@ -337,6 +337,13 @@ INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, 
 VALUES (false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf', false, false, 4, 18);
 INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
 VALUES (true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19);
+
+INSERT INTO zones_restaurant_tables (zone_id, restaurant_tables_id)
+VALUES (2, 2);
+INSERT INTO zones_restaurant_tables (zone_id, restaurant_tables_id)
+VALUES (2, 15);
+INSERT INTO zones_restaurant_tables (zone_id, restaurant_tables_id)
+VALUES (2, 16);
 
 INSERT INTO role (id, name, displayed_name)
 VALUES (1, 'ROLE_WAITER', 'Kelner');
