@@ -32,22 +32,15 @@ public class CustomerAccessRemover {
         List<User> users = userService.findAll();
         for (User user : users) {
             String token = getAccessToken(user);
-            if (token.isBlank()) {
-                continue;
-            }
-            if (jwtService.isTokenExpired(token)) {
-                handleDeletion(user);
-            }
+            if (token.isBlank()) continue;
+            if (jwtService.isTokenExpired(token)) handleDeletion(user);
         }
         log.info("Finished controlJwtAndRemoveUsers() job.");
     }
 
     private String getAccessToken(User user) {
         JwtToken token = user.getJwtToken();
-        if (Objects.nonNull(token)) {
-            return token.getToken();
-        }
-        return "";
+        return Objects.nonNull(token) ? token.getToken() : "";
     }
 
     private void handleDeletion(User user) {
