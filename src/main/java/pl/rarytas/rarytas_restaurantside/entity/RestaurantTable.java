@@ -1,8 +1,8 @@
 package pl.rarytas.rarytas_restaurantside.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,11 +28,6 @@ public class RestaurantTable {
 
     private Integer number;
 
-    @ManyToOne
-    @JoinColumn(name = "section_id", referencedColumnName = "id")
-    @JsonIgnore
-    private Section section;
-
     @OneToMany(fetch = FetchType.EAGER)
     private Set<User> users;
 
@@ -42,6 +37,7 @@ public class RestaurantTable {
 
     private boolean waiterCalled;
 
+    @Min(value = 1)
     private int maxNumOfPpl;
 
     @Column(length = 36, nullable = false)

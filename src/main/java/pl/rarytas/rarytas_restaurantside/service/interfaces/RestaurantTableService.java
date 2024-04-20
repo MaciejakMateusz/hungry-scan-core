@@ -22,6 +22,8 @@ public interface RestaurantTableService {
 
     void delete(Integer id) throws LocalizedException;
 
+    void generateNewToken(Integer id) throws LocalizedException;
+
     void toggleActivation(Integer id) throws LocalizedException;
 
     void callWaiter(Integer id) throws LocalizedException;

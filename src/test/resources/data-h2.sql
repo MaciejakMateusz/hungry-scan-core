@@ -294,44 +294,49 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (1, true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 4, 1);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (2, true, '79d8684f-333e-4275-a317-fa06d46fa6b6', false, false, 4, 2);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (3, false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27', false, false, 4, 3);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (4, false, '5afb9629-990a-4934-87f2-793b1aa2f35e', false, false, 4, 4);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (5, true, '58d77e24-6b8c-41a9-b24c-a67602deacdd', false, false, 4, 5);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (6, false, '59ebc00c-b580-4dff-9788-2df90b1d4bba', false, false, 4, 6);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (7, false, 'ef303854-6faa-4615-8d47-6f3686086586', false, false, 4, 7);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (8, false, '97cba027-ae47-4c42-8828-f4b3b3506d0c', false, false, 4, 8);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (9, false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2', false, false, 4, 9);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (10, false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff', false, false, 4, 10);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (11, false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301', false, false, 4, 11);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (12, true, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71', false, false, 4, 12);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (13, false, '6696c583-a312-4b24-9716-430826ad1e96', false, false, 4, 13);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (14, false, 'a65896cb-805d-4d7b-849b-1d53e78f3191', false, false, 4, 14);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (15, false, '65b6bb94-da99-4ced-8a94-5860fe95e708', false, false, 4, 15);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (16, false, '2fd07320-a841-48ad-9f3f-35b307014b2a', false, false, 4, 16);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (17, false, '3740c35f-5759-4eb8-ab00-cb3807707235', false, false, 4, 17);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (18, false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf', false, false, 4, 18);
-INSERT INTO restaurant_tables (id, is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (19, true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19);
+INSERT INTO sections(id, name, created, updated) VALUES (1, 'Sekcja 1', NOW(), null);
+INSERT INTO sections(id, name, created, updated) VALUES (2, 'Sekcja 2', NOW(), null);
+INSERT INTO sections(id, name, created, updated) VALUES (3, 'Piętro II', NOW(), null);
+INSERT INTO sections(id, name, created, updated) VALUES (4, 'Loża VIP', NOW(), null);
+
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 4, 1);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (true, '79d8684f-333e-4275-a317-fa06d46fa6b6', false, false, 4, 2);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27', false, false, 4, 3);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '5afb9629-990a-4934-87f2-793b1aa2f35e', false, false, 4, 4);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (true, '58d77e24-6b8c-41a9-b24c-a67602deacdd', false, false, 4, 5);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '59ebc00c-b580-4dff-9788-2df90b1d4bba', false, false, 4, 6);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, 'ef303854-6faa-4615-8d47-6f3686086586', false, false, 4, 7);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '97cba027-ae47-4c42-8828-f4b3b3506d0c', false, false, 4, 8);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2', false, false, 4, 9);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff', false, false, 4, 10);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301', false, false, 4, 11);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (true, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71', false, false, 4, 12);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '6696c583-a312-4b24-9716-430826ad1e96', false, false, 4, 13);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, 'a65896cb-805d-4d7b-849b-1d53e78f3191', false, false, 4, 14);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '65b6bb94-da99-4ced-8a94-5860fe95e708', false, false, 4, 15);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '2fd07320-a841-48ad-9f3f-35b307014b2a', false, false, 4, 16);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '3740c35f-5759-4eb8-ab00-cb3807707235', false, false, 4, 17);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf', false, false, 4, 18);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
+VALUES (true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19);
 
 INSERT INTO role (id, name, displayed_name)
 VALUES (1, 'ROLE_WAITER', 'Kelner');

@@ -16,6 +16,7 @@ import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -27,7 +28,8 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     protected final ExceptionHelper exceptionHelper;
     protected final SimpMessagingTemplate messagingTemplate;
 
-    public RestaurantTableServiceImp(RestaurantTableRepository restaurantTableRepository, UserRepository userRepository,
+    public RestaurantTableServiceImp(RestaurantTableRepository restaurantTableRepository,
+                                     UserRepository userRepository,
                                      OrderSummaryRepository orderSummaryRepository,
                                      ExceptionHelper exceptionHelper,
                                      SimpMessagingTemplate messagingTemplate) {
@@ -73,13 +75,21 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
 
     @Override
     public void save(RestaurantTable restaurantTable) {
-        restaurantTableRepository.saveAndFlush(restaurantTable);
+        restaurantTableRepository.save(restaurantTable);
     }
 
     @Override
     public void delete(Integer id) throws LocalizedException {
         RestaurantTable restaurantTable = findById(id);
         restaurantTableRepository.delete(restaurantTable);
+    }
+
+    @Override
+    public void generateNewToken(Integer id) throws LocalizedException {
+        RestaurantTable existingTable = findById(id);
+        String token = String.valueOf(UUID.randomUUID());
+        existingTable.setToken(token);
+        save(existingTable);
     }
 
     @Override
