@@ -24,6 +24,8 @@ public interface RestaurantTableService {
 
     void generateNewToken(Integer id) throws LocalizedException;
 
+    void changeZone(Integer tableId, Integer zoneId) throws LocalizedException;
+
     void toggleActivation(Integer id) throws LocalizedException;
 
     void callWaiter(Integer id) throws LocalizedException;

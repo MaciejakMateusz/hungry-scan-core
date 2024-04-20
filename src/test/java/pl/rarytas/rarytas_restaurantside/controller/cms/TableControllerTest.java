@@ -6,6 +6,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -14,6 +15,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.entity.Zone;
+import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
+import pl.rarytas.rarytas_restaurantside.repository.ZoneRepository;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
 import java.util.List;
@@ -22,6 +26,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -38,6 +44,10 @@ class TableControllerTest {
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
+    @Autowired
+    private ZoneRepository zoneRepository;
+    @Autowired
+    private RestaurantTableRepository restaurantTableRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -186,7 +196,7 @@ class TableControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/tables/show", 6, RestaurantTable.class);
         assertEquals("59ebc00c-b580-4dff-9788-2df90b1d4bba", existingTable.getToken());
 
-        apiRequestUtils.patchAndExpect200("/api/cms/tables/generate_token", existingTable.getId());
+        apiRequestUtils.patchAndExpect200("/api/cms/tables/generate-token", existingTable.getId());
 
         existingTable =
                 apiRequestUtils.postObjectExpect200("/api/cms/tables/show", 6, RestaurantTable.class);
@@ -195,6 +205,32 @@ class TableControllerTest {
         assertEquals(36, existingTable.getToken().length());
         assertEquals(4, existingTable.getMaxNumOfPpl());
         assertEquals(6, existingTable.getNumber());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeZone() throws Exception {
+        RestaurantTable restaurantTable = restaurantTableRepository.findById(15).orElseThrow();
+        Zone zone = zoneRepository.findByRestaurantTable(restaurantTable).orElseThrow();
+        assertEquals(2, zone.getId());
+
+        mockMvc.perform(patch("/api/cms/tables/change-zone")
+                        .contentType(MediaType.APPLICATION_JSON)
+                .param("tableId", "15")
+                .param("zoneId", "3"))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        Zone newZone = zoneRepository.findByRestaurantTable(restaurantTable).orElseThrow();
+        assertEquals(3, newZone.getId());
+        assertEquals(1, newZone.getRestaurantTables().size());
+        assertTrue(newZone.getRestaurantTables().contains(restaurantTable));
+
+        Zone oldZone = zoneRepository.findById(2).orElseThrow();
+        assertEquals(2, oldZone.getRestaurantTables().size());
+        assertFalse(oldZone.getRestaurantTables().contains(restaurantTable));
     }
 
     private RestaurantTable createTable() {

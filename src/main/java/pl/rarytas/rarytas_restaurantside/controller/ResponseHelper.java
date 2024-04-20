@@ -149,7 +149,7 @@ public class ResponseHelper {
         return ResponseEntity.badRequest().body(getFieldErrors(br));
     }
 
-    private ResponseEntity<Map<String, Object>> createErrorResponse(Exception e) {
+    public ResponseEntity<Map<String, Object>> createErrorResponse(Exception e) {
         log.error(e.getMessage());
         Map<String, Object> params = Map.of("exceptionMsg", e.getMessage());
         return ResponseEntity.badRequest().body(params);

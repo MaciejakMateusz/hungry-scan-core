@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
+import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
 import java.util.List;
@@ -51,10 +52,21 @@ public class TableController {
         return responseHelper.buildResponse(restaurantTable, br, restaurantTableService::save);
     }
 
-    @PatchMapping(value = "/generate_token")
+    @PatchMapping(value = "/generate-token")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> generateNewToken(@RequestBody Integer id) {
         return responseHelper.buildResponse(id, restaurantTableService::generateNewToken);
+    }
+
+    @PatchMapping(value = "/change-zone")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> changeZone(@RequestParam Integer tableId, @RequestParam Integer zoneId) {
+        try {
+            restaurantTableService.changeZone(tableId, zoneId);
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete")
