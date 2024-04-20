@@ -1,4 +1,4 @@
-package pl.rarytas.rarytas_restaurantside.controller.cms;
+package pl.rarytas.rarytas_restaurantside.controller.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
