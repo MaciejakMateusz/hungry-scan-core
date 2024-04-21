@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Table(name = "menu_item_variants")
+@Table(name = "variants")
 @EntityListeners(GeneralListener.class)
 @Entity
 public class MenuItemVariant {
@@ -35,8 +35,7 @@ public class MenuItemVariant {
     @Column(nullable = false)
     private BigDecimal price = Money.of(0.00);
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private MenuItem menuItem;
+    private Integer menuItemId;
 
     private boolean isAvailable = true;
 

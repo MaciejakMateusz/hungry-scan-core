@@ -49,8 +49,10 @@ class MenuItemControllerTest {
 
     @Autowired
     private MenuItemFactory menuItemFactory;
+
     @Autowired
     private MenuItemRepository menuItemRepository;
+
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -127,6 +129,7 @@ class MenuItemControllerTest {
         assertEquals(5, persistedMenuItem.getAdditionalIngredients().size());
         assertEquals(1, persistedMenuItem.getAllergens().size());
         assertEquals(2, persistedMenuItem.getLabels().size());
+        assertEquals(2, persistedMenuItem.getVariants().size());
         assertEquals("/public/assets/sample.png", persistedMenuItem.getImageName());
     }
 

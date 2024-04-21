@@ -237,87 +237,87 @@ INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 28);
 INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 29);
 INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 30);
 
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, 'Z szpinakiem', '20.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Z konfiturą cebulową', '24.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, 'Mała', '28.50', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Średnia', '32.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Duża', '38.90', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, 'Mała', '30.25', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Średnia', '35.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Duża', '41.20', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, 'Mała', '27.75', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Średnia', '32.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Duża', '38.20', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, 'Mała', '29.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Średnia', '35.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Duża', '40.20', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, 'Mała', '24.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Średnia', '29.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, false, 'Duża', '35.20', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '19.99', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '24.50', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '22.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '18.75', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '16.99', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '24.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '22.50', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '26.50', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '21.75', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '18.50', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '20.75', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '22.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '21.50', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '23.75', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '15.50', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '16.25', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '17.50', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '15.75', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '18.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '29.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '22.75', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '20.00', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '21.25', null);
-INSERT INTO menu_item_variants(created, is_available, is_default_variant, name, price, updated)
+INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, '', '23.00', null);
 
 INSERT INTO restaurants (address, name)
@@ -325,49 +325,49 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO zones(name, created, updated, display_order) VALUES ('Sekcja 1', NOW(), null, 1);
-INSERT INTO zones(name, created, updated, display_order) VALUES ('Sekcja 2', NOW(), null, 2);
-INSERT INTO zones(name, created, updated, display_order) VALUES ('Piętro II', NOW(), null, 4);
-INSERT INTO zones(name, created, updated, display_order) VALUES ('Loża VIP', NOW(), null, 3);
+INSERT INTO zones(name, created, updated, display_order, is_visible) VALUES ('Sekcja 1', NOW(), null, 1, true);
+INSERT INTO zones(name, created, updated, display_order, is_visible) VALUES ('Sekcja 2', NOW(), null, 2, true);
+INSERT INTO zones(name, created, updated, display_order, is_visible) VALUES ('Piętro II', NOW(), null, 4, true);
+INSERT INTO zones(name, created, updated, display_order, is_visible) VALUES ('Loża VIP', NOW(), null, 3, true);
 
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 4, 1);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (true, '79d8684f-333e-4275-a317-fa06d46fa6b6', false, false, 4, 2);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27', false, false, 4, 3);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '5afb9629-990a-4934-87f2-793b1aa2f35e', false, false, 4, 4);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (true, '58d77e24-6b8c-41a9-b24c-a67602deacdd', false, false, 4, 5);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '59ebc00c-b580-4dff-9788-2df90b1d4bba', false, false, 4, 6);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, 'ef303854-6faa-4615-8d47-6f3686086586', false, false, 4, 7);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '97cba027-ae47-4c42-8828-f4b3b3506d0c', false, false, 4, 8);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2', false, false, 4, 9);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff', false, false, 4, 10);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301', false, false, 4, 11);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (true, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71', false, false, 4, 12);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '6696c583-a312-4b24-9716-430826ad1e96', false, false, 4, 13);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, 'a65896cb-805d-4d7b-849b-1d53e78f3191', false, false, 4, 14);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '65b6bb94-da99-4ced-8a94-5860fe95e708', false, false, 4, 15);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '2fd07320-a841-48ad-9f3f-35b307014b2a', false, false, 4, 16);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '3740c35f-5759-4eb8-ab00-cb3807707235', false, false, 4, 17);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf', false, false, 4, 18);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number)
-VALUES (true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 4, 1, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (true, '79d8684f-333e-4275-a317-fa06d46fa6b6', false, false, 4, 2, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27', false, false, 4, 3, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '5afb9629-990a-4934-87f2-793b1aa2f35e', false, false, 4, 4, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (true, '58d77e24-6b8c-41a9-b24c-a67602deacdd', false, false, 4, 5, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '59ebc00c-b580-4dff-9788-2df90b1d4bba', false, false, 4, 6, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, 'ef303854-6faa-4615-8d47-6f3686086586', false, false, 4, 7, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '97cba027-ae47-4c42-8828-f4b3b3506d0c', false, false, 4, 8, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2', false, false, 4, 9, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff', false, false, 4, 10, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301', false, false, 4, 11, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (true, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71', false, false, 4, 12, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '6696c583-a312-4b24-9716-430826ad1e96', false, false, 4, 13, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, 'a65896cb-805d-4d7b-849b-1d53e78f3191', false, false, 4, 14, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '65b6bb94-da99-4ced-8a94-5860fe95e708', false, false, 4, 15, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '2fd07320-a841-48ad-9f3f-35b307014b2a', false, false, 4, 16, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '3740c35f-5759-4eb8-ab00-cb3807707235', false, false, 4, 17, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf', false, false, 4, 18, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
+VALUES (true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19, true);
 
 INSERT INTO zones_restaurant_tables (zone_id, restaurant_tables_id)
 VALUES (2, 2);
