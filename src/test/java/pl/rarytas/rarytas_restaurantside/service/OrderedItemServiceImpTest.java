@@ -15,7 +15,8 @@ import pl.rarytas.rarytas_restaurantside.service.interfaces.OrderedItemService;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureMockMvc

@@ -1,8 +1,10 @@
 package pl.rarytas.rarytas_restaurantside.controller.cms;
 
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -10,8 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.QRService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -20,10 +28,12 @@ import java.util.Map;
 public class TableController {
 
     private final RestaurantTableService restaurantTableService;
+    private final QRService qrService;
     private final ResponseHelper responseHelper;
 
-    public TableController(RestaurantTableService restaurantTableService, ResponseHelper responseHelper) {
+    public TableController(RestaurantTableService restaurantTableService, QRService qrService, ResponseHelper responseHelper) {
         this.restaurantTableService = restaurantTableService;
+        this.qrService = qrService;
         this.responseHelper = responseHelper;
     }
 
@@ -52,12 +62,6 @@ public class TableController {
         return responseHelper.buildResponse(restaurantTable, br, restaurantTableService::save);
     }
 
-    @PatchMapping(value = "/generate-token")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> generateNewToken(@RequestBody Integer id) {
-        return responseHelper.buildResponse(id, restaurantTableService::generateNewToken);
-    }
-
     @PatchMapping(value = "/change-zone")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> changeZone(@RequestParam Integer tableId, @RequestParam Integer zoneId) {
@@ -67,6 +71,38 @@ public class TableController {
             return responseHelper.createErrorResponse(e);
         }
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping(value = "/generate-token")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> generateNewToken(@RequestBody Integer id) {
+        return responseHelper.buildResponse(id, restaurantTableService::generateNewToken);
+    }
+
+    @PostMapping(value = "/generate-qr")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> generateQr(@RequestBody RestaurantTable restaurantTable) throws IOException {
+        File file;
+        try {
+            file = qrService.generate(restaurantTable);
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=qr-code.png");
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        Path path = Paths.get(file.getAbsolutePath());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
     }
 
     @DeleteMapping("/delete")

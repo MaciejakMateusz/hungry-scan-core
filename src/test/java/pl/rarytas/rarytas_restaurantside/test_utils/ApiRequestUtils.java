@@ -103,7 +103,7 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the fetching or parsing of the object.
      */
     public <T> T fetchObject(String endpointUrl, Class<T> itemType) throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(endpointUrl)
+        MvcResult result = mockMvc.perform(get(endpointUrl)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -140,6 +140,22 @@ public class ApiRequestUtils {
         String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
         return prepObjMapper().readValue(jsonResponse, itemType);
+    }
+
+    public <T> byte[] postAndFetchBinary(String endpointUrl, T object) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        MvcResult result = mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+                        .accept(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        return response.getContentAsByteArray();
     }
 
     public <R> R fetchObjectWithParam(String endpointUrl, Class<R> itemType) throws Exception {

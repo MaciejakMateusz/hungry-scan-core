@@ -20,6 +20,8 @@ import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
 import pl.rarytas.rarytas_restaurantside.repository.ZoneRepository;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -218,8 +220,8 @@ class TableControllerTest {
 
         mockMvc.perform(patch("/api/cms/tables/change-zone")
                         .contentType(MediaType.APPLICATION_JSON)
-                .param("tableId", "15")
-                .param("zoneId", "3"))
+                        .param("tableId", "15")
+                        .param("zoneId", "3"))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -231,6 +233,24 @@ class TableControllerTest {
         Zone oldZone = zoneRepository.findById(2).orElseThrow();
         assertEquals(2, oldZone.getRestaurantTables().size());
         assertFalse(oldZone.getRestaurantTables().contains(restaurantTable));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER"})
+    void shouldGenerateQr() throws Exception {
+        RestaurantTable restaurantTable = restaurantTableRepository.findById(15).orElseThrow();
+
+        byte[] qrCode = apiRequestUtils.postAndFetchBinary(
+                "/api/cms/tables/generate-qr", restaurantTable);
+        assertNotNull(qrCode);
+
+        File file = new File("qr_code.png");
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(qrCode);
+        }
+        assertTrue(file.exists());
+        assertTrue(file.delete());
+        assertFalse(file.exists());
     }
 
     private RestaurantTable createTable() {
