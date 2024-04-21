@@ -38,6 +38,8 @@ public class Zone {
     @Min(1)
     private Integer displayOrder;
 
+    private boolean isVisible = true;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
 

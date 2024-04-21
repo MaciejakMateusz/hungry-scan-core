@@ -31,7 +31,11 @@ public class RestaurantTable {
     @OneToMany(fetch = FetchType.EAGER)
     private Set<User> users;
 
+    private Integer zoneId;
+
     private boolean isActive;
+
+    private boolean isVisible = true;
 
     private boolean billRequested;
 
