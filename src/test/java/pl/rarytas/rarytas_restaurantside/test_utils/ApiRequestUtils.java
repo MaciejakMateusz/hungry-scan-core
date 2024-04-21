@@ -142,6 +142,14 @@ public class ApiRequestUtils {
         return prepObjMapper().readValue(jsonResponse, itemType);
     }
 
+    /**
+     * Fetches a byte array from the specified endpoint URL based on posted object.
+     *
+     * @param endpointUrl The URL endpoint from which to fetch the object.
+     * @param object      The object to be posted.
+     * @return            The byte array
+     * @throws Exception If an error occurs during the fetching or parsing of the byte array.
+     */
     public <T> byte[] postAndFetchBinary(String endpointUrl, T object) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
