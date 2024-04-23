@@ -51,6 +51,15 @@ public class OrderSummary {
 
     private boolean paid;
 
+    private boolean isBillSplitRequested;
+
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
+
+    @PrePersist
+    public void prePersist() {
+        if(this.orders.size() == 1) {
+            this.initialOrderTime = this.orders.get(0).getOrderTime();
+        }
+    }
 }
