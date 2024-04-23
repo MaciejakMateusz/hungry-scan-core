@@ -1,8 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.controller.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -13,6 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Role;
@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AdminManagementControllerTest {
 
     @Autowired
@@ -43,13 +44,18 @@ class AdminManagementControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @Order(1)
+    @Sql("/data-h2.sql")
+    void init() {}
+
+    @Test
     @WithMockUser(roles = "ADMIN")
-    public void shouldGetAllUsers() throws Exception {
+    void shouldGetAllUsers() throws Exception {
         List<User> users =
                 apiRequestUtils.fetchAsList(
                         "/api/admin/users", User.class);
 
-        assertEquals(5, users.size());
+        assertEquals(8, users.size());
         assertEquals("mati", users.get(0).getUsername());
         assertEquals("kucharz@antek.pl", users.get(3).getEmail());
     }
@@ -63,7 +69,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void shouldGetWaiters() throws Exception {
+    void shouldGetWaiters() throws Exception {
         List<User> users =
                 apiRequestUtils.fetchAsList(
                         "/api/admin/users/waiters", User.class);
@@ -81,7 +87,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void shouldGetCooks() throws Exception {
+    void shouldGetCooks() throws Exception {
         List<User> users =
                 apiRequestUtils.fetchAsList(
                         "/api/admin/users/cooks", User.class);
@@ -99,7 +105,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void shouldGetManagers() throws Exception {
+    void shouldGetManagers() throws Exception {
         List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/managers", User.class);
 
@@ -116,7 +122,7 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void shouldGetAdmins() throws Exception {
+    void shouldGetAdmins() throws Exception {
         List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/admins", User.class);
 
@@ -180,7 +186,7 @@ class AdminManagementControllerTest {
         User user = createUser();
         apiRequestUtils.postAndExpect200("/api/admin/users/add", user);
 
-        User persistedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 6, User.class);
+        User persistedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 9, User.class);
         assertEquals("exampleUser", persistedUser.getUsername());
     }
 
