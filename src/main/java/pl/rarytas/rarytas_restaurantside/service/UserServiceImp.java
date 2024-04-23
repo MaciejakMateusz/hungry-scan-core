@@ -92,4 +92,9 @@ public class UserServiceImp implements UserService {
     public List<User> findAllByRole(String roleName) {
         return userRepository.findByRole(roleName);
     }
+
+    @Override
+    public List<User> findAllCustomers() {
+        return userRepository.findAllCustomers();
+    }
 }

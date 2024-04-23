@@ -14,7 +14,7 @@ VALUES (4, 'ROLE_COOK', 'Kucharz');
 INSERT IGNORE INTO role (id, name, displayed_name)
 VALUES (5, 'ROLE_CUSTOMER', 'Klient');
 INSERT IGNORE INTO role (id, name, displayed_name)
-VALUES (5, 'ROLE_CUSTOMER_READONLY', 'Klient (tylko odczyt)');
+VALUES (6, 'ROLE_CUSTOMER_READONLY', 'Klient (tylko odczyt)');
 
 INSERT IGNORE INTO users (created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number, surname)
 VALUES (NOW(), 'admin@example.com', 1,

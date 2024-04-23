@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import pl.rarytas.rarytas_restaurantside.listener.GeneralListener;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Slf4j
 @Getter
@@ -32,9 +30,6 @@ public class Zone {
     @NotBlank
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    private Set<RestaurantTable> restaurantTables = new HashSet<>();
-
     @Min(1)
     private Integer displayOrder;
 
@@ -45,13 +40,5 @@ public class Zone {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
-
-    public void addRestaurantTable(RestaurantTable restaurantTable) {
-        this.restaurantTables.add(restaurantTable);
-    }
-
-    public void removeRestaurantTable(RestaurantTable restaurantTable) {
-        this.restaurantTables.remove(restaurantTable);
-    }
 
 }

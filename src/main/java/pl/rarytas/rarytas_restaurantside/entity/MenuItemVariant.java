@@ -35,8 +35,6 @@ public class MenuItemVariant {
     @Column(nullable = false)
     private BigDecimal price = Money.of(0.00);
 
-    private Integer menuItemId;
-
     private boolean isAvailable = true;
 
     private boolean isDefaultVariant;

@@ -39,7 +39,8 @@ public class MenuItem {
     @NotBlank
     private String name;
 
-    private Integer categoryId;
+    @ManyToOne
+    private Category category;
 
     @Column(length = 500)
     @SizeIfNotEmpty
@@ -99,4 +100,5 @@ public class MenuItem {
     public void addAdditionalIngredient(Ingredient additionalIngredient) {
         this.additionalIngredients.add(additionalIngredient);
     }
+
 }

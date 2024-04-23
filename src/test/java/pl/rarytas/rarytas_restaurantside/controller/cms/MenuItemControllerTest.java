@@ -6,7 +6,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -14,11 +13,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
-import pl.rarytas.rarytas_restaurantside.repository.CategoryRepository;
-import pl.rarytas.rarytas_restaurantside.repository.MenuItemRepository;
 import pl.rarytas.rarytas_restaurantside.test_utils.ApiRequestUtils;
 import pl.rarytas.rarytas_restaurantside.test_utils.MenuItemFactory;
 import pl.rarytas.rarytas_restaurantside.utility.Money;
@@ -28,8 +24,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -50,12 +44,6 @@ class MenuItemControllerTest {
     @Autowired
     private MenuItemFactory menuItemFactory;
 
-    @Autowired
-    private MenuItemRepository menuItemRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     @Order(1)
     @Sql("/data-h2.sql")
     @Test
@@ -74,8 +62,20 @@ class MenuItemControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"WAITER"})
+    void shouldGetAllMenuItemsByCategoryId() throws Exception {
+        List<MenuItem> menuItems =
+                apiRequestUtils.postAndGetList(
+                        "/api/cms/items/by-category", 3, MenuItem.class);
+
+        assertEquals(5, menuItems.size());
+        assertEquals("Sałatka grecka", menuItems.get(0).getName());
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToMenuItems() throws Exception {
-        mockMvc.perform(get("/api/cms/items")).andExpect(status().isUnauthorized());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/items");
+        apiRequestUtils.postAndExpectUnauthorized("/api/cms/items/by-category", 3);
     }
 
     @Test
@@ -123,6 +123,7 @@ class MenuItemControllerTest {
 
         MenuItem persistedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 31, MenuItem.class);
+
         assertEquals("Sample Item", persistedMenuItem.getName());
         assertEquals("Sample description", persistedMenuItem.getDescription());
         assertEquals(5, persistedMenuItem.getIngredients().size());
@@ -182,32 +183,6 @@ class MenuItemControllerTest {
         assertEquals("Updated Item", updatedMenuItem.getName());
         assertEquals("Updated description.", updatedMenuItem.getDescription());
         assertEquals("/public/assets/updated.png", updatedMenuItem.getImageName());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER"})
-    @Transactional
-    @Rollback
-    void shouldChangeCategory() throws Exception {
-        MenuItem menuItem = menuItemRepository.findById(15).orElseThrow();
-        Category category = categoryRepository.findByMenuItem(menuItem).orElseThrow();
-        assertEquals(3, category.getId());
-
-        mockMvc.perform(patch("/api/cms/items/change-category")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("itemId", "15")
-                        .param("categoryId", "5"))
-                .andExpect(status().isOk())
-                .andDo(print());
-
-        Category newCategory = categoryRepository.findByMenuItem(menuItem).orElseThrow();
-        assertEquals(5, newCategory.getId());
-        assertEquals(6, newCategory.getMenuItems().size());
-        assertTrue(newCategory.getMenuItems().contains(menuItem));
-
-        Category oldCategory = categoryRepository.findById(3).orElseThrow();
-        assertEquals(4, oldCategory.getMenuItems().size());
-        assertFalse(oldCategory.getMenuItems().contains(menuItem));
     }
 
     @Test

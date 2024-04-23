@@ -12,8 +12,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
+import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
 
 import java.util.List;
@@ -32,6 +34,9 @@ public class MenuItemServiceImpTest {
     @Autowired
     private MenuItemService menuItemService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @Test
     public void shouldReturnAll() {
         assertEquals(30, getMenuItems().size());
@@ -43,7 +48,7 @@ public class MenuItemServiceImpTest {
     public void shouldInsertNew() throws LocalizedException {
         MenuItem newMenuItem = createMenuItem(
                 "Burger",
-                2,
+                categoryService.findById(2),
                 "Z mięsem wegańskim",
                 "/public/assets/burger.png");
         menuItemService.save(newMenuItem);
@@ -53,10 +58,10 @@ public class MenuItemServiceImpTest {
     }
 
     @Test
-    public void shouldNotInsertNew() {
+    public void shouldNotInsertNew() throws LocalizedException {
         MenuItem menuItem = createMenuItem(
                 "Cheeseburger",
-                3,
+                categoryService.findById(3),
                 "Z mięsem i serem wegańskim.",
                 "/public/assets/cheeseburger.png");
 
@@ -106,12 +111,12 @@ public class MenuItemServiceImpTest {
     }
 
     private MenuItem createMenuItem(String name,
-                                    Integer categoryId,
+                                    Category category,
                                     String description,
                                     String imageName) {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(name);
-        menuItem.setCategoryId(categoryId);
+        menuItem.setCategory(category);
         menuItem.setDescription(description);
         menuItem.setImageName(imageName);
         return menuItem;

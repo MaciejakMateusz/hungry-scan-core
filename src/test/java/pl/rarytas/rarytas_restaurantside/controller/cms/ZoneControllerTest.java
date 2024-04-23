@@ -114,7 +114,6 @@ class ZoneControllerTest {
         Zone persistedZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 5, Zone.class);
         assertEquals("Test zone", persistedZone.getName());
-        assertEquals(4, persistedZone.getRestaurantTables().size());
     }
 
     @Test
@@ -179,14 +178,10 @@ class ZoneControllerTest {
         apiRequestUtils.deleteAndExpect("/api/cms/zones/delete", 4, status().isForbidden());
     }
 
-    private Zone createZone() throws LocalizedException {
+    private Zone createZone() {
         Zone zone = new Zone();
         zone.setName("Test zone");
         zone.setDisplayOrder(5);
-        zone.addRestaurantTable(restaurantTableService.findById(1));
-        zone.addRestaurantTable(restaurantTableService.findById(4));
-        zone.addRestaurantTable(restaurantTableService.findById(8));
-        zone.addRestaurantTable(restaurantTableService.findById(12));
         return zone;
     }
 

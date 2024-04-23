@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.dto.AuthRequestDTO;
 import pl.rarytas.rarytas_restaurantside.dto.JwtResponseDTO;
 import pl.rarytas.rarytas_restaurantside.entity.*;
+import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.*;
 
@@ -30,19 +31,21 @@ public class UserController {
     private final UserService userService;
     private final RoleService roleService;
     private final JwtService jwtService;
+    private final ExceptionHelper exceptionHelper;
 
     public UserController(AuthenticationManager authenticationManager,
                           RestaurantTableService restaurantTableService,
                           SettingsService settingsService,
                           UserService userService,
                           RoleService roleService,
-                          JwtService jwtService) {
+                          JwtService jwtService, ExceptionHelper exceptionHelper) {
         this.authenticationManager = authenticationManager;
         this.restaurantTableService = restaurantTableService;
         this.settingsService = settingsService;
         this.userService = userService;
         this.roleService = roleService;
         this.jwtService = jwtService;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @PostMapping("/login")
@@ -63,18 +66,20 @@ public class UserController {
     @GetMapping("/scan/{token}")
     public JwtResponseDTO scanQR(@PathVariable("token") String token) throws AccessDeniedException, LocalizedException {
         Settings settings = settingsService.getSettings();
-        RestaurantTable restaurantTable = getRestaurantTable(token);
-        if (restaurantTable.isActive()) {
+        RestaurantTable table = getRestaurantTable(token);
+        if (table.isActive()) {
             String randomUUID = UUID.randomUUID().toString();
             String accessToken = jwtService.generateToken(randomUUID.substring(1, 13),
                     settings.getEmployeeSessionTime());
-            persistTableAndUser(new JwtToken(accessToken), randomUUID, restaurantTable);
+            persistTableAndUser(new JwtToken(accessToken), randomUUID, table);
             return JwtResponseDTO
                     .builder()
                     .accessToken(accessToken)
                     .build();
         } else {
-            throw new LocalizedException("Table not activated");
+            throw new LocalizedException(exceptionHelper.getLocalizedMessage(
+                    "error.restaurantTableService.tableNotActive",
+                    table.getId()));
         }
     }
 

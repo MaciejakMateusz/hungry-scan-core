@@ -206,37 +206,6 @@ VALUES ('Makaron z pesto bazyliowym', 6,
         'Makaron spaghetti z pysznym pesto bazyliowym, parmezanem i prażonymi orzechami.', null, null, false, false,
         true, 23.00);
 
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 1);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 2);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 3);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 4);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (1, 5);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 6);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 7);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 8);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 9);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (2, 10);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 11);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 12);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 13);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 14);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (3, 15);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 16);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 17);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 18);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 19);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (4, 20);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 21);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 22);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 23);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 24);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (5, 25);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 26);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 27);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 28);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 29);
-INSERT INTO categories_menu_items(category_id, menu_items_id) VALUES (6, 30);
-
 INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
 VALUES (NOW(), true, true, 'Z szpinakiem', '20.00', null);
 INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
@@ -325,67 +294,85 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO zones(name, created, updated, display_order, is_visible) VALUES ('Sekcja 1', NOW(), null, 1, true);
-INSERT INTO zones(name, created, updated, display_order, is_visible) VALUES ('Sekcja 2', NOW(), null, 2, true);
-INSERT INTO zones(name, created, updated, display_order, is_visible) VALUES ('Piętro II', NOW(), null, 4, true);
-INSERT INTO zones(name, created, updated, display_order, is_visible) VALUES ('Loża VIP', NOW(), null, 3, true);
+INSERT INTO zones(name, created, updated, display_order, is_visible)
+VALUES ('Sekcja 1', NOW(), null, 1, true);
+INSERT INTO zones(name, created, updated, display_order, is_visible)
+VALUES ('Sekcja 2', NOW(), null, 2, true);
+INSERT INTO zones(name, created, updated, display_order, is_visible)
+VALUES ('Piętro II', NOW(), null, 4, true);
+INSERT INTO zones(name, created, updated, display_order, is_visible)
+VALUES ('Loża VIP', NOW(), null, 3, true);
 
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 4, 1, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (true, '79d8684f-333e-4275-a317-fa06d46fa6b6', false, false, 4, 2, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27', false, false, 4, 3, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '5afb9629-990a-4934-87f2-793b1aa2f35e', false, false, 4, 4, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (true, '58d77e24-6b8c-41a9-b24c-a67602deacdd', false, false, 4, 5, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '59ebc00c-b580-4dff-9788-2df90b1d4bba', false, false, 4, 6, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, 'ef303854-6faa-4615-8d47-6f3686086586', false, false, 4, 7, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '97cba027-ae47-4c42-8828-f4b3b3506d0c', false, false, 4, 8, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2', false, false, 4, 9, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff', false, false, 4, 10, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301', false, false, 4, 11, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (true, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71', false, false, 4, 12, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '6696c583-a312-4b24-9716-430826ad1e96', false, false, 4, 13, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, 'a65896cb-805d-4d7b-849b-1d53e78f3191', false, false, 4, 14, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '65b6bb94-da99-4ced-8a94-5860fe95e708', false, false, 4, 15, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '2fd07320-a841-48ad-9f3f-35b307014b2a', false, false, 4, 16, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '3740c35f-5759-4eb8-ab00-cb3807707235', false, false, 4, 17, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf', false, false, 4, 18, true);
-INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible)
-VALUES (true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19, true);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 4, 1, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (true, '79d8684f-333e-4275-a317-fa06d46fa6b6', false, false, 4, 2, true, 2, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '0ce8beb3-6fb1-42f1-9c95-05cf9fb88d27', false, false, 4, 3, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '5afb9629-990a-4934-87f2-793b1aa2f35e', false, false, 4, 4, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (true, '58d77e24-6b8c-41a9-b24c-a67602deacdd', false, false, 4, 5, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '59ebc00c-b580-4dff-9788-2df90b1d4bba', false, false, 4, 6, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, 'ef303854-6faa-4615-8d47-6f3686086586', false, false, 4, 7, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '97cba027-ae47-4c42-8828-f4b3b3506d0c', false, false, 4, 8, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, 'fe2cce7c-7c4c-4076-9eb4-3e91b440fec2', false, false, 4, 9, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '88ca9c82-e630-40f2-9bf9-47f7d14f6bff', false, false, 4, 10, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, 'c88a6029-4f29-4ee1-8d8f-f31f7a554301', false, false, 4, 11, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (true, 'd565c73a-8d87-4a79-9e3f-7b6a02520e71', false, false, 4, 12, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '6696c583-a312-4b24-9716-430826ad1e96', false, false, 4, 13, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, 'a65896cb-805d-4d7b-849b-1d53e78f3191', false, false, 4, 14, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '65b6bb94-da99-4ced-8a94-5860fe95e708', false, false, 4, 15, true, 2, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '2fd07320-a841-48ad-9f3f-35b307014b2a', false, false, 4, 16, true, 2, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '3740c35f-5759-4eb8-ab00-cb3807707235', false, false, 4, 17, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (false, '480407f1-13bd-45a7-bad7-d0e2b76e5ebf', false, false, 4, 18, true, null, false);
+INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
+                               zone_id, has_qr_code)
+VALUES (true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19, true, null, false);
 
-INSERT INTO zones_restaurant_tables (zone_id, restaurant_tables_id)
-VALUES (2, 2);
-INSERT INTO zones_restaurant_tables (zone_id, restaurant_tables_id)
-VALUES (2, 15);
-INSERT INTO zones_restaurant_tables (zone_id, restaurant_tables_id)
-VALUES (2, 16);
-
-INSERT INTO role (id, name, displayed_name)
-VALUES (1, 'ROLE_WAITER', 'Kelner');
-INSERT INTO role (id, name, displayed_name)
-VALUES (2, 'ROLE_ADMIN', 'Administrator');
-INSERT INTO role (id, name, displayed_name)
-VALUES (3, 'ROLE_MANAGER', 'Menadżer');
-INSERT INTO role (id, name, displayed_name)
-VALUES (4, 'ROLE_COOK', 'Kucharz');
-INSERT INTO role (id, name, displayed_name)
-VALUES (5, 'ROLE_CUSTOMER', 'Klient');
+INSERT INTO role (name, displayed_name)
+VALUES ('ROLE_WAITER', 'Kelner');
+INSERT INTO role (name, displayed_name)
+VALUES ('ROLE_ADMIN', 'Administrator');
+INSERT INTO role (name, displayed_name)
+VALUES ('ROLE_MANAGER', 'Menadżer');
+INSERT INTO role (name, displayed_name)
+VALUES ('ROLE_COOK', 'Kucharz');
+INSERT INTO role (name, displayed_name)
+VALUES ('ROLE_CUSTOMER', 'Klient');
+INSERT INTO role (name, displayed_name)
+VALUES ('ROLE_CUSTOMER_READONLY', 'Klient (tylko odczyt)');
 
 INSERT INTO history_ordered_items (id, quantity, menu_item_id, is_ready_to_serve)
 VALUES (222, 2, 3, false);
@@ -476,6 +463,16 @@ INSERT INTO settings (id, booking_duration, opening_time, closing_time, language
                       employee_session_time, is_order_comment_allowed)
 VALUES (1, 3, '07:00:00', '23:00:00', 1, 120, 3, 20, false);
 
+INSERT INTO jwt_tokens (token, created)
+VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZjNhYmY4LTliNmEiLCJpYXQiOjE3MTM4MTAzNTUsImV4cCI6MTcxMzg4MjM1NX0.EhIv7CDkpXcfXFHeihyju6bdUS2Te41a-m3GaxRWKHM',
+        '2024-04-23 12:50:41.531670');
+INSERT INTO jwt_tokens (token, created)
+VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyYzczYmZjLTE2ZmMiLCJpYXQiOjE3MTM4MTA5NDcsImV4cCI6MTcxMzg4Mjk0N30.NExb3606nYuZgxQa4-jOrlk2PM4CoKj9pyz25XtZhl0',
+        '2024-04-23 12:50:41.531670');
+INSERT INTO jwt_tokens (token, created)
+VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwYzllNjgzLTg1NzYiLCJpYXQiOjE3MTM4ODA5MjMsImV4cCI6MTcxMzk1MjkyM30.M28dOa0W5FApG8p2sgfUhLHylHO4hM5bAgOOgF2k5oU',
+        NOW());
+
 INSERT INTO users (created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number,
                    surname)
 VALUES ('2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
@@ -502,6 +499,18 @@ INSERT INTO users (created, email, enabled, password, updated, username, email_t
 VALUES ('2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
         '$2a$10$tykyevzP4v1WV/FyuYWNOO6wspbmAHnzI.deEAZQU6SA8NSxod3Vy', null, 'owner', null, null, 'Właściciel', '',
         'Biznesmen');
+INSERT INTO users (created, email, email_token, enabled, name, password, phone_number, surname, updated, username,
+                   jwt_token_id)
+VALUES ('2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', null, 1, null, '$2a$10$fb4q1jBqnMLDkUBi2YXQ4eHZ0M17bP5gxzwU84UwCkEUbyekGRDlC',
+        null, null, null, 'ff3abf8-9b6a', 1);
+INSERT INTO users (created, email, email_token, enabled, name, password, phone_number, surname, updated, username,
+                   jwt_token_id)
+VALUES ('2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', null, 1, null, '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.',
+        null, null, null, '2c73bfc-16fc', 2);
+INSERT INTO users (created, email, email_token, enabled, name, password, phone_number, surname, updated, username,
+                   jwt_token_id)
+VALUES (NOW(), '0c9e683-8576@temp.it', null, 1, null, '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW',
+        null, null, null, '0c9e683-8576', 3);
 
 INSERT INTO user_role (user_id, role_id)
 VALUES (1, 1);
@@ -517,3 +526,9 @@ INSERT INTO user_role (user_id, role_id)
 VALUES (5, 3);
 INSERT INTO user_role (user_id, role_id)
 VALUES (4, 4);
+INSERT INTO user_role (user_id, role_id)
+VALUES (6, 5);
+INSERT INTO user_role (user_id, role_id)
+VALUES (7, 6);
+INSERT INTO user_role (user_id, role_id)
+VALUES (8, 5);

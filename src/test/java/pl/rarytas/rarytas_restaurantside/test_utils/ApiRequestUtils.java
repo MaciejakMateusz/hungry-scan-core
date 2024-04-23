@@ -64,6 +64,25 @@ public class ApiRequestUtils {
                 objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
     }
 
+    public <T, R> List<T> postAndGetList(String endpointUrl, R object, Class<T> itemType) throws Exception {
+        ObjectMapper objectMapper = prepObjMapper();
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        MvcResult result = mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        return objectMapper.readValue(jsonResponse,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
+    }
+
     /**
      * Fetches a Page<T> collection from the specified endpoint.
      *

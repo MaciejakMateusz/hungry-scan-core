@@ -12,8 +12,6 @@ import pl.rarytas.rarytas_restaurantside.annotation.SizeIfNotEmpty;
 import pl.rarytas.rarytas_restaurantside.listener.GeneralListener;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -36,9 +34,6 @@ public class Category {
     @Column(length = 300)
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<MenuItem> menuItems = new HashSet<>();
-
     private boolean isAvailable = true;
 
     @Min(1)
@@ -49,14 +44,6 @@ public class Category {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
-
-    public void addMenuItem(MenuItem menuItem) {
-        this.menuItems.add(menuItem);
-    }
-
-    public void removeMenuItem(MenuItem menuItem) {
-        this.menuItems.remove(menuItem);
-    }
 
     @Override
     public String toString() {

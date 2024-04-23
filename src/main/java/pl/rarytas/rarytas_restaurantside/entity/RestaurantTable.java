@@ -31,7 +31,10 @@ public class RestaurantTable {
     @OneToMany(fetch = FetchType.EAGER)
     private Set<User> users;
 
-    private Integer zoneId;
+    @ManyToOne
+    private Zone zone;
+
+    private boolean hasQrCode = false;
 
     private boolean isActive;
 

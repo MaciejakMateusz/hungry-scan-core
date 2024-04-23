@@ -11,7 +11,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.rarytas_restaurantside.controller.ResponseHelper;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
-import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.QRService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 
@@ -60,17 +59,6 @@ public class TableController {
     public ResponseEntity<?> add(@RequestBody @Valid RestaurantTable restaurantTable,
                                  BindingResult br) {
         return responseHelper.buildResponse(restaurantTable, br, restaurantTableService::save);
-    }
-
-    @PatchMapping(value = "/change-zone")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> changeZone(@RequestParam Integer tableId, @RequestParam Integer zoneId) {
-        try {
-            restaurantTableService.changeZone(tableId, zoneId);
-        } catch (LocalizedException e) {
-            return responseHelper.createErrorResponse(e);
-        }
-        return ResponseEntity.ok().build();
     }
 
     @PatchMapping(value = "/generate-token")

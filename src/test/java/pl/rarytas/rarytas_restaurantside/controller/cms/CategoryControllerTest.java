@@ -53,7 +53,6 @@ class CategoryControllerTest {
 
         assertEquals(8, categories.size());
         assertEquals("Przystawki", categories.get(0).getName());
-        assertEquals(5, categories.get(3).getMenuItems().size());
         assertEquals("Napoje", categories.get(7).getName());
     }
 

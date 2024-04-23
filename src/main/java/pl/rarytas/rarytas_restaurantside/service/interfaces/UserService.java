@@ -32,4 +32,6 @@ public interface UserService {
     String getErrorParam(User user) throws LocalizedException;
 
     List<User> findAllByRole(String roleName);
+
+    List<User> findAllCustomers();
 }

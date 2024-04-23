@@ -5,14 +5,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import pl.rarytas.rarytas_restaurantside.entity.OrderSummary;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
-import pl.rarytas.rarytas_restaurantside.entity.Zone;
 import pl.rarytas.rarytas_restaurantside.enums.PaymentMethod;
 import pl.rarytas.rarytas_restaurantside.exception.ExceptionHelper;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.repository.OrderSummaryRepository;
 import pl.rarytas.rarytas_restaurantside.repository.RestaurantTableRepository;
 import pl.rarytas.rarytas_restaurantside.repository.UserRepository;
-import pl.rarytas.rarytas_restaurantside.repository.ZoneRepository;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.RestaurantTableService;
 import pl.rarytas.rarytas_restaurantside.utility.Money;
 
@@ -26,19 +24,17 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
 
     private final RestaurantTableRepository restaurantTableRepository;
     private final UserRepository userRepository;
-    private final ZoneRepository zoneRepository;
     protected final OrderSummaryRepository orderSummaryRepository;
     protected final ExceptionHelper exceptionHelper;
     protected final SimpMessagingTemplate messagingTemplate;
 
     public RestaurantTableServiceImp(RestaurantTableRepository restaurantTableRepository,
-                                     UserRepository userRepository, ZoneRepository zoneRepository,
+                                     UserRepository userRepository,
                                      OrderSummaryRepository orderSummaryRepository,
                                      ExceptionHelper exceptionHelper,
                                      SimpMessagingTemplate messagingTemplate) {
         this.restaurantTableRepository = restaurantTableRepository;
         this.userRepository = userRepository;
-        this.zoneRepository = zoneRepository;
         this.orderSummaryRepository = orderSummaryRepository;
         this.exceptionHelper = exceptionHelper;
         this.messagingTemplate = messagingTemplate;
@@ -97,17 +93,6 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
-    public void changeZone(Integer tableId, Integer zoneId) throws LocalizedException {
-        RestaurantTable table = findById(tableId);
-        Zone zone = getZoneByRestaurantTable(table);
-        zone.removeRestaurantTable(table);
-        zoneRepository.save(zone);
-        Zone newZone = getZoneById(zoneId);
-        newZone.addRestaurantTable(table);
-        zoneRepository.save(newZone);
-    }
-
-    @Override
     public void toggleActivation(Integer id) throws LocalizedException {
         RestaurantTable table = findById(id);
         if (isToggleValid(table)) {
@@ -144,18 +129,6 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         restaurantTable.setBillRequested(true);
         save(restaurantTable);
         messagingTemplate.convertAndSend("/topic/tables", findAll());
-    }
-
-    private Zone getZoneByRestaurantTable(RestaurantTable table) throws LocalizedException {
-        return zoneRepository.findByRestaurantTable(table)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.restaurantTableService.zoneNotFound", table.getId()));
-    }
-
-    private Zone getZoneById(Integer id) throws LocalizedException {
-        return zoneRepository.findById(id)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.zoneService.zoneNotFound", id));
     }
 
     private void notifyRelatedOrderSummary(Integer tableNumber, PaymentMethod paymentMethod) throws LocalizedException {

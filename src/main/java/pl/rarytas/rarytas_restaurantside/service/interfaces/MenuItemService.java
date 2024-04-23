@@ -12,7 +12,7 @@ public interface MenuItemService {
 
     MenuItem findById(Integer id) throws LocalizedException;
 
-    void changeCategory(Integer itemId, Integer categoryId) throws LocalizedException;
+    List<MenuItem> findAllByCategoryId(Integer id);
 
     void delete(Integer id) throws LocalizedException;
 }
