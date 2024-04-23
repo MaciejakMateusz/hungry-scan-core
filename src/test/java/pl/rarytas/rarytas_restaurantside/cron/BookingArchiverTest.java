@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.history.HistoryBooking;
@@ -45,6 +46,11 @@ class BookingArchiverTest {
 
     @Test
     @Order(1)
+    @Sql("/data-h2.sql")
+    void init() {}
+
+    @Test
+    @Order(2)
     void shouldFindArchive() {
         Set<Booking> expiredBookings = bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(EXPIRATION_TIME));
         assertFalse(expiredBookings.isEmpty());
@@ -53,7 +59,7 @@ class BookingArchiverTest {
     @Test
     @Transactional
     @Rollback
-    @Order(2)
+    @Order(3)
     void shouldCheckAndArchive() {
         Set<Booking> expiredBookings =
                 bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(EXPIRATION_TIME));
