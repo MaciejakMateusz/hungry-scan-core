@@ -163,7 +163,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
 
     private OrderSummary getSummaryForTable(Integer id) {
         return orderSummaryRepository.findFirstByRestaurantTableId(id)
-                .orElse(null);
+                .orElse(new OrderSummary());
     }
 
     private void validateTableAction(RestaurantTable rt) throws LocalizedException {

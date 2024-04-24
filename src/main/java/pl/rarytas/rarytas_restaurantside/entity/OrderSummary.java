@@ -12,6 +12,7 @@ import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -41,7 +42,7 @@ public class OrderSummary {
     private LocalDateTime initialOrderTime;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
 
     @DecimalMin(value = "0.00")
     private BigDecimal tipAmount = Money.of(0.00);
