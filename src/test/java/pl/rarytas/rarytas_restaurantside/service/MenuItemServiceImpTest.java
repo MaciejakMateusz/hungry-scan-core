@@ -1,8 +1,7 @@
 package pl.rarytas.rarytas_restaurantside.service;
 
 import jakarta.validation.ConstraintViolationException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -11,17 +10,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Category;
 import pl.rarytas.rarytas_restaurantside.entity.MenuItem;
 import pl.rarytas.rarytas_restaurantside.exception.LocalizedException;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.CategoryService;
 import pl.rarytas.rarytas_restaurantside.service.interfaces.MenuItemService;
+import pl.rarytas.rarytas_restaurantside.utility.Money;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MenuItemServiceImpTest {
 
     @Autowired
@@ -38,8 +39,41 @@ public class MenuItemServiceImpTest {
     private CategoryService categoryService;
 
     @Test
-    public void shouldReturnAll() {
-        assertEquals(30, getMenuItems().size());
+    @Order(1)
+    @Sql("/data-h2.sql")
+    void init() {
+    }
+
+    @Test
+    public void shouldFindAll() {
+        List<MenuItem> menuItems = menuItemService.findAll();
+        assertEquals(30, menuItems.size());
+        assertEquals("Makaron z pesto bazyliowym", menuItems.get(29).getName());
+    }
+
+    @Test
+    public void shouldFindAllByCategoryId() {
+        List<MenuItem> menuItems = menuItemService.findAllByCategoryId(3);
+        assertEquals(5, menuItems.size());
+        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami", menuItems.get(2).getName());
+    }
+
+    @Test
+    public void shouldNotFindAllByCategoryId() {
+        List<MenuItem> menuItems = menuItemService.findAllByCategoryId(666);
+        assertTrue(menuItems.isEmpty());
+    }
+
+    @Test
+    public void shouldFindById() throws LocalizedException {
+        MenuItem menuItem = menuItemService.findById(12);
+        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItem.getName());
+    }
+
+    @Test
+    public void shouldNotFindById() {
+        LocalizedException localizedException = assertThrows(LocalizedException.class, () -> menuItemService.findById(666));
+        assertEquals("Danie z podanym ID = 666 nie istnieje.", localizedException.getLocalizedMessage());
     }
 
     @Test
@@ -58,7 +92,7 @@ public class MenuItemServiceImpTest {
     }
 
     @Test
-    public void shouldNotInsertNew() throws LocalizedException {
+    public void shouldNotInsertWithIncorrectName() throws LocalizedException {
         MenuItem menuItem = createMenuItem(
                 "Cheeseburger",
                 categoryService.findById(3),
@@ -76,18 +110,56 @@ public class MenuItemServiceImpTest {
 
         menuItem.setDescription(null);
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
+
+        menuItem.setDescription(null);
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
+    }
+
+    @Test
+    public void shouldNotInsertWithIncorrectDescription() throws LocalizedException {
+        MenuItem menuItem = createMenuItem(
+                "Cheeseburger",
+                categoryService.findById(3),
+                "Z mięsem i serem wegańskim.",
+                "/public/assets/cheeseburger.png");
+
+        menuItem.setDescription("");
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
+
+        menuItem.setDescription(null);
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
+    }
+
+    @Test
+    public void shouldNotInsertWithIncorrectPrice() throws LocalizedException {
+        MenuItem menuItem = createMenuItem(
+                "Cheeseburger",
+                categoryService.findById(3),
+                "Z mięsem i serem wegańskim.",
+                "/public/assets/cheeseburger.png");
+
+        menuItem.setPrice(Money.of(0.00));
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
+
+        menuItem.setPrice(null);
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
     }
 
     @Test
     @Transactional
     @Rollback
     public void shouldUpdate() throws LocalizedException {
-        MenuItem existingMenuItem = menuItemService.findById(33);
+        MenuItem existingMenuItem = menuItemService.findById(23);
+        assertEquals("Pizza Capricciosa", existingMenuItem.getName());
+
         existingMenuItem.setName("Burger wege");
+        existingMenuItem.setPrice(Money.of(44.12));
         existingMenuItem.setImageName("/public/assets/wege-burger.png");
         menuItemService.save(existingMenuItem);
-        MenuItem updatedMenuItem = menuItemService.findById(33);
+
+        MenuItem updatedMenuItem = menuItemService.findById(23);
         assertEquals("Burger wege", updatedMenuItem.getName());
+        assertEquals(Money.of(44.12), updatedMenuItem.getPrice());
         assertEquals("/public/assets/wege-burger.png", updatedMenuItem.getImageName());
     }
 
@@ -95,19 +167,10 @@ public class MenuItemServiceImpTest {
     @Transactional
     @Rollback
     public void shouldDelete() throws LocalizedException {
-        MenuItem menuItem = menuItemService.findById(33);
-        assertEquals("Kanapki z nutellą i bananem", menuItem.getName());
-        menuItemService.delete(33);
-        assertThrows(LocalizedException.class, () -> menuItemService.findById(41));
-    }
-
-    @Test
-    public void shouldNotFindById() {
-        assertThrows(LocalizedException.class, () -> menuItemService.findById(321));
-    }
-
-    private List<MenuItem> getMenuItems() {
-        return menuItemService.findAll();
+        MenuItem menuItem = menuItemService.findById(23);
+        assertEquals("Pizza Capricciosa", menuItem.getName());
+        menuItemService.delete(23);
+        assertThrows(LocalizedException.class, () -> menuItemService.findById(23));
     }
 
     private MenuItem createMenuItem(String name,
@@ -118,6 +181,7 @@ public class MenuItemServiceImpTest {
         menuItem.setName(name);
         menuItem.setCategory(category);
         menuItem.setDescription(description);
+        menuItem.setPrice(Money.of(42.50));
         menuItem.setImageName(imageName);
         return menuItem;
     }

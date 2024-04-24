@@ -24,13 +24,13 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public void save(MenuItem menuItem) {
-        menuItemRepository.save(menuItem);
+    public List<MenuItem> findAll() {
+        return menuItemRepository.findAll();
     }
 
     @Override
-    public List<MenuItem> findAll() {
-        return menuItemRepository.findAll();
+    public List<MenuItem> findAllByCategoryId(Integer id) {
+        return menuItemRepository.findAllByCategoryId(id);
     }
 
     @Override
@@ -41,8 +41,8 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public List<MenuItem> findAllByCategoryId(Integer id) {
-        return menuItemRepository.findAllByCategoryId(id);
+    public void save(MenuItem menuItem) {
+        menuItemRepository.save(menuItem);
     }
 
     @Override
