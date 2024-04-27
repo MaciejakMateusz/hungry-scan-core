@@ -80,13 +80,15 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
 
     @Override
     public void delete(Integer id) throws LocalizedException {
-        RestaurantTable restaurantTable = findById(id);
-        restaurantTableRepository.delete(restaurantTable);
+        RestaurantTable existingTable = findById(id);
+        assertTableNotActivatedElseThrow(existingTable);
+        restaurantTableRepository.delete(existingTable);
     }
 
     @Override
     public void generateNewToken(Integer id) throws LocalizedException {
         RestaurantTable existingTable = findById(id);
+        assertTableNotActivatedElseThrow(existingTable);
         String token = String.valueOf(UUID.randomUUID());
         existingTable.setToken(token);
         save(existingTable);
@@ -178,15 +180,21 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         }
     }
 
+    private void assertTableNotActivatedElseThrow(RestaurantTable rt) throws LocalizedException {
+        if (rt.isActive()) {
+            exceptionHelper.throwLocalizedMessage("error.restaurantTableService.tableIsActive", rt.getId());
+        }
+    }
+
     private void assertWaiterNotCalledElseThrow(RestaurantTable rt) throws LocalizedException {
         if (rt.isWaiterCalled()) {
-            throwAlreadyRequested(rt);
+            exceptionHelper.throwLocalizedMessage("error.restaurantTableService.alreadyRequested");
         }
     }
 
     private void assertBillNotRequestedElseThrow(RestaurantTable rt) throws LocalizedException {
         if (rt.isBillRequested()) {
-            throwAlreadyRequested(rt);
+            exceptionHelper.throwLocalizedMessage("error.restaurantTableService.alreadyRequested");
         }
     }
 
@@ -195,10 +203,6 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         if (restaurantTableRepository.existsByNumber(tableNumber)) {
             exceptionHelper.throwLocalizedMessage("error.restaurantTableService.tableNumberExists", tableNumber);
         }
-    }
-
-    private void throwAlreadyRequested(RestaurantTable rt) throws LocalizedException {
-        exceptionHelper.throwLocalizedMessage("error.restaurantTableService.alreadyRequested", rt.getId());
     }
 
 }
