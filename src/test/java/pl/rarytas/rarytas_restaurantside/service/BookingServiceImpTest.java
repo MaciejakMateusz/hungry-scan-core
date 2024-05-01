@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BookingServiceImpTest {
 
@@ -46,7 +46,9 @@ class BookingServiceImpTest {
     @Test
     @Order(1)
     @Sql("/data-h2.sql")
-    void init() {}
+    void init() {
+        log.info("Initializing H2 database...");
+    }
 
     @Test
     @Transactional

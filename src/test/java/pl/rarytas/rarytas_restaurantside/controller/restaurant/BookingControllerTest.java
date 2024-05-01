@@ -1,5 +1,6 @@
 package pl.rarytas.rarytas_restaurantside.controller.restaurant;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -11,6 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import pl.rarytas.rarytas_restaurantside.entity.Booking;
 import pl.rarytas.rarytas_restaurantside.entity.RestaurantTable;
@@ -26,12 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BookingControllerTest {
 
@@ -41,9 +44,16 @@ class BookingControllerTest {
     @Autowired
     private RestaurantTableService restaurantTableService;
 
+    @Order(1)
+    @Sql("/data-h2.sql")
+    @Test
+    void init() {
+        log.info("Initializing H2 database...");
+    }
+
     @Test
     @WithMockUser(roles = "WAITER")
-    @Order(1)
+    @Order(2)
     public void shouldGetById() throws Exception {
         Booking booking =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/bookings/show", 1, Booking.class);
@@ -54,7 +64,7 @@ class BookingControllerTest {
     @WithMockUser(roles = "WAITER")
     @Transactional
     @Rollback
-    @Order(2)
+    @Order(3)
     public void shouldSaveNewBooking() throws Exception {
         Booking booking = createBooking(
                 LocalDate.now().plusDays(4),
@@ -80,7 +90,7 @@ class BookingControllerTest {
     @WithMockUser(roles = "WAITER")
     @Transactional
     @Rollback
-    @Order(3)
+    @Order(4)
     public void shouldSaveBookingForTwoTables() throws Exception {
         Booking booking = createBooking(
                 LocalDate.now().plusDays(5),
@@ -107,7 +117,7 @@ class BookingControllerTest {
     @WithMockUser(roles = "COOK")
     @Transactional
     @Rollback
-    @Order(4)
+    @Order(5)
     public void shouldDeleteBooking() throws Exception {
         Booking existingBooking =
                 apiRequestUtils.postObjectExpect200("/api/restaurant/bookings/show", 2L, Booking.class);
