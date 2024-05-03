@@ -33,7 +33,8 @@ build/
 .vscode/
 
 ### Docker ###
-/docker
+compose.yaml
+Dockerfile
 
 ### TODO helper ###
 src/main/java/pl/rarytas/rarytas_restaurantside/utility/ToDo.java
