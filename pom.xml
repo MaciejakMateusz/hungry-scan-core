@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>pl.rarytas</groupId>
-    <artifactId>HungryScanCore</artifactId>
+    <artifactId>hungry-scan-core</artifactId>
     <version>0.0.1</version>
     <packaging>war</packaging>
     <name>HungryScanCore</name>

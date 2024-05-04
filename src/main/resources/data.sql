@@ -16,9 +16,11 @@ VALUES (5, 'ROLE_CUSTOMER', 'Klient');
 INSERT IGNORE INTO role (id, name, displayed_name)
 VALUES (6, 'ROLE_CUSTOMER_READONLY', 'Klient (tylko odczyt)');
 
-INSERT IGNORE INTO users (created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number, surname)
-VALUES (NOW(), 'admin@example.com', 1,
+INSERT IGNORE INTO users (id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number, surname)
+VALUES (1, NOW(), 'admin@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin',null, null, '', '', '');
+
+INSERT IGNORE INTO user_role(user_id, role_id) VALUES (1, 2);
 
 INSERT IGNORE INTO allergens(id, description, icon_name, name)
 VALUES (1,

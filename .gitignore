@@ -37,4 +37,4 @@ compose.yaml
 Dockerfile
 
 ### TODO helper ###
-src/main/java/pl/rarytas/rarytas_restaurantside/utility/ToDo.java
+src/main/java/pl/rarytas/hungry_scan_core/utility/ToDo.java
