@@ -5,36 +5,43 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.rarytas.hungry_scan_core.entity.RestaurantTable;
 import pl.rarytas.hungry_scan_core.service.interfaces.QRService;
+import pl.rarytas.hungry_scan_core.service.interfaces.RestaurantTableService;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class QRServiceImp implements QRService {
 
-    private final Environment env;
 
-    public QRServiceImp(Environment env) {
-        this.env = env;
+    @Value("${QR_PATH}")
+    private String directory;
+
+    @Value("${server.port}")
+    private String port;
+
+    private final RestaurantTableService restaurantTableService;
+
+    public QRServiceImp(RestaurantTableService restaurantTableService) {
+        this.restaurantTableService = restaurantTableService;
     }
 
     @Override
-    public File generate(RestaurantTable table) throws Exception {
+    public void generate(RestaurantTable table) throws Exception {
         StringBuilder address = getEndpointAddress();
         address.append(table.getToken());
         String url = address.toString();
 
         String format = "png";
-
         String fileName = "QR code - " + "Table number " + table.getNumber() + ", Table ID " + table.getId();
 
         int width = 1000;
@@ -44,18 +51,17 @@ public class QRServiceImp implements QRService {
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 
         BitMatrix bitMatrix = new QRCodeWriter().encode(url, BarcodeFormat.QR_CODE, width, height, hints);
+        Files.createDirectories(Paths.get(directory));
+        Path qrFilePath = Paths.get(directory, fileName + "." + format);
+        MatrixToImageWriter.writeToPath(bitMatrix, format, qrFilePath);
 
-        Path tempFile = Files.createTempFile(fileName, "." + format);
-        File qrFile = tempFile.toFile();
-        MatrixToImageWriter.writeToPath(bitMatrix, format, qrFile.toPath());
+        table.setQrName(fileName + "." + format);
+        restaurantTableService.save(table);
 
         System.out.println("QR code for table " + table.getNumber() + " generated successfully.");
-
-        return qrFile;
     }
 
     private StringBuilder getEndpointAddress() {
-        String port = env.getProperty("server.port");
         StringBuilder sb = new StringBuilder();
         sb.append("https://").append(getServerIPAddress()).append(":").append(port).append("/api/scan/");
         return sb;

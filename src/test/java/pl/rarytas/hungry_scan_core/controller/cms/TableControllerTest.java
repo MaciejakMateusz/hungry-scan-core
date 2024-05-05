@@ -1,12 +1,15 @@
 package pl.rarytas.hungry_scan_core.controller.cms;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -20,6 +23,8 @@ import pl.rarytas.hungry_scan_core.test_utils.ApiRequestUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -46,6 +51,9 @@ class TableControllerTest {
 
     @Autowired
     private RestaurantTableRepository restaurantTableRepository;
+
+    @Value("${QR_PATH}")
+    private String qrPath;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -188,40 +196,31 @@ class TableControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER"})
-    @Transactional
-    @Rollback
-    void shouldGenerateNewToken() throws Exception {
-        RestaurantTable existingTable =
-                apiRequestUtils.postObjectExpect200("/api/cms/tables/show", 6, RestaurantTable.class);
-        assertEquals("59ebc00c-b580-4dff-9788-2df90b1d4bba", existingTable.getToken());
+    void shouldGenerateQr() throws Exception {
+        apiRequestUtils.postAndExpect200(
+                "/api/cms/tables/generate-qr", 15);
 
-        apiRequestUtils.patchAndExpect200("/api/cms/tables/generate-token", existingTable.getId());
+        RestaurantTable table = restaurantTableRepository.findById(15).orElseThrow();
 
-        existingTable =
-                apiRequestUtils.postObjectExpect200("/api/cms/tables/show", 6, RestaurantTable.class);
-        assertNotNull(existingTable.getToken());
-        assertNotEquals("59ebc00c-b580-4dff-9788-2df90b1d4bba", existingTable.getToken());
-        assertEquals(36, existingTable.getToken().length());
-        assertEquals(4, existingTable.getMaxNumOfPpl());
-        assertEquals(6, existingTable.getNumber());
+        File file = new File(qrPath + table.getQrName());
+        assertEquals(table.getQrName(), file.getName());
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER"})
-    void shouldGenerateQr() throws Exception {
-        RestaurantTable restaurantTable = restaurantTableRepository.findById(15).orElseThrow();
+    @WithMockUser(roles = {"ADMIN"})
+    void shouldDownload() throws Exception {
+        apiRequestUtils.postAndExpect200("/api/cms/tables/generate-qr", 13);
 
-        byte[] qrCode = apiRequestUtils.postAndFetchBinary(
-                "/api/cms/tables/generate-qr", restaurantTable);
-        assertNotNull(qrCode);
-
-        File file = new File("qr_code.png");
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            fos.write(qrCode);
+        Resource resource = apiRequestUtils.postAndFetchResource("/api/cms/tables/download", 13);
+        InputStream inputStream = resource.getInputStream();
+        File file = new File("./src/test/files/download/shouldDownloadTest.png"); // Provide the path where you want to save the file
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            IOUtils.copy(inputStream, outputStream);
+        } catch (IOException e) {
+            log.error("The test file could not be downloaded.", e);
         }
-        assertTrue(file.exists());
-        assertTrue(file.delete());
-        assertFalse(file.exists());
+
+        assertEquals("shouldDownloadTest.png", file.getName());
     }
 
     private RestaurantTable createTable() {

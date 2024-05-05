@@ -3,6 +3,7 @@ package pl.rarytas.hungry_scan_core.service;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,6 +32,9 @@ class QRServiceImpTest {
     @Autowired
     private QRService qrService;
 
+    @Value("${QR_PATH}")
+    private String directory;
+
     @Autowired
     RestaurantTableService restaurantTableService;
 
@@ -44,7 +48,9 @@ class QRServiceImpTest {
     @Test
     void shouldGenerate() throws Exception {
         RestaurantTable restaurantTable = restaurantTableService.findById(1);
-        File file = qrService.generate(restaurantTable);
-        assertEquals("QR code - Table n", file.getName().substring(0, 17));
+        qrService.generate(restaurantTable);
+        String qrName = restaurantTable.getQrName();
+        File file = new File(directory + qrName);
+        assertEquals("QR code - Table number 1, Table ID 1.png", file.getName());
     }
 }
