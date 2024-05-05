@@ -22,7 +22,7 @@ public interface RestaurantTableService {
 
     void delete(Integer id) throws LocalizedException;
 
-    void generateNewToken(Integer id) throws LocalizedException;
+    RestaurantTable generateNewToken(Integer id) throws LocalizedException;
 
     void toggleActivation(Integer id) throws LocalizedException;
 

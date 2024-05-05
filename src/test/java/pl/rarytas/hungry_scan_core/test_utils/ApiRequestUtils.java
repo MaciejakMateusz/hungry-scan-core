@@ -3,6 +3,8 @@ package pl.rarytas.hungry_scan_core.test_utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -162,27 +164,28 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Fetches a byte array from the specified endpoint URL based on posted object.
+     * Fetches a Resource from the specified endpoint URL based on posted object.
      *
-     * @param endpointUrl The URL endpoint from which to fetch the object.
+     * @param endpointUrl The URL endpoint from which to fetch the Resource.
      * @param object      The object to be posted.
-     * @return            The byte array
+     * @return            The Resource object.
      * @throws Exception If an error occurs during the fetching or parsing of the byte array.
      */
-    public <T> byte[] postAndFetchBinary(String endpointUrl, T object) throws Exception {
+    public <T> Resource postAndFetchResource(String endpointUrl, T object) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
         MvcResult result = mockMvc.perform(post(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest)
-                        .accept(MediaType.APPLICATION_OCTET_STREAM))
+                        .accept(MediaType.IMAGE_PNG_VALUE))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
 
         MockHttpServletResponse response = result.getResponse();
-        return response.getContentAsByteArray();
+        byte[] bytes = response.getContentAsByteArray();
+        return new ByteArrayResource(bytes);
     }
 
     public <R> R fetchObjectWithParam(String endpointUrl, Class<R> itemType) throws Exception {

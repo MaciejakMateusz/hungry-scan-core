@@ -34,6 +34,8 @@ public class RestaurantTable {
     @ManyToOne
     private Zone zone;
 
+    private String qrName;
+
     private boolean hasQrCode = false;
 
     private boolean isActive;

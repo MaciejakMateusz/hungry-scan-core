@@ -86,12 +86,13 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
-    public void generateNewToken(Integer id) throws LocalizedException {
+    public RestaurantTable generateNewToken(Integer id) throws LocalizedException {
         RestaurantTable existingTable = findById(id);
         assertTableNotActivatedElseThrow(existingTable);
         String token = String.valueOf(UUID.randomUUID());
         existingTable.setToken(token);
         save(existingTable);
+        return existingTable;
     }
 
     @Override
