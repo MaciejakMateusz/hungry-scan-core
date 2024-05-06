@@ -208,6 +208,32 @@ class TableControllerTest {
 
     @Test
     @WithMockUser(roles = {"ADMIN"})
+    void shouldNotGenerateQrForNonExistingTable() throws Exception {
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/cms/tables/generate-qr", 982, status().isBadRequest());
+        assertEquals("Stolik z ID = 982 nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER"})
+    void shouldNotGenerateQrWhenTableActivated() throws Exception {
+        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/toggle", 9);
+
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/cms/tables/generate-qr", 9, status().isBadRequest());
+        assertEquals("Stolik z ID = 9 jest jeszcze aktywny.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    void shouldNotAllowUnauthorizedAccessToGenerateQr() throws Exception {
+        apiRequestUtils.postAndExpect("/api/cms/tables/generate-qr", 12, status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"})
     void shouldDownload() throws Exception {
         apiRequestUtils.postAndExpect200("/api/cms/tables/generate-qr", 13);
 
@@ -221,6 +247,32 @@ class TableControllerTest {
         }
 
         assertEquals("shouldDownloadTest.png", file.getName());
+        assertTrue(file.delete());
+        assertFalse(file.exists());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER"})
+    void shouldNotDownloadForNonExistingTable() throws Exception {
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/cms/tables/download", 982, status().isBadRequest());
+        assertEquals("Stolik z ID = 982 nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"})
+    void shouldNotDownloadForNullQrName() throws Exception {
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/cms/tables/download", 4, status().isBadRequest());
+        assertEquals("Nie znaleziono pliku z podaną ścieżką: ./src/test/files/qr/null", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"WAITER"})
+    void shouldNotAllowUnauthorizedAccessToDownload() throws Exception {
+        apiRequestUtils.postAndExpect("/api/cms/tables/download", 12, status().isForbidden());
     }
 
     private RestaurantTable createTable() {

@@ -80,7 +80,8 @@ public class TableController {
         }
     }
 
-    @PostMapping(value = "/download", produces = MediaType.IMAGE_PNG_VALUE)
+    @PostMapping(value = "/download")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> downloadFile(@RequestBody Integer id) {
         try {
             RestaurantTable restaurantTable = restaurantTableService.findById(id);
