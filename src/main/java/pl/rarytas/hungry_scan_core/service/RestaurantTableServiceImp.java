@@ -183,7 +183,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
 
     private void assertTableNotActivatedElseThrow(RestaurantTable rt) throws LocalizedException {
         if (rt.isActive()) {
-            exceptionHelper.throwLocalizedMessage("error.restaurantTableService.tableIsActive", rt.getId());
+            exceptionHelper.throwLocalizedMessage("error.restaurantTableService.tableStillActive", rt.getId());
         }
     }
 

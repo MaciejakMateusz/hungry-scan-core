@@ -1,6 +1,7 @@
 package pl.rarytas.hungry_scan_core.service.interfaces;
 
 import pl.rarytas.hungry_scan_core.entity.Order;
+import pl.rarytas.hungry_scan_core.entity.OrderSummary;
 import pl.rarytas.hungry_scan_core.exception.LocalizedException;
 
 import java.util.List;
@@ -14,7 +15,9 @@ public interface OrderService {
 
     Order findById(Long id) throws LocalizedException;
 
-    void saveDineIn(Order order) throws LocalizedException;
+    OrderSummary findByTable(Integer id) throws LocalizedException;
+
+    OrderSummary saveDineIn(Order order) throws LocalizedException;
 
     void saveTakeAway(Order order) throws LocalizedException;
 

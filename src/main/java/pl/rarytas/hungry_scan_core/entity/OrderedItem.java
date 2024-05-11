@@ -37,7 +37,7 @@ public class OrderedItem implements Serializable {
     @JoinColumn(name = "menu_item_variant_id", referencedColumnName = "id")
     private MenuItemVariant menuItemVariant;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(name = "ordered_item_additional_ingredients",
             joinColumns = @JoinColumn(name = "ordered_item_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id"))

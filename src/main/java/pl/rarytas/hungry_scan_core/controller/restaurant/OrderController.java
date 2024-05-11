@@ -7,10 +7,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.rarytas.hungry_scan_core.controller.ResponseHelper;
 import pl.rarytas.hungry_scan_core.entity.Order;
+import pl.rarytas.hungry_scan_core.entity.OrderSummary;
+import pl.rarytas.hungry_scan_core.exception.LocalizedException;
 import pl.rarytas.hungry_scan_core.service.interfaces.OrderService;
 import pl.rarytas.hungry_scan_core.utility.Constants;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,24 +28,6 @@ public class OrderController {
         this.responseHelper = responseHelper;
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
-    @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        return ResponseEntity.ok(orderService.findAll());
-    }
-
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
-    @GetMapping("/take-away")
-    public ResponseEntity<List<Order>> getAllTakeAwayOrders() {
-        return ResponseEntity.ok(orderService.findAllTakeAway());
-    }
-
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
-    @GetMapping("/dine-in")
-    public ResponseEntity<List<Order>> getAllDineInOrders() {
-        return ResponseEntity.ok(orderService.findAllDineIn());
-    }
-
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> getById(@RequestBody Long id) {
@@ -52,21 +35,25 @@ public class OrderController {
     }
 
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
-    @PostMapping("/take-away")
-    public ResponseEntity<Map<String, Object>> saveTakeAwayOrder(@RequestBody Order order) {
-        return responseHelper.buildResponse(order, orderService::saveTakeAway);
+    @PostMapping("/show/table")
+    public ResponseEntity<?> getByTable(@RequestBody Integer tableId) {
+        try {
+            OrderSummary orderSummary = orderService.findByTable(tableId);
+            return ResponseEntity.ok(orderSummary);
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
-    @PostMapping("/dine-in")
-    public ResponseEntity<Map<String, Object>> saveDineInOrder(@RequestBody Order order) {
-        return responseHelper.buildResponse(order, orderService::saveDineIn);
-    }
-
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
-    @PostMapping("/finalize-take-away")
-    public ResponseEntity<Map<String, Object>> finalizeTakeAwayOrder(@RequestBody Long id) {
-        return responseHelper.getResponseEntity(id, orderService::finishTakeAway);
+    @PostMapping(value = "/dine-in")
+    public ResponseEntity<?> saveDineInOrder(@RequestBody Order order) {
+        try {
+            OrderSummary orderSummary = orderService.saveDineIn(order);
+            return ResponseEntity.ok(orderSummary);
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

@@ -11,7 +11,8 @@ import pl.rarytas.hungry_scan_core.listener.OrderSummaryListener;
 import pl.rarytas.hungry_scan_core.utility.Money;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,21 +28,22 @@ public class OrderSummary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @JoinColumn(name = "table_id", referencedColumnName = "id")
-    @ManyToOne
-    @NotNull
-    private RestaurantTable restaurantTable;
-
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     @NotNull
     private Restaurant restaurant;
 
-    @Column(length = 50, nullable = false)
-    @NotNull
-    private LocalDateTime initialOrderTime;
+    @JoinColumn(name = "table_id", referencedColumnName = "id")
+    @ManyToOne
+    private RestaurantTable restaurantTable;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Column(length = 50, nullable = false)
+    private LocalDate initialOrderDate;
+
+    @Column(length = 50, nullable = false)
+    private LocalTime initialOrderTime;
+
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Order> orders = new ArrayList<>();
 
     @DecimalMin(value = "0.00")
@@ -57,10 +59,8 @@ public class OrderSummary {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    @PrePersist
-    public void prePersist() {
-        if(this.orders.size() == 1) {
-            this.initialOrderTime = this.orders.get(0).getOrderTime();
-        }
+    public void addOrder(Order order) {
+        this.orders.add(order);
     }
+
 }

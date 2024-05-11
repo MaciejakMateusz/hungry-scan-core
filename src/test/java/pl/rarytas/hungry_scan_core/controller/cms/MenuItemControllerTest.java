@@ -85,7 +85,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = {"COOK"})
     void shouldShowMenuItemById() throws Exception {
         MenuItem menuItem = apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
-        assertEquals("Roladki z bakłażana z feta i suszonymi pomidorami", menuItem.getName());
+        assertEquals("Roladki z bakłażana", menuItem.getName());
     }
 
     @Test

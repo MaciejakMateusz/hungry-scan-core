@@ -28,7 +28,6 @@ public class Order {
 
     @JoinColumn(name = "table_id", referencedColumnName = "id")
     @ManyToOne
-    @NotNull
     private RestaurantTable restaurantTable;
 
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
@@ -37,10 +36,9 @@ public class Order {
     private Restaurant restaurant;
 
     @Column(length = 50, nullable = false)
-    @NotNull
     private LocalDateTime orderTime;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private List<OrderedItem> orderedItems;
 
     @DecimalMin(value = "0.00")
