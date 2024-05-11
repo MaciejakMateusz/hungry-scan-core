@@ -2,17 +2,34 @@ package pl.rarytas.hungry_scan_core.controller.restaurant;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import pl.rarytas.hungry_scan_core.entity.Order;
+import pl.rarytas.hungry_scan_core.entity.OrderSummary;
+import pl.rarytas.hungry_scan_core.exception.LocalizedException;
+import pl.rarytas.hungry_scan_core.test_utils.ApiRequestUtils;
+import pl.rarytas.hungry_scan_core.test_utils.OrderFactory;
+import pl.rarytas.hungry_scan_core.test_utils.OrderedItemFactory;
+import pl.rarytas.hungry_scan_core.utility.Money;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import java.util.ArrayList;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @SpringBootTest
@@ -24,288 +41,143 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderControllerTest {
 
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @Autowired
-//    private OrderProcessor orderProcessor;
-//
-//    @Autowired
-//    private ApiRequestUtils apiRequestUtils;
-//
-//    @org.junit.jupiter.api.Order(1)
-//    @Sql("/data-h2.sql")
-//    @Test
-//    void init() {
-//        log.info("Initializing H2 database...");
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "WAITER")
-//    @org.junit.jupiter.api.Order(2)
-//    public void shouldGetAllOrders() throws Exception {
-//        List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders", Order.class);
-//        assertFalse(orders.stream().anyMatch(Order::isResolved));
-//        assertEquals(5, orders.size());
-//    }
-//
-//    @Test
-//    public void shouldNotAllowUnauthorizedAccessToOrders() throws Exception {
-//        mockMvc.perform(get("/api/restaurant/orders"))
-//                .andExpect(status().isUnauthorized());
-//    }
-//
-////    @Test
-////    @WithMockUser(roles = "WAITER")
-////    @org.junit.jupiter.api.Order(2)
-////    public void shouldGetAllTakeAwayOrders() throws Exception {
-////        List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/take-away", Order.class);
-////        assertFalse(orders.stream().anyMatch(order -> !order.isIsForTakeAway()));
-////        assertEquals(1, orders.size());
-////    }
-//
-//    @Test
-//    public void shouldNotAllowUnauthorizedAccessToTakeAwayOrders() throws Exception {
-//        mockMvc.perform(get("/api/restaurant/orders/take-away"))
-//                .andExpect(status().isUnauthorized());
-//    }
-//
-////    @Test
-////    @WithMockUser(roles = "WAITER")
-////    @org.junit.jupiter.api.Order(3)
-////    public void shouldGetAllDineInOrders() throws Exception {
-////        List<Order> orders = apiRequestUtils.fetchAsList("/api/restaurant/orders/dine-in", Order.class);
-////        assertFalse(orders.stream().anyMatch(Order::isIsForTakeAway));
-////        assertEquals(4, orders.size());
-////    }
-//
-//    @Test
-//    public void shouldNotAllowUnauthorizedAccessToDineInOrders() throws Exception {
-//        mockMvc.perform(get("/api/restaurant/orders/dine-in"))
-//                .andExpect(status().isUnauthorized());
-//    }
-//
-////    @Test
-////    @WithMockUser(roles = "WAITER")
-////    @org.junit.jupiter.api.Order(4)
-////    public void shouldGetByTableNumber() throws Exception {
-////        Order order =
-////                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/table-number", 2, Order.class);
-////        assertEquals(PaymentMethod.CASH, order.getPaymentMethod());
-////    }
-//
-//    @Test
-//    public void shouldNotAllowUnauthorizedAccessToOrderByTableNumber() throws Exception {
-//        mockMvc.perform(post("/api/restaurant/orders/table-number")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("2"))
-//                .andExpect(status().isUnauthorized());
-//    }
-//
-////    @Test
-////    @WithMockUser(roles = "WAITER")
-////    @org.junit.jupiter.api.Order(5)
-////    public void shouldGetById() throws Exception {
-////        Order order =
-////                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2, Order.class);
-////        assertEquals(322, order.getOrderNumber());
-////    }
-//
-//    @Test
-//    public void shouldNotAllowUnauthorizedAccessToOrderById() throws Exception {
-//        mockMvc.perform(post("/api/restaurant/orders/show")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("2"))
-//                .andExpect(status().isUnauthorized());
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = {"WAITER"})
-//    @Transactional
-//    @Rollback
-//    @org.junit.jupiter.api.Order(6)
-//    public void shouldSaveNewDineInOrder() throws Exception {
-//        Order order = orderProcessor.createDineInOrder(15, List.of(4, 12, 15));
-//
-//        apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order);
-//
-//        Order persistedOrder =
-//                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 6, Order.class);
-//
-//        assertNotNull(persistedOrder);
-//        assertEquals(15, order.getRestaurantTable().getId());
-//        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = {"WAITER"})
-//    @Transactional
-//    @Rollback
-//    @org.junit.jupiter.api.Order(7)
-//    public void shouldNotSaveOrderForOccupiedTable() throws Exception {
-//        Order order = orderProcessor.createDineInOrder(12, List.of(5, 1, 22));
-//
-//        Map<?, ?> errors =
-//                apiRequestUtils.postAndReturnResponseBody(
-//                        "/api/restaurant/orders/dine-in", order, status().isBadRequest());
-//
-//        assertEquals(1, errors.size());
-//        assertEquals("Stolik posiada już zamówienie.", errors.get("exceptionMsg"));
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = {"WAITER"})
-//    @Transactional
-//    @Rollback
-//    @org.junit.jupiter.api.Order(8)
-//    public void shouldSaveNewTakeAwayOrder() throws Exception {
-//        Order order = orderProcessor.createTakeAwayOrder(List.of(3, 10, 22, 33));
-//
-//        apiRequestUtils.postAndExpect200("/api/restaurant/orders/take-away", order);
-//
-//        Order persistedOrder =
-//                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 7, Order.class);
-//
-//        assertNotNull(persistedOrder);
-//        assertEquals(order.getRestaurantTable().getId(), persistedOrder.getRestaurantTable().getId());
-//        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = {"WAITER"})
-//    @Transactional
-//    @Rollback
-//    @org.junit.jupiter.api.Order(9)
-//    public void shouldSaveNextDineInOrder() throws Exception {
-//        Order order = orderProcessor.createDineInOrder(10, List.of(7, 9, 22, 31));
-//
-//        apiRequestUtils.postAndExpect200("/api/restaurant/orders/dine-in", order);
-//
-//        Order persistedOrder =
-//                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 8, Order.class);
-//
-//        assertNotNull(persistedOrder);
-//        assertEquals(persistedOrder.getRestaurantTable().getId(), order.getRestaurantTable().getId());
-//        assertEquals(orderProcessor.countTotalAmount(order.getOrderedItems()), persistedOrder.getTotalAmount());
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = {"WAITER"})
-//    @Transactional
-//    @Rollback
-//    @org.junit.jupiter.api.Order(13)
-//    public void shouldOrderMoreDishes() throws Exception {
-//        Order moreDishes = orderProcessor.createDineInOrder(12, List.of(2, 35));
-//        moreDishes.setId(1L);
-//
-//        apiRequestUtils.patchAndExpect200("/api/restaurant/orders", moreDishes);
-//
-//        Order updatedOrder =
-//                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
-//        assertNotNull(updatedOrder);
-//
-//        BigDecimal newItemsAmount =
-//                orderProcessor.countTotalAmount(moreDishes.getOrderedItems());
-//        BigDecimal newTotalAmount = updatedOrder.getTotalAmount();
-//
-//        assertEquals(Money.of(40.00), newItemsAmount);
-//        assertEquals(Money.of(84.00), newTotalAmount);
-//        assertEquals(3, updatedOrder.getOrderedItems().size());
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = {"WAITER"})
-//    @Transactional
-//    @Rollback
-//    @org.junit.jupiter.api.Order(18)
-//    public void shouldFinalizeDineIn() throws Exception {
-//        Order order =
-//                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 2, Order.class);
-//        assertNotNull(order);
-//
-//        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-dine-in", 2);
-//
-//        Map<?, ?> errors =
-//                apiRequestUtils.postAndReturnResponseBody(
-//                        "/api/restaurant/orders/show", 2L, status().isBadRequest());
-//        assertEquals("Zamówienie z podanym ID = 2 nie istnieje.", errors.get("exceptionMsg"));
-//    }
-//
-////    @Test
-////    @WithMockUser(roles = {"WAITER"})
-////    @Transactional
-////    @Rollback
-////    @org.junit.jupiter.api.Order(19)
-////    public void shouldFinalizeTakeAway() throws Exception {
-////        Order order =
-////                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 4L, Order.class);
-////        assertTrue(order.isIsForTakeAway());
-////
-////        apiRequestUtils.postAndExpect200("/api/restaurant/orders/finalize-take-away", 4L);
-////
-////        Map<?, ?> errors =
-////                apiRequestUtils.postAndReturnResponseBody(
-////                        "/api/restaurant/orders/finalize-take-away", 4L, status().isBadRequest());
-////        assertEquals("Zamówienie z podanym ID = 4 nie istnieje.", errors.get("exceptionMsg"));
-////    }
-////
-////    @Test
-////    @WithMockUser(roles = {"WAITER"})
-////    @Transactional
-////    @Rollback
-////    @org.junit.jupiter.api.Order(20)
-////    public void shouldGiveTip() throws Exception {
-////        Order existingOrder =
-////                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
-////        assertEquals(Money.of(44.00), existingOrder.getTotalAmount());
-////        assertEquals(Money.of(0.00), existingOrder.getTipAmount());
-////
-////        BigDecimal tipAmount = Money.of(50.00);
-////        apiRequestUtils.patchAndExpect(
-////                "/api/restaurant/orders/tip", 1L, tipAmount, status().isOk());
-////
-////        existingOrder =
-////                apiRequestUtils.postObjectExpect200("/api/restaurant/orders/show", 1L, Order.class);
-////        assertEquals(Money.of(107.00), existingOrder.getTotalAmount());
-////        assertEquals(tipAmount, existingOrder.getTipAmount());
-////    }
-//
-//    @Test
-//    @WithMockUser(roles = {"WAITER"})
-//    @Transactional
-//    @Rollback
-//    @org.junit.jupiter.api.Order(21)
-//    public void shouldNotGiveZeroTip() throws Exception {
-//        BigDecimal tipAmount = Money.of(0.00);
-//        Map<?, ?> errors = apiRequestUtils.patchAndReturnResponseBody(
-//                "/api/restaurant/orders/tip", 1L, tipAmount, status().isBadRequest());
-//
-//        assertEquals(1, errors.size());
-//        assertEquals("Wysokość napiwku musi być większa od 0.", errors.get("exceptionMsg"));
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = {"WAITER"})
-//    @Transactional
-//    @Rollback
-//    @org.junit.jupiter.api.Order(22)
-//    public void shouldNotGiveNegativeTip() throws Exception {
-//        BigDecimal tipAmount = Money.of(-50.00);
-//        Map<?, ?> errors = apiRequestUtils.patchAndReturnResponseBody(
-//                "/api/restaurant/orders/tip", 1L, tipAmount, status().isBadRequest());
-//
-//        assertEquals(1, errors.size());
-//        assertEquals("Wysokość napiwku musi być większa od 0.", errors.get("exceptionMsg"));
-//    }
-//
-//    @Test
-//    public void shouldNotAllowAccessWithoutAuthorization() throws Exception {
-//        Order order = orderProcessor.createDineInOrder(12, List.of(4, 12, 15));
-//        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/dine-in", order);
-//        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/take-away", order);
-//        apiRequestUtils.patchAndExpect(
-//                "/api/restaurant/orders/tip", 6L, Money.of(15.00), status().isUnauthorized());
-//        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-dine-in", 111L);
-//        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/orders/finalize-take-away", 111L);
-//    }
+    @Autowired
+    private OrderFactory orderFactory;
+
+    @Autowired
+    private OrderedItemFactory orderedItemFactory;
+
+    @Autowired
+    private ApiRequestUtils apiRequestUtils;
+
+    private Order table15Order = new Order();
+    private Order table12Order = new Order();
+
+    @Sql("/data-h2.sql")
+    @Test
+    @org.junit.jupiter.api.Order(1)
+    void init() throws LocalizedException {
+        log.info("Initializing H2 database...");
+        log.info("Database initialized.");
+        log.info("Creating test Order objects...");
+        this.table15Order = orderFactory.createOrder(15, false,
+                orderedItemFactory.createOrderedItem(4, 2, "Extra warm please.", 2, "Pomidory", "Mozzarella"),
+                orderedItemFactory.createOrderedItem(21, 4, null, 1),
+                orderedItemFactory.createOrderedItem(22, 8, "Spicy af", 1, "Cebula", "Kurczak"));
+        this.table12Order = orderFactory.createOrder(12, false,
+                orderedItemFactory.createOrderedItem(4, 1, null, 1, "Bazylia"),
+                orderedItemFactory.createOrderedItem(21, 3, "i want it cold", 3),
+                orderedItemFactory.createOrderedItem(22, 6, "no salt please", 1));
+        log.info("Order objects created.");
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(2)
+    void orderInitializationCheck() {
+        assertNotNull(table15Order);
+        assertEquals(Money.of(139.00), table15Order.getTotalAmount());
+        assertNotNull(table12Order);
+        assertEquals(Money.of(129.25), table12Order.getTotalAmount());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    void shouldSaveDineInOrder() throws Exception {
+        table15Order.getRestaurantTable().setActive(true);
+        OrderSummary summary =
+                apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
+        assertEquals(1, summary.getOrders().size());
+        assertEquals(3, summary.getOrders().get(0).getOrderedItems().size());
+        assertEquals(Money.of(139.00), summary.getTotalAmount());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    void shouldSaveMultipleOrders() throws Exception {
+        table15Order.getRestaurantTable().setActive(true);
+        apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
+        apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
+        OrderSummary summary =
+                apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
+        assertEquals(3, summary.getOrders().size());
+        assertEquals(Money.of(417.00), summary.getTotalAmount());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    void shouldSaveForSeparateTables() throws Exception {
+        table15Order.getRestaurantTable().setActive(true);
+        table12Order.getRestaurantTable().setActive(true);
+        OrderSummary table15Summary = apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
+        OrderSummary table12Summary = apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table12Order, OrderSummary.class);
+        assertEquals(1, table15Summary.getOrders().size());
+        assertEquals(Money.of(139.00), table15Summary.getTotalAmount());
+        assertEquals(1, table12Summary.getOrders().size());
+        assertEquals(Money.of(129.25), table12Summary.getTotalAmount());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    void shouldNotSaveWithNullTable() throws Exception {
+        table12Order.setRestaurantTable(null);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/dine-in", table12Order);
+        assertEquals("Podany numer stolika jest niepoprawny.", errors.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    void shouldNotSaveWithInactiveTable() throws Exception {
+        table15Order.getRestaurantTable().setActive(false);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/dine-in", table15Order);
+        assertEquals("Stolik z ID = 15 nie jest aktywny.", errors.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    void shouldNotSaveWithEmptyOrderedItems() throws Exception {
+        table15Order.getRestaurantTable().setActive(true);
+        table15Order.setOrderedItems(new ArrayList<>());
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/dine-in", table15Order);
+        assertEquals("Brak pozycji w zamówieniu.", errors.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER_READONLY"})
+    void shouldNotAllowUnauthorizedAccessToSaveOrder() throws Exception {
+        table15Order.getRestaurantTable().setActive(true);
+        apiRequestUtils.postAndExpect("/api/restaurant/orders/dine-in", table15Order, status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    @Rollback
+    void shouldGetByTable() throws Exception {
+        table15Order.getRestaurantTable().setActive(true);
+        apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
+
+        OrderSummary summary = apiRequestUtils.postAndFetchObject("/api/restaurant/orders/show/table", 15, OrderSummary.class);
+        assertEquals(1, summary.getOrders().size());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    void shouldNotGetByTableWhenTableHasNoOrders() throws Exception {
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/show/table", 15);
+        assertEquals("Podsumowanie z podanym ID stolika = 15 nie istnieje.", errors.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER"})
+    void shouldNotGetByTableWithNonExistingTable() throws Exception {
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/show/table", 400);
+        assertEquals("Podsumowanie z podanym ID stolika = 400 nie istnieje.", errors.get("exceptionMsg"));
+    }
+
 }

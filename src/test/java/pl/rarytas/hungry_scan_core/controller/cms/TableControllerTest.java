@@ -239,7 +239,7 @@ class TableControllerTest {
 
         Resource resource = apiRequestUtils.postAndFetchResource("/api/cms/tables/download", 13);
         InputStream inputStream = resource.getInputStream();
-        File file = new File("./src/test/files/download/shouldDownloadTest.png"); // Provide the path where you want to save the file
+        File file = new File("./src/test/files/download/shouldDownloadTest.png");
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {

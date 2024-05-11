@@ -3,6 +3,7 @@ package pl.rarytas.hungry_scan_core.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.rarytas.hungry_scan_core.entity.Order;
+import pl.rarytas.hungry_scan_core.entity.RestaurantTable;
 
 import java.util.List;
 
@@ -14,5 +15,7 @@ public interface OrderRepository extends CustomRepository<Order, Long> {
 
     @Query(value = "SELECT o FROM Order o WHERE o.isForTakeAway = true")
     List<Order> findAllTakeAway();
+
+    List<Order> findAllByRestaurantTable(RestaurantTable restaurantTableId);
 
 }
