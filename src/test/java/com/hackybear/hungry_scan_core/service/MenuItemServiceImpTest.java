@@ -50,7 +50,7 @@ public class MenuItemServiceImpTest {
     @Test
     public void shouldFindAll() {
         List<MenuItem> menuItems = menuItemService.findAll();
-        assertEquals(30, menuItems.size());
+        assertEquals(33, menuItems.size());
         assertEquals("Makaron z pesto bazyliowym", menuItems.get(29).getName());
     }
 
