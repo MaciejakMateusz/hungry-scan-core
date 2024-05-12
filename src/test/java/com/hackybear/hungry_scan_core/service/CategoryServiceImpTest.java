@@ -95,7 +95,7 @@ class CategoryServiceImpTest {
         assertThrows(ConstraintViolationException.class, () -> categoryService.save(category));
 
         category.setName("Test");
-        category.setDescription("Seven11");
+        category.setDescription("1234");
         assertThrows(ConstraintViolationException.class, () -> categoryService.save(category));
 
         category.setDescription("""

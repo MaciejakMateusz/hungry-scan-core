@@ -35,22 +35,22 @@ VALUES (1, 'Dla osób unikających mięsa i/lub produktów pochodzenia zwierzęc
         'Świeże / Sezonowe'),
        (9, 'Odpowiednie dla osób ograniczających spożycie sodu.', 'icon_low_sodium', 'Niskosodowe');
 
-INSERT INTO categories (name, is_available, created, updated)
-VALUES ('Przystawki', true, NOW(), null);
-INSERT INTO categories (name, is_available, created, updated)
-VALUES ('Makarony', true, NOW(), null);
-INSERT INTO categories (name, is_available, created, updated)
-VALUES ('Sałatki', true, NOW(), null);
-INSERT INTO categories (name, is_available, created, updated)
-VALUES ('Zupy', true, NOW(), null);
-INSERT INTO categories (name, is_available, created, updated)
-VALUES ('Pizza', true, NOW(), null);
-INSERT INTO categories (name, is_available, created, updated)
-VALUES ('Wegetariańskie', true, NOW(), null);
-INSERT INTO categories (name, is_available, created, updated)
-VALUES ('Dla dzieci', true, NOW(), null);
-INSERT INTO categories (name, is_available, created, updated)
-VALUES ('Napoje', true, NOW(), null);
+INSERT INTO categories (name, is_available, created, updated, is_bar_served)
+VALUES ('Przystawki', true, NOW(), null, false);
+INSERT INTO categories (name, is_available, created, updated, is_bar_served)
+VALUES ('Makarony', true, NOW(), null, false);
+INSERT INTO categories (name, is_available, created, updated, is_bar_served)
+VALUES ('Sałatki', true, NOW(), null, false);
+INSERT INTO categories (name, is_available, created, updated, is_bar_served)
+VALUES ('Zupy', true, NOW(), null, false);
+INSERT INTO categories (name, is_available, created, updated, is_bar_served)
+VALUES ('Pizza', true, NOW(), null, false);
+INSERT INTO categories (name, is_available, created, updated, is_bar_served)
+VALUES ('Wegetariańskie', true, NOW(), null, false);
+INSERT INTO categories (name, is_available, created, updated, is_bar_served)
+VALUES ('Dla dzieci', true, NOW(), null, false);
+INSERT INTO categories (name, is_available, created, updated, is_bar_served)
+VALUES ('Napoje', true, NOW(), null, true);
 
 INSERT INTO ingredients(created, is_available, name, updated, price)
 VALUES ('2024-03-30', 1, 'Pomidory', '2024-03-30', '4.00');
@@ -205,6 +205,15 @@ INSERT INTO menu_items (name, category_id, description, created, updated, is_bes
 VALUES ('Makaron z pesto bazyliowym', 6,
         'Makaron spaghetti z pysznym pesto bazyliowym, parmezanem i prażonymi orzechami.', null, null, false, false,
         true, 23.00, 0);
+INSERT INTO menu_items (name, category_id, description, created, updated, is_bestseller, is_new, is_available, price, counter)
+VALUES ('Kawa', 8,
+        'Czarna sypana.', null, null, false, false, true, 9.00, 0);
+INSERT INTO menu_items (name, category_id, description, created, updated, is_bestseller, is_new, is_available, price, counter)
+VALUES ('Sok pomarańczowy', 8,
+        'Świeżo wyciskany.', null, null, false, false, true, 7.00, 0);
+INSERT INTO menu_items (name, category_id, description, created, updated, is_bestseller, is_new, is_available, price, counter)
+VALUES ('Coca-cola', 8,
+        '250ml', null, null, false, false, true, 7.00, 0);
 
 INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (4, 1);
 INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (4, 5);

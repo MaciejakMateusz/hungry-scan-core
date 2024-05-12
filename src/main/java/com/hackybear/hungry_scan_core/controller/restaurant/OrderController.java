@@ -2,8 +2,6 @@ package com.hackybear.hungry_scan_core.controller.restaurant;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.Order;
-import com.hackybear.hungry_scan_core.entity.OrderSummary;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.OrderService;
 import com.hackybear.hungry_scan_core.utility.Constants;
 import org.springframework.http.HttpHeaders;
@@ -37,23 +35,13 @@ public class OrderController {
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/show/table")
     public ResponseEntity<?> getByTable(@RequestBody Integer tableId) {
-        try {
-            OrderSummary orderSummary = orderService.findByTable(tableId);
-            return ResponseEntity.ok(orderSummary);
-        } catch (LocalizedException e) {
-            return responseHelper.createErrorResponse(e);
-        }
+        return responseHelper.getObjectAndBuildResponse(tableId, orderService::findByTable);
     }
 
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping(value = "/dine-in")
     public ResponseEntity<?> saveDineInOrder(@RequestBody Order order) {
-        try {
-            OrderSummary orderSummary = orderService.saveDineIn(order);
-            return ResponseEntity.ok(orderSummary);
-        } catch (LocalizedException e) {
-            return responseHelper.createErrorResponse(e);
-        }
+        return responseHelper.getObjectAndBuildResponse(order, orderService::saveDineIn);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

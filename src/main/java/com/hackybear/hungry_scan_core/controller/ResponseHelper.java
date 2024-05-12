@@ -75,6 +75,22 @@ public class ResponseHelper {
     }
 
     /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param t        Object to apply to the function.
+     * @param function Behaviour to pass from a given service. For example orderService::findByTable
+     * @return ResponseEntity with appropriate response code and body containing object or map with exception.
+     */
+    public <T, R> ResponseEntity<?> getObjectAndBuildResponse(T t, ThrowingFunction<T, R> function) {
+        try {
+            R r = function.apply(t);
+            return ResponseEntity.ok(r);
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    /**
      * Finds entity in database based on provided ID.
      * Creates ResponseEntity based on provided parameters.
      *
@@ -162,8 +178,7 @@ public class ResponseHelper {
         return ResponseEntity.ok(params);
     }
 
-    private <ENTITY> ResponseEntity<Map<String, Object>> acceptAndCreateSuccessResponse(ThrowingConsumer<ENTITY> saveFunction,
-                                                                                        ENTITY entity) {
+    private <ENTITY> ResponseEntity<Map<String, Object>> acceptAndCreateSuccessResponse(ThrowingConsumer<ENTITY> saveFunction, ENTITY entity) {
         try {
             saveFunction.accept(entity);
         } catch (Exception e) {

@@ -1,16 +1,12 @@
 package com.hackybear.hungry_scan_core.service;
 
-import com.hackybear.hungry_scan_core.entity.Order;
 import com.hackybear.hungry_scan_core.entity.OrderedItem;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.repository.OrderRepository;
 import com.hackybear.hungry_scan_core.repository.OrderedItemRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.OrderedItemService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,14 +15,10 @@ import java.util.List;
 public class OrderedItemServiceImp implements OrderedItemService {
 
     private final OrderedItemRepository orderedItemRepository;
-    private final SimpMessagingTemplate messagingTemplate;
-    private final OrderRepository orderRepository;
     private final ExceptionHelper exceptionHelper;
 
-    public OrderedItemServiceImp(OrderedItemRepository orderedItemRepository, SimpMessagingTemplate messagingTemplate, OrderRepository orderRepository, ExceptionHelper exceptionHelper) {
+    public OrderedItemServiceImp(OrderedItemRepository orderedItemRepository, ExceptionHelper exceptionHelper) {
         this.orderedItemRepository = orderedItemRepository;
-        this.messagingTemplate = messagingTemplate;
-        this.orderRepository = orderRepository;
         this.exceptionHelper = exceptionHelper;
     }
 
@@ -36,34 +28,14 @@ public class OrderedItemServiceImp implements OrderedItemService {
     }
 
     @Override
+    public List<OrderedItem> findAllDrinks() {
+        return orderedItemRepository.findAllDrinks();
+    }
+
+    @Override
     public OrderedItem findById(Long id) throws LocalizedException {
         return orderedItemRepository.findById(id).orElseThrow(exceptionHelper.supplyLocalizedMessage(
                 "error.orderedItemService.orderedItemNotFound", id));
-    }
-
-    @Override
-    @Transactional
-    public void saveAll(List<OrderedItem> orderedItems) {
-        orderedItemRepository.saveAllAndFlush(orderedItems);
-    }
-
-    @Override
-    @Transactional
-    @Deprecated
-    //TODO metoda do wywalenia
-    public void toggleIsReadyToServe(Long id) {
-        OrderedItem orderedItem;
-        try {
-            orderedItem = findById(id);
-        } catch (LocalizedException e) {
-            log.error(e.getLocalizedMessage());
-            return;
-        }
-//        orderedItem.setReadyToServe(!orderedItem.isReadyToServe());
-        orderedItemRepository.saveAndFlush(orderedItem);
-        orderedItemRepository.refresh(orderedItem);
-        List<Order> orders = orderRepository.findAllDineIn();
-        messagingTemplate.convertAndSend("/topic/restaurant-orders", orders);
     }
 
 }

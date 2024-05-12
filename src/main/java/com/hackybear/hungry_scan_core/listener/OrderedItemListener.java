@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.listener;
 
 import com.hackybear.hungry_scan_core.entity.Ingredient;
+import com.hackybear.hungry_scan_core.entity.MenuItemVariant;
 import com.hackybear.hungry_scan_core.entity.OrderedItem;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.PostRemove;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Slf4j
 @Getter
@@ -20,7 +22,9 @@ public class OrderedItemListener {
     protected void prePersist(final OrderedItem orderedItem) {
         BigDecimal price = Money.of(0.00);
         price = price.add(orderedItem.getMenuItem().getPrice());
-        price = price.add(orderedItem.getMenuItemVariant().getPrice());
+        MenuItemVariant variant = orderedItem.getMenuItemVariant();
+        BigDecimal variantModifier = Objects.nonNull(variant) ? variant.getPrice() : Money.of(0.00);
+        price = price.add(variantModifier);
         for (Ingredient ingredient : orderedItem.getAdditionalIngredients()) {
             price = price.add(ingredient.getPrice());
         }

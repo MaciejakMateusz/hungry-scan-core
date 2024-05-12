@@ -60,7 +60,7 @@ class MenuItemControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/items", MenuItem.class);
 
-        assertEquals(30, menuItems.size());
+        assertEquals(33, menuItems.size());
         assertEquals("Krewetki marynowane w cytrynie", menuItems.get(0).getName());
     }
 
@@ -125,7 +125,7 @@ class MenuItemControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
         MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 31, MenuItem.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 34, MenuItem.class);
 
         assertEquals("Sample Item", persistedMenuItem.getName());
         assertEquals("Sample description", persistedMenuItem.getDescription());
@@ -165,7 +165,7 @@ class MenuItemControllerTest {
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItem);
 
         assertEquals(1, errors.size());
-        assertEquals("Opis kategorii musi mieć minimum 8 znaków", errors.get("description"));
+        assertEquals("Opis kategorii musi mieć minimum 5 znaków", errors.get("description"));
     }
 
     @Test

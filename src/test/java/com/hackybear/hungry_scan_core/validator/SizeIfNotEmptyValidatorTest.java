@@ -40,9 +40,9 @@ class SizeIfNotEmptyValidatorTest {
     }
 
     @Test
-    void shouldNotApproveValueLengthLessThan8() {
+    void shouldNotApproveValueLengthLessThan5() {
         SizeIfNotEmptyValidator validator = new SizeIfNotEmptyValidator();
-        assertFalse(validator.isValid("1234567", mockConstraintValidatorContext()));
+        assertFalse(validator.isValid("1234", mockConstraintValidatorContext()));
     }
 
     private ConstraintValidatorContext mockConstraintValidatorContext() {
