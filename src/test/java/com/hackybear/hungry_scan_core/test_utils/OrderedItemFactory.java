@@ -68,7 +68,8 @@ public class OrderedItemFactory {
     private BigDecimal computePrice(OrderedItem orderedItem) {
         BigDecimal price = Money.of(0.00);
         BigDecimal menuItemPrice = orderedItem.getMenuItem().getPrice();
-        BigDecimal variantModifier = orderedItem.getMenuItemVariant().getPrice();
+        MenuItemVariant variant = orderedItem.getMenuItemVariant();
+        BigDecimal variantModifier = Objects.nonNull(variant) ? variant.getPrice() : Money.of(0.00);
         price = price.add(menuItemPrice);
         price = price.add(variantModifier);
         for (Ingredient ingredient : orderedItem.getAdditionalIngredients()) {

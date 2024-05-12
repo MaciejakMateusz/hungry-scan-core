@@ -36,6 +36,8 @@ public class Category {
 
     private boolean isAvailable = true;
 
+    private boolean isBarServed;
+
     @Min(1)
     private Integer displayOrder;
 

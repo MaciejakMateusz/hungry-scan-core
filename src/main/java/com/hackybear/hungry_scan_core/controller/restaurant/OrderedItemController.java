@@ -12,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/restaurant/ordered-items")
@@ -33,22 +32,16 @@ public class OrderedItemController {
         return ResponseEntity.ok(orderedItemService.findAll());
     }
 
+    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+    @GetMapping("/drinks")
+    public ResponseEntity<List<OrderedItem>> getAllDrinks() {
+        return ResponseEntity.ok(orderedItemService.findAllDrinks());
+    }
+
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/show")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
-        return responseHelper.getResponseEntity(id, orderedItemService::findById);
-    }
-
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
-    @PostMapping
-    public ResponseEntity<Map<String, Object>> saveAll(@RequestBody List<OrderedItem> orderedItems) {
-        return responseHelper.buildResponse(orderedItems, orderedItemService::saveAll);
-    }
-
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
-    @PatchMapping("/toggle-item")
-    public ResponseEntity<Map<String, Object>> toggleReadyToServe(@RequestBody Long id) {
-        return responseHelper.getResponseEntity(id, orderedItemService::toggleIsReadyToServe);
+    public ResponseEntity<?> show(@RequestBody Long id) {
+        return responseHelper.getObjectAndBuildResponse(id, orderedItemService::findById);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

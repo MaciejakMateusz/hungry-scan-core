@@ -10,6 +10,6 @@ public class SizeIfNotEmptyValidator implements ConstraintValidator<SizeIfNotEmp
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        return value == null || value.isBlank() || value.length() >= 8;
+        return value == null || value.isBlank() || value.length() >= 5;
     }
 }

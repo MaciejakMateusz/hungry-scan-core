@@ -8,9 +8,8 @@ import java.util.List;
 public interface OrderedItemService {
     List<OrderedItem> findAll();
 
+    List<OrderedItem> findAllDrinks();
+
     OrderedItem findById(Long id) throws LocalizedException;
 
-    void saveAll(List<OrderedItem> orderedItems);
-
-    void toggleIsReadyToServe(Long id);
 }

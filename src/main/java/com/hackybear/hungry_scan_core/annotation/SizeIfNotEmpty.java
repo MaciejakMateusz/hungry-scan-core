@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SizeIfNotEmpty {
-    String message() default "Opis kategorii musi mieć minimum 8 znaków";
+    String message() default "Opis kategorii musi mieć minimum 5 znaków";
 
     Class<?>[] groups() default {};
 

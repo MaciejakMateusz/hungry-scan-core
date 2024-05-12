@@ -130,7 +130,6 @@ public class OrderServiceImp implements OrderService {
 
     private void saveRefreshAndNotify(Order order) throws LocalizedException {
         order.setTotalAmount(orderHelper.getOrderAmount(order));
-        linkMenuItemsToOrderedItems(order);
         orderedItemRepository.saveAll(order.getOrderedItems());
         orderRepository.save(order);
         orderRepository.refresh(order);
@@ -152,26 +151,12 @@ public class OrderServiceImp implements OrderService {
         orderSummaryRepository.saveAndFlush(orderSummary);
     }
 
-    private void linkMenuItemsToOrderedItems(Order order) throws LocalizedException {
-        for (OrderedItem orderedItem : order.getOrderedItems()) {
-            Integer variantId = orderedItem.getMenuItemVariant().getId();
-            MenuItem menuItem = getMenuItemByVariantId(variantId);
-            orderedItem.setMenuItem(menuItem);
-        }
-    }
-
     private void updateMenuItemsCounterStatistics(Order order) throws LocalizedException {
         for (OrderedItem orderedItem : order.getOrderedItems()) {
             MenuItem menuItem = getMenuItemById(orderedItem.getMenuItem().getId());
             menuItem.setCounter(menuItem.getCounter() + orderedItem.getQuantity());
             menuItemRepository.saveAndFlush(menuItem);
         }
-    }
-
-    private MenuItem getMenuItemByVariantId(Integer variantId) throws LocalizedException {
-        return menuItemRepository.findByVariantId(variantId)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.menuItemService.menuItemNotFoundByVariant", variantId));
     }
 
     private MenuItem getMenuItemById(Integer id) throws LocalizedException {
