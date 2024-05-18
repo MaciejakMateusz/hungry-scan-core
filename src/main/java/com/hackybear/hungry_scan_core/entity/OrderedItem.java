@@ -29,15 +29,15 @@ public class OrderedItem implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")
     private MenuItem menuItem;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "menu_item_variant_id", referencedColumnName = "id")
     private MenuItemVariant menuItemVariant;
 
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "ordered_item_additional_ingredients",
             joinColumns = @JoinColumn(name = "ordered_item_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
@@ -54,5 +54,4 @@ public class OrderedItem implements Serializable {
     private BigDecimal price = Money.of(0.00);
 
     private boolean paid;
-
 }

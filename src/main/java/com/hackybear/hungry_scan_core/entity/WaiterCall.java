@@ -16,11 +16,7 @@ public class WaiterCall {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order order;
+    private Long id;
 
     @Column(nullable = false)
     private LocalDateTime callTime;

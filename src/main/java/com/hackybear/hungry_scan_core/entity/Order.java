@@ -4,7 +4,6 @@ import com.hackybear.hungry_scan_core.listener.OrderListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +11,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,14 +32,13 @@ public class Order {
 
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
-    @NotNull
     private Restaurant restaurant;
 
     @Column(length = 50, nullable = false)
     private LocalDateTime orderTime;
 
     @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    private List<OrderedItem> orderedItems;
+    private List<OrderedItem> orderedItems = new ArrayList<>();
 
     @DecimalMin(value = "0.00")
     private BigDecimal totalAmount = Money.of(0.00);

@@ -1,18 +1,16 @@
 package com.hackybear.hungry_scan_core.service;
 
-import com.hackybear.hungry_scan_core.entity.Order;
-import com.hackybear.hungry_scan_core.entity.OrderSummary;
-import com.hackybear.hungry_scan_core.entity.WaiterCall;
+import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.entity.history.HistoryOrder;
 import com.hackybear.hungry_scan_core.entity.history.HistoryOrderSummary;
 import com.hackybear.hungry_scan_core.entity.history.HistoryOrderedItem;
 import com.hackybear.hungry_scan_core.entity.history.HistoryWaiterCall;
 import com.hackybear.hungry_scan_core.repository.OrderSummaryRepository;
-import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryOrderService;
+import com.hackybear.hungry_scan_core.repository.RestaurantTableRepository;
+import com.hackybear.hungry_scan_core.repository.WaiterCallRepository;
+import com.hackybear.hungry_scan_core.repository.history.HistoryWaiterCallRepository;
 import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryOrderSummaryService;
-import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryWaiterCallService;
 import com.hackybear.hungry_scan_core.service.interfaces.ArchiveDataService;
-import com.hackybear.hungry_scan_core.service.interfaces.WaiterCallService;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,22 +19,22 @@ import java.util.List;
 @Component
 public class ArchiveDataServiceImp implements ArchiveDataService {
 
-    private final HistoryOrderService historyOrderService;
     private final HistoryOrderSummaryService historyOrderSummaryService;
     private final OrderSummaryRepository orderSummaryRepository;
-    private final WaiterCallService waiterCallService;
-    private final HistoryWaiterCallService historyWaiterCallService;
+    private final WaiterCallRepository waiterCallRepository;
+    private final HistoryWaiterCallRepository historyWaiterCallRepository;
+    private final RestaurantTableRepository restaurantTableRepository;
 
-    public ArchiveDataServiceImp(HistoryOrderService historyOrderService,
-                                 HistoryOrderSummaryService historyOrderSummaryService,
+    public ArchiveDataServiceImp(HistoryOrderSummaryService historyOrderSummaryService,
                                  OrderSummaryRepository orderSummaryRepository,
-                                 WaiterCallService waiterCallService,
-                                 HistoryWaiterCallService historyWaiterCallService) {
-        this.historyOrderService = historyOrderService;
+                                 WaiterCallRepository waiterCallRepository,
+                                 HistoryWaiterCallRepository historyWaiterCallRepository,
+                                 RestaurantTableRepository restaurantTableRepository) {
         this.historyOrderSummaryService = historyOrderSummaryService;
         this.orderSummaryRepository = orderSummaryRepository;
-        this.waiterCallService = waiterCallService;
-        this.historyWaiterCallService = historyWaiterCallService;
+        this.waiterCallRepository = waiterCallRepository;
+        this.historyWaiterCallRepository = historyWaiterCallRepository;
+        this.restaurantTableRepository = restaurantTableRepository;
     }
 
     @Override
@@ -48,29 +46,39 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
 
     @Override
     public void archiveOrder(Order order) {
-        HistoryOrder historyOrder = mapOrderToHistoryOrder(order);
-        historyOrderService.save(historyOrder);
-        transferWaiterCallDataToHistory(order, historyOrder);
+
     }
+
+    @Override
+    public void archiveWaiterCall(RestaurantTable restaurantTable) {
+        historyWaiterCallRepository.saveAll(mapWaiterCallsToHistoryWaiterCalls(restaurantTable));
+        waiterCallRepository.deleteAll(restaurantTable.getWaiterCalls());
+        restaurantTable.setWaiterCalls(new ArrayList<>());
+        restaurantTableRepository.save(restaurantTable);
+    }
+
 
     private HistoryOrderSummary mapSummaryToHistorySummary(OrderSummary orderSummary) {
         HistoryOrderSummary historyOrderSummary = new HistoryOrderSummary(
                 orderSummary.getId(),
-                orderSummary.getRestaurantTable(),
                 orderSummary.getRestaurant(),
+                orderSummary.getRestaurantTable(),
                 orderSummary.getInitialOrderDate(),
                 orderSummary.getInitialOrderTime(),
                 orderSummary.getTipAmount(),
                 orderSummary.getTotalAmount(),
                 orderSummary.isPaid(),
+                orderSummary.isBillSplitRequested(),
                 orderSummary.getPaymentMethod()
         );
+
         List<HistoryOrder> historyOrders = new ArrayList<>();
         for (Order order : orderSummary.getOrders()) {
             HistoryOrder historyOrder = mapOrderToHistoryOrder(order);
             historyOrders.add(historyOrder);
         }
         historyOrderSummary.setHistoryOrders(historyOrders);
+
         return historyOrderSummary;
     }
 
@@ -86,10 +94,7 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
 
         List<HistoryOrderedItem> transferredItems = new ArrayList<>();
         order.getOrderedItems().forEach(orderedItem -> {
-            HistoryOrderedItem historyOrderedItem = new HistoryOrderedItem();
-            historyOrderedItem.setId(orderedItem.getId());
-            historyOrderedItem.setMenuItemVariant(orderedItem.getMenuItemVariant());
-            historyOrderedItem.setQuantity(orderedItem.getQuantity());
+            HistoryOrderedItem historyOrderedItem = mapOrderedItemToHistoryOrderedItem(orderedItem);
             transferredItems.add(historyOrderedItem);
         });
 
@@ -98,21 +103,30 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
         return historyOrder;
     }
 
-    private void transferWaiterCallDataToHistory(Order order, HistoryOrder historyOrder) {
-        List<WaiterCall> waiterCalls = waiterCallService.findAllByOrder(order);
-        HistoryWaiterCall historyWaiterCall = new HistoryWaiterCall();
-
-        if (!waiterCalls.isEmpty()) {
-            waiterCalls.forEach(waiterCall -> {
-                historyWaiterCall.setId(Long.valueOf(waiterCall.getId()));
-                historyWaiterCall.setCallTime(waiterCall.getCallTime());
-                historyWaiterCall.setResolvedTime(waiterCall.getResolvedTime());
-                historyWaiterCall.setResolved(waiterCall.isResolved());
-                historyWaiterCall.setHistoryOrder(historyOrder);
-
-                historyWaiterCallService.save(historyWaiterCall);
-                waiterCallService.delete(waiterCall);
-            });
-        }
+    private HistoryOrderedItem mapOrderedItemToHistoryOrderedItem(OrderedItem orderedItem) {
+        return new HistoryOrderedItem(
+                orderedItem.getId(),
+                orderedItem.getMenuItem(),
+                orderedItem.getMenuItemVariant(),
+                orderedItem.getAdditionalIngredients(),
+                orderedItem.getAdditionalComment(),
+                orderedItem.getQuantity(),
+                orderedItem.isPaid()
+        );
     }
+
+    private List<HistoryWaiterCall> mapWaiterCallsToHistoryWaiterCalls(RestaurantTable restaurantTable) {
+        List<HistoryWaiterCall> historyWaiterCalls = new ArrayList<>();
+        for (WaiterCall waiterCall : restaurantTable.getWaiterCalls()) {
+            historyWaiterCalls.add(new HistoryWaiterCall(
+                    waiterCall.getId(),
+                    restaurantTable.getId(),
+                    restaurantTable.getNumber(),
+                    waiterCall.getCallTime(),
+                    waiterCall.getResolvedTime(),
+                    waiterCall.isResolved()));
+        }
+        return historyWaiterCalls;
+    }
+
 }

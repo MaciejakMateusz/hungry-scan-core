@@ -24,8 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -108,8 +107,8 @@ class BookingControllerTest {
         assertEquals(LocalTime.of(15, 0), persistedBooking.getTime());
         assertEquals("Cieślak", persistedBooking.getSurname());
         assertEquals(2, persistedBooking.getRestaurantTables().size());
-        assertEquals(6, persistedBooking.getRestaurantTables().stream().findFirst().orElseThrow().getId());
-        assertEquals(7, persistedBooking.getRestaurantTables().stream().skip(1).findFirst().orElseThrow().getId());
+        assertTrue(persistedBooking.getRestaurantTables().stream().anyMatch(table -> table.getId() == 6));
+        assertTrue(persistedBooking.getRestaurantTables().stream().anyMatch(table -> table.getId() == 7));
         assertEquals((short) 7, persistedBooking.getNumOfPpl());
     }
 

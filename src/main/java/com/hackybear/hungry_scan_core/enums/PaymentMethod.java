@@ -6,8 +6,8 @@ import lombok.Getter;
 public enum PaymentMethod {
     CASH("cash"),
     CARD("card"),
-    ONLINE("online"),
-    NONE("none");
+    BLIK("blik"),
+    APPLE("apple");
 
     private final String methodName;
 

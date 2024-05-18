@@ -17,6 +17,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,53 +25,53 @@ import java.util.List;
 @EqualsAndHashCode
 @EntityListeners(value = OrderSummaryListener.class)
 @NoArgsConstructor
-@Table(name = "order_summaries")
+@Table(name = "history_order_summary")
 @Entity
 public class HistoryOrderSummary {
 
     public HistoryOrderSummary(Long id,
-                               RestaurantTable restaurantTable,
                                Restaurant restaurant,
+                               RestaurantTable restaurantTable,
                                LocalDate initialOrderDate,
                                LocalTime initialOrderTime,
                                BigDecimal tipAmount,
                                BigDecimal totalAmount,
                                boolean paid,
+                               boolean isBillSplitRequested,
                                PaymentMethod paymentMethod) {
         this.id = id;
-        this.restaurantTable = restaurantTable;
         this.restaurant = restaurant;
+        this.restaurantTable = restaurantTable;
         this.initialOrderDate = initialOrderDate;
         this.initialOrderTime = initialOrderTime;
         this.tipAmount = tipAmount;
         this.totalAmount = totalAmount;
         this.paid = paid;
+        this.isBillSplitRequested = isBillSplitRequested;
         this.paymentMethod = paymentMethod;
     }
 
     @Id
     Long id;
 
-    @JoinColumn(name = "table_id", referencedColumnName = "id")
-    @ManyToOne
-    @NotNull
-    private RestaurantTable restaurantTable;
-
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     @NotNull
     private Restaurant restaurant;
 
-    @Column(nullable = false)
+    @JoinColumn(name = "table_id", referencedColumnName = "id")
+    @ManyToOne
     @NotNull
+    private RestaurantTable restaurantTable;
+
+    @Column(length = 50, nullable = false)
     private LocalDate initialOrderDate;
 
-    @Column(nullable = false)
-    @NotNull
+    @Column(length = 50, nullable = false)
     private LocalTime initialOrderTime;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<HistoryOrder> historyOrders;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    private List<HistoryOrder> historyOrders = new ArrayList<>();
 
     @DecimalMin(value = "0.00")
     private BigDecimal tipAmount = Money.of(0.00);
@@ -79,6 +80,8 @@ public class HistoryOrderSummary {
     private BigDecimal totalAmount = Money.of(0.00);
 
     private boolean paid;
+
+    private boolean isBillSplitRequested;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;

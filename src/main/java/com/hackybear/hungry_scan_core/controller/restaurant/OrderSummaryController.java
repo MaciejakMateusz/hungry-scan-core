@@ -10,10 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/restaurant/summaries")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
@@ -28,35 +24,11 @@ public class OrderSummaryController {
         this.responseHelper = responseHelper;
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
-    @GetMapping
-    public ResponseEntity<List<OrderSummary>> getAllSummaries() {
-        return ResponseEntity.ok(orderSummaryService.findAll());
-    }
 
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
-    @PostMapping("/table-number")
-    public ResponseEntity<Map<String, Object>> getByTableNumber(@RequestBody Integer number) {
-        return responseHelper.getResponseEntity(number, orderSummaryService::findByTableNumber);
-    }
-
-    @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
-    @PostMapping("/show")
-    public ResponseEntity<Map<String, Object>> getById(@RequestBody Long id) {
-        return responseHelper.getResponseEntity(id, orderSummaryService::findById);
-    }
-
-    @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
-    @PatchMapping("/tip")
-    public ResponseEntity<Map<String, Object>> tip(@RequestParam("id") Long id,
-                                                   @RequestParam("value") BigDecimal value) {
-        return responseHelper.buildResponse(id, value, orderSummaryService::tip);
-    }
-
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
-    @PostMapping("/finalize-dine-in")
-    public ResponseEntity<Map<String, Object>> finalizeDineInOrder(@RequestBody Long id) {
-        return responseHelper.getResponseEntity(id, orderSummaryService::finish);
+    @PostMapping("/pay")
+    public ResponseEntity<?> requestPayment(@RequestBody OrderSummary orderSummary) {
+        return responseHelper.getObjectAndBuildResponse(orderSummary, orderSummaryService::pay);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

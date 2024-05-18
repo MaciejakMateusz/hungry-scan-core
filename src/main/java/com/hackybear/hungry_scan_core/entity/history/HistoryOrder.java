@@ -2,9 +2,9 @@ package com.hackybear.hungry_scan_core.entity.history;
 
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
+import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -45,27 +46,23 @@ public class HistoryOrder {
 
     @JoinColumn(name = "table_id", referencedColumnName = "id")
     @ManyToOne
-    @NotNull
     private RestaurantTable restaurantTable;
 
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
-    @NotNull
     private Restaurant restaurant;
 
     @Column(nullable = false)
-    @NotNull
     private LocalDate orderDate;
 
     @Column(nullable = false)
-    @NotNull
     private LocalTime orderTime;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<HistoryOrderedItem> historyOrderedItems;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    private List<HistoryOrderedItem> historyOrderedItems = new ArrayList<>();
 
     @DecimalMin(value = "0.00")
-    private BigDecimal totalAmount;
+    private BigDecimal totalAmount = Money.of(0.00);
 
     private boolean isForTakeAway;
 

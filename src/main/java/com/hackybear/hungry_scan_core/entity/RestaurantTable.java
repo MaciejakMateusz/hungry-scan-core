@@ -11,6 +11,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -30,6 +32,9 @@ public class RestaurantTable {
 
     @OneToMany(fetch = FetchType.EAGER)
     private Set<User> users;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<WaiterCall> waiterCalls = new ArrayList<>();
 
     @ManyToOne
     private Zone zone;

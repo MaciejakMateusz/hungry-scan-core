@@ -26,7 +26,7 @@ public class OrderSummary {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
@@ -43,7 +43,7 @@ public class OrderSummary {
     @Column(length = 50, nullable = false)
     private LocalTime initialOrderTime;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Order> orders = new ArrayList<>();
 
     @DecimalMin(value = "0.00")

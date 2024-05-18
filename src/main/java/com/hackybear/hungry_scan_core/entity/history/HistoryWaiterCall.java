@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.entity.history;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -9,15 +10,30 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "history_waiter_calls")
 public class HistoryWaiterCall {
+
+    public HistoryWaiterCall(Long id,
+                             Integer tableId,
+                             Integer tableNumber,
+                             LocalDateTime callTime,
+                             LocalDateTime resolvedTime,
+                             boolean isResolved) {
+        this.id = id;
+        this.tableId = tableId;
+        this.tableNumber = tableNumber;
+        this.callTime = callTime;
+        this.resolvedTime = resolvedTime;
+        this.isResolved = isResolved;
+    }
 
     @Id
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "history_order_id", referencedColumnName = "id")
-    private HistoryOrder historyOrder;
+    private Integer tableId;
+
+    private Integer tableNumber;
 
     @Column(nullable = false)
     private LocalDateTime callTime;
