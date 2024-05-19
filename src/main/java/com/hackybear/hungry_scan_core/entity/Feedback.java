@@ -21,7 +21,7 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Long summaryId;
+    private Integer tableId;
 
     @Min(1)
     @Max(5)
@@ -31,9 +31,13 @@ public class Feedback {
     @Max(5)
     private Integer food;
 
+    @Min(1)
+    @Max(5)
+    private Integer vibe;
+
     private String comment;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime created;
+    private LocalDateTime postTime;
 
 }
