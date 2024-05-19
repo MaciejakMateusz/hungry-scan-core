@@ -186,6 +186,7 @@ public class MenuItemServiceImpTest {
         menuItem.setDescription(description);
         menuItem.setPrice(Money.of(42.50));
         menuItem.setImageName(imageName);
+        menuItem.setDisplayOrder(6);
         return menuItem;
     }
 }

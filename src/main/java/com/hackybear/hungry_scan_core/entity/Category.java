@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hackybear.hungry_scan_core.annotation.SizeIfNotEmpty;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +38,8 @@ public class Category {
 
     private boolean isBarServed;
 
-    @Min(1)
+    @Column(nullable = false)
+    @NotNull
     private Integer displayOrder;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

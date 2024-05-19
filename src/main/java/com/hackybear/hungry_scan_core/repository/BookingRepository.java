@@ -1,11 +1,11 @@
 package com.hackybear.hungry_scan_core.repository;
 
+import com.hackybear.hungry_scan_core.entity.Booking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.hackybear.hungry_scan_core.entity.Booking;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core;
 
+import com.hackybear.hungry_scan_core.filter.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-import com.hackybear.hungry_scan_core.filter.JwtAuthFilter;
 
 import java.util.List;
 

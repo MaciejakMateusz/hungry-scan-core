@@ -1,12 +1,10 @@
 package com.hackybear.hungry_scan_core.test_utils;
 
+import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.MenuItemVariant;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.AllergenService;
-import com.hackybear.hungry_scan_core.service.interfaces.IngredientService;
-import com.hackybear.hungry_scan_core.service.interfaces.LabelService;
-import com.hackybear.hungry_scan_core.service.interfaces.MenuItemVariantService;
+import com.hackybear.hungry_scan_core.service.interfaces.*;
 import com.hackybear.hungry_scan_core.utility.Money;
 import org.springframework.stereotype.Component;
 
@@ -19,18 +17,22 @@ public class MenuItemFactory {
     private final MenuItemVariantService menuItemVariantService;
     private final AllergenService allergenService;
     private final LabelService labelService;
+    private final CategoryService categoryService;
 
-    public MenuItemFactory(IngredientService ingredientService, MenuItemVariantService menuItemVariantService,
+    public MenuItemFactory(IngredientService ingredientService,
+                           MenuItemVariantService menuItemVariantService,
                            AllergenService allergenService,
-                           LabelService labelService) {
+                           LabelService labelService, CategoryService categoryService) {
         this.ingredientService = ingredientService;
         this.menuItemVariantService = menuItemVariantService;
         this.allergenService = allergenService;
         this.labelService = labelService;
+        this.categoryService = categoryService;
     }
 
     public MenuItem createMenuItem(String name,
                                    String description,
+                                   Integer categoryId,
                                    BigDecimal price) throws LocalizedException {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(name);
@@ -38,12 +40,19 @@ public class MenuItemFactory {
         menuItem.setPrice(price);
         menuItem.setAvailable(true);
         menuItem.setImageName("/public/assets/sample.png");
+        menuItem.setDisplayOrder(6);
+        setCategory(menuItem, categoryId);
         setIngredients(menuItem);
         setAdditionalIngredients(menuItem);
         setLabels(menuItem);
         setAllergen(menuItem);
         setVariants(menuItem);
         return menuItem;
+    }
+
+    private void setCategory(MenuItem menuItem, Integer categoryId) throws LocalizedException {
+        Category category = categoryService.findById(categoryId);
+        menuItem.setCategory(category);
     }
 
     private void setIngredients(MenuItem menuItem) throws LocalizedException {

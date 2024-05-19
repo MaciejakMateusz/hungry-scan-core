@@ -46,7 +46,7 @@ class CategoryServiceImpTest {
     @Test
     void shouldFindAll() {
         List<Category> categories = categoryService.findAll();
-        assertEquals(8, categories.size());
+        assertEquals(9, categories.size());
     }
 
     @Test
@@ -70,7 +70,8 @@ class CategoryServiceImpTest {
                 createCategory("Pizza", "Zanurz się w prawdziwym smaku pizzy."),
                 createCategory("Wegetariańskie", "Odkryj różnorodność wegetariańskich smaków."),
                 createCategory("Dla dzieci", "Zaspokój apetyt najmłodszych przyjemnymi dla podniebienia daniami."),
-                createCategory("Napoje", "Uzupełnij swoje doznania smakowe pysznymi napojami."));
+                createCategory("Napoje", "Uzupełnij swoje doznania smakowe pysznymi napojami."),
+                createCategory("Pusta", ""));
         assertEquals(categories.toString(), getCategories().toString());
     }
 
@@ -139,6 +140,7 @@ class CategoryServiceImpTest {
         Category category = new Category();
         category.setName(name);
         category.setDescription(description);
+        category.setDisplayOrder(10);
         return category;
     }
 }

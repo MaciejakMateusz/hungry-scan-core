@@ -1,9 +1,9 @@
 package com.hackybear.hungry_scan_core.repository;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 import com.hackybear.hungry_scan_core.entity.Order;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

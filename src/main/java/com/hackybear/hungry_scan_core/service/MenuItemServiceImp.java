@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -30,7 +31,7 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Override
     public List<MenuItem> findAllByCategoryId(Integer id) {
-        return menuItemRepository.findAllByCategoryId(id);
+        return menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(id);
     }
 
     @Override
@@ -41,8 +42,68 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public void save(MenuItem menuItem) {
-        menuItemRepository.save(menuItem);
+    public void save(MenuItem menuItem) throws LocalizedException {
+        sortAndSave(menuItem);
+    }
+
+    private void sortAndSave(MenuItem menuItem) throws LocalizedException {
+        boolean isNew = Objects.isNull(menuItem.getId());
+        MenuItem currentItem = new MenuItem();
+        if (!isNew) {
+            currentItem = findById(menuItem.getId());
+        } else {
+            menuItem = menuItemRepository.save(menuItem);
+        }
+
+        Integer currentOrder = Objects.isNull(currentItem.getDisplayOrder()) ? 0 : currentItem.getDisplayOrder();
+        Integer newOrder = menuItem.getDisplayOrder();
+        if (currentOrder.equals(newOrder) && newOrder != 0) {
+            menuItemRepository.save(menuItem);
+            return;
+        }
+        List<MenuItem> categoryItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(menuItem.getCategory().getId());
+
+        //In case of adding first MenuItem to a Category.
+        if (categoryItems.size() == 1) {
+            newOrder = 1;
+        }
+
+        int maxOrder = categoryItems.size();
+        if (newOrder > maxOrder) {
+            newOrder = maxOrder;
+        } else if (newOrder < 1) {
+            newOrder = 1;
+        }
+
+        if (isNew) {
+            for (MenuItem mi : categoryItems) {
+                if (mi.getDisplayOrder() >= newOrder) {
+                    mi.setDisplayOrder(mi.getDisplayOrder() + 1);
+                }
+            }
+        } else {
+            if (newOrder > currentOrder) {
+                for (MenuItem mi : categoryItems) {
+                    if (mi.getDisplayOrder() > currentOrder && mi.getDisplayOrder() <= newOrder) {
+                        mi.setDisplayOrder(mi.getDisplayOrder() - 1);
+                    }
+                }
+            } else {
+                for (MenuItem mi : categoryItems) {
+                    if (mi.getDisplayOrder() >= newOrder && mi.getDisplayOrder() < currentOrder) {
+                        mi.setDisplayOrder(mi.getDisplayOrder() + 1);
+                    }
+                }
+            }
+        }
+
+        for (MenuItem mi : categoryItems) {
+            if (mi.getId().equals(menuItem.getId())) {
+                mi.setDisplayOrder(newOrder);
+            }
+        }
+
+        menuItemRepository.saveAll(categoryItems);
     }
 
     @Override
