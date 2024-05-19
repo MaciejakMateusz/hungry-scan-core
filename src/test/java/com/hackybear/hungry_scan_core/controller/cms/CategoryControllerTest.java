@@ -1,6 +1,8 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.repository.CategoryRepository;
+import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -39,6 +41,10 @@ class CategoryControllerTest {
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private MenuItemRepository menuItemRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -201,6 +207,259 @@ class CategoryControllerTest {
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderToBigger() throws Exception {
+        Category existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
+        assertEquals(1, existingCategory.getDisplayOrder());
+        existingCategory.setDisplayOrder(3);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
+
+        Category updatedCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
+        assertEquals(3, updatedCategory.getDisplayOrder());
+
+        Category thirdToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, Category.class);
+        assertEquals(2, thirdToSecond.getDisplayOrder());
+
+        Category secondToFirst =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, Category.class);
+        assertEquals(1, secondToFirst.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderToLower() throws Exception {
+        Category existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 5, Category.class);
+        assertEquals(5, existingCategory.getDisplayOrder());
+        existingCategory.setDisplayOrder(2);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
+
+        Category updatedCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 5, Category.class);
+        assertEquals(2, updatedCategory.getDisplayOrder());
+
+        Category secondToThird =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, Category.class);
+        assertEquals(3, secondToThird.getDisplayOrder());
+
+        Category fourthToFifth =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 4, Category.class);
+        assertEquals(5, fourthToFifth.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderToLastWithTooBigValue() throws Exception {
+        Category existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
+        assertEquals(1, existingCategory.getDisplayOrder());
+        existingCategory.setDisplayOrder(15);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
+
+        Category updatedCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
+        assertEquals(9, updatedCategory.getDisplayOrder());
+
+        Category ninthToEight =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+        assertEquals(8, ninthToEight.getDisplayOrder());
+
+        Category thirdToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, Category.class);
+        assertEquals(2, thirdToSecond.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderToFirstWithTooLowValue() throws Exception {
+        Category existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, Category.class);
+        assertEquals(3, existingCategory.getDisplayOrder());
+        existingCategory.setDisplayOrder(-2);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
+
+        Category updatedCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, Category.class);
+        assertEquals(1, updatedCategory.getDisplayOrder());
+
+        Category firstToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
+        assertEquals(2, firstToSecond.getDisplayOrder());
+
+        Category secondToThird =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, Category.class);
+        assertEquals(3, secondToThird.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderFromLastToFirst() throws Exception {
+        Category existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+        assertEquals(9, existingCategory.getDisplayOrder());
+        existingCategory.setDisplayOrder(1);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
+
+        Category updatedCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+        assertEquals(1, updatedCategory.getDisplayOrder());
+
+        Category firstToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
+        assertEquals(2, firstToSecond.getDisplayOrder());
+
+        Category eightToNinth =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 8, Category.class);
+        assertEquals(9, eightToNinth.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderFromFirstToLast() throws Exception {
+        Category existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
+        assertEquals(1, existingCategory.getDisplayOrder());
+        existingCategory.setDisplayOrder(9);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
+
+        Category updatedCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
+        assertEquals(9, updatedCategory.getDisplayOrder());
+
+        Category secondToFirst =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, Category.class);
+        assertEquals(1, secondToFirst.getDisplayOrder());
+
+        Category ninthToEight =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+        assertEquals(8, ninthToEight.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldAddNewWithExistingDisplayOrder() throws Exception {
+        Category category = createCategory();
+        category.setDisplayOrder(2);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
+
+        List<Category> categories =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories", Category.class);
+
+        assertEquals(10, categories.size());
+        assertEquals("Food", categories.get(1).getName());
+        assertEquals(2, categories.get(1).getDisplayOrder());
+        assertEquals("Przystawki", categories.get(0).getName());
+        assertEquals("Makarony", categories.get(2).getName());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldAddFirstAssertDisplayOrder1() throws Exception {
+        Category category = createCategory();
+
+        menuItemRepository.deleteAll();
+        categoryRepository.deleteAll();
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
+
+        List<Category> categories =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories", Category.class);
+        assertEquals(1, categories.size());
+        Category persistedCategory = categories.get(0);
+        assertEquals("Food", persistedCategory.getName());
+        assertEquals(1, persistedCategory.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldHandleBoundaryDisplayOrders() throws Exception {
+        Category category = createCategory();
+        category.setDisplayOrder(Integer.MIN_VALUE);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
+
+        List<Category> categories =
+                apiRequestUtils.fetchAsList("/api/cms/categories", Category.class);
+        assertEquals(10, categories.size());
+        category = categories.get(0);
+        assertEquals("Food", category.getName());
+        assertEquals(1, category.getDisplayOrder());
+        assertEquals("Przystawki", categories.get(1).getName());
+        assertEquals(2, categories.get(1).getDisplayOrder());
+
+        category.setDisplayOrder(Integer.MAX_VALUE);
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
+
+        categories = apiRequestUtils.fetchAsList("/api/cms/categories", Category.class);
+        category = categories.get(categories.size() - 1);
+
+        assertEquals("Food", category.getName());
+        assertEquals(10, category.getDisplayOrder());
+        assertEquals("Przystawki", categories.get(0).getName());
+        assertEquals(1, categories.get(0).getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldHandleMiddleReordering() throws Exception {
+        Category category = createCategory();
+        category.setDisplayOrder(3);
+
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
+
+        List<Category> categories =
+                apiRequestUtils.fetchAsList("/api/cms/categories", Category.class);
+        assertEquals(10, categories.size());
+        category = categories.get(2);
+        assertEquals("Food", category.getName());
+        assertEquals(3, category.getDisplayOrder());
+        assertEquals("Sałatki", categories.get(3).getName());
+        assertEquals(4, categories.get(3).getDisplayOrder());
+
+        category.setDisplayOrder(5);
+        apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
+
+        categories = apiRequestUtils.fetchAsList("/api/cms/categories", Category.class);
+        category = categories.get(4);
+        assertEquals("Food", category.getName());
+        assertEquals(5, category.getDisplayOrder());
+        assertEquals("Pizza", categories.get(5).getName());
+        assertEquals(6, categories.get(5).getDisplayOrder());
     }
 
     @Test

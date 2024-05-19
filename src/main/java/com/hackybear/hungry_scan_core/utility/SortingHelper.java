@@ -60,7 +60,7 @@ public class SortingHelper {
             return;
         }
 
-        List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAllByOrderByDisplayOrder();
         newOrder = adjustNewOrderIfNeeded(newOrder, categories);
 
         if (isNew) {
