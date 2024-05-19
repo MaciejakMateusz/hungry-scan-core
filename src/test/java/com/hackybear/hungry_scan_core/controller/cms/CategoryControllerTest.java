@@ -54,7 +54,7 @@ class CategoryControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/categories", Category.class);
 
-        assertEquals(8, categories.size());
+        assertEquals(9, categories.size());
         assertEquals("Przystawki", categories.get(0).getName());
         assertEquals("Napoje", categories.get(7).getName());
     }
@@ -109,8 +109,10 @@ class CategoryControllerTest {
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
 
-        Category persistedCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
+        List<Category> categories =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories", Category.class);
+        Category persistedCategory = categories.get(categories.size() - 1);
         assertEquals("Food", persistedCategory.getName());
         assertEquals("Good foot.", persistedCategory.getDescription());
     }
@@ -228,6 +230,7 @@ class CategoryControllerTest {
         Category category = new Category();
         category.setName("Food");
         category.setDescription("Good foot.");
+        category.setDisplayOrder(10);
         return category;
     }
 }

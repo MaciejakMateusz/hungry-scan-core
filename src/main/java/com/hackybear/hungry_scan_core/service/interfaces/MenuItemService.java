@@ -13,7 +13,7 @@ public interface MenuItemService {
 
     MenuItem findById(Integer id) throws LocalizedException;
 
-    void save(MenuItem menuItem);
+    void save(MenuItem menuItem) throws LocalizedException;
 
     void delete(Integer id) throws LocalizedException;
 }

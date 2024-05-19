@@ -124,11 +124,15 @@ class MenuItemControllerTest {
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 34, MenuItem.class);
+        List<MenuItem> menuItems =
+                apiRequestUtils.postAndGetList(
+                        "/api/cms/items/by-category", 3, MenuItem.class);
 
+        assertEquals(6, menuItems.size());
+        MenuItem persistedMenuItem = menuItems.get(menuItems.size() - 1);
         assertEquals("Sample Item", persistedMenuItem.getName());
         assertEquals("Sample description", persistedMenuItem.getDescription());
+        assertEquals(3, menuItem.getCategory().getId());
         assertEquals(5, persistedMenuItem.getIngredients().size());
         assertEquals(5, persistedMenuItem.getAdditionalIngredients().size());
         assertEquals(1, persistedMenuItem.getAllergens().size());
@@ -189,6 +193,264 @@ class MenuItemControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderToBigger() throws Exception {
+        MenuItem persistedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        assertEquals(1, persistedMenuItem.getDisplayOrder());
+        persistedMenuItem.setDisplayOrder(3);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+
+        MenuItem updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        assertEquals(3, updatedMenuItem.getDisplayOrder());
+
+        MenuItem thirdToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItem.class);
+        assertEquals(2, thirdToSecond.getDisplayOrder());
+
+        MenuItem secondToFirst =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
+        assertEquals(1, secondToFirst.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderToLower() throws Exception {
+        MenuItem persistedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
+        assertEquals(5, persistedMenuItem.getDisplayOrder());
+        persistedMenuItem.setDisplayOrder(2);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+
+        MenuItem updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
+        assertEquals(2, updatedMenuItem.getDisplayOrder());
+
+        MenuItem secondToThird =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
+        assertEquals(3, secondToThird.getDisplayOrder());
+
+        MenuItem fourthToFifth =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
+        assertEquals(5, fourthToFifth.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderToLastWithTooBigValue() throws Exception {
+        MenuItem persistedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        assertEquals(1, persistedMenuItem.getDisplayOrder());
+        persistedMenuItem.setDisplayOrder(15);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+
+        MenuItem updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        assertEquals(5, updatedMenuItem.getDisplayOrder());
+
+        MenuItem fifthToFourth =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
+        assertEquals(4, fifthToFourth.getDisplayOrder());
+
+        MenuItem thirdToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItem.class);
+        assertEquals(2, thirdToSecond.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderToFirstWithTooLowValue() throws Exception {
+        MenuItem persistedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItem.class);
+        assertEquals(3, persistedMenuItem.getDisplayOrder());
+        persistedMenuItem.setDisplayOrder(-2);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+
+        MenuItem updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItem.class);
+        assertEquals(1, updatedMenuItem.getDisplayOrder());
+
+        MenuItem firstToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        assertEquals(2, firstToSecond.getDisplayOrder());
+
+        MenuItem secondToThird =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
+        assertEquals(3, secondToThird.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderFromLastToFirst() throws Exception {
+        MenuItem persistedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
+        assertEquals(5, persistedMenuItem.getDisplayOrder());
+        persistedMenuItem.setDisplayOrder(1);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+
+        MenuItem updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
+        assertEquals(1, updatedMenuItem.getDisplayOrder());
+
+        MenuItem firstToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        assertEquals(2, firstToSecond.getDisplayOrder());
+
+        MenuItem fourthToFifth =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
+        assertEquals(5, fourthToFifth.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldChangeDisplayOrderFromFirstToLast() throws Exception {
+        MenuItem persistedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        assertEquals(1, persistedMenuItem.getDisplayOrder());
+        persistedMenuItem.setDisplayOrder(5);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+
+        MenuItem updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        assertEquals(5, updatedMenuItem.getDisplayOrder());
+
+        MenuItem secondToFirst =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
+        assertEquals(1, secondToFirst.getDisplayOrder());
+
+        MenuItem fifthToFourth =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
+        assertEquals(4, fifthToFourth.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldAddNewWithExistingDisplayOrder() throws Exception {
+        MenuItem menuItem = createMenuItem();
+        menuItem.setDisplayOrder(2);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+
+        List<MenuItem> menuItems =
+                apiRequestUtils.postAndGetList(
+                        "/api/cms/items/by-category", 3, MenuItem.class);
+
+        assertEquals(6, menuItems.size());
+        assertEquals("Sample Item", menuItems.get(1).getName());
+        assertEquals(2, menuItems.get(1).getDisplayOrder());
+        assertEquals("Sałatka grecka", menuItems.get(0).getName());
+        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldAddFirstToEmptyCategoryAssertDisplayOrder1() throws Exception {
+        MenuItem menuItem = menuItemFactory.createMenuItem(
+                "Sample Item",
+                "Sample description",
+                9,
+                Money.of(23.55));
+        menuItem.setDisplayOrder(22);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+
+        List<MenuItem> menuItems =
+                apiRequestUtils.postAndGetList(
+                        "/api/cms/items/by-category", 9, MenuItem.class);
+        assertEquals(1, menuItems.size());
+        MenuItem persistedMenuItem = menuItems.get(0);
+        assertEquals("Sample Item", persistedMenuItem.getName());
+        assertEquals(1, persistedMenuItem.getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldHandleBoundaryDisplayOrders() throws Exception {
+        MenuItem menuItem = createMenuItem();
+        menuItem.setDisplayOrder(Integer.MIN_VALUE);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+
+        List<MenuItem> menuItems =
+                apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
+        assertEquals(6, menuItems.size());
+        menuItem = menuItems.get(0);
+        assertEquals("Sample Item", menuItem.getName());
+        assertEquals(1, menuItem.getDisplayOrder());
+        assertEquals("Sałatka grecka", menuItems.get(1).getName());
+        assertEquals(2, menuItems.get(1).getDisplayOrder());
+
+        menuItem.setDisplayOrder(Integer.MAX_VALUE);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+
+        menuItems = apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
+        menuItem = menuItems.get(menuItems.size() - 1);
+
+        assertEquals("Sample Item", menuItem.getName());
+        assertEquals(6, menuItem.getDisplayOrder());
+
+        assertEquals("Sałatka grecka", menuItems.get(0).getName());
+        assertEquals(1, menuItems.get(0).getDisplayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldHandleMiddleReordering() throws Exception {
+        MenuItem menuItem = createMenuItem();
+        menuItem.setDisplayOrder(3);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+
+        List<MenuItem> menuItems =
+                apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
+        assertEquals(6, menuItems.size());
+        menuItem = menuItems.get(2);
+        assertEquals("Sample Item", menuItem.getName());
+        assertEquals(3, menuItem.getDisplayOrder());
+        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami", menuItems.get(3).getName());
+        assertEquals(4, menuItems.get(3).getDisplayOrder());
+
+        menuItem.setDisplayOrder(2);
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+
+        menuItems = apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
+        menuItem = menuItems.get(1);
+        assertEquals("Sample Item", menuItem.getName());
+        assertEquals(2, menuItem.getDisplayOrder());
+        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName());
+        assertEquals(3, menuItems.get(2).getDisplayOrder());
+
+    }
+
+    @Test
     @WithMockUser(roles = "ADMIN", username = "admin")
     @Transactional
     @Rollback
@@ -215,6 +477,7 @@ class MenuItemControllerTest {
         return menuItemFactory.createMenuItem(
                 "Sample Item",
                 "Sample description",
+                3,
                 Money.of(23.55));
     }
 

@@ -21,7 +21,8 @@ public class MenuItemController {
     private final MenuItemService menuItemService;
     private final ResponseHelper responseHelper;
 
-    public MenuItemController(MenuItemService menuItemService, ResponseHelper responseHelper) {
+    public MenuItemController(MenuItemService menuItemService,
+                              ResponseHelper responseHelper) {
         this.menuItemService = menuItemService;
         this.responseHelper = responseHelper;
     }

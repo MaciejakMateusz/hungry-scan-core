@@ -1,10 +1,10 @@
 package com.hackybear.hungry_scan_core.repository;
 
+import com.hackybear.hungry_scan_core.entity.MenuItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.hackybear.hungry_scan_core.entity.MenuItem;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,5 +17,5 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Integer> {
             "WHERE variants_id = :variantId LIMIT 1", nativeQuery = true)
     Optional<MenuItem> findByVariantId(@Param("variantId") Integer variantId);
 
-    List<MenuItem> findAllByCategoryId(Integer categoryId);
+    List<MenuItem> findAllByCategoryIdOrderByDisplayOrder(Integer categoryId);
 }

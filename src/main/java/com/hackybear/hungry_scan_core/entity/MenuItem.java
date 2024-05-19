@@ -40,6 +40,7 @@ public class MenuItem {
     private String name;
 
     @ManyToOne
+    @NotNull
     private Category category;
 
     @Column(length = 500)
@@ -66,6 +67,10 @@ public class MenuItem {
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private Set<Ingredient> additionalIngredients = new HashSet<>();
+
+    @Column(nullable = false)
+    @NotNull
+    private Integer displayOrder;
 
     private boolean isAvailable = true;
 
