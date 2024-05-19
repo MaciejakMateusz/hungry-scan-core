@@ -82,7 +82,7 @@ public class MenuItemServiceImpTest {
     @Test
     @Transactional
     @Rollback
-    public void shouldInsertNew() throws LocalizedException {
+    public void shouldInsertNew() throws Exception {
         MenuItem newMenuItem = createMenuItem(
                 "Burger",
                 categoryService.findById(2),
@@ -151,7 +151,7 @@ public class MenuItemServiceImpTest {
     @Test
     @Transactional
     @Rollback
-    public void shouldUpdate() throws LocalizedException {
+    public void shouldUpdate() throws Exception {
         MenuItem existingMenuItem = menuItemService.findById(23);
         assertEquals("Pizza Capricciosa", existingMenuItem.getName());
 
