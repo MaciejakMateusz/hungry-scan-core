@@ -14,4 +14,5 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     @Query("SELECT Category from Category c WHERE c.isAvailable = true ORDER BY c.displayOrder")
     List<Category> findAllAvailable();
 
+    List<Category> findAllByOrderByDisplayOrder();
 }

@@ -406,7 +406,6 @@ class MenuItemControllerTest {
         assertEquals(2, menuItems.get(1).getDisplayOrder());
 
         menuItem.setDisplayOrder(Integer.MAX_VALUE);
-
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
         menuItems = apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
@@ -447,7 +446,6 @@ class MenuItemControllerTest {
         assertEquals(2, menuItem.getDisplayOrder());
         assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName());
         assertEquals(3, menuItems.get(2).getDisplayOrder());
-
     }
 
     @Test

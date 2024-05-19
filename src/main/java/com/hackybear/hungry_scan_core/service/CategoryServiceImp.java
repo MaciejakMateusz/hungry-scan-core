@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
+import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +17,17 @@ public class CategoryServiceImp implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ExceptionHelper exceptionHelper;
+    private final SortingHelper sortingHelper;
 
-    public CategoryServiceImp(CategoryRepository categoryRepository, ExceptionHelper exceptionHelper) {
+    public CategoryServiceImp(CategoryRepository categoryRepository, ExceptionHelper exceptionHelper, SortingHelper sortingHelper) {
         this.categoryRepository = categoryRepository;
         this.exceptionHelper = exceptionHelper;
+        this.sortingHelper = sortingHelper;
     }
 
     @Override
     public List<Category> findAll() {
-        return categoryRepository.findAll();
+        return categoryRepository.findAllByOrderByDisplayOrder();
     }
 
     @Override
@@ -40,8 +43,8 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public void save(Category category) {
-        categoryRepository.save(category);
+    public void save(Category category) throws Exception {
+        sortingHelper.sortAndSave(category, this::findById);
     }
 
     @Override

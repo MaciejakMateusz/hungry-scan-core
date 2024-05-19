@@ -13,7 +13,7 @@ public interface CategoryService {
 
     Category findById(Integer id) throws LocalizedException;
 
-    void save(Category category);
+    void save(Category category) throws Exception;
 
     void delete(Integer id) throws LocalizedException;
 }

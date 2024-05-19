@@ -78,7 +78,7 @@ class CategoryServiceImpTest {
     @Test
     @Transactional
     @Rollback
-    public void shouldInsertNew() throws LocalizedException {
+    public void shouldInsertNew() throws Exception {
         Category newCategory = createCategory("Tajskie", "Ostre, orientalne posiłki prosto z dalekiego kraju");
         categoryService.save(newCategory);
         Category category = categoryService.findById(newCategory.getId());
@@ -111,7 +111,7 @@ class CategoryServiceImpTest {
     @Test
     @Transactional
     @Rollback
-    public void shouldUpdate() throws LocalizedException {
+    public void shouldUpdate() throws Exception {
         Category existingCategory = categoryService.findById(7);
         existingCategory.setName("Testowe jedzenie");
         categoryService.save(existingCategory);
