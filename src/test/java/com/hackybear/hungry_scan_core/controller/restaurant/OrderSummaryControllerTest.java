@@ -49,6 +49,7 @@ public class OrderSummaryControllerTest {
 
     private OrderSummary table9Summary = new OrderSummary();
     private OrderSummary table11Summary = new OrderSummary();
+
     @Autowired
     private RestaurantTableRepository restaurantTableRepository;
 

@@ -4,6 +4,8 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.Feedback;
 import com.hackybear.hungry_scan_core.service.interfaces.FeedbackService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/restaurant/feedback")
-@PreAuthorize("isAuthenticated()")
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
@@ -27,25 +28,32 @@ public class FeedbackController {
         this.responseHelper = responseHelper;
     }
 
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
         return responseHelper.getResponseEntity(id, feedbackService::findById);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public ResponseEntity<?> save(@RequestBody @Valid Feedback feedback, BindingResult br) {
         return responseHelper.buildResponse(feedback, br, feedbackService::save);
     }
 
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @PostMapping
-    public ResponseEntity<Map<String, Object>> getByDate(@RequestBody Pageable pageable) {
-        return responseHelper.buildResponse(pageable, feedbackService::findAll);
+    public ResponseEntity<Page<Feedback>> findFeedbacks(@RequestBody Map<String, Object> params) {
+        Integer pageSize = (Integer) params.get("pageSize");
+        Integer pageNumber = (Integer) params.get("pageNumber");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Feedback> feedbacks = feedbackService.findAll(pageable);
+        return ResponseEntity.ok(feedbacks);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Allow", "GET, POST, OPTIONS");
+        headers.add("Allow", "POST, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }
