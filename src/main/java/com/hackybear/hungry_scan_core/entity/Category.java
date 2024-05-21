@@ -1,17 +1,17 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hackybear.hungry_scan_core.annotation.SizeIfNotEmpty;
+import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 @Getter
 @Setter
@@ -25,14 +25,11 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 100, nullable = false)
-    @NotBlank
-    private String name;
-
-    @SizeIfNotEmpty
-    @Length(max = 300)
-    @Column(length = 300)
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
+    @DefaultTranslationNotBlank
+    @NotNull
+    private Translatable name;
 
     private boolean isAvailable = true;
 
@@ -50,6 +47,7 @@ public class Category {
 
     @Override
     public String toString() {
-        return name;
+        Locale locale = LocaleContextHolder.getLocale();
+        return locale.getISO3Language().equals("pl") ? name.getDefaultTranslation() : name.getTranslationEn();
     }
 }

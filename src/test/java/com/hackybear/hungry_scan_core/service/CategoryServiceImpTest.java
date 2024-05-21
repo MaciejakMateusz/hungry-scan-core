@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import jakarta.validation.ConstraintViolationException;
@@ -52,7 +53,7 @@ class CategoryServiceImpTest {
     @Test
     void shouldFindById() throws LocalizedException {
         Category category = categoryService.findById(1);
-        assertEquals("Przystawki", category.getName());
+        assertEquals("Przystawki", category.getName().getDefaultTranslation());
     }
 
     @Test
@@ -62,49 +63,33 @@ class CategoryServiceImpTest {
 
     @Test
     public void shouldReturnAll() {
-        List<Category> categories = List.of(
-                createCategory("Przystawki", "Rozpocznij swoją kulinarną podróż..."),
-                createCategory("Makarony", "Ciesz się smakiem Włoch dzięki naszym wyśmienitym makaronom."),
-                createCategory("Sałatki", "Zachwyć swoje zmysły zdrowymi i świeżymi sałatkami."),
-                createCategory("Zupy", "Rozgrzej się pysznymi zupami."),
-                createCategory("Pizza", "Zanurz się w prawdziwym smaku pizzy."),
-                createCategory("Wegetariańskie", "Odkryj różnorodność wegetariańskich smaków."),
-                createCategory("Dla dzieci", "Zaspokój apetyt najmłodszych przyjemnymi dla podniebienia daniami."),
-                createCategory("Napoje", "Uzupełnij swoje doznania smakowe pysznymi napojami."),
-                createCategory("Pusta", ""));
-        assertEquals(categories.toString(), getCategories().toString());
+        List<Category> allCategories = getCategories();
+        assertEquals(9, allCategories.size());
+        assertEquals("Pizza", allCategories.get(4).getName().getDefaultTranslation());
+        assertEquals("Makarony", allCategories.get(1).getName().getDefaultTranslation());
+        assertEquals("Pastas", allCategories.get(1).getName().getTranslationEn());
     }
 
     @Test
     @Transactional
     @Rollback
     public void shouldInsertNew() throws Exception {
-        Category newCategory = createCategory("Tajskie", "Ostre, orientalne posiłki prosto z dalekiego kraju");
+        Category newCategory = createCategory();
         categoryService.save(newCategory);
         Category category = categoryService.findById(newCategory.getId());
-        assertEquals("Tajskie", category.getName());
+        assertEquals("Tajskie", category.getName().getDefaultTranslation());
     }
 
     @Test
     public void shouldNotInsertNew() {
         Category category = new Category();
 
-        category.setName("");
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation("");
+        category.setName(translatable);
         assertThrows(ConstraintViolationException.class, () -> categoryService.save(category));
 
         category.setName(null);
-        assertThrows(ConstraintViolationException.class, () -> categoryService.save(category));
-
-        category.setName("Test");
-        category.setDescription("1234");
-        assertThrows(ConstraintViolationException.class, () -> categoryService.save(category));
-
-        category.setDescription("""
-                Indulge your senses in a culinary journey with our exquisite range of delectable delights, carefully curated to tantalize your taste buds and satisfy your cravings. From savory appetizers that awaken your palate to sumptuous main courses that embody culinary perfection, our food category is a symphony of flavors, textures, and aromas. Immerse yourself in the rich tapestry of global cuisines, where each dish is a masterpiece crafted with precision and passion.
-                Explore the vibrant tapestry of tastes, from the spicy and aromatic profiles of Asian cuisine to the comforting familiarity of classic Western dishes. Our menu is a celebration of fresh, locally sourced ingredients that elevate every bite, ensuring a harmonious blend of nutrition and indulgence. Whether you seek the bold and spicy, the subtle and sophisticated, or the comforting and hearty, our diverse selection caters to every palate and preference.
-                Elevate your dining experience with our artisanal desserts, where sweetness meets innovation. Savor the velvety textures, decadent flavors, and artistic presentations that transform each dessert into a work of edible art. From traditional favorites to avant-garde creations, our dessert collection is a testament to the creativity and skill of our culinary artisans.
-                Not just a meal, but a sensorial experience, our food category goes beyond nourishment, offering a symphony of tastes and aromas that transport you to gastronomic bliss. Imbued with a commitment to quality and culinary excellence, our offerings are designed to redefine your dining experience, leaving an indelible mark on your culinary memories. Embrace the extraordinary, savor the exceptional – welcome to a world where food is an art form, and every bite tells a story.
-                """);
         assertThrows(ConstraintViolationException.class, () -> categoryService.save(category));
     }
 
@@ -113,10 +98,10 @@ class CategoryServiceImpTest {
     @Rollback
     public void shouldUpdate() throws Exception {
         Category existingCategory = categoryService.findById(7);
-        existingCategory.setName("Testowe jedzenie");
+        existingCategory.setName(getTranslationPl());
         categoryService.save(existingCategory);
         Category updatedCategory = categoryService.findById(7);
-        assertEquals("Testowe jedzenie", updatedCategory.getName());
+        assertEquals("Testowe jedzenie", updatedCategory.getName().getDefaultTranslation());
     }
 
     @Test
@@ -136,11 +121,18 @@ class CategoryServiceImpTest {
         return categoryService.findAll();
     }
 
-    private Category createCategory(String name, String description) {
+    private Category createCategory() {
         Category category = new Category();
-        category.setName(name);
-        category.setDescription(description);
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation("Tajskie");
+        category.setName(translatable);
         category.setDisplayOrder(10);
         return category;
+    }
+
+    private Translatable getTranslationPl() {
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation("Testowe jedzenie");
+        return translatable;
     }
 }

@@ -35,24 +35,43 @@ VALUES (1, 'Dla osób unikających mięsa i/lub produktów pochodzenia zwierzęc
         'Świeże / Sezonowe'),
        (9, 'Odpowiednie dla osób ograniczających spożycie sodu.', 'icon_low_sodium', 'Niskosodowe');
 
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Przystawki', true, NOW(), null, false, 1);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Makarony', true, NOW(), null, false, 2);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Sałatki', true, NOW(), null, false, 3);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Zupy', true, NOW(), null, false, 4);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Pizza', true, NOW(), null, false, 5);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Wegetariańskie', true, NOW(), null, false, 6);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Dla dzieci', true, NOW(), null, false, 7);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Napoje', true, NOW(), null, true, 8);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Pusta', true, NOW(), null, false, 9);
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Przystawki', 'Starters');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Makarony', 'Pastas');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Sałatki', 'Salads');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Zupy', 'Soups');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Pizza', 'Pizza');
+INSERT INTO translatable(default_translation)
+VALUES ('Wegetariańskie');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Dla dzieci', 'For kids');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Napoje', 'Drinks');
+INSERT INTO translatable(default_translation)
+VALUES ('Pusta');
+
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (1, true, NOW(), null, false, 1);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (2, true, NOW(), null, false, 2);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (3, true, NOW(), null, false, 3);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (4, true, NOW(), null, false, 4);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (5, true, NOW(), null, false, 5);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (6, true, NOW(), null, false, 6);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (7, true, NOW(), null, false, 7);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (8, true, NOW(), null, true, 8);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (9, true, NOW(), null, false, 9);
 
 INSERT INTO ingredients(created, is_available, name, updated, price)
 VALUES ('2024-03-30', 1, 'Pomidory', '2024-03-30', '4.00');
