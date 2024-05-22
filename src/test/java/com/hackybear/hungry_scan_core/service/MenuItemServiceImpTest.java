@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
@@ -14,6 +15,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
@@ -51,14 +53,14 @@ public class MenuItemServiceImpTest {
     public void shouldFindAll() {
         List<MenuItem> menuItems = menuItemService.findAll();
         assertEquals(33, menuItems.size());
-        assertEquals("Makaron z pesto bazyliowym", menuItems.get(29).getName());
+        assertEquals("Makaron z pesto bazyliowym", menuItems.get(29).getName().getDefaultTranslation());
     }
 
     @Test
     public void shouldFindAllByCategoryId() {
         List<MenuItem> menuItems = menuItemService.findAllByCategoryId(3);
         assertEquals(5, menuItems.size());
-        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami", menuItems.get(2).getName());
+        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami", menuItems.get(2).getName().getDefaultTranslation());
     }
 
     @Test
@@ -70,7 +72,7 @@ public class MenuItemServiceImpTest {
     @Test
     public void shouldFindById() throws LocalizedException {
         MenuItem menuItem = menuItemService.findById(12);
-        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItem.getName());
+        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItem.getName().getDefaultTranslation());
     }
 
     @Test
@@ -90,7 +92,7 @@ public class MenuItemServiceImpTest {
                 "/public/assets/burger.png");
         menuItemService.save(newMenuItem);
         MenuItem menuItem = menuItemService.findById(newMenuItem.getId());
-        assertEquals("Z mięsem wegańskim", menuItem.getDescription());
+        assertEquals("Z mięsem wegańskim", menuItem.getDescription().getDefaultTranslation());
         assertEquals("/public/assets/burger.png", menuItem.getImageName());
     }
 
@@ -102,31 +104,16 @@ public class MenuItemServiceImpTest {
                 "Z mięsem i serem wegańskim.",
                 "/public/assets/cheeseburger.png");
 
-        menuItem.setName("");
+        menuItem.setName(getDefaultTranslation(""));
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setName(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> menuItemService.save(menuItem));
 
-        menuItem.setDescription("");
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
-
-        menuItem.setDescription(null);
+        menuItem.setDescription(getDefaultTranslation(""));
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setDescription(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
-    }
-
-    @Test
-    public void shouldNotInsertWithIncorrectDescription() throws LocalizedException {
-        MenuItem menuItem = createMenuItem(
-                "Cheeseburger",
-                categoryService.findById(3),
-                "Z mięsem i serem wegańskim.",
-                "/public/assets/cheeseburger.png");
-
-        menuItem.setDescription("");
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setDescription(null);
@@ -145,7 +132,7 @@ public class MenuItemServiceImpTest {
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setPrice(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> menuItemService.save(menuItem));
     }
 
     @Test
@@ -153,15 +140,15 @@ public class MenuItemServiceImpTest {
     @Rollback
     public void shouldUpdate() throws Exception {
         MenuItem existingMenuItem = menuItemService.findById(23);
-        assertEquals("Pizza Capricciosa", existingMenuItem.getName());
+        assertEquals("Pizza Capricciosa", existingMenuItem.getName().getDefaultTranslation());
 
-        existingMenuItem.setName("Burger wege");
+        existingMenuItem.setName(getDefaultTranslation("Burger wege"));
         existingMenuItem.setPrice(Money.of(44.12));
         existingMenuItem.setImageName("/public/assets/wege-burger.png");
         menuItemService.save(existingMenuItem);
 
         MenuItem updatedMenuItem = menuItemService.findById(23);
-        assertEquals("Burger wege", updatedMenuItem.getName());
+        assertEquals("Burger wege", updatedMenuItem.getName().getDefaultTranslation());
         assertEquals(Money.of(44.12), updatedMenuItem.getPrice());
         assertEquals("/public/assets/wege-burger.png", updatedMenuItem.getImageName());
     }
@@ -171,7 +158,7 @@ public class MenuItemServiceImpTest {
     @Rollback
     public void shouldDelete() throws LocalizedException {
         MenuItem menuItem = menuItemService.findById(23);
-        assertEquals("Pizza Capricciosa", menuItem.getName());
+        assertEquals("Pizza Capricciosa", menuItem.getName().getDefaultTranslation());
         menuItemService.delete(23);
         assertThrows(LocalizedException.class, () -> menuItemService.findById(23));
     }
@@ -181,12 +168,18 @@ public class MenuItemServiceImpTest {
                                     String description,
                                     String imageName) {
         MenuItem menuItem = new MenuItem();
-        menuItem.setName(name);
+        menuItem.setName(getDefaultTranslation(name));
         menuItem.setCategory(category);
-        menuItem.setDescription(description);
+        menuItem.setDescription(getDefaultTranslation(description));
         menuItem.setPrice(Money.of(42.50));
         menuItem.setImageName(imageName);
         menuItem.setDisplayOrder(6);
         return menuItem;
+    }
+
+    private Translatable getDefaultTranslation(String translation) {
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation(translation);
+        return translatable;
     }
 }

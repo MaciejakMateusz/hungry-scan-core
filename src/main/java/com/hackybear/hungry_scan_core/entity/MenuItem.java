@@ -1,12 +1,11 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hackybear.hungry_scan_core.annotation.SizeIfNotEmpty;
+import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -35,18 +34,19 @@ public class MenuItem {
 
     private String imageName;
 
-    @Column(nullable = false, length = 200)
-    @NotBlank
-    private String name;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
+    @DefaultTranslationNotBlank
+    @NotNull
+    private Translatable name;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "translatable_description_id", referencedColumnName = "id")
+    private Translatable description;
 
     @ManyToOne
     @NotNull
     private Category category;
-
-    @Column(length = 500)
-    @SizeIfNotEmpty
-    @NotBlank
-    private String description;
 
     @Column(nullable = false)
     @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
