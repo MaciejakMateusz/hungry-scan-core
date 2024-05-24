@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.Ingredient;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.utility.Money;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ class IngredientControllerTest {
                         "/api/cms/ingredients", Ingredient.class);
 
         assertEquals(26, ingredients.size());
-        assertEquals("Pomidory", ingredients.get(0).getName());
+        assertEquals("Pomidory", ingredients.get(0).getName().getDefaultTranslation());
     }
 
     @Test
@@ -72,7 +73,7 @@ class IngredientControllerTest {
     void shouldShowIngredientById() throws Exception {
         Ingredient ingredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, Ingredient.class);
-        assertEquals("Mozzarella", ingredient.getName());
+        assertEquals("Mozzarella", ingredient.getName().getDefaultTranslation());
     }
 
     @Test
@@ -114,7 +115,7 @@ class IngredientControllerTest {
 
         Ingredient persistedIngredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 27, Ingredient.class);
-        assertEquals("Majeranek", persistedIngredient.getName());
+        assertEquals("Majeranek", persistedIngredient.getName().getDefaultTranslation());
         assertEquals(Money.of(1.00), persistedIngredient.getPrice());
     }
 
@@ -143,16 +144,16 @@ class IngredientControllerTest {
     void shouldUpdateExistingIngredient() throws Exception {
         Ingredient existingIngredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, Ingredient.class);
-        assertEquals("Mozzarella", existingIngredient.getName());
+        assertEquals("Mozzarella", existingIngredient.getName().getDefaultTranslation());
 
-        existingIngredient.setName("Updated mozzarella");
+        existingIngredient.setName(getDefaultTranslation("Updated mozzarella"));
         existingIngredient.setPrice(Money.of(4.00));
 
         apiRequestUtils.postAndExpect200("/api/cms/ingredients/add", existingIngredient);
 
         Ingredient updatedIngredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, Ingredient.class);
-        assertEquals("Updated mozzarella", updatedIngredient.getName());
+        assertEquals("Updated mozzarella", updatedIngredient.getName().getDefaultTranslation());
         assertEquals(Money.of(4.00), updatedIngredient.getPrice());
     }
 
@@ -163,7 +164,7 @@ class IngredientControllerTest {
     void shouldDeleteIngredient() throws Exception {
         Ingredient ingredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, Ingredient.class);
-        assertEquals("Mozzarella", ingredient.getName());
+        assertEquals("Mozzarella", ingredient.getName().getDefaultTranslation());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/ingredients/delete", 6);
 
@@ -181,8 +182,14 @@ class IngredientControllerTest {
 
     private Ingredient createIngredient(String name, BigDecimal price) {
         Ingredient ingredient = new Ingredient();
-        ingredient.setName(name);
+        ingredient.setName(getDefaultTranslation(name));
         ingredient.setPrice(price);
         return ingredient;
+    }
+
+    private Translatable getDefaultTranslation(String value) {
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation(value);
+        return translatable;
     }
 }

@@ -168,59 +168,6 @@ VALUES (8, true, NOW(), null, true, 8);
 INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
 VALUES (9, true, NOW(), null, false, 9);
 
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Pomidory', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Cebula', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Czosnek', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Oliwa z oliwek', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Bazylia', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Mozzarella', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Makaron penne', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Mięso mielone', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Papryka', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Ser parmezan', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Oregano', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Sól', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Pieprz', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Kiełbasa', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Makaron spaghetti', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Kurczak', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Szpinak', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Kapusta', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Masło', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Marchew', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Sos pomidorowy', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Cukier', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Cukinia', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Pietruszka', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Koper', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Ser biały', '2024-03-30', '4.00');
-
 INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
                         is_bestseller, is_new, is_available, price, counter)
 VALUES (10, 1, 1, 11, null, null, false, false, true, 19.99, 0);
@@ -320,25 +267,6 @@ VALUES (72, 8, 2, 73, null, null, false, false, true, 7.00, 0);
 INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
                         is_bestseller, is_new, is_available, price, counter)
 VALUES (74, 8, 3, 75, null, null, false, false, true, 7.00, 0);
-
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (4, 1);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (4, 5);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (4, 6);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (21, 6);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (21, 16);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (21, 2);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (22, 6);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (22, 16);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
-VALUES (22, 2);
 
 INSERT INTO translatable(default_translation)
 VALUES ('Z szpinakiem');
@@ -636,6 +564,106 @@ VALUES ('icon_gluten_free', 127),
        ('icon_coriander', 130),
        ('icon_lactose_free', 131),
        ('icon_spicy', 132);
+
+INSERT INTO translatable (default_translation, translation_en) VALUES('Pomidory', 'Tomatoes');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Cebula', 'Onion');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Czosnek', 'Garlic');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Oliwa z oliwek', 'Olive oil');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Bazylia', 'Basil');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Mozzarella', 'Mozzarella');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Makaron penne', 'Pasta penne');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Mięso mielone', 'Minced meat');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Papryka', 'Bell pepper');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Ser parmezan', 'Parmesan cheese');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Ser parmezan', 'Parmesan cheese');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Oregano', 'Oregano');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Sól', 'Salt');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Pieprz', 'Pepper');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Kiełbasa', 'Sausage');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Makaron spaghetti', 'Spaghetti pasta');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Kurczak', 'Chicken');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Szpinak', 'Spinach');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Kapusta', 'Cabbage');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Masło', 'Butter');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Marchew', 'Carrot');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Sos pomidorowy', 'Tomato sauce');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Cukier', 'Sugar');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Cukinia', 'Zucchini');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Pietruszka', 'Parsley');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Koper', 'Dill');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Ser biały', 'White cheese');
+
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 133, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 134, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 135, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 136, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 137, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 138, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 139, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 140, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 141, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 142, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 143, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 144, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 145, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 146, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 147, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 148, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 149, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 150, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 151, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 152, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 153, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 154, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 155, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 156, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 157, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 158, '2024-03-30', '4.00');
+
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (4, 1);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (4, 5);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (4, 6);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (21, 6);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (21, 16);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (21, 2);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (22, 6);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (22, 16);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (22, 2);
 
 INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
 VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', '16:00:00');
