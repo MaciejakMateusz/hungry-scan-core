@@ -1,24 +1,3 @@
-INSERT INTO allergens(id, description, icon_name, name)
-VALUES (1,
-        'Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.',
-        'icon_gluten', 'Gluten'),
-       (2, 'Skorupiaki i produkty pochodne.', 'icon_crustaceans', 'Skorupiaki'),
-       (3, 'Jaja i produkty pochodne.', 'icon_eggs', 'Jaja'),
-       (4, 'Ryby i produkty pochodne.', 'icon_fish', 'Ryby'),
-       (5, 'Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'icon_peanuts', 'Orzeszki ziemne'),
-       (6, 'Soja i produkty pochodne.', 'icon_soybeans', 'Soja'),
-       (7, 'Mleko i produkty pochodne (łącznie z laktozą).', 'icon_milk', 'Mleko'),
-       (8,
-        'Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.',
-        'icon_nuts', 'Orzechy'),
-       (9, 'Seler i produkty pochodne.', 'icon_celery', 'Seler'),
-       (10, 'Gorczyca i produkty pochodne.', 'icon_mustard', 'Gorczyca'),
-       (11, 'Nasiona sezamu i produkty pochodne.', 'icon_sesame', 'Nasiona sezamu'),
-       (12, 'Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.',
-        'icon_sulfur_dioxide', 'Dwutlenek siarki'),
-       (13, 'Łubin i produkty pochodne.', 'icon_lupin', 'Łubin'),
-       (14, 'Mięczaki i produkty pochodne.', 'icon_molluscs', 'Mięczaki');
-
 INSERT INTO labels (id, description, icon_name, name)
 VALUES (1, 'Dla osób unikających mięsa i/lub produktów pochodzenia zwierzęcego.', 'icon_leaf',
         'Wegetariańskie / Wegańskie'),
@@ -579,6 +558,79 @@ INSERT INTO role (name, translatable_displayed_name_id)
 VALUES ('ROLE_CUSTOMER', 97);
 INSERT INTO role (name, translatable_displayed_name_id)
 VALUES ('ROLE_CUSTOMER_READONLY', 98);
+
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Gluten', 'Gluten');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.', 'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Skorupiaki', 'Crustaceans');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Skorupiaki i produkty pochodne.', 'Crustaceans and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Jaja', 'Eggs');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Jaja i produkty pochodne.', 'Eggs and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Ryby', 'Fish');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Ryby i produkty pochodne.', 'Fish and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Orzeszki ziemne', 'Peanuts');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'Peanuts and related products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Soja', 'Soybeans');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Soja i produkty pochodne.', 'Soybeans and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Mleko', 'Milk');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Mleko i produkty pochodne (łącznie z laktozą).', 'Milk and derived products (including lactose).');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Orzechy', 'Nuts');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.', 'Nuts, i.e. almonds, hazelnuts, walnuts, cashews, pecans, Brazil nuts, pistachios/pistachio nuts, macadamia nuts and related products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Seler', 'Celery');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Seler i produkty pochodne.', 'Celery amd derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Gorczyca', 'Mustard');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Gorczyca i produkty pochodne.', 'Mustard and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Nasiona sezamu', 'Sesame');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Nasiona sezamu i produkty pochodne.', 'Sesame and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Dwutlenek siarki', 'Sulfur dioxide');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.', 'Sulfur dioxide and sulphites in concentrations above 10 mg/kg or 10 mg/l expressed as SO2.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Łubin', 'Lupin');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Łubin i produkty pochodne.', 'Lupin and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Mięczaki', 'Molluscs');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
+
+INSERT INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
+VALUES (1, 100, 'icon_gluten', 99),
+       (2, 102, 'icon_crustaceans', 101),
+       (3, 104, 'icon_eggs', 103),
+       (4, 106, 'icon_fish', 105),
+       (5, 108, 'icon_peanuts', 107),
+       (6, 110, 'icon_soybeans', 109),
+       (7, 112, 'icon_milk', 111),
+       (8, 114, 'icon_nuts', 113),
+       (9, 116, 'icon_celery', 115),
+       (10, 118, 'icon_mustard', 117),
+       (11, 120, 'icon_sesame', 119),
+       (12, 122, 'icon_sulfur_dioxide', 121),
+       (13, 124, 'icon_lupin', 123),
+       (14, 126, 'icon_molluscs', 125);
 
 INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
 VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', '16:00:00');

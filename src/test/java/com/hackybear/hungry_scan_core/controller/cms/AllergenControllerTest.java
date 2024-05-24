@@ -53,7 +53,7 @@ class AllergenControllerTest {
                         "/api/cms/allergens", Allergen.class);
 
         assertEquals(14, allergens.size());
-        assertEquals("Gluten", allergens.get(0).getName());
+        assertEquals("Gluten", allergens.get(0).getName().getDefaultTranslation());
     }
 
     @Test
@@ -66,7 +66,7 @@ class AllergenControllerTest {
     void shouldShowAllergenById() throws Exception {
         Allergen allergen =
                 apiRequestUtils.postObjectExpect200("/api/cms/allergens/show", 6, Allergen.class);
-        assertEquals("Soja", allergen.getName());
+        assertEquals("Soja", allergen.getName().getDefaultTranslation());
     }
 
     @Test
