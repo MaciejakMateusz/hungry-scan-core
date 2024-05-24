@@ -185,40 +185,6 @@ INSERT INTO translatable(default_translation)
 VALUES ('Coca-cola');
 INSERT INTO translatable(default_translation)
 VALUES ('250ml');
-INSERT INTO translatable(default_translation)
-VALUES ('Z szpinakiem');
-INSERT INTO translatable(default_translation)
-VALUES ('Z konfiturą cebulową');
-INSERT INTO translatable(default_translation)
-VALUES ('Mała');
-INSERT INTO translatable(default_translation)
-VALUES ('Średnia');
-INSERT INTO translatable(default_translation)
-VALUES ('Duża');
-INSERT INTO translatable(default_translation)
-VALUES ('Mała');
-INSERT INTO translatable(default_translation)
-VALUES ('Średnia');
-INSERT INTO translatable(default_translation)
-VALUES ('Duża');
-INSERT INTO translatable(default_translation)
-VALUES ('Mała');
-INSERT INTO translatable(default_translation)
-VALUES ('Średnia');
-INSERT INTO translatable(default_translation)
-VALUES ('Duża');
-INSERT INTO translatable(default_translation)
-VALUES ('Mała');
-INSERT INTO translatable(default_translation)
-VALUES ('Średnia');
-INSERT INTO translatable(default_translation)
-VALUES ('Duża');
-INSERT INTO translatable(default_translation)
-VALUES ('Mała');
-INSERT INTO translatable(default_translation)
-VALUES ('Średnia');
-INSERT INTO translatable(default_translation)
-VALUES ('Duża');
 
 INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
 VALUES (1, true, NOW(), null, false, 1);
@@ -411,6 +377,41 @@ VALUES (22, 16);
 INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
 VALUES (22, 2);
 
+INSERT INTO translatable(default_translation)
+VALUES ('Z szpinakiem');
+INSERT INTO translatable(default_translation)
+VALUES ('Z konfiturą cebulową');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+
 INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
 VALUES (NOW(), true, true, 76, '0.00', null);
 INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
@@ -553,18 +554,31 @@ INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, 
                                zone_id, has_qr_code, qr_name)
 VALUES (true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19, true, null, false, null);
 
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_WAITER', 'Kelner');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_ADMIN', 'Administrator');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_MANAGER', 'Menadżer');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_COOK', 'Kucharz');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_CUSTOMER', 'Klient');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_CUSTOMER_READONLY', 'Klient (tylko odczyt)');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Kelner', 'Waiter');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Administrator', 'Admin');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Menadżer', 'Manager');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Kucharz', 'Cook');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Klient', 'Customer');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Klient (tylko odczyt)', 'Customer (read only)');
+
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_WAITER', 93);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_ADMIN', 94);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_MANAGER', 95);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_COOK', 96);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_CUSTOMER', 97);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_CUSTOMER_READONLY', 98);
 
 INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
 VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', '16:00:00');

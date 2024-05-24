@@ -1,20 +1,33 @@
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+(1, 'Kelner', 'Waiter');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+(2, 'Administrator', 'Admin');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+(3, 'Menadżer', 'Manager');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+(4, 'Kucharz', 'Cook');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+(5, 'Klient', 'Customer');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+(6, 'Klient (tylko odczyt)', 'Customer (read only)');
+
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
                              employee_session_time, is_order_comment_allowed)
 VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 3, 20, false);
 
-INSERT IGNORE INTO role (id, name, displayed_name)
-VALUES (1, 'ROLE_WAITER', 'Kelner');
-INSERT IGNORE INTO role (id, name, displayed_name)
-VALUES (2, 'ROLE_ADMIN', 'Administrator');
-INSERT IGNORE INTO role (id, name, displayed_name)
-VALUES (3, 'ROLE_MANAGER', 'Menadżer');
-INSERT IGNORE INTO role (id, name, displayed_name)
-VALUES (4, 'ROLE_COOK', 'Kucharz');
-INSERT IGNORE INTO role (id, name, displayed_name)
-VALUES (5, 'ROLE_CUSTOMER', 'Klient');
-INSERT IGNORE INTO role (id, name, displayed_name)
-VALUES (6, 'ROLE_CUSTOMER_READONLY', 'Klient (tylko odczyt)');
+INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
+VALUES (1, 'ROLE_WAITER', 1);
+INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
+VALUES (2, 'ROLE_ADMIN', 2);
+INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
+VALUES (3, 'ROLE_MANAGER', 3);
+INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
+VALUES (4, 'ROLE_COOK', 4);
+INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
+VALUES (5, 'ROLE_CUSTOMER', 5);
+INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
+VALUES (6, 'ROLE_CUSTOMER_READONLY', 6);
 
 INSERT IGNORE INTO users (id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number, surname)
 VALUES (1, NOW(), 'admin@example.com', 1,

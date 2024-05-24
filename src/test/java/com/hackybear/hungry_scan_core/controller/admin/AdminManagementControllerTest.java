@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.controller.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackybear.hungry_scan_core.entity.Role;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -359,7 +360,13 @@ class AdminManagementControllerTest {
         Role role = new Role();
         role.setId(1);
         role.setName("ROLE_WAITER");
-        role.setDisplayedName("Kelner");
+        role.setDisplayedName(getDefaultTranslation());
         return role;
+    }
+
+    private Translatable getDefaultTranslation() {
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation("Kelner");
+        return translatable;
     }
 }
