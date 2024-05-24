@@ -79,13 +79,13 @@ public class MenuItemFactory {
 
     private void setVariants(MenuItem menuItem) {
         MenuItemVariant variant = new MenuItemVariant();
-        variant.setName("Test variant");
+        variant.setName(getDefaultTranslation("Test variant"));
         variant.setPrice(Money.of(12.00));
         menuItemVariantService.save(variant);
         menuItem.addVariant(variant);
 
         MenuItemVariant variant2 = new MenuItemVariant();
-        variant2.setName("Test variant 2");
+        variant2.setName(getDefaultTranslation("Test variant 2"));
         variant2.setPrice(Money.of(0.00));
         variant2.setDefaultVariant(true);
         menuItemVariantService.save(variant2);
