@@ -70,7 +70,7 @@ public class MenuItemFactory {
 
     private void setLabels(MenuItem menuItem) throws LocalizedException {
         menuItem.addLabel(labelService.findById(3));
-        menuItem.addLabel(labelService.findById(9));
+        menuItem.addLabel(labelService.findById(5));
     }
 
     private void setAllergen(MenuItem menuItem) throws LocalizedException {

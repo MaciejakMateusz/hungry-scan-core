@@ -108,20 +108,26 @@ VALUES (1, 8, 'icon_gluten', 7),
        (13, 32, 'icon_lupin', 31),
        (14, 34, 'icon_molluscs', 33);
 
-INSERT IGNORE INTO labels (id, description, icon_name, name)
-VALUES (1, 'Dla osób unikających mięsa i/lub produktów pochodzenia zwierzęcego.', 'icon_leaf', 'Wegetariańskie / Wegańskie'),
-       (2, 'Ważne dla osób z nietolerancją glutenu lub celiakią.', 'icon_no_gluten', 'Bezglutenowe'),
-       (3, 'Dla tych, którzy lubią pikantne potrawy.', 'icon_chili_pepper', 'Ostre / Pikantne'),
-       (4,
-        'Niektórzy nie lubią smaku kolendry, więc taka etykieta pomaga uniknąć potraw zawierających tę przyprawę.',
-        'icon_no_cilantro', 'Kolendra / Bez kolendry'),
-       (5, 'Odpowiednie dla osób świadomych kalorii.', 'icon_light', 'Niskokaloryczne / Light'),
-       (6, 'Wskazuje na potrawy charakterystyczne dla danej kuchni regionalnej.', 'icon_world_map',
-        'Tradycyjne / Regionalne'),
-       (7, 'Ważne dla osób z nietolerancją laktozy.', 'icon_no_lactose', 'Bez laktozy'),
-       (8, 'Oznaczenie produktów z sezonu lub potraw przygotowanych z świeżych składników.', 'icon_fresh',
-        'Świeże / Sezonowe'),
-       (9, 'Odpowiednie dla osób ograniczających spożycie sodu.', 'icon_low_sodium', 'Niskosodowe');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+    (35, 'Bez glutenu', 'Gluten free');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+    (36, 'Wegańskie', 'Vegan');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+    (37, 'Wegetariańskie', 'Vegetarian');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+    (38, 'Kolendra', 'Coriander');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+    (39, 'Bez laktozy', 'Lactose free');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
+    (40, 'Ostre', 'Spicy');
+
+INSERT IGNORE INTO labels (id, icon_name, translatable_name_id)
+VALUES (1, 'icon_gluten_free', 35),
+       (2, 'icon_vegan', 36),
+       (3, 'icon_vegetarian', 37),
+       (4, 'icon_coriander', 38),
+       (5, 'icon_lactose_free', 39),
+       (6, 'icon_spicy', 40);
 
 INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
                                zone_id, has_qr_code, qr_name)

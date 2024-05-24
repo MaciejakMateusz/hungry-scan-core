@@ -1,19 +1,3 @@
-INSERT INTO labels (id, description, icon_name, name)
-VALUES (1, 'Dla osób unikających mięsa i/lub produktów pochodzenia zwierzęcego.', 'icon_leaf',
-        'Wegetariańskie / Wegańskie'),
-       (2, 'Ważne dla osób z nietolerancją glutenu lub celiakią.', 'icon_no_gluten', 'Bezglutenowe'),
-       (3, 'Dla tych, którzy lubią pikantne potrawy.', 'icon_chili_pepper', 'Ostre / Pikantne'),
-       (4,
-        'Niektórzy ludzie nie lubią smaku kolendry, więc taka etykieta może pomóc im uniknąć potraw zawierających tę przyprawę.',
-        'icon_no_cilantro', 'Kolendra / Bez kolendry'),
-       (5, 'Odpowiednie dla osób świadomych kalorii.', 'icon_light', 'Niskokaloryczne / Light'),
-       (6, 'Wskazuje na potrawy charakterystyczne dla danej kuchni regionalnej.', 'icon_world_map',
-        'Tradycyjne / Regionalne'),
-       (7, 'Ważne dla osób z nietolerancją laktozy.', 'icon_no_lactose', 'Bez laktozy'),
-       (8, 'Oznaczenie produktów z sezonu lub potraw przygotowanych z świeżych składników.', 'icon_fresh',
-        'Świeże / Sezonowe'),
-       (9, 'Odpowiednie dla osób ograniczających spożycie sodu.', 'icon_low_sodium', 'Niskosodowe');
-
 INSERT INTO translatable(default_translation, translation_en)
 VALUES ('Przystawki', 'Starters');
 INSERT INTO translatable(default_translation, translation_en)
@@ -631,6 +615,27 @@ VALUES (1, 100, 'icon_gluten', 99),
        (12, 122, 'icon_sulfur_dioxide', 121),
        (13, 124, 'icon_lupin', 123),
        (14, 126, 'icon_molluscs', 125);
+
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Bez glutenu', 'Gluten free');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Wegańskie', 'Vegan');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Wegetariańskie', 'Vegetarian');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Kolendra', 'Coriander');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Bez laktozy', 'Lactose free');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Ostre', 'Spicy');
+
+INSERT INTO labels (icon_name, translatable_name_id)
+VALUES ('icon_gluten_free', 127),
+       ('icon_vegan', 128),
+       ('icon_vegetarian', 129),
+       ('icon_coriander', 130),
+       ('icon_lactose_free', 131),
+       ('icon_spicy', 132);
 
 INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
 VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', '16:00:00');
