@@ -3,12 +3,12 @@ package com.hackybear.hungry_scan_core.service.interfaces;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TranslatableService {
 
-    void saveAllNames(List<Translatable> translatables);
+    void saveAllTranslatables(Map<String, List<Translatable>> translatables);
 
-    List<Translatable> findAllFromCategories();
+    Map<String, List<Translatable>> findAllTranslatables();
 
-    List<Object[]> findAllFromMenuItems();
 }

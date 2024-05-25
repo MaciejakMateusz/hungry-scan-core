@@ -22,34 +22,16 @@ public class TranslatableController {
         this.translatableService = translatableService;
     }
 
-    @GetMapping("/categories")
+    @GetMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<List<Translatable>> allFromCategories() {
-        return ResponseEntity.ok(translatableService.findAllFromCategories());
-    }
-
-    @GetMapping("/menu-items")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<List<Object[]>> allFromMenuItems() {
-        return ResponseEntity.ok(translatableService.findAllFromMenuItems());
-    }
-
-    @GetMapping("/variants")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<List<Translatable>> allFromVariants() {
-        return ResponseEntity.ok(translatableService.findAllFromCategories());
-    }
-
-    @GetMapping("/ingredients")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<List<Translatable>> allFromIngredients() {
-        return ResponseEntity.ok(translatableService.findAllFromCategories());
+    public ResponseEntity<Map<String, List<Translatable>>> findAll() {
+        return ResponseEntity.ok(translatableService.findAllTranslatables());
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody List<Translatable> translatables) {
-        translatableService.saveAllNames(translatables);
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> saveAll(@RequestBody Map<String, List<Translatable>> translatables) {
+        translatableService.saveAllTranslatables(translatables);
         return ResponseEntity.ok().build();
     }
 
