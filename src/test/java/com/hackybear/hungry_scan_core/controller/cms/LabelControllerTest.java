@@ -52,8 +52,8 @@ class LabelControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/labels", Label.class);
 
-        assertEquals(9, labels.size());
-        assertEquals("Wegetariańskie / Wegańskie", labels.get(0).getName());
+        assertEquals(6, labels.size());
+        assertEquals("Bez glutenu", labels.get(0).getName().getDefaultTranslation());
     }
 
     @Test
@@ -66,7 +66,7 @@ class LabelControllerTest {
     void shouldShowLabelById() throws Exception {
         Label label =
                 apiRequestUtils.postObjectExpect200("/api/cms/labels/show", 6, Label.class);
-        assertEquals("Tradycyjne / Regionalne", label.getName());
+        assertEquals("Ostre", label.getName().getDefaultTranslation());
     }
 
     @Test

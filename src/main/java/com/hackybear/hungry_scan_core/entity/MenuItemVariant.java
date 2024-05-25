@@ -1,10 +1,11 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,9 +29,11 @@ public class MenuItemVariant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 200)
-    @NotBlank
-    private String name;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
+    @DefaultTranslationNotBlank
+    @NotNull
+    private Translatable name;
 
     @Column(nullable = false)
     private BigDecimal price = Money.of(0.00);

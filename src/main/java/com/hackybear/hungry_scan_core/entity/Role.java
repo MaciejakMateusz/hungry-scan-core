@@ -1,9 +1,8 @@
 package com.hackybear.hungry_scan_core.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,11 +15,17 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
-    private String displayedName;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "translatable_displayed_name_id", referencedColumnName = "id")
+    @DefaultTranslationNotBlank
+    @NotNull
+    private Translatable displayedName;
 
     @Override
     public String toString() {
-        return displayedName;
+        return displayedName.getDefaultTranslation();
     }
 }

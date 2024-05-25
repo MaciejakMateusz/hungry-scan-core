@@ -56,11 +56,11 @@ public class OrderedItemFactory {
 
     private void setAdditionalIngredients(OrderedItem orderedItem, String... chosenIngredients) {
         MenuItem menuItem = orderedItem.getMenuItem();
-        List<String> orderedIngredients = Arrays.asList(chosenIngredients); // Convert array to list
+        List<String> orderedIngredients = Arrays.asList(chosenIngredients);
         Set<Ingredient> availableIngredients = menuItem.getAdditionalIngredients();
         availableIngredients = availableIngredients.stream()
                 .filter(ingredient -> orderedIngredients.stream()
-                        .anyMatch(ingredientName -> ingredientName.equals(ingredient.getName())))
+                        .anyMatch(ingredientName -> ingredientName.equals(ingredient.getName().getDefaultTranslation())))
                 .collect(Collectors.toSet());
         orderedItem.setAdditionalIngredients(availableIngredients);
     }

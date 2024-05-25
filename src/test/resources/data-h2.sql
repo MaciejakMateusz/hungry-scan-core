@@ -1,266 +1,342 @@
-INSERT INTO allergens(id, description, icon_name, name)
-VALUES (1,
-        'Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.',
-        'icon_gluten', 'Gluten'),
-       (2, 'Skorupiaki i produkty pochodne.', 'icon_crustaceans', 'Skorupiaki'),
-       (3, 'Jaja i produkty pochodne.', 'icon_eggs', 'Jaja'),
-       (4, 'Ryby i produkty pochodne.', 'icon_fish', 'Ryby'),
-       (5, 'Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'icon_peanuts', 'Orzeszki ziemne'),
-       (6, 'Soja i produkty pochodne.', 'icon_soybeans', 'Soja'),
-       (7, 'Mleko i produkty pochodne (łącznie z laktozą).', 'icon_milk', 'Mleko'),
-       (8,
-        'Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.',
-        'icon_nuts', 'Orzechy'),
-       (9, 'Seler i produkty pochodne.', 'icon_celery', 'Seler'),
-       (10, 'Gorczyca i produkty pochodne.', 'icon_mustard', 'Gorczyca'),
-       (11, 'Nasiona sezamu i produkty pochodne.', 'icon_sesame', 'Nasiona sezamu'),
-       (12, 'Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.',
-        'icon_sulfur_dioxide', 'Dwutlenek siarki'),
-       (13, 'Łubin i produkty pochodne.', 'icon_lupin', 'Łubin'),
-       (14, 'Mięczaki i produkty pochodne.', 'icon_molluscs', 'Mięczaki');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Przystawki', 'Starters');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Makarony', 'Pastas');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Sałatki', 'Salads');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Zupy', 'Soups');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Pizza', 'Pizza');
+INSERT INTO translatable(default_translation)
+VALUES ('Wegetariańskie');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Dla dzieci', 'For kids');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Napoje', 'Drinks');
+INSERT INTO translatable(default_translation)
+VALUES ('Pusta');
+INSERT INTO translatable(default_translation)
+VALUES ('Krewetki marynowane w cytrynie');
+INSERT INTO translatable(default_translation)
+VALUES ('Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.');
+INSERT INTO translatable(default_translation)
+VALUES ('Carpaccio z polędwicy wołowej');
+INSERT INTO translatable(default_translation)
+VALUES ('Cienko pokrojona polędwica wołowa podana z rukolą, parmezanem i kaparami.');
+INSERT INTO translatable(default_translation)
+VALUES ('Krewetki w tempurze');
+INSERT INTO translatable(default_translation)
+VALUES ('Delikatne krewetki w cieście tempura, podawane z sosem słodko-kwaśnym');
+INSERT INTO translatable(default_translation)
+VALUES ('Roladki z bakłażana');
+INSERT INTO translatable(default_translation)
+VALUES ('Dostępne w różnych wariantach');
+INSERT INTO translatable(default_translation)
+VALUES ('Nachos z sosem serowym');
+INSERT INTO translatable(default_translation)
+VALUES ('Chrupiące nachos z sosem serowym, podane z guacamole i pikantnym sosem salsa.');
+INSERT INTO translatable(default_translation)
+VALUES ('Spaghetti Bolognese');
+INSERT INTO translatable(default_translation)
+VALUES ('Długie spaghetti podane z aromatycznym sosem bolognese na bazie mięsa mielonego i pomidorów.');
+INSERT INTO translatable(default_translation)
+VALUES ('Penne Carbonara');
+INSERT INTO translatable(default_translation)
+VALUES ('Penne z sosem carbonara na bazie jajek, boczku, sera parmezan i śmietanki.');
+INSERT INTO translatable(default_translation)
+VALUES ('Lasagne warzywna');
+INSERT INTO translatable(default_translation)
+VALUES ('Warstwy makaronu lasagne przeplatane warzywami, beszamelem i sosem pomidorowym.');
+INSERT INTO translatable(default_translation)
+VALUES ('Tagliatelle z łososiem i szpinakiem');
+INSERT INTO translatable(default_translation)
+VALUES ('Cienkie tagliatelle z kawałkami łososia i świeżym szpinakiem w sosie śmietanowym.');
+INSERT INTO translatable(default_translation)
+VALUES ('Rigatoni z kurczakiem i brokułami');
+INSERT INTO translatable(default_translation)
+VALUES ('Rurki rigatoni z duszonym kurczakiem, brokułami i sosem śmietanowym.');
+INSERT INTO translatable(default_translation)
+VALUES ('Sałatka grecka');
+INSERT INTO translatable(default_translation)
+VALUES ('Tradycyjna grecka sałatka z pomidorami, ogórkiem, cebulą, oliwkami, serem feta i sosem vinegrette.');
+INSERT INTO translatable(default_translation)
+VALUES ('Sałatka z grillowanym kurczakiem i awokado');
+INSERT INTO translatable(default_translation)
+VALUES ('Sałatka z grillowanymi kawałkami kurczaka, awokado, pomidorami i orzechami.');
+INSERT INTO translatable(default_translation)
+VALUES ('Sałatka z rukolą, serem kozim i suszonymi żurawinami');
+INSERT INTO translatable(default_translation)
+VALUES ('Świeża rukola z serem kozim, prażonymi orzechami włoskimi i suszonymi żurawinami.');
+INSERT INTO translatable(default_translation)
+VALUES ('Sałatka z grillowanym ananasem i kurczakiem');
+INSERT INTO translatable(default_translation)
+VALUES ('Sałatka z soczystym grillowanym ananasem, kawałkami kurczaka i mieszanką sałat.');
+INSERT INTO translatable(default_translation)
+VALUES ('Sałatka z quinoa i pieczonymi warzywami');
+INSERT INTO translatable(default_translation)
+VALUES ('Sałatka z quinoa, pieczonymi marchewkami, burakami i suszonymi pomidorami.');
+INSERT INTO translatable(default_translation)
+VALUES ('Krem z pomidorów');
+INSERT INTO translatable(default_translation)
+VALUES ('Gładki krem z pomidorów z dodatkiem śmietany i świeżego bazylia.');
+INSERT INTO translatable(default_translation)
+VALUES ('Rosołek z kury');
+INSERT INTO translatable(default_translation)
+VALUES ('Tradycyjny rosół z kury z makaronem, warzywami i natką pietruszki.');
+INSERT INTO translatable(default_translation)
+VALUES ('Zupa krem z dyni');
+INSERT INTO translatable(default_translation)
+VALUES ('Kremowa zupa z dyni z nutą cynamonu i prażonymi pestkami dyni.');
+INSERT INTO translatable(default_translation)
+VALUES ('Zupa pomidorowa z ryżem');
+INSERT INTO translatable(default_translation)
+VALUES ('Zupa pomidorowa z dodatkiem ryżu i świeżego kopru.');
+INSERT INTO translatable(default_translation)
+VALUES ('Zupa krem z brokułów');
+INSERT INTO translatable(default_translation)
+VALUES ('Delikatny krem z zielonych brokułów podawany z grzankami.');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza Margherita');
+INSERT INTO translatable(default_translation)
+VALUES ('Klasyka włoskiej kuchni - sos pomidorowy, mozzarella i świeża bazylia.');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza Pepperoni');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza z pikantnym salami pepperoni, serem mozzarella i papryką.');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza Capricciosa');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza z szynką, pieczarkami, karczochami i oliwkami.');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza Hawajska');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza z szynką, ananasem i kukurydzą.');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza Quattro Formaggi');
+INSERT INTO translatable(default_translation)
+VALUES ('Pizza z 4 rodzajami sera: mozzarella, gorgonzola, parmezan i camembert.');
+INSERT INTO translatable(default_translation)
+VALUES ('Risotto z grzybami leśnymi');
+INSERT INTO translatable(default_translation)
+VALUES ('Klasyczne włoskie risotto z wybornymi grzybami leśnymi i parmezanem.');
+INSERT INTO translatable(default_translation)
+VALUES ('Curry z ciecierzycą i szpinakiem');
+INSERT INTO translatable(default_translation)
+VALUES ('Aromatyczne curry z ciecierzycą, świeżym szpinakiem i mlekiem kokosowym.');
+INSERT INTO translatable(default_translation)
+VALUES ('Naleśniki z serem i szpinakiem');
+INSERT INTO translatable(default_translation)
+VALUES ('Delikatne naleśniki nadziewane serem i szpinakiem, podane z sosem pomidorowym.');
+INSERT INTO translatable(default_translation)
+VALUES ('Falafel w pitce z hummusem');
+INSERT INTO translatable(default_translation)
+VALUES ('Smakowite kulki falafel w cieście pita z sosem hummus i warzywami.');
+INSERT INTO translatable(default_translation)
+VALUES ('Makaron z pesto bazyliowym');
+INSERT INTO translatable(default_translation)
+VALUES ('Makaron spaghetti z pysznym pesto bazyliowym, parmezanem i prażonymi orzechami.');
+INSERT INTO translatable(default_translation)
+VALUES ('Kawa');
+INSERT INTO translatable(default_translation)
+VALUES ('Czarna sypana.');
+INSERT INTO translatable(default_translation)
+VALUES ('Sok pomarańczowy');
+INSERT INTO translatable(default_translation)
+VALUES ('Świeżo wyciskany.');
+INSERT INTO translatable(default_translation)
+VALUES ('Coca-cola');
+INSERT INTO translatable(default_translation)
+VALUES ('250ml');
 
-INSERT INTO labels (id, description, icon_name, name)
-VALUES (1, 'Dla osób unikających mięsa i/lub produktów pochodzenia zwierzęcego.', 'icon_leaf',
-        'Wegetariańskie / Wegańskie'),
-       (2, 'Ważne dla osób z nietolerancją glutenu lub celiakią.', 'icon_no_gluten', 'Bezglutenowe'),
-       (3, 'Dla tych, którzy lubią pikantne potrawy.', 'icon_chili_pepper', 'Ostre / Pikantne'),
-       (4,
-        'Niektórzy ludzie nie lubią smaku kolendry, więc taka etykieta może pomóc im uniknąć potraw zawierających tę przyprawę.',
-        'icon_no_cilantro', 'Kolendra / Bez kolendry'),
-       (5, 'Odpowiednie dla osób świadomych kalorii.', 'icon_light', 'Niskokaloryczne / Light'),
-       (6, 'Wskazuje na potrawy charakterystyczne dla danej kuchni regionalnej.', 'icon_world_map',
-        'Tradycyjne / Regionalne'),
-       (7, 'Ważne dla osób z nietolerancją laktozy.', 'icon_no_lactose', 'Bez laktozy'),
-       (8, 'Oznaczenie produktów z sezonu lub potraw przygotowanych z świeżych składników.', 'icon_fresh',
-        'Świeże / Sezonowe'),
-       (9, 'Odpowiednie dla osób ograniczających spożycie sodu.', 'icon_low_sodium', 'Niskosodowe');
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (1, true, NOW(), null, false, 1);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (2, true, NOW(), null, false, 2);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (3, true, NOW(), null, false, 3);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (4, true, NOW(), null, false, 4);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (5, true, NOW(), null, false, 5);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (6, true, NOW(), null, false, 6);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (7, true, NOW(), null, false, 7);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (8, true, NOW(), null, true, 8);
+INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (9, true, NOW(), null, false, 9);
 
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Przystawki', true, NOW(), null, false, 1);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Makarony', true, NOW(), null, false, 2);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Sałatki', true, NOW(), null, false, 3);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Zupy', true, NOW(), null, false, 4);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Pizza', true, NOW(), null, false, 5);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Wegetariańskie', true, NOW(), null, false, 6);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Dla dzieci', true, NOW(), null, false, 7);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Napoje', true, NOW(), null, true, 8);
-INSERT INTO categories (name, is_available, created, updated, is_bar_served, display_order)
-VALUES ('Pusta', true, NOW(), null, false, 9);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (10, 1, 1, 11, null, null, false, false, true, 19.99, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (12, 1, 2, 13, null, null, false, false, true, 24.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (14, 1, 3, 15, null, null, false, false, true, 22.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (16, 1, 4, 17, null, null, false, false, true, 18.75, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (18, 1, 5, 19, null, null, false, false, true, 16.99, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (20, 2, 1, 21, null, null, false, false, true, 24.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (22, 2, 2, 23, null, null, false, false, true, 22.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (24, 2, 3, 25, null, null, false, false, true, 23.25, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (26, 2, 4, 27, null, null, false, false, true, 26.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (28, 2, 5, 29, null, null, false, false, true, 21.75, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (30, 3, 1, 31, null, null, false, false, true, 18.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (32, 3, 2, 33, null, null, false, false, true, 20.75, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (34, 3, 3, 35, null, null, false, false, true, 22.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (36, 3, 4, 37, null, null, false, false, true, 21.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (38, 3, 5, 39, null, null, false, false, true, 23.75, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (40, 4, 1, 41, null, null, false, false, true, 15.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (42, 4, 2, 43, null, null, false, false, true, 16.25, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (44, 4, 3, 45, null, null, false, false, true, 17.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (46, 4, 4, 47, null, null, false, false, true, 15.75, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (48, 4, 5, 49, null, null, false, false, true, 18.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (50, 5, 1, 51, null, null, false, false, true, 26.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (52, 5, 2, 53, null, null, false, false, true, 28.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (54, 5, 3, 55, null, null, false, false, true, 30.25, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (56, 5, 4, 57, null, null, false, false, true, 27.75, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (58, 5, 5, 59, null, null, false, false, true, 29.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (60, 6, 1, 61, null, null, false, false, true, 24.50, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (62, 6, 2, 63, null, null, false, false, true, 22.75, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (64, 6, 3, 65, null, null, false, false, true, 20.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (66, 6, 4, 67, null, null, false, false, true, 21.25, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (68, 6, 5, 69, null, null, false, false, true, 23.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (70, 8, 1, 71, null, null, false, false, true, 9.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (72, 8, 2, 73, null, null, false, false, true, 7.00, 0);
+INSERT INTO menu_items (translatable_name_id, category_id, display_order, translatable_description_id, created, updated,
+                        is_bestseller, is_new, is_available, price, counter)
+VALUES (74, 8, 3, 75, null, null, false, false, true, 7.00, 0);
 
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Pomidory', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Cebula', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Czosnek', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Oliwa z oliwek', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Bazylia', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Mozzarella', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Makaron penne', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Mięso mielone', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Papryka', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Ser parmezan', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Oregano', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Sól', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Pieprz', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Kiełbasa', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Makaron spaghetti', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Kurczak', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Szpinak', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Kapusta', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Masło', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Marchew', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Sos pomidorowy', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Cukier', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Cukinia', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Pietruszka', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Koper', '2024-03-30', '4.00');
-INSERT INTO ingredients(created, is_available, name, updated, price)
-VALUES ('2024-03-30', 1, 'Ser biały', '2024-03-30', '4.00');
+INSERT INTO translatable(default_translation)
+VALUES ('Z szpinakiem');
+INSERT INTO translatable(default_translation)
+VALUES ('Z konfiturą cebulową');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
+INSERT INTO translatable(default_translation)
+VALUES ('Mała');
+INSERT INTO translatable(default_translation)
+VALUES ('Średnia');
+INSERT INTO translatable(default_translation)
+VALUES ('Duża');
 
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Krewetki marynowane w cytrynie', 1, 1, 'Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.', null,
-        null, false, false, true, 19.99, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Carpaccio z polędwicy wołowej', 1, 2, 'Cienko pokrojona polędwica wołowa podana z rukolą, parmezanem i kaparami.',
-        null, null, false, false, true, 24.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Krewetki w tempurze', 1, 3, 'Delikatne krewetki w cieście tempura, podawane z sosem słodko-kwaśnym', null, null,
-        false, false, true, 22.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Roladki z bakłażana', 1, 4,
-        'Dostępne w różnych wariantach', null, null, false, false, true,
-        18.75, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Nachos z sosem serowym', 1, 5, 'Chrupiące nachos z sosem serowym, podane z guacamole i pikantnym sosem salsa.',
-        null, null, false, false, true, 16.99, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Spaghetti Bolognese', 2, 1,
-        'Długie spaghetti podane z aromatycznym sosem bolognese na bazie mięsa mielonego i pomidorów.',
-        null, null, false, false, true, 24.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Penne Carbonara', 2, 2, 'Penne z sosem carbonara na bazie jajek, boczku, sera parmezan i śmietanki.',
-        null, null, false, false, true, 22.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Lasagne warzywna', 2, 3, 'Warstwy makaronu lasagne przeplatane warzywami, beszamelem i sosem pomidorowym.',
-        null, null, false, false, true, 23.25, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Tagliatelle z łososiem i szpinakiem', 2, 4,
-        'Cienkie tagliatelle z kawałkami łososia i świeżym szpinakiem w sosie śmietanowym.', null, null, false, false,
-        true, 26.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Rigatoni z kurczakiem i brokułami', 2, 5, 'Rurki rigatoni z duszonym kurczakiem, brokułami i sosem śmietanowym.',
-        null, null, false, false, true, 21.75, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Sałatka grecka', 3, 1,
-        'Tradycyjna grecka sałatka z pomidorami, ogórkiem, cebulą, oliwkami, serem feta i sosem vinegrette.', null,
-        null, false, false, true, 18.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Sałatka z grillowanym kurczakiem i awokado', 3, 2,
-        'Sałatka z grillowanymi kawałkami kurczaka, awokado, pomidorami i orzechami.', null, null, false, false, true,
-        20.75, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Sałatka z rukolą, serem kozim i suszonymi żurawinami', 3, 3,
-        'Świeża rukola z serem kozim, prażonymi orzechami włoskimi i suszonymi żurawinami.', null, null, false, false,
-        true, 22.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Sałatka z grillowanym ananasem i kurczakiem', 3, 4,
-        'Sałatka z soczystym grillowanym ananasem, kawałkami kurczaka i mieszanką sałat.', null, null, false, false,
-        true, 21.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Sałatka z quinoa i pieczonymi warzywami', 3, 5,
-        'Sałatka z quinoa, pieczonymi marchewkami, burakami i suszonymi pomidorami.', null, null, false, false, true,
-        23.75, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Krem z pomidorów', 4, 1, 'Gładki krem z pomidorów z dodatkiem śmietany i świeżego bazylia.', null, null, false,
-        false, true, 15.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Rosołek z kury', 4, 2, 'Tradycyjny rosół z kury z makaronem, warzywami i natką pietruszki.', null, null, false,
-        false, true, 16.25, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Zupa krem z dyni', 4, 3, 'Kremowa zupa z dyni z nutą cynamonu i prażonymi pestkami dyni.', null, null, false,
-        false, true, 17.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Zupa pomidorowa z ryżem', 4, 4, 'Zupa pomidorowa z dodatkiem ryżu i świeżego kopru.', null, null, false, false,
-        true, 15.75, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Zupa krem z brokułów', 4, 5, 'Delikatny krem z zielonych brokułów podawany z grzankami.', null, null, false,
-        false, true, 18.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Pizza Margherita', 5, 1, 'Klasyka włoskiej kuchni - sos pomidorowy, mozzarella i świeża bazylia.', null, null,
-        false, false, true, 26.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Pizza Pepperoni', 5, 2, 'Pizza z pikantnym salami pepperoni, serem mozzarella i papryką.', null, null, false,
-        false, true, 28.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Pizza Capricciosa', 5, 3, 'Pizza z szynką, pieczarkami, karczochami i oliwkami.', null, null, false, false, true,
-        30.25, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Pizza Hawajska', 5, 4, 'Pizza z szynką, ananasem i kukurydzą.', null, null, false, false, true, 27.75, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Pizza Quattro Formaggi', 5, 5, 'Pizza z 4 rodzajami sera: mozzarella, gorgonzola, parmezan i camembert.', null,
-        null, false, false, true, 29.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Risotto z grzybami leśnymi', 6, 1, 'Klasyczne włoskie risotto z wybornymi grzybami leśnymi i parmezanem.',
-        null, null, false, false, true, 24.50, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Curry z ciecierzycą i szpinakiem', 6, 2,
-        'Aromatyczne curry z ciecierzycą, świeżym szpinakiem i mlekiem kokosowym.', null, null, false, false, true,
-        22.75, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Naleśniki z serem i szpinakiem', 6, 3,
-        'Delikatne naleśniki nadziewane serem i szpinakiem, podane z sosem pomidorowym.', null, null, false, false,
-        true, 20.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Falafel w pitce z hummusem', 6, 4, 'Smakowite kulki falafel w cieście pita z sosem hummus i warzywami.',
-        null, null, false, false, true, 21.25, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Makaron z pesto bazyliowym', 6, 5,
-        'Makaron spaghetti z pysznym pesto bazyliowym, parmezanem i prażonymi orzechami.', null, null, false, false,
-        true, 23.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Kawa', 8, 1,
-        'Czarna sypana.', null, null, false, false, true, 9.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Sok pomarańczowy', 8, 2,
-        'Świeżo wyciskany.', null, null, false, false, true, 7.00, 0);
-INSERT INTO menu_items (name, category_id, display_order, description, created, updated, is_bestseller, is_new, is_available, price, counter)
-VALUES ('Coca-cola', 8, 3,
-        '250ml', null, null, false, false, true, 7.00, 0);
-
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (4, 1);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (4, 5);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (4, 6);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (21, 6);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (21, 16);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (21, 2);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (22, 6);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (22, 16);
-INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id) VALUES (22, 2);
-
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, true, 'Z szpinakiem', '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Z konfiturą cebulową', '4.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, true, 'Mała', '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Średnia', '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Duża', '10.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, true, 'Mała', '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Średnia', '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Duża', '10.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, true, 'Mała', '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Średnia', '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Duża', '10.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, true, 'Mała', '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Średnia', '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Duża', '10.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, true, 'Mała', '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Średnia', '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, name, price, updated)
-VALUES (NOW(), true, false, 'Duża', '10.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, true, 76, '0.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 77, '4.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, true, 78, '0.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 79, '5.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 80, '10.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, true, 81, '0.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 82, '5.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 83, '10.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, true, 84, '0.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 85, '5.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 86, '10.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, true, 87, '0.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 88, '5.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 89, '10.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, true, 90, '0.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 91, '5.00', null);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
+VALUES (NOW(), true, false, 92, '10.00', null);
 
 INSERT INTO menu_items_variants(menu_item_id, variants_id)
 VALUES (4, 1);
@@ -302,14 +378,226 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO zones(name, created, updated, display_order, is_visible)
-VALUES ('Sekcja 1', NOW(), null, 1, true);
-INSERT INTO zones(name, created, updated, display_order, is_visible)
-VALUES ('Sekcja 2', NOW(), null, 2, true);
-INSERT INTO zones(name, created, updated, display_order, is_visible)
-VALUES ('Piętro II', NOW(), null, 4, true);
-INSERT INTO zones(name, created, updated, display_order, is_visible)
-VALUES ('Loża VIP', NOW(), null, 3, true);
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Kelner', 'Waiter');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Administrator', 'Admin');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Menadżer', 'Manager');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Kucharz', 'Cook');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Klient', 'Customer');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Klient (tylko odczyt)', 'Customer (read only)');
+
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_WAITER', 93);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_ADMIN', 94);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_MANAGER', 95);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_COOK', 96);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_CUSTOMER', 97);
+INSERT INTO role (name, translatable_displayed_name_id)
+VALUES ('ROLE_CUSTOMER_READONLY', 98);
+
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Gluten', 'Gluten');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.', 'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Skorupiaki', 'Crustaceans');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Skorupiaki i produkty pochodne.', 'Crustaceans and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Jaja', 'Eggs');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Jaja i produkty pochodne.', 'Eggs and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Ryby', 'Fish');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Ryby i produkty pochodne.', 'Fish and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Orzeszki ziemne', 'Peanuts');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'Peanuts and related products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Soja', 'Soybeans');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Soja i produkty pochodne.', 'Soybeans and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Mleko', 'Milk');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Mleko i produkty pochodne (łącznie z laktozą).', 'Milk and derived products (including lactose).');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Orzechy', 'Nuts');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.', 'Nuts, i.e. almonds, hazelnuts, walnuts, cashews, pecans, Brazil nuts, pistachios/pistachio nuts, macadamia nuts and related products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Seler', 'Celery');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Seler i produkty pochodne.', 'Celery amd derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Gorczyca', 'Mustard');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Gorczyca i produkty pochodne.', 'Mustard and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Nasiona sezamu', 'Sesame');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Nasiona sezamu i produkty pochodne.', 'Sesame and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Dwutlenek siarki', 'Sulfur dioxide');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.', 'Sulfur dioxide and sulphites in concentrations above 10 mg/kg or 10 mg/l expressed as SO2.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Łubin', 'Lupin');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Łubin i produkty pochodne.', 'Lupin and derived products.');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Mięczaki', 'Molluscs');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
+
+INSERT INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
+VALUES (1, 100, 'icon_gluten', 99),
+       (2, 102, 'icon_crustaceans', 101),
+       (3, 104, 'icon_eggs', 103),
+       (4, 106, 'icon_fish', 105),
+       (5, 108, 'icon_peanuts', 107),
+       (6, 110, 'icon_soybeans', 109),
+       (7, 112, 'icon_milk', 111),
+       (8, 114, 'icon_nuts', 113),
+       (9, 116, 'icon_celery', 115),
+       (10, 118, 'icon_mustard', 117),
+       (11, 120, 'icon_sesame', 119),
+       (12, 122, 'icon_sulfur_dioxide', 121),
+       (13, 124, 'icon_lupin', 123),
+       (14, 126, 'icon_molluscs', 125);
+
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Bez glutenu', 'Gluten free');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Wegańskie', 'Vegan');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Wegetariańskie', 'Vegetarian');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Kolendra', 'Coriander');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Bez laktozy', 'Lactose free');
+INSERT INTO translatable (default_translation, translation_en) VALUES
+    ('Ostre', 'Spicy');
+
+INSERT INTO labels (icon_name, translatable_name_id)
+VALUES ('icon_gluten_free', 127),
+       ('icon_vegan', 128),
+       ('icon_vegetarian', 129),
+       ('icon_coriander', 130),
+       ('icon_lactose_free', 131),
+       ('icon_spicy', 132);
+
+INSERT INTO translatable (default_translation, translation_en) VALUES('Pomidory', 'Tomatoes');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Cebula', 'Onion');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Czosnek', 'Garlic');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Oliwa z oliwek', 'Olive oil');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Bazylia', 'Basil');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Mozzarella', 'Mozzarella');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Makaron penne', 'Pasta penne');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Mięso mielone', 'Minced meat');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Papryka', 'Bell pepper');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Ser parmezan', 'Parmesan cheese');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Ser parmezan', 'Parmesan cheese');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Oregano', 'Oregano');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Sól', 'Salt');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Pieprz', 'Pepper');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Kiełbasa', 'Sausage');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Makaron spaghetti', 'Spaghetti pasta');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Kurczak', 'Chicken');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Szpinak', 'Spinach');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Kapusta', 'Cabbage');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Masło', 'Butter');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Marchew', 'Carrot');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Sos pomidorowy', 'Tomato sauce');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Cukier', 'Sugar');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Cukinia', 'Zucchini');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Pietruszka', 'Parsley');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Koper', 'Dill');
+INSERT INTO translatable (default_translation, translation_en) VALUES('Ser biały', 'White cheese');
+
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 133, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 134, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 135, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 136, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 137, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 138, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 139, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 140, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 141, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 142, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 143, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 144, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 145, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 146, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 147, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 148, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 149, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 150, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 151, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 152, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 153, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 154, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 155, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 156, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 157, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 158, '2024-03-30', '4.00');
+INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
+VALUES ('2024-03-30', 1, 159, '2024-03-30', '4.00');
+
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Sekcja 1', 'Section 1');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Sekcja 2', 'Section 2');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Piętro II', 'Floor 2');
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Loża VIP', 'VIP Lounge');
+
+INSERT INTO zones(translatable_name_id, created, updated, display_order, is_visible)
+VALUES (160, NOW(), null, 1, true);
+INSERT INTO zones(translatable_name_id, created, updated, display_order, is_visible)
+VALUES (161, NOW(), null, 2, true);
+INSERT INTO zones(translatable_name_id, created, updated, display_order, is_visible)
+VALUES (162, NOW(), null, 4, true);
+INSERT INTO zones(translatable_name_id, created, updated, display_order, is_visible)
+VALUES (163, NOW(), null, 3, true);
 
 INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
                                zone_id, has_qr_code, qr_name)
@@ -369,18 +657,24 @@ INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, 
                                zone_id, has_qr_code, qr_name)
 VALUES (true, '96fb4431-af22-48f4-9e4c-40b5774d9ab2', false, false, 1, 19, true, null, false, null);
 
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_WAITER', 'Kelner');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_ADMIN', 'Administrator');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_MANAGER', 'Menadżer');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_COOK', 'Kucharz');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_CUSTOMER', 'Klient');
-INSERT INTO role (name, displayed_name)
-VALUES ('ROLE_CUSTOMER_READONLY', 'Klient (tylko odczyt)');
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (4, 1);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (4, 5);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (4, 6);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (21, 6);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (21, 16);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (21, 2);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (22, 6);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (22, 16);
+INSERT INTO menu_items_additional_ingredients(menu_item_id, additional_ingredients_id)
+VALUES (22, 2);
 
 INSERT INTO bookings (date, expiration_time, num_of_ppl, surname, time)
 VALUES ('2024-02-23', '19:00:00', 2, 'Pierwszy', '16:00:00');
