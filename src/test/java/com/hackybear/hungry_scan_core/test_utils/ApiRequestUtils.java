@@ -2,7 +2,9 @@ package com.hackybear.hungry_scan_core.test_utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -111,6 +114,30 @@ public class ApiRequestUtils {
 
         return objectMapper.readValue(jsonResponse,
                 objectMapper.getTypeFactory().constructParametricType(Page.class, itemType));
+    }
+
+    /**
+     * Fetches a Page<T> collection from the specified endpoint.
+     *
+     * @param endpointUrl The URL of the endpoint to fetch from.
+     * @return A Map<String, List<Translatable> fetched from the endpoint.
+     * @throws Exception If an error occurs during the request.
+     */
+    public Map<String, List<Translatable>> fetchTranslatablesMap(String endpointUrl) throws Exception {
+        MvcResult result = mockMvc.perform(get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        ObjectMapper objectMapper = prepObjMapper();
+        TypeFactory typeFactory = objectMapper.getTypeFactory();
+        return objectMapper.readValue(jsonResponse,
+                typeFactory.constructMapType(Map.class, typeFactory.constructType(String.class),
+                        typeFactory.constructCollectionType(List.class, Translatable.class)));
     }
 
 
