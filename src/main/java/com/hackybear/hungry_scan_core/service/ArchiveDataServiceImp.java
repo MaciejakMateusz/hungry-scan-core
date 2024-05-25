@@ -107,7 +107,7 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
         return new HistoryOrderedItem(
                 orderedItem.getId(),
                 orderedItem.getMenuItem(),
-                orderedItem.getMenuItemVariant(),
+                orderedItem.getVariant(),
                 orderedItem.getAdditionalIngredients(),
                 orderedItem.getAdditionalComment(),
                 orderedItem.getQuantity(),

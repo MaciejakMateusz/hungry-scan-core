@@ -54,9 +54,6 @@ public class MenuItem {
     private BigDecimal price = Money.of(0.00);
 
     @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    private Set<MenuItemVariant> variants = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private Set<Label> labels = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
@@ -85,10 +82,6 @@ public class MenuItem {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
-
-    public void addVariant(MenuItemVariant variant) {
-        this.variants.add(variant);
-    }
 
     public void addLabel(Label label) {
         this.labels.add(label);

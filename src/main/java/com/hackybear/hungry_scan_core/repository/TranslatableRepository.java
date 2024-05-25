@@ -25,7 +25,7 @@ public interface TranslatableRepository extends JpaRepository<Translatable, Inte
     @Query("SELECT mi.name, mi.description FROM MenuItem mi")
     List<Object[]> findAllTranslationsFromMenuItems();
 
-    @Query("SELECT v.name FROM MenuItemVariant v")
+    @Query("SELECT v.name FROM Variant v")
     List<Translatable> findAllTranslationsFromVariants();
 
     @Query("SELECT z.name FROM Zone z")

@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
+import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -46,6 +47,8 @@ class CategoryControllerTest {
     private CategoryRepository categoryRepository;
     @Autowired
     private MenuItemRepository menuItemRepository;
+    @Autowired
+    private VariantRepository variantRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -356,6 +359,7 @@ class CategoryControllerTest {
     void shouldAddFirstAssertDisplayOrder1() throws Exception {
         Category category = createCategory();
 
+        variantRepository.deleteAll();
         menuItemRepository.deleteAll();
         categoryRepository.deleteAll();
 

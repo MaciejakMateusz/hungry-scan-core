@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @Table(name = "variants")
 @EntityListeners(GeneralListener.class)
 @Entity
-public class MenuItemVariant {
+public class Variant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +34,10 @@ public class MenuItemVariant {
     @DefaultTranslationNotBlank
     @NotNull
     private Translatable name;
+
+    @ManyToOne
+    @NotNull
+    private MenuItem menuItem;
 
     @Column(nullable = false)
     private BigDecimal price = Money.of(0.00);
