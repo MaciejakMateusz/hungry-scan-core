@@ -13,14 +13,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Slf4j
 @SpringBootTest
@@ -54,13 +57,36 @@ public class FeedbackControllerTest {
     @Test
     @WithMockUser(roles = {"MANAGER"})
     void shouldFindAll() throws Exception {
-        Map<String, Object> params = getPageableParams();
-        Page<Feedback> allReviews = apiRequestUtils.fetchAsPage("/api/restaurant/feedback", params, Feedback.class);
+        Map<String, Object> pageableParams = getPageableParams();
+        Page<Feedback> allReviews =
+                apiRequestUtils.fetchAsPage("/api/restaurant/feedback", pageableParams, Feedback.class);
         List<Feedback> reviews = allReviews.getContent();
         assertEquals(3, reviews.size());
         assertEquals("Schabowy was fire", reviews.get(0).getComment());
         assertEquals("Pretty nice experience", reviews.get(1).getComment());
         assertEquals("Not hehe", reviews.get(2).getComment());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER"})
+    @Transactional
+    @Rollback
+    void shouldSave() throws Exception {
+        Feedback feedback = createFeedback(2, 2, 3, null);
+
+        apiRequestUtils.postAndExpect200("/api/restaurant/feedback/add", feedback);
+
+        Map<String, Object> pageableParams = getPageableParams();
+        Page<Feedback> allReviews =
+                apiRequestUtils.fetchAsPage("/api/restaurant/feedback", pageableParams, Feedback.class);
+        List<Feedback> reviews = allReviews.getContent();
+        assertEquals(4, reviews.size());
+        assertEquals("Schabowy was fire", reviews.get(0).getComment());
+        Feedback newFeedback = reviews.get(3);
+        assertNull(newFeedback.getComment());
+        assertEquals(2, newFeedback.getFood());
+        assertEquals(2, newFeedback.getService());
+        assertEquals(3, newFeedback.getVibe());
     }
 
     private Map<String, Object> getPageableParams() {

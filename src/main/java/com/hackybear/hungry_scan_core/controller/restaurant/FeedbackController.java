@@ -42,7 +42,7 @@ public class FeedbackController {
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @PostMapping
-    public ResponseEntity<Page<Feedback>> findFeedbacks(@RequestBody Map<String, Object> params) {
+    public ResponseEntity<Page<Feedback>> findAll(@RequestBody Map<String, Object> params) {
         Integer pageSize = (Integer) params.get("pageSize");
         Integer pageNumber = (Integer) params.get("pageNumber");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
