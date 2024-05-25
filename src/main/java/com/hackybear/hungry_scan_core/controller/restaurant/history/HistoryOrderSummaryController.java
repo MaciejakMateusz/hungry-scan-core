@@ -1,17 +1,14 @@
 package com.hackybear.hungry_scan_core.controller.restaurant.history;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.Feedback;
 import com.hackybear.hungry_scan_core.entity.history.HistoryOrderSummary;
 import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryOrderSummaryService;
 import com.hackybear.hungry_scan_core.utility.Constants;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -46,12 +43,6 @@ public class HistoryOrderSummaryController {
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, historyOrderSummaryService::findById);
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @PatchMapping("/feedback")
-    public ResponseEntity<?> feedback(@RequestBody @Valid Feedback feedback, BindingResult br) {
-        return responseHelper.buildResponse(feedback, br, historyOrderSummaryService::leaveFeedback);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

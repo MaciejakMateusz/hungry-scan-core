@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "feedback")
-@EntityListeners(GeneralListener.class)
 @Entity
 public class Feedback {
 
@@ -21,7 +19,7 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Long summaryId;
+    private Integer tableId;
 
     @Min(1)
     @Max(5)
@@ -31,9 +29,18 @@ public class Feedback {
     @Max(5)
     private Integer food;
 
+    @Min(1)
+    @Max(5)
+    private Integer vibe;
+
     private String comment;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime created;
+    private LocalDateTime postTime;
+
+    @PrePersist
+    private void prePersist() {
+        this.postTime = LocalDateTime.now();
+    }
 
 }

@@ -1,6 +1,5 @@
 package com.hackybear.hungry_scan_core.service.history;
 
-import com.hackybear.hungry_scan_core.entity.Feedback;
 import com.hackybear.hungry_scan_core.entity.history.HistoryOrderSummary;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
@@ -47,12 +46,5 @@ public class HistoryOrderSummaryServiceImp implements HistoryOrderSummaryService
     @Override
     public void save(HistoryOrderSummary historyOrderSummary) {
         historyOrderSummaryRepository.save(historyOrderSummary);
-    }
-
-    @Override
-    public void leaveFeedback(Feedback feedback) throws LocalizedException {
-        HistoryOrderSummary existingSummary = findById(feedback.getSummaryId());
-        existingSummary.setFeedback(feedback);
-        save(existingSummary);
     }
 }

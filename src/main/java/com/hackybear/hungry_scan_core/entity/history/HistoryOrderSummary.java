@@ -1,6 +1,5 @@
 package com.hackybear.hungry_scan_core.entity.history;
 
-import com.hackybear.hungry_scan_core.entity.Feedback;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import com.hackybear.hungry_scan_core.enums.PaymentMethod;
@@ -85,7 +84,4 @@ public class HistoryOrderSummary {
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
-
-    @OneToOne(cascade = CascadeType.MERGE)
-    private Feedback feedback;
 }
