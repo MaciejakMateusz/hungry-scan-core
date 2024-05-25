@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.entity.Zone;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -61,7 +62,7 @@ class ZoneControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/zones", Zone.class);
         assertEquals(4, zones.size());
-        assertEquals("Piętro II", zones.get(3).getName());
+        assertEquals("Piętro II", zones.get(3).getName().getDefaultTranslation());
     }
 
     @Test
@@ -73,7 +74,7 @@ class ZoneControllerTest {
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
     void shouldShowZoneById() throws Exception {
         Zone zone = apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 1, Zone.class);
-        assertEquals("Sekcja 1", zone.getName());
+        assertEquals("Sekcja 1", zone.getName().getDefaultTranslation());
     }
 
     @Test
@@ -115,7 +116,7 @@ class ZoneControllerTest {
 
         Zone persistedZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 5, Zone.class);
-        assertEquals("Test zone", persistedZone.getName());
+        assertEquals("Test zone", persistedZone.getName().getDefaultTranslation());
     }
 
     @Test
@@ -129,7 +130,7 @@ class ZoneControllerTest {
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
     void shouldNotAddWithIncorrectName() throws Exception {
         Zone zone = createZone();
-        zone.setName("");
+        zone.setName(getDefaultTranslation(""));
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/zones/add", zone);
 
@@ -144,14 +145,14 @@ class ZoneControllerTest {
     void shouldUpdateExistingZone() throws Exception {
         Zone persistedZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 3, Zone.class);
-        assertEquals("Piętro II", persistedZone.getName());
-        persistedZone.setName("Updated zone");
+        assertEquals("Piętro II", persistedZone.getName().getDefaultTranslation());
+        persistedZone.setName(getDefaultTranslation("Updated zone"));
 
         apiRequestUtils.postAndExpect200("/api/cms/zones/add", persistedZone);
 
         Zone updatedZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 3, Zone.class);
-        assertEquals("Updated zone", updatedZone.getName());
+        assertEquals("Updated zone", updatedZone.getName().getDefaultTranslation());
     }
 
     @Test
@@ -161,7 +162,7 @@ class ZoneControllerTest {
     void shouldDeleteZone() throws Exception {
         Zone exitingZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 2, Zone.class);
-        assertEquals("Sekcja 2", exitingZone.getName());
+        assertEquals("Sekcja 2", exitingZone.getName().getDefaultTranslation());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/zones/delete", 2);
 
@@ -182,9 +183,15 @@ class ZoneControllerTest {
 
     private Zone createZone() {
         Zone zone = new Zone();
-        zone.setName("Test zone");
+        zone.setName(getDefaultTranslation("Test zone"));
         zone.setDisplayOrder(5);
         return zone;
+    }
+
+    private Translatable getDefaultTranslation(String value) {
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation(value);
+        return translatable;
     }
 
 }

@@ -58,7 +58,7 @@ class IngredientControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/ingredients", Ingredient.class);
 
-        assertEquals(26, ingredients.size());
+        assertEquals(27, ingredients.size());
         assertEquals("Pomidory", ingredients.get(0).getName().getDefaultTranslation());
     }
 
@@ -114,7 +114,7 @@ class IngredientControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/ingredients/add", ingredient);
 
         Ingredient persistedIngredient =
-                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 27, Ingredient.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 28, Ingredient.class);
         assertEquals("Majeranek", persistedIngredient.getName().getDefaultTranslation());
         assertEquals(Money.of(1.00), persistedIngredient.getPrice());
     }
