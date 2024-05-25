@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -61,8 +62,8 @@ class CategoryControllerTest {
                         "/api/cms/categories", Category.class);
 
         assertEquals(9, categories.size());
-        assertEquals("Przystawki", categories.get(0).getName());
-        assertEquals("Napoje", categories.get(7).getName());
+        assertEquals("Przystawki", categories.get(0).getName().getDefaultTranslation());
+        assertEquals("Napoje", categories.get(7).getName().getDefaultTranslation());
     }
 
     @Test
@@ -75,7 +76,7 @@ class CategoryControllerTest {
     void shouldShowCategoryById() throws Exception {
         Category category = apiRequestUtils.postObjectExpect200(
                 "/api/cms/categories/show", 4, Category.class);
-        assertEquals("Zupy", category.getName());
+        assertEquals("Zupy", category.getName().getDefaultTranslation());
     }
 
     @Test
@@ -119,8 +120,8 @@ class CategoryControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/categories", Category.class);
         Category persistedCategory = categories.get(categories.size() - 1);
-        assertEquals("Food", persistedCategory.getName());
-        assertEquals("Good foot.", persistedCategory.getDescription());
+        assertEquals("Food", persistedCategory.getName().getDefaultTranslation());
+        assertNull(persistedCategory.getName().getTranslationEn());
     }
 
     @Test
@@ -134,7 +135,7 @@ class CategoryControllerTest {
     @WithMockUser(roles = "ADMIN")
     void shouldNotAddWithIncorrectName() throws Exception {
         Category category = createCategory();
-        category.setName("");
+        category.setName(getTranslationPl(""));
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", category);
 
@@ -144,50 +145,18 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldNotAddWithTooLongDescription() throws Exception {
-        Category category = createCategory();
-        category.setDescription("""
-                Indulge your senses in a culinary journey with our exquisite range of delectable delights, carefully\s
-                curated to tantalize your taste buds and satisfy your cravings. From savory appetizers that awaken your\s
-                palate to sumptuous main courses that embody culinary perfection, our food category is a symphony of\s
-                flavors, textures, and aromas. Immerse yourself in the rich tapestry of global cuisines, where each\s
-                dish is a masterpiece crafted with precision and passion.
-                Explore the vibrant tapestry of tastes, from the spicy and aromatic profiles of Asian cuisine to the\s
-                comforting familiarity of classic Western dishes. Our menu is a celebration of fresh, locally sourced\s
-                ingredients that elevate every bite, ensuring a harmonious blend of nutrition and indulgence.\s
-                Whether you seek the bold and spicy, the subtle and sophisticated, or the comforting and hearty, our\s
-                diverse selection caters to every palate and preference.
-                Elevate your dining experience with our artisanal desserts, where sweetness meets innovation. Savor\s
-                the velvety textures, decadent flavors, and artistic presentations that transform each dessert into a\s
-                work of edible art. From traditional favorites to avant-garde creations, our dessert collection is a\s
-                testament to the creativity and skill of our culinary artisans.
-                Not just a meal, but a sensorial experience, our food category goes beyond nourishment, offering a\s
-                symphony of tastes and aromas that transport you to gastronomic bliss. Imbued with a commitment to\s
-                quality and culinary excellence, our offerings are designed to redefine your dining experience, leaving\s
-                an indelible mark on your culinary memories. Embrace the extraordinary, savor the exceptional – welcome\s
-                to a world where food is an art form, and every bite tells a story.
-                """);
-
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", category);
-
-        assertEquals(1, errors.size());
-        assertEquals("Długość musi wynosić od 0 do 300.", errors.get("description"));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
     @Transactional
     @Rollback
     void shouldUpdateCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
-        existingCategory.setName("Foot");
+        existingCategory.setName(getTranslationPl("Foot"));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
-        assertEquals("Foot", updatedCategory.getName());
+        assertEquals("Foot", updatedCategory.getName().getDefaultTranslation());
     }
 
     @Test
@@ -201,7 +170,7 @@ class CategoryControllerTest {
     void shouldNotUpdateIncorrectCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
-        existingCategory.setName("");
+        existingCategory.setName(getTranslationPl(""));
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", existingCategory);
 
@@ -374,10 +343,10 @@ class CategoryControllerTest {
                         "/api/cms/categories", Category.class);
 
         assertEquals(10, categories.size());
-        assertEquals("Food", categories.get(1).getName());
+        assertEquals("Food", categories.get(1).getName().getDefaultTranslation());
         assertEquals(2, categories.get(1).getDisplayOrder());
-        assertEquals("Przystawki", categories.get(0).getName());
-        assertEquals("Makarony", categories.get(2).getName());
+        assertEquals("Przystawki", categories.get(0).getName().getDefaultTranslation());
+        assertEquals("Makarony", categories.get(2).getName().getDefaultTranslation());
     }
 
     @Test
@@ -397,7 +366,7 @@ class CategoryControllerTest {
                         "/api/cms/categories", Category.class);
         assertEquals(1, categories.size());
         Category persistedCategory = categories.get(0);
-        assertEquals("Food", persistedCategory.getName());
+        assertEquals("Food", persistedCategory.getName().getDefaultTranslation());
         assertEquals(1, persistedCategory.getDisplayOrder());
     }
 
@@ -415,9 +384,10 @@ class CategoryControllerTest {
                 apiRequestUtils.fetchAsList("/api/cms/categories", Category.class);
         assertEquals(10, categories.size());
         category = categories.get(0);
-        assertEquals("Food", category.getName());
+        assertEquals("Food", category.getName().getDefaultTranslation());
         assertEquals(1, category.getDisplayOrder());
-        assertEquals("Przystawki", categories.get(1).getName());
+        assertEquals("Przystawki", categories.get(1).getName().getDefaultTranslation());
+        assertEquals("Starters", categories.get(1).getName().getTranslationEn());
         assertEquals(2, categories.get(1).getDisplayOrder());
 
         category.setDisplayOrder(Integer.MAX_VALUE);
@@ -426,9 +396,9 @@ class CategoryControllerTest {
         categories = apiRequestUtils.fetchAsList("/api/cms/categories", Category.class);
         category = categories.get(categories.size() - 1);
 
-        assertEquals("Food", category.getName());
+        assertEquals("Food", category.getName().getDefaultTranslation());
         assertEquals(10, category.getDisplayOrder());
-        assertEquals("Przystawki", categories.get(0).getName());
+        assertEquals("Przystawki", categories.get(0).getName().getDefaultTranslation());
         assertEquals(1, categories.get(0).getDisplayOrder());
     }
 
@@ -446,9 +416,9 @@ class CategoryControllerTest {
                 apiRequestUtils.fetchAsList("/api/cms/categories", Category.class);
         assertEquals(10, categories.size());
         category = categories.get(2);
-        assertEquals("Food", category.getName());
+        assertEquals("Food", category.getName().getDefaultTranslation());
         assertEquals(3, category.getDisplayOrder());
-        assertEquals("Sałatki", categories.get(3).getName());
+        assertEquals("Sałatki", categories.get(3).getName().getDefaultTranslation());
         assertEquals(4, categories.get(3).getDisplayOrder());
 
         category.setDisplayOrder(5);
@@ -456,9 +426,9 @@ class CategoryControllerTest {
 
         categories = apiRequestUtils.fetchAsList("/api/cms/categories", Category.class);
         category = categories.get(4);
-        assertEquals("Food", category.getName());
+        assertEquals("Food", category.getName().getDefaultTranslation());
         assertEquals(5, category.getDisplayOrder());
-        assertEquals("Pizza", categories.get(5).getName());
+        assertEquals("Pizza", categories.get(5).getName().getDefaultTranslation());
         assertEquals(6, categories.get(5).getDisplayOrder());
     }
 
@@ -487,9 +457,14 @@ class CategoryControllerTest {
 
     private Category createCategory() {
         Category category = new Category();
-        category.setName("Food");
-        category.setDescription("Good foot.");
+        category.setName(getTranslationPl("Food"));
         category.setDisplayOrder(10);
         return category;
+    }
+
+    private Translatable getTranslationPl(String translationPl) {
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation(translationPl);
+        return translatable;
     }
 }

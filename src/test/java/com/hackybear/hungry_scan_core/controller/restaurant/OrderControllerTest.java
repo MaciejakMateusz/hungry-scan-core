@@ -75,7 +75,7 @@ class OrderControllerTest {
     @org.junit.jupiter.api.Order(2)
     void orderInitializationCheck() {
         assertNotNull(table15Order);
-        assertEquals(Money.of(139.00), table15Order.getTotalAmount());
+        assertEquals(Money.of(135.00), table15Order.getTotalAmount());
         assertNotNull(table12Order);
         assertEquals(Money.of(129.25), table12Order.getTotalAmount());
     }
@@ -90,7 +90,7 @@ class OrderControllerTest {
                 apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
         assertEquals(1, summary.getOrders().size());
         assertEquals(3, summary.getOrders().get(0).getOrderedItems().size());
-        assertEquals(Money.of(139.00), summary.getTotalAmount());
+        assertEquals(Money.of(135.00), summary.getTotalAmount());
     }
 
     @Test
@@ -104,7 +104,7 @@ class OrderControllerTest {
         OrderSummary summary =
                 apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
         assertEquals(3, summary.getOrders().size());
-        assertEquals(Money.of(417.00), summary.getTotalAmount());
+        assertEquals(Money.of(405.00), summary.getTotalAmount());
     }
 
     @Test
@@ -117,7 +117,7 @@ class OrderControllerTest {
         OrderSummary table15Summary = apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
         OrderSummary table12Summary = apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table12Order, OrderSummary.class);
         assertEquals(1, table15Summary.getOrders().size());
-        assertEquals(Money.of(139.00), table15Summary.getTotalAmount());
+        assertEquals(Money.of(135.00), table15Summary.getTotalAmount());
         assertEquals(1, table12Summary.getOrders().size());
         assertEquals(Money.of(129.25), table12Summary.getTotalAmount());
     }

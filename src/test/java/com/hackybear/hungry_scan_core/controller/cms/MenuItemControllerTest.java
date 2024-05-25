@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.MenuItem;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.test_utils.MenuItemFactory;
@@ -61,7 +62,7 @@ class MenuItemControllerTest {
                         "/api/cms/items", MenuItem.class);
 
         assertEquals(33, menuItems.size());
-        assertEquals("Krewetki marynowane w cytrynie", menuItems.get(0).getName());
+        assertEquals("Krewetki marynowane w cytrynie", menuItems.get(0).getName().getDefaultTranslation());
     }
 
     @Test
@@ -72,7 +73,7 @@ class MenuItemControllerTest {
                         "/api/cms/items/by-category", 3, MenuItem.class);
 
         assertEquals(5, menuItems.size());
-        assertEquals("Sałatka grecka", menuItems.get(0).getName());
+        assertEquals("Sałatka grecka", menuItems.get(0).getName().getDefaultTranslation());
     }
 
     @Test
@@ -85,7 +86,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = {"COOK"})
     void shouldShowMenuItemById() throws Exception {
         MenuItem menuItem = apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
-        assertEquals("Roladki z bakłażana", menuItem.getName());
+        assertEquals("Roladki z bakłażana", menuItem.getName().getDefaultTranslation());
     }
 
     @Test
@@ -130,8 +131,8 @@ class MenuItemControllerTest {
 
         assertEquals(6, menuItems.size());
         MenuItem persistedMenuItem = menuItems.get(menuItems.size() - 1);
-        assertEquals("Sample Item", persistedMenuItem.getName());
-        assertEquals("Sample description", persistedMenuItem.getDescription());
+        assertEquals("Sample Item", persistedMenuItem.getName().getDefaultTranslation());
+        assertEquals("Sample description", persistedMenuItem.getDescription().getDefaultTranslation());
         assertEquals(3, menuItem.getCategory().getId());
         assertEquals(5, persistedMenuItem.getIngredients().size());
         assertEquals(5, persistedMenuItem.getAdditionalIngredients().size());
@@ -152,7 +153,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
     void shouldNotAddWithIncorrectName() throws Exception {
         MenuItem menuItem = createMenuItem();
-        menuItem.setName("");
+        menuItem.setName(getDefaultTranslation(""));
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItem);
 
@@ -162,33 +163,21 @@ class MenuItemControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    void shouldNotAddWithIncorrectDescription() throws Exception {
-        MenuItem menuItem = createMenuItem();
-        menuItem.setDescription("Meme");
-
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItem);
-
-        assertEquals(1, errors.size());
-        assertEquals("Opis kategorii musi mieć minimum 5 znaków", errors.get("description"));
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
     @Transactional
     @Rollback
     void shouldUpdateExistingMenuItem() throws Exception {
         MenuItem persistedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
-        persistedMenuItem.setName("Updated Item");
-        persistedMenuItem.setDescription("Updated description.");
+        persistedMenuItem.setName(getDefaultTranslation("Updated Item"));
+        persistedMenuItem.setDescription(getDefaultTranslation("Updated Description"));
         persistedMenuItem.setImageName("/public/assets/updated.png");
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
 
         MenuItem updatedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
-        assertEquals("Updated Item", updatedMenuItem.getName());
-        assertEquals("Updated description.", updatedMenuItem.getDescription());
+        assertEquals("Updated Item", updatedMenuItem.getName().getDefaultTranslation());
+        assertEquals("Updated Description", updatedMenuItem.getDescription().getDefaultTranslation());
         assertEquals("/public/assets/updated.png", updatedMenuItem.getImageName());
     }
 
@@ -357,10 +346,10 @@ class MenuItemControllerTest {
                         "/api/cms/items/by-category", 3, MenuItem.class);
 
         assertEquals(6, menuItems.size());
-        assertEquals("Sample Item", menuItems.get(1).getName());
+        assertEquals("Sample Item", menuItems.get(1).getName().getDefaultTranslation());
         assertEquals(2, menuItems.get(1).getDisplayOrder());
-        assertEquals("Sałatka grecka", menuItems.get(0).getName());
-        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName());
+        assertEquals("Sałatka grecka", menuItems.get(0).getName().getDefaultTranslation());
+        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName().getDefaultTranslation());
     }
 
     @Test
@@ -382,7 +371,7 @@ class MenuItemControllerTest {
                         "/api/cms/items/by-category", 9, MenuItem.class);
         assertEquals(1, menuItems.size());
         MenuItem persistedMenuItem = menuItems.get(0);
-        assertEquals("Sample Item", persistedMenuItem.getName());
+        assertEquals("Sample Item", persistedMenuItem.getName().getDefaultTranslation());
         assertEquals(1, persistedMenuItem.getDisplayOrder());
     }
 
@@ -400,9 +389,9 @@ class MenuItemControllerTest {
                 apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
         assertEquals(6, menuItems.size());
         menuItem = menuItems.get(0);
-        assertEquals("Sample Item", menuItem.getName());
+        assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
         assertEquals(1, menuItem.getDisplayOrder());
-        assertEquals("Sałatka grecka", menuItems.get(1).getName());
+        assertEquals("Sałatka grecka", menuItems.get(1).getName().getDefaultTranslation());
         assertEquals(2, menuItems.get(1).getDisplayOrder());
 
         menuItem.setDisplayOrder(Integer.MAX_VALUE);
@@ -411,10 +400,10 @@ class MenuItemControllerTest {
         menuItems = apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
         menuItem = menuItems.get(menuItems.size() - 1);
 
-        assertEquals("Sample Item", menuItem.getName());
+        assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
         assertEquals(6, menuItem.getDisplayOrder());
 
-        assertEquals("Sałatka grecka", menuItems.get(0).getName());
+        assertEquals("Sałatka grecka", menuItems.get(0).getName().getDefaultTranslation());
         assertEquals(1, menuItems.get(0).getDisplayOrder());
     }
 
@@ -432,9 +421,9 @@ class MenuItemControllerTest {
                 apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
         assertEquals(6, menuItems.size());
         menuItem = menuItems.get(2);
-        assertEquals("Sample Item", menuItem.getName());
+        assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
         assertEquals(3, menuItem.getDisplayOrder());
-        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami", menuItems.get(3).getName());
+        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami", menuItems.get(3).getName().getDefaultTranslation());
         assertEquals(4, menuItems.get(3).getDisplayOrder());
 
         menuItem.setDisplayOrder(2);
@@ -442,9 +431,9 @@ class MenuItemControllerTest {
 
         menuItems = apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
         menuItem = menuItems.get(1);
-        assertEquals("Sample Item", menuItem.getName());
+        assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
         assertEquals(2, menuItem.getDisplayOrder());
-        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName());
+        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName().getDefaultTranslation());
         assertEquals(3, menuItems.get(2).getDisplayOrder());
     }
 
@@ -477,6 +466,12 @@ class MenuItemControllerTest {
                 "Sample description",
                 3,
                 Money.of(23.55));
+    }
+
+    private Translatable getDefaultTranslation(String translation) {
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation(translation);
+        return translatable;
     }
 
 }

@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.test_utils;
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.MenuItemVariant;
+import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.*;
 import com.hackybear.hungry_scan_core.utility.Money;
@@ -35,8 +36,8 @@ public class MenuItemFactory {
                                    Integer categoryId,
                                    BigDecimal price) throws LocalizedException {
         MenuItem menuItem = new MenuItem();
-        menuItem.setName(name);
-        menuItem.setDescription(description);
+        menuItem.setName(getDefaultTranslation(name));
+        menuItem.setDescription(getDefaultTranslation(description));
         menuItem.setPrice(price);
         menuItem.setAvailable(true);
         menuItem.setImageName("/public/assets/sample.png");
@@ -69,7 +70,7 @@ public class MenuItemFactory {
 
     private void setLabels(MenuItem menuItem) throws LocalizedException {
         menuItem.addLabel(labelService.findById(3));
-        menuItem.addLabel(labelService.findById(9));
+        menuItem.addLabel(labelService.findById(5));
     }
 
     private void setAllergen(MenuItem menuItem) throws LocalizedException {
@@ -78,17 +79,23 @@ public class MenuItemFactory {
 
     private void setVariants(MenuItem menuItem) {
         MenuItemVariant variant = new MenuItemVariant();
-        variant.setName("Test variant");
+        variant.setName(getDefaultTranslation("Test variant"));
         variant.setPrice(Money.of(12.00));
         menuItemVariantService.save(variant);
         menuItem.addVariant(variant);
 
         MenuItemVariant variant2 = new MenuItemVariant();
-        variant2.setName("Test variant 2");
+        variant2.setName(getDefaultTranslation("Test variant 2"));
         variant2.setPrice(Money.of(0.00));
         variant2.setDefaultVariant(true);
         menuItemVariantService.save(variant2);
         menuItem.addVariant(variant2);
+    }
+
+    private Translatable getDefaultTranslation(String translation) {
+        Translatable translatable = new Translatable();
+        translatable.setDefaultTranslation(translation);
+        return translatable;
     }
 
 }
