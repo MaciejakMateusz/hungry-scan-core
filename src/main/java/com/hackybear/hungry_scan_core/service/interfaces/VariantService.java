@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface VariantService {
 
-    void save(Variant variant);
-
-    List<Variant> findAll();
-
     Variant findById(Integer id) throws LocalizedException;
+
+    List<Variant> findAllByMenuItemId(Integer menuItemId);
+
+    void save(Variant variant) throws Exception;
 
     void delete(Integer id) throws LocalizedException;
 }

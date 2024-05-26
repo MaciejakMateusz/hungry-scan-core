@@ -5,6 +5,8 @@ import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,12 +41,15 @@ public class Variant {
     @NotNull
     private MenuItem menuItem;
 
-    @Column(nullable = false)
+    @DecimalMin(value = "0.00")
     private BigDecimal price = Money.of(0.00);
 
     private boolean isAvailable = true;
 
     private boolean isDefaultVariant;
+
+    @Min(1)
+    private Integer displayOrder;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;

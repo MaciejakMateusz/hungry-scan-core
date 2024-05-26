@@ -46,7 +46,7 @@ public class OrderedItemFactory {
 
     private void setVariant(OrderedItem orderedItem, Integer variantId) {
         MenuItem menuItem = orderedItem.getMenuItem();
-        List<Variant> variants = variantRepository.findAllByMenuItem(menuItem);
+        List<Variant> variants = variantRepository.findAllByMenuItemIdOrderByDisplayOrder(menuItem.getId());
         if (!variants.isEmpty()) {
             Variant variant =
                     variants.stream()

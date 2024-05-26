@@ -2,37 +2,41 @@ package com.hackybear.hungry_scan_core.utility;
 
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
+import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
+import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingFunction;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Component
 public class SortingHelper {
 
     private final MenuItemRepository menuItemRepository;
     private final CategoryRepository categoryRepository;
+    private final VariantRepository variantRepository;
 
-    public SortingHelper(MenuItemRepository menuItemRepository, CategoryRepository categoryRepository) {
+    public SortingHelper(MenuItemRepository menuItemRepository, CategoryRepository categoryRepository, VariantRepository variantRepository) {
         this.menuItemRepository = menuItemRepository;
         this.categoryRepository = categoryRepository;
+        this.variantRepository = variantRepository;
     }
 
     public void sortAndSave(MenuItem menuItem, ThrowingFunction<Integer, MenuItem> findFunction) throws Exception {
         boolean isNew = isNewEntity(menuItem);
         MenuItem currentItem = getCurrentEntity(menuItem, findFunction, isNew, MenuItem.class);
-        menuItem = persistIfNew(menuItem, menuItemRepository::save, isNew);
-
         Integer currentOrder = getCurrentOrder(currentItem);
-        Integer newOrder = menuItem.getDisplayOrder();
+        Integer newOrder = getNewOrder(menuItem.getDisplayOrder());
 
-        if (shouldSaveWithoutReordering(currentOrder, newOrder)) {
-            menuItemRepository.save(menuItem);
+        if (shouldSaveWithoutReordering(currentOrder, menuItem, menuItemRepository::save)) {
             return;
         }
+
+        menuItem = persistIfNew(menuItem, menuItemRepository::save, isNew);
 
         List<MenuItem> categoryItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(menuItem.getCategory().getId());
         newOrder = adjustNewOrderIfNeeded(newOrder, categoryItems);
@@ -50,15 +54,14 @@ public class SortingHelper {
     public void sortAndSave(Category category, ThrowingFunction<Integer, Category> findFunction) throws Exception {
         boolean isNew = isNewEntity(category);
         Category currentCategory = getCurrentEntity(category, findFunction, isNew, Category.class);
-        category = persistIfNew(category, categoryRepository::save, isNew);
-
         Integer currentOrder = getCurrentOrder(currentCategory);
-        Integer newOrder = category.getDisplayOrder();
+        Integer newOrder = getNewOrder(category.getDisplayOrder());
 
-        if (shouldSaveWithoutReordering(currentOrder, newOrder)) {
-            categoryRepository.save(category);
+        if(shouldSaveWithoutReordering(currentOrder, category, categoryRepository::save)) {
             return;
         }
+
+        category = persistIfNew(category, categoryRepository::save, isNew);
 
         List<Category> categories = categoryRepository.findAllByOrderByDisplayOrder();
         newOrder = adjustNewOrderIfNeeded(newOrder, categories);
@@ -71,6 +74,35 @@ public class SortingHelper {
 
         updateDisplayOrder(categories, category.getId(), newOrder);
         categoryRepository.saveAll(categories);
+    }
+
+    private Integer getNewOrder(Integer displayOrder) {
+        return Objects.isNull(displayOrder) ? 1 : displayOrder;
+    }
+
+    public void sortAndSave(Variant variant, ThrowingFunction<Integer, Variant> findFunction) throws Exception {
+        boolean isNew = isNewEntity(variant);
+        Variant currentVariant = getCurrentEntity(variant, findFunction, isNew, Variant.class);
+        Integer currentOrder = getCurrentOrder(currentVariant);
+        Integer newOrder = getNewOrder(variant.getDisplayOrder());
+
+        if (shouldSaveWithoutReordering(currentOrder, variant, variantRepository::save)) {
+            return;
+        }
+
+        variant = persistIfNew(variant, variantRepository::save, isNew);
+
+        List<Variant> variants = variantRepository.findAllByMenuItemIdOrderByDisplayOrder(variant.getMenuItem().getId());
+        newOrder = adjustNewOrderIfNeeded(newOrder, variants);
+
+        if (isNew) {
+            incrementDisplayOrders(variants, newOrder);
+        } else {
+            adjustDisplayOrders(variants, currentOrder, newOrder);
+        }
+
+        updateDisplayOrder(variants, variant.getId(), newOrder);
+        variantRepository.saveAll(variants);
     }
 
     private <T> boolean isNewEntity(T entity) {
@@ -99,8 +131,12 @@ public class SortingHelper {
         return Objects.isNull(getDisplayOrder(currentEntity)) ? 0 : getDisplayOrder(currentEntity);
     }
 
-    private boolean shouldSaveWithoutReordering(Integer currentOrder, Integer newOrder) {
-        return currentOrder.equals(newOrder) && newOrder != 0;
+    private <T> boolean shouldSaveWithoutReordering(Integer currentOrder, T t, Consumer<T> save) {
+        if(currentOrder.equals(getDisplayOrder(t)) && getDisplayOrder(t) != 0) {
+            save.accept(t);
+            return true;
+        }
+        return false;
     }
 
     private <T> Integer adjustNewOrderIfNeeded(Integer newOrder, List<T> collection) {
@@ -118,6 +154,9 @@ public class SortingHelper {
     }
 
     private <T> void incrementDisplayOrders(List<T> collection, Integer newOrder) {
+        if (collection.size() == 1) {
+            return;
+        }
         for (T t : collection) {
             if (getDisplayOrder(t) >= newOrder) {
                 setDisplayOrder(t, getDisplayOrder(t) + 1);
@@ -126,6 +165,9 @@ public class SortingHelper {
     }
 
     private <T> void adjustDisplayOrders(List<T> collection, Integer currentOrder, Integer newOrder) {
+        if (collection.size() == 1) {
+            return;
+        }
         if (newOrder > currentOrder) {
             for (T t : collection) {
                 if (getDisplayOrder(t) > currentOrder && getDisplayOrder(t) <= newOrder) {
@@ -154,6 +196,8 @@ public class SortingHelper {
             return ((MenuItem) obj).getDisplayOrder();
         } else if (obj instanceof Category) {
             return ((Category) obj).getDisplayOrder();
+        } else if (obj instanceof Variant) {
+            return ((Variant) obj).getDisplayOrder();
         }
         throw new IllegalArgumentException("Unsupported type");
     }
@@ -163,6 +207,8 @@ public class SortingHelper {
             ((MenuItem) obj).setDisplayOrder(displayOrder);
         } else if (obj instanceof Category) {
             ((Category) obj).setDisplayOrder(displayOrder);
+        } else if (obj instanceof Variant) {
+            ((Variant) obj).setDisplayOrder(displayOrder);
         } else {
             throw new IllegalArgumentException("Unsupported type");
         }
@@ -173,6 +219,8 @@ public class SortingHelper {
             return ((MenuItem) obj).getId();
         } else if (obj instanceof Category) {
             return ((Category) obj).getId();
+        } else if (obj instanceof Variant) {
+            return ((Variant) obj).getId();
         }
         throw new IllegalArgumentException("Unsupported type");
     }

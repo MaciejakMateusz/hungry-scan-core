@@ -65,7 +65,6 @@ public class MenuItem {
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private Set<Ingredient> additionalIngredients = new HashSet<>();
 
-    @Column(nullable = false)
     @NotNull
     private Integer displayOrder;
 
