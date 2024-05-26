@@ -35,7 +35,6 @@ public class Category {
 
     private boolean isBarServed;
 
-    @Column(nullable = false)
     @NotNull
     private Integer displayOrder;
 

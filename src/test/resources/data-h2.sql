@@ -303,75 +303,40 @@ VALUES ('Średnia');
 INSERT INTO translatable(default_translation)
 VALUES ('Duża');
 
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, true, 76, '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 77, '4.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, true, 78, '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 79, '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 80, '10.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, true, 81, '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 82, '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 83, '10.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, true, 84, '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 85, '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 86, '10.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, true, 87, '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 88, '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 89, '10.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, true, 90, '0.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 91, '5.00', null);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated)
-VALUES (NOW(), true, false, 92, '10.00', null);
-
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (4, 1);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (4, 2);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (21, 3);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (21, 4);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (21, 5);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (22, 6);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (22, 7);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (22, 8);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (23, 9);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (23, 10);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (23, 11);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (24, 12);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (24, 13);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (24, 14);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (25, 15);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (25, 16);
-INSERT INTO menu_items_variants(menu_item_id, variants_id)
-VALUES (25, 17);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, true, 76, '0.00', null, 4, 1);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 77, '4.00', null, 4, 2);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, true, 78, '0.00', null, 21, 1);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 79, '5.00', null, 21, 2);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 80, '10.00', null, 21, 3);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, true, 81, '0.00', null, 22, 1);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 82, '5.00', null, 22, 2);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 83, '10.00', null, 22, 3);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, true, 84, '0.00', null, 23, 1);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 85, '5.00', null, 23, 2);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 86, '10.00', null, 23, 3);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, true, 87, '0.00', null, 24, 1);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 88, '5.00', null, 24, 2);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 89, '10.00', null, 24, 3);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, true, 90, '0.00', null, 25, 1);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 91, '5.00', null, 25, 2);
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+VALUES (NOW(), true, false, 92, '10.00', null, 25, 3);
 
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');

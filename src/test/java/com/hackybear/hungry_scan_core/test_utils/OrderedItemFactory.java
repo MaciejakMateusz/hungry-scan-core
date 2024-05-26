@@ -2,9 +2,10 @@ package com.hackybear.hungry_scan_core.test_utils;
 
 import com.hackybear.hungry_scan_core.entity.Ingredient;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
-import com.hackybear.hungry_scan_core.entity.MenuItemVariant;
+import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.entity.OrderedItem;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.utility.Money;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,11 @@ import java.util.stream.Collectors;
 public class OrderedItemFactory {
 
     private final MenuItemService menuItemService;
+    private final VariantRepository variantRepository;
 
-    public OrderedItemFactory(MenuItemService menuItemService) {
+    public OrderedItemFactory(MenuItemService menuItemService, VariantRepository variantRepository) {
         this.menuItemService = menuItemService;
+        this.variantRepository = variantRepository;
     }
 
     public OrderedItem createOrderedItem(Integer menuItemId,
@@ -43,14 +46,14 @@ public class OrderedItemFactory {
 
     private void setVariant(OrderedItem orderedItem, Integer variantId) {
         MenuItem menuItem = orderedItem.getMenuItem();
-        Set<MenuItemVariant> variants = menuItem.getVariants();
+        List<Variant> variants = variantRepository.findAllByMenuItemIdOrderByDisplayOrder(menuItem.getId());
         if (!variants.isEmpty()) {
-            MenuItemVariant menuItemVariant =
+            Variant variant =
                     variants.stream()
-                            .filter(variant -> Objects.equals(variant.getId(), variantId))
+                            .filter(v -> Objects.equals(v.getId(), variantId))
                             .findFirst()
                             .orElseThrow();
-            orderedItem.setMenuItemVariant(menuItemVariant);
+            orderedItem.setVariant(variant);
         }
     }
 
@@ -68,7 +71,7 @@ public class OrderedItemFactory {
     private BigDecimal computePrice(OrderedItem orderedItem) {
         BigDecimal price = Money.of(0.00);
         BigDecimal menuItemPrice = orderedItem.getMenuItem().getPrice();
-        MenuItemVariant variant = orderedItem.getMenuItemVariant();
+        Variant variant = orderedItem.getVariant();
         BigDecimal variantModifier = Objects.nonNull(variant) ? variant.getPrice() : Money.of(0.00);
         price = price.add(menuItemPrice);
         price = price.add(variantModifier);

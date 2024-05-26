@@ -35,7 +35,7 @@ public class OrderedItem implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "menu_item_variant_id", referencedColumnName = "id")
-    private MenuItemVariant menuItemVariant;
+    private Variant variant;
 
     @ManyToMany
     @JoinTable(name = "ordered_item_additional_ingredients",

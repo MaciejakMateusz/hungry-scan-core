@@ -2,7 +2,7 @@ package com.hackybear.hungry_scan_core.entity.history;
 
 import com.hackybear.hungry_scan_core.entity.Ingredient;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
-import com.hackybear.hungry_scan_core.entity.MenuItemVariant;
+import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -28,14 +28,14 @@ public class HistoryOrderedItem implements Serializable {
 
     public HistoryOrderedItem(Long id,
                               MenuItem menuItem,
-                              MenuItemVariant menuItemVariant,
+                              Variant variant,
                               Set<Ingredient> additionalIngredients,
                               String additionalComment,
                               Integer quantity,
                               boolean paid) {
         this.id = id;
         this.menuItem = menuItem;
-        this.menuItemVariant = menuItemVariant;
+        this.variant = variant;
         this.additionalIngredients = additionalIngredients;
         this.additionalComment = additionalComment;
         this.quantity = quantity;
@@ -51,7 +51,7 @@ public class HistoryOrderedItem implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "menu_item_variant_id", referencedColumnName = "id")
-    private MenuItemVariant menuItemVariant;
+    private Variant variant;
 
     @ManyToMany
     @JoinTable(name = "history_ordered_item_additional_ingredients",
