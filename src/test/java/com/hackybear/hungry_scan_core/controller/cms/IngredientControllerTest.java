@@ -11,6 +11,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,18 +56,19 @@ class IngredientControllerTest {
     @Test
     @WithMockUser(roles = {"MANAGER"})
     void shouldGetAllIngredients() throws Exception {
-        List<Ingredient> ingredients =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/ingredients", Ingredient.class);
+        Page<Ingredient> ingredients =
+                apiRequestUtils.fetchAsPage(
+                        "/api/cms/ingredients", getPageableParams(), Ingredient.class);
 
-        assertEquals(27, ingredients.size());
-        assertEquals("Pomidory", ingredients.get(0).getName().getDefaultTranslation());
+        List<Ingredient> ingredientList = ingredients.getContent();
+        assertEquals(27, ingredientList.size());
+        assertEquals("Bazylia", ingredientList.get(0).getName().getDefaultTranslation());
     }
 
     @Test
     @WithMockUser(roles = {"CUSTOMER"})
     void shouldNotAllowUnauthorizedAccessToIngredients() throws Exception {
-        mockMvc.perform(get("/api/cms/ingredients")).andExpect(status().isForbidden());
+        apiRequestUtils.postAndExpect("/api/cms/ingredients", getPageableParams(), status().isForbidden());
     }
 
     @Test
@@ -191,5 +194,12 @@ class IngredientControllerTest {
         Translatable translatable = new Translatable();
         translatable.setDefaultTranslation(value);
         return translatable;
+    }
+
+    private Map<String, Object> getPageableParams() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("pageSize", 40);
+        params.put("pageNumber", 0);
+        return params;
     }
 }

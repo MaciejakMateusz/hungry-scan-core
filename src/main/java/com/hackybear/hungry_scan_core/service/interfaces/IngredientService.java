@@ -2,14 +2,14 @@ package com.hackybear.hungry_scan_core.service.interfaces;
 
 import com.hackybear.hungry_scan_core.entity.Ingredient;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface IngredientService {
 
     void save(Ingredient ingredient);
 
-    List<Ingredient> findAll();
+    Page<Ingredient> findAll(Pageable pageable);
 
     Ingredient findById(Integer id) throws LocalizedException;
 

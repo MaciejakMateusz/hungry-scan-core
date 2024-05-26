@@ -6,9 +6,9 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.IngredientRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.IngredientService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -29,8 +29,8 @@ public class IngredientServiceImp implements IngredientService {
     }
 
     @Override
-    public List<Ingredient> findAll() {
-        return ingredientRepository.findAll();
+    public Page<Ingredient> findAll(Pageable pageable) {
+        return ingredientRepository.findAllOrderByDefaultTranslation(pageable);
     }
 
     @Override
