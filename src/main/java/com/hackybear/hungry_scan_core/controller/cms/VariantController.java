@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/variants")
@@ -23,6 +24,12 @@ public class VariantController {
     public VariantController(VariantService variantService, ResponseHelper responseHelper) {
         this.variantService = variantService;
         this.responseHelper = responseHelper;
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PostMapping("/show")
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+        return responseHelper.getResponseEntity(id, variantService::findById);
     }
 
     @PreAuthorize("isAuthenticated()")

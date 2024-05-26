@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -27,6 +28,9 @@ public class VariantServiceImp implements VariantService {
 
     @Override
     public void save(Variant variant) throws Exception {
+        if(!isFirstVariant(variant.getMenuItem().getId())) {
+            switchDefaultVariant(variant);
+        }
         sortingHelper.sortAndSave(variant, this::findById);
     }
 
@@ -46,5 +50,33 @@ public class VariantServiceImp implements VariantService {
     public void delete(Integer id) throws LocalizedException {
         Variant existingVariant = findById(id);
         variantRepository.delete(existingVariant);
+    }
+
+    private boolean isFirstVariant(Integer menuItemId) {
+        List<Variant> variants = findAllByMenuItemId(menuItemId);
+        return variants.isEmpty();
+    }
+
+    private void switchDefaultVariant(Variant variant) {
+        if(!variant.isDefaultVariant()) {
+            return;
+        }
+        boolean isNewVariant = Objects.isNull(variant.getId());
+        List<Variant> variants = findAllByMenuItemId(variant.getMenuItem().getId());
+
+        if(isNewVariant) {
+            for(Variant v : variants) {
+                v.setDefaultVariant(false);
+            }
+            variantRepository.saveAll(variants);
+        } else {
+            for(Variant v : variants) {
+                if(v.getId().equals(variant.getId())) {
+                    continue;
+                }
+                v.setDefaultVariant(false);
+            }
+            variantRepository.saveAll(variants);
+        }
     }
 }
