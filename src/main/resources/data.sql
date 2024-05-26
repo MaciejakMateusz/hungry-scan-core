@@ -129,6 +129,15 @@ VALUES (1, 'icon_gluten_free', 35),
        (5, 'icon_lactose_free', 39),
        (6, 'icon_spicy', 40);
 
+INSERT IGNORE INTO themes(id, name)
+VALUES (1, 'green'),
+       (2, 'pink'),
+       (3, 'grey'),
+       (4, 'orange');
+
+INSERT IGNORE INTO onboarding_images(id, image_name)
+VALUES (1, 'default');
+
 INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
                                zone_id, has_qr_code, qr_name)
 VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 4, 1, true, null, false, null);
