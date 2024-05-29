@@ -24,4 +24,5 @@ public class OnboardingImage {
     @NotBlank
     String imageName;
 
+    boolean isActive;
 }

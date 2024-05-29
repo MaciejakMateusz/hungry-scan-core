@@ -46,11 +46,21 @@ class QRServiceImpTest {
     }
 
     @Test
-    void shouldGenerate() throws Exception {
+    void shouldGenerateForTable() throws Exception {
         RestaurantTable restaurantTable = restaurantTableService.findById(1);
-        qrService.generate(restaurantTable);
+        qrService.generate(restaurantTable, "");
         String qrName = restaurantTable.getQrName();
         File file = new File(directory + qrName);
         assertEquals("QR code - Table number 1, Table ID 1.png", file.getName());
     }
+
+    @Test
+    void shouldGenerateForGeneralUse() throws Exception {
+        RestaurantTable restaurantTable = restaurantTableService.findById(1);
+        qrService.generate(restaurantTable, "Kod QR do aplikacji klienta");
+        String qrName = restaurantTable.getQrName();
+        File file = new File(directory + qrName);
+        assertEquals("Kod QR do aplikacji klienta.png", file.getName());
+    }
+
 }

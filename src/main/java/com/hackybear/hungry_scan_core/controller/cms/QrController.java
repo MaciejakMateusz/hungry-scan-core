@@ -5,32 +5,29 @@ import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
-import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/cms/tables")
-public class TableController {
+@RequestMapping("/api/cms/qr")
+public class QrController {
 
     private final RestaurantTableService restaurantTableService;
     private final FileProcessingService fileProcessingService;
     private final QRService qrService;
     private final ResponseHelper responseHelper;
 
-    public TableController(RestaurantTableService restaurantTableService,
-                           FileProcessingService fileProcessingService,
-                           QRService qrService,
-                           ResponseHelper responseHelper) {
+    public QrController(RestaurantTableService restaurantTableService,
+                        FileProcessingService fileProcessingService,
+                        QRService qrService,
+                        ResponseHelper responseHelper) {
         this.restaurantTableService = restaurantTableService;
         this.fileProcessingService = fileProcessingService;
         this.qrService = qrService;
@@ -41,25 +38,6 @@ public class TableController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<List<RestaurantTable>> list() {
         return ResponseEntity.ok(restaurantTableService.findAll());
-    }
-
-    @PostMapping("/show")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
-        return responseHelper.getResponseEntity(id, restaurantTableService::findById);
-    }
-
-    @GetMapping("/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<RestaurantTable> add() {
-        return ResponseEntity.ok(new RestaurantTable());
-    }
-
-    @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> add(@RequestBody @Valid RestaurantTable restaurantTable,
-                                 BindingResult br) {
-        return responseHelper.buildResponse(restaurantTable, br, restaurantTableService::save);
     }
 
     @PatchMapping("/generate-token")
@@ -82,10 +60,9 @@ public class TableController {
 
     @PostMapping(value = "/download")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> downloadFile(@RequestBody Integer id) {
+    public ResponseEntity<?> downloadQr() {
         try {
-            RestaurantTable restaurantTable = restaurantTableService.findById(id);
-            Resource file = fileProcessingService.downloadFile(restaurantTable.getQrName());
+            Resource file = fileProcessingService.downloadFile("qr/Kod QR do aplikacji klienta");
 
             String filename = file.getFilename();
 
@@ -98,12 +75,6 @@ public class TableController {
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
-    }
-
-    @DeleteMapping("/delete")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> delete(@RequestBody Integer id) {
-        return responseHelper.buildResponse(id, restaurantTableService::delete);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

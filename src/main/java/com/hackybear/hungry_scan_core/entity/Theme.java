@@ -24,4 +24,6 @@ public class Theme {
     @NotBlank
     String name;
 
+    private boolean isActive;
+
 }
