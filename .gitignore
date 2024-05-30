@@ -35,6 +35,7 @@ build/
 ### Docker ###
 compose.yaml
 Dockerfile
+instruction
 
 ### TODO helper ###
 src/main/java/com/hackybear/hungry_scan_core/utility/ToDo.java
