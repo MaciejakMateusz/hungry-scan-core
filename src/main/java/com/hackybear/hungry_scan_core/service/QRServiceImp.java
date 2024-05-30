@@ -8,6 +8,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
+@Slf4j
 public class QRServiceImp implements QRService {
 
 
@@ -36,13 +39,18 @@ public class QRServiceImp implements QRService {
     }
 
     @Override
-    public void generate(RestaurantTable table) throws Exception {
+    public void generate(RestaurantTable table, String name) throws Exception {
         StringBuilder address = getEndpointAddress();
         address.append(table.getToken());
         String url = address.toString();
 
         String format = "png";
-        String fileName = "QR code - " + "Table number " + table.getNumber() + ", Table ID " + table.getId();
+        String fileName;
+        if (!Objects.equals("", name)) {
+            fileName = name;
+        } else {
+            fileName = "QR code - " + "Table number " + table.getNumber() + ", Table ID " + table.getId();
+        }
 
         int width = 1000;
         int height = 1000;
@@ -58,7 +66,7 @@ public class QRServiceImp implements QRService {
         table.setQrName(fileName + "." + format);
         restaurantTableService.save(table);
 
-        System.out.println("QR code for table " + table.getNumber() + " generated successfully.");
+        log.info("QR code for table {} generated successfully.", table.getNumber());
     }
 
     private StringBuilder getEndpointAddress() {

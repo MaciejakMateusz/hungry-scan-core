@@ -205,7 +205,8 @@ public class ApiRequestUtils {
         MvcResult result = mockMvc.perform(post(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest)
-                        .accept(MediaType.IMAGE_PNG_VALUE))
+                        .accept(MediaType.IMAGE_PNG_VALUE)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
@@ -250,7 +251,7 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the fetching or matching of the response.
      */
     public void fetchAndExpectForbidden(String endpointUrl) throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(endpointUrl)
+        mockMvc.perform(get(endpointUrl)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden())
                 .andDo(print())
