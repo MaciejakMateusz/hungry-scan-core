@@ -1,10 +1,8 @@
 package com.hackybear.hungry_scan_core.service;
 
-import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.validation.ConstraintViolationException;
@@ -24,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 @SpringBootTest
@@ -39,9 +38,6 @@ public class MenuItemServiceImpTest {
     @Autowired
     private MenuItemService menuItemService;
 
-    @Autowired
-    private CategoryService categoryService;
-
     @Test
     @Order(1)
     @Sql("/data-h2.sql")
@@ -54,19 +50,6 @@ public class MenuItemServiceImpTest {
         List<MenuItem> menuItems = menuItemService.findAll();
         assertEquals(33, menuItems.size());
         assertEquals("Makaron z pesto bazyliowym", menuItems.get(29).getName().getDefaultTranslation());
-    }
-
-    @Test
-    public void shouldFindAllByCategoryId() {
-        List<MenuItem> menuItems = menuItemService.findAllByCategoryId(3);
-        assertEquals(5, menuItems.size());
-        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami", menuItems.get(2).getName().getDefaultTranslation());
-    }
-
-    @Test
-    public void shouldNotFindAllByCategoryId() {
-        List<MenuItem> menuItems = menuItemService.findAllByCategoryId(666);
-        assertTrue(menuItems.isEmpty());
     }
 
     @Test
@@ -87,7 +70,6 @@ public class MenuItemServiceImpTest {
     public void shouldInsertNew() throws Exception {
         MenuItem newMenuItem = createMenuItem(
                 "Burger",
-                categoryService.findById(2),
                 "Z mięsem wegańskim",
                 "/public/assets/burger.png");
         menuItemService.save(newMenuItem);
@@ -97,10 +79,9 @@ public class MenuItemServiceImpTest {
     }
 
     @Test
-    public void shouldNotInsertWithIncorrectName() throws LocalizedException {
+    public void shouldNotInsertWithIncorrectName() {
         MenuItem menuItem = createMenuItem(
                 "Cheeseburger",
-                categoryService.findById(3),
                 "Z mięsem i serem wegańskim.",
                 "/public/assets/cheeseburger.png");
 
@@ -121,10 +102,9 @@ public class MenuItemServiceImpTest {
     }
 
     @Test
-    public void shouldNotInsertWithIncorrectPrice() throws LocalizedException {
+    public void shouldNotInsertWithIncorrectPrice() {
         MenuItem menuItem = createMenuItem(
                 "Cheeseburger",
-                categoryService.findById(3),
                 "Z mięsem i serem wegańskim.",
                 "/public/assets/cheeseburger.png");
 
@@ -164,16 +144,15 @@ public class MenuItemServiceImpTest {
     }
 
     private MenuItem createMenuItem(String name,
-                                    Category category,
                                     String description,
                                     String imageName) {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(getDefaultTranslation(name));
-        menuItem.setCategory(category);
         menuItem.setDescription(getDefaultTranslation(description));
         menuItem.setPrice(Money.of(42.50));
         menuItem.setImageName(imageName);
         menuItem.setDisplayOrder(6);
+        menuItem.setCategoryId(2);
         return menuItem;
     }
 

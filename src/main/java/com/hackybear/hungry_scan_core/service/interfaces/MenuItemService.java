@@ -9,8 +9,6 @@ public interface MenuItemService {
 
     List<MenuItem> findAll();
 
-    List<MenuItem> findAllByCategoryId(Integer id);
-
     MenuItem findById(Integer id) throws LocalizedException;
 
     void save(MenuItem menuItem) throws Exception;

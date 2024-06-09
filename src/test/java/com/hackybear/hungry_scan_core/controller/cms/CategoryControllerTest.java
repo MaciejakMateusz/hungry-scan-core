@@ -442,15 +442,15 @@ class CategoryControllerTest {
     @Rollback
     void shouldRemoveCategory() throws Exception {
         Category existingCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 7, Category.class);
         assertNotNull(existingCategory);
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 6);
+        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 7);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/categories/show", 6, status().isBadRequest());
-        assertEquals("Kategoria z podanym ID = 6 nie istnieje.", responseBody.get("exceptionMsg"));
+                        "/api/cms/categories/show", 7, status().isBadRequest());
+        assertEquals("Kategoria z podanym ID = 7 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test

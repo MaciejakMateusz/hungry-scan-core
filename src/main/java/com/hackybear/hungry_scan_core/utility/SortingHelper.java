@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.utility;
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Variant;
+import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
@@ -19,11 +20,16 @@ public class SortingHelper {
     private final MenuItemRepository menuItemRepository;
     private final CategoryRepository categoryRepository;
     private final VariantRepository variantRepository;
+    private final ExceptionHelper exceptionHelper;
 
-    public SortingHelper(MenuItemRepository menuItemRepository, CategoryRepository categoryRepository, VariantRepository variantRepository) {
+    public SortingHelper(MenuItemRepository menuItemRepository,
+                         CategoryRepository categoryRepository,
+                         VariantRepository variantRepository,
+                         ExceptionHelper exceptionHelper) {
         this.menuItemRepository = menuItemRepository;
         this.categoryRepository = categoryRepository;
         this.variantRepository = variantRepository;
+        this.exceptionHelper = exceptionHelper;
     }
 
     public void sortAndSave(MenuItem menuItem, ThrowingFunction<Integer, MenuItem> findFunction) throws Exception {
@@ -36,9 +42,17 @@ public class SortingHelper {
             return;
         }
 
-        menuItem = persistIfNew(menuItem, menuItemRepository::save, isNew);
+        Category category = categoryRepository.findById(menuItem.getCategoryId())
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.categoryService.categoryNotFound", menuItem.getCategoryId()));
 
-        List<MenuItem> categoryItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(menuItem.getCategory().getId());
+        if (isNew) {
+            menuItemRepository.save(menuItem);
+            category.addMenuItem(menuItem);
+            categoryRepository.save(category);
+        }
+
+        List<MenuItem> categoryItems = category.getMenuItems();
         newOrder = adjustNewOrderIfNeeded(newOrder, categoryItems);
 
         if (isNew) {
@@ -57,7 +71,7 @@ public class SortingHelper {
         Integer currentOrder = getCurrentOrder(currentCategory);
         Integer newOrder = getNewOrder(category.getDisplayOrder());
 
-        if(shouldSaveWithoutReordering(currentOrder, category, categoryRepository::save)) {
+        if (shouldSaveWithoutReordering(currentOrder, category, categoryRepository::save)) {
             return;
         }
 
@@ -132,7 +146,7 @@ public class SortingHelper {
     }
 
     private <T> boolean shouldSaveWithoutReordering(Integer currentOrder, T t, Consumer<T> save) {
-        if(currentOrder.equals(getDisplayOrder(t)) && getDisplayOrder(t) != 0) {
+        if (currentOrder.equals(getDisplayOrder(t)) && getDisplayOrder(t) != 0) {
             save.accept(t);
             return true;
         }

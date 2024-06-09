@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -117,7 +119,7 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Fetches a Page<T> collection from the specified endpoint.
+     * Fetches a Map<String, List<Translatable>> from the specified endpoint.
      *
      * @param endpointUrl The URL of the endpoint to fetch from.
      * @return A Map<String, List<Translatable> fetched from the endpoint.
@@ -138,6 +140,30 @@ public class ApiRequestUtils {
         return objectMapper.readValue(jsonResponse,
                 typeFactory.constructMapType(Map.class, typeFactory.constructType(String.class),
                         typeFactory.constructCollectionType(List.class, Translatable.class)));
+    }
+
+    /**
+     * Fetches a Map<Category, List<MenuItem>> from the specified endpoint.
+     *
+     * @param endpointUrl The URL of the endpoint to fetch from.
+     * @return A Map<Category, List<MenuItem>> fetched from the endpoint.
+     * @throws Exception If an error occurs during the request.
+     */
+    public Map<Category, List<MenuItem>> fetchCategoriesMenuItems(String endpointUrl) throws Exception {
+        MvcResult result = mockMvc.perform(get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        ObjectMapper objectMapper = prepObjMapper();
+        TypeFactory typeFactory = objectMapper.getTypeFactory();
+        return objectMapper.readValue(jsonResponse,
+                typeFactory.constructMapType(Map.class, typeFactory.constructType(Category.class),
+                        typeFactory.constructCollectionType(List.class, MenuItem.class)));
     }
 
 
@@ -466,9 +492,9 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Prepares and returns an ObjectMapper instance with JavaTimeModule registered.
+     * Prepares and returns an ObjectMapper instance with necessary modules registered.
      *
-     * @return An ObjectMapper instance prepared with JavaTimeModule.
+     * @return A prepared ObjectMapper.
      */
     public ObjectMapper prepObjMapper() {
         ObjectMapper objectMapper = new ObjectMapper();

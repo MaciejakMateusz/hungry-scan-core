@@ -44,9 +44,8 @@ public class MenuItem {
     @JoinColumn(name = "translatable_description_id", referencedColumnName = "id")
     private Translatable description;
 
-    @ManyToOne
     @NotNull
-    private Category category;
+    private Integer categoryId;
 
     @Column(nullable = false)
     @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
@@ -67,6 +66,8 @@ public class MenuItem {
 
     @NotNull
     private Integer displayOrder;
+
+    private boolean isBarServed;
 
     private boolean isAvailable = true;
 

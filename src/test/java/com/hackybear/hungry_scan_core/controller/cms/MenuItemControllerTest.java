@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
@@ -66,20 +67,8 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
-    void shouldGetAllMenuItemsByCategoryId() throws Exception {
-        List<MenuItem> menuItems =
-                apiRequestUtils.postAndGetList(
-                        "/api/cms/items/by-category", 3, MenuItem.class);
-
-        assertEquals(5, menuItems.size());
-        assertEquals("Sałatka grecka", menuItems.get(0).getName().getDefaultTranslation());
-    }
-
-    @Test
     void shouldNotAllowUnauthorizedAccessToMenuItems() throws Exception {
         apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/items");
-        apiRequestUtils.postAndExpectUnauthorized("/api/cms/items/by-category", 3);
     }
 
     @Test
@@ -125,15 +114,12 @@ class MenuItemControllerTest {
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
-        List<MenuItem> menuItems =
-                apiRequestUtils.postAndGetList(
-                        "/api/cms/items/by-category", 3, MenuItem.class);
+        MenuItem persistedMenuItem =
+                apiRequestUtils.postObjectExpect200(
+                        "/api/cms/items/show", 36, MenuItem.class);
 
-        assertEquals(6, menuItems.size());
-        MenuItem persistedMenuItem = menuItems.get(menuItems.size() - 1);
         assertEquals("Sample Item", persistedMenuItem.getName().getDefaultTranslation());
         assertEquals("Sample description", persistedMenuItem.getDescription().getDefaultTranslation());
-        assertEquals(3, menuItem.getCategory().getId());
         assertEquals(5, persistedMenuItem.getIngredients().size());
         assertEquals(5, persistedMenuItem.getAdditionalIngredients().size());
         assertEquals(1, persistedMenuItem.getAllergens().size());
@@ -340,15 +326,15 @@ class MenuItemControllerTest {
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
-        List<MenuItem> menuItems =
-                apiRequestUtils.postAndGetList(
-                        "/api/cms/items/by-category", 3, MenuItem.class);
+        Category category = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 2, Category.class);
+        List<MenuItem> menuItems = category.getMenuItems();
 
         assertEquals(6, menuItems.size());
         assertEquals("Sample Item", menuItems.get(1).getName().getDefaultTranslation());
         assertEquals(2, menuItems.get(1).getDisplayOrder());
-        assertEquals("Sałatka grecka", menuItems.get(0).getName().getDefaultTranslation());
-        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName().getDefaultTranslation());
+        assertEquals("Spaghetti Bolognese", menuItems.get(0).getName().getDefaultTranslation());
+        assertEquals("Penne Carbonara", menuItems.get(2).getName().getDefaultTranslation());
     }
 
     @Test
@@ -365,11 +351,8 @@ class MenuItemControllerTest {
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
-        List<MenuItem> menuItems =
-                apiRequestUtils.postAndGetList(
-                        "/api/cms/items/by-category", 9, MenuItem.class);
-        assertEquals(1, menuItems.size());
-        MenuItem persistedMenuItem = menuItems.get(0);
+        MenuItem persistedMenuItem = apiRequestUtils.postObjectExpect200(
+                "/api/cms/items/show", 37, MenuItem.class);
         assertEquals("Sample Item", persistedMenuItem.getName().getDefaultTranslation());
         assertEquals(1, persistedMenuItem.getDisplayOrder());
     }
@@ -384,25 +367,28 @@ class MenuItemControllerTest {
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
-        List<MenuItem> menuItems =
-                apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
+        Category category = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 2, Category.class);
+        List<MenuItem> menuItems = category.getMenuItems();
         assertEquals(6, menuItems.size());
         menuItem = menuItems.get(0);
         assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
         assertEquals(1, menuItem.getDisplayOrder());
-        assertEquals("Sałatka grecka", menuItems.get(1).getName().getDefaultTranslation());
+        assertEquals("Spaghetti Bolognese", menuItems.get(1).getName().getDefaultTranslation());
         assertEquals(2, menuItems.get(1).getDisplayOrder());
 
         menuItem.setDisplayOrder(Integer.MAX_VALUE);
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
-        menuItems = apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
+        category = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 2, Category.class);
+        menuItems = category.getMenuItems();
         menuItem = menuItems.get(menuItems.size() - 1);
 
         assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
         assertEquals(6, menuItem.getDisplayOrder());
 
-        assertEquals("Sałatka grecka", menuItems.get(0).getName().getDefaultTranslation());
+        assertEquals("Spaghetti Bolognese", menuItems.get(0).getName().getDefaultTranslation());
         assertEquals(1, menuItems.get(0).getDisplayOrder());
     }
 
@@ -416,23 +402,26 @@ class MenuItemControllerTest {
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
-        List<MenuItem> menuItems =
-                apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
+        Category category = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 2, Category.class);
+        List<MenuItem> menuItems = category.getMenuItems();
         assertEquals(6, menuItems.size());
         menuItem = menuItems.get(2);
         assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
         assertEquals(3, menuItem.getDisplayOrder());
-        assertEquals("Sałatka z rukolą, serem kozim i suszonymi żurawinami", menuItems.get(3).getName().getDefaultTranslation());
+        assertEquals("Lasagne warzywna", menuItems.get(3).getName().getDefaultTranslation());
         assertEquals(4, menuItems.get(3).getDisplayOrder());
 
         menuItem.setDisplayOrder(2);
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
 
-        menuItems = apiRequestUtils.postAndGetList("/api/cms/items/by-category", 3, MenuItem.class);
+        category = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 2, Category.class);
+        menuItems = category.getMenuItems();
         menuItem = menuItems.get(1);
         assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
         assertEquals(2, menuItem.getDisplayOrder());
-        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItems.get(2).getName().getDefaultTranslation());
+        assertEquals("Penne Carbonara", menuItems.get(2).getName().getDefaultTranslation());
         assertEquals(3, menuItems.get(2).getDisplayOrder());
     }
 
@@ -463,7 +452,7 @@ class MenuItemControllerTest {
         return menuItemFactory.createMenuItem(
                 "Sample Item",
                 "Sample description",
-                3,
+                2,
                 Money.of(23.55));
     }
 

@@ -12,7 +12,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
@@ -114,7 +113,8 @@ class CategoryServiceImpTest {
 
     @Test
     public void shouldNotDelete() {
-        assertThrows(DataIntegrityViolationException.class, () -> categoryService.delete(1));
+        LocalizedException exception = assertThrows(LocalizedException.class, () -> categoryService.delete(1));
+        assertEquals("Kategoria posiada w sobie dania.", exception.getLocalizedMessage());
     }
 
     private List<Category> getCategories() {

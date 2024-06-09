@@ -141,3 +141,46 @@ VALUES (1, 'default', true);
 INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
                                zone_id, has_qr_code, qr_name)
 VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 999, 1, true, null, false, null);
+
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (41, 'Przystawki', 'Starters');
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (42, 'Makarony', 'Pastas');
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (43, 'Sałatki', 'Salads');
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (44, 'Zupy', 'Soups');
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (45, 'Pizza', 'Pizza');
+INSERT IGNORE INTO translatable(id, default_translation)
+VALUES (46, 'Wegetariańskie');
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (47, 'Dla dzieci', 'For kids');
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (48, 'Napoje', 'Drinks');
+INSERT IGNORE INTO translatable(id, default_translation)
+VALUES (49, 'Pusta');
+INSERT IGNORE INTO translatable(id, default_translation)
+VALUES (50, 'Krewetki marynowane w cytrynie');
+
+INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
+VALUES (1, 41, true, NOW(), null, false, 1);
+
+INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
+                               is_bestseller, is_new, is_available, price, counter, is_bar_served, category_id)
+VALUES (1, 50, 1, 11, null, null, false, false, true, 19.99, 0, false, 1);
+
+INSERT IGNORE INTO categories_menu_items
+VALUES (1, 1);
+
+INSERT IGNORE INTO translatable(id, default_translation)
+VALUES (51, 'Z szpinakiem');
+INSERT IGNORE INTO translatable(id, default_translation)
+VALUES (52, 'Z konfiturą cebulową');
+
+INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+                            menu_item_id, display_order)
+VALUES (1, NOW(), true, true, 51, '0.00', null, 1, 1);
+INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+                            menu_item_id, display_order)
+VALUES (2, NOW(), true, false, 52, '4.00', null, 1, 2);

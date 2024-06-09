@@ -8,10 +8,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,6 +32,9 @@ public class Category {
     @NotNull
     private Translatable name;
 
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private List<MenuItem> menuItems = new ArrayList<>();
+
     private boolean isAvailable = true;
 
     private boolean isBarServed;
@@ -46,7 +50,18 @@ public class Category {
 
     @Override
     public String toString() {
-        Locale locale = LocaleContextHolder.getLocale();
-        return locale.getISO3Language().equals("pl") ? name.getDefaultTranslation() : name.getTranslationEn();
+        return name.getDefaultTranslation();
     }
+
+    public void addMenuItem(MenuItem menuItem) {
+        menuItems.add(menuItem);
+    }
+
+    public List<MenuItem> getMenuItems() {
+        if (!menuItems.isEmpty()) {
+            menuItems.sort(Comparator.comparing(MenuItem::getDisplayOrder));
+        }
+        return menuItems;
+    }
+
 }

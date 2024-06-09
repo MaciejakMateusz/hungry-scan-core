@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface OrderedItemRepository extends CustomRepository<OrderedItem, Long> {
 
-    @Query("SELECT i FROM OrderedItem i WHERE i.menuItem.category.isBarServed = true")
+    @Query("SELECT i FROM OrderedItem i WHERE i.menuItem.isBarServed = true")
     List<OrderedItem> findAllDrinks();
 }

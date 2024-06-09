@@ -62,8 +62,6 @@ public class PageDeserializer extends JsonDeserializer<Page<?>> implements Conte
             ctxt.handleUnexpectedToken(handledType(), p);
         }
 
-        //Note that Sort field of Page is ignored here.
-
         return new PageImpl<>(list, PageRequest.of(pageNumber, pageSize), total);
     }
 
@@ -72,10 +70,9 @@ public class PageDeserializer extends JsonDeserializer<Page<?>> implements Conte
      */
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) {
-        //This is the Page actually
         final JavaType wrapperType = ctxt.getContextualType();
         final PageDeserializer deserializer = new PageDeserializer();
-        //This is the parameter of Page
+
         deserializer.valueType = wrapperType.containedType(0);
         return deserializer;
     }

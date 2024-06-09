@@ -1,11 +1,9 @@
 package com.hackybear.hungry_scan_core.test_utils;
 
-import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.AllergenService;
-import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.service.interfaces.IngredientService;
 import com.hackybear.hungry_scan_core.service.interfaces.LabelService;
 import org.springframework.stereotype.Component;
@@ -18,15 +16,13 @@ public class MenuItemFactory {
     private final IngredientService ingredientService;
     private final AllergenService allergenService;
     private final LabelService labelService;
-    private final CategoryService categoryService;
 
     public MenuItemFactory(IngredientService ingredientService,
                            AllergenService allergenService,
-                           LabelService labelService, CategoryService categoryService) {
+                           LabelService labelService) {
         this.ingredientService = ingredientService;
         this.allergenService = allergenService;
         this.labelService = labelService;
-        this.categoryService = categoryService;
     }
 
     public MenuItem createMenuItem(String name,
@@ -36,21 +32,16 @@ public class MenuItemFactory {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(getDefaultTranslation(name));
         menuItem.setDescription(getDefaultTranslation(description));
+        menuItem.setCategoryId(categoryId);
         menuItem.setPrice(price);
         menuItem.setAvailable(true);
         menuItem.setImageName("/public/assets/sample.png");
         menuItem.setDisplayOrder(6);
-        setCategory(menuItem, categoryId);
         setIngredients(menuItem);
         setAdditionalIngredients(menuItem);
         setLabels(menuItem);
         setAllergen(menuItem);
         return menuItem;
-    }
-
-    private void setCategory(MenuItem menuItem, Integer categoryId) throws LocalizedException {
-        Category category = categoryService.findById(categoryId);
-        menuItem.setCategory(category);
     }
 
     private void setIngredients(MenuItem menuItem) throws LocalizedException {

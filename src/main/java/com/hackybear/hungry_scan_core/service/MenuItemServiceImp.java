@@ -32,11 +32,6 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public List<MenuItem> findAllByCategoryId(Integer id) {
-        return menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(id);
-    }
-
-    @Override
     public MenuItem findById(Integer id) throws LocalizedException {
         return menuItemRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(

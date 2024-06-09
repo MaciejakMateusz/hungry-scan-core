@@ -39,12 +39,6 @@ public class MenuItemController {
         return responseHelper.getResponseEntity(id, menuItemService::findById);
     }
 
-    @PostMapping("/by-category")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<MenuItem>> findAllByCategoryId(@RequestBody Integer id) {
-        return ResponseEntity.ok(menuItemService.findAllByCategoryId(id));
-    }
-
     @GetMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<MenuItem> add() {

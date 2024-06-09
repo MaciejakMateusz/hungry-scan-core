@@ -50,6 +50,10 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public void delete(Integer id) throws LocalizedException {
         Category existingCategory = findById(id);
-        categoryRepository.delete(existingCategory);
+        if (!existingCategory.getMenuItems().isEmpty()) {
+            exceptionHelper.throwLocalizedMessage("error.categoryService.categoryNotEmpty");
+        } else {
+            categoryRepository.delete(existingCategory);
+        }
     }
 }
