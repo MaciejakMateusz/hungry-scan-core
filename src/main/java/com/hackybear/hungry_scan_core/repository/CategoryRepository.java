@@ -21,6 +21,6 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     List<Category> findAllByOrderByDisplayOrder();
 
-    @Query("SELECT c.displayOrder FROM Category c")
+    @Query("SELECT c.displayOrder FROM Category c ORDER BY c.displayOrder")
     List<Integer> findAllDisplayOrders();
 }
