@@ -1,3 +1,4 @@
+/* CATEGORIES TRANSLATIONS */
 INSERT INTO translatable(default_translation, translation_en)
 VALUES ('Przystawki', 'Starters');
 INSERT INTO translatable(default_translation, translation_en)
@@ -16,6 +17,9 @@ INSERT INTO translatable(default_translation, translation_en)
 VALUES ('Napoje', 'Drinks');
 INSERT INTO translatable(default_translation)
 VALUES ('Pusta');
+/* END OF CATEGORIES TRANSLATIONS */
+
+/* MENU ITEMS TRANSLATIONS */
 INSERT INTO translatable(default_translation)
 VALUES ('Krewetki marynowane w cytrynie');
 INSERT INTO translatable(default_translation)
@@ -148,6 +152,7 @@ INSERT INTO translatable(default_translation)
 VALUES ('Coca-cola');
 INSERT INTO translatable(default_translation)
 VALUES ('250ml');
+/* END OF MENU ITEMS TRANSLATIONS */
 
 INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
 VALUES (1, true, NOW(), null, false, 1);

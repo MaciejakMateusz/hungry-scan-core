@@ -9,6 +9,10 @@ public interface CategoryService {
 
     List<Category> findAll();
 
+    List<Integer> findAllDisplayOrders();
+
+    Long countAll();
+
     List<Category> findAllAvailable();
 
     Category findById(Integer id) throws LocalizedException;

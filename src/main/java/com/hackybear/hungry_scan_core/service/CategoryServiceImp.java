@@ -31,6 +31,16 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
+    public List<Integer> findAllDisplayOrders() {
+        return categoryRepository.findAllDisplayOrders();
+    }
+
+    @Override
+    public Long countAll() {
+        return categoryRepository.count();
+    }
+
+    @Override
     public List<Category> findAllAvailable() {
         return categoryRepository.findAllAvailable();
     }

@@ -34,6 +34,18 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.findAll());
     }
 
+    @GetMapping("/display-orders")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<List<Integer>> getDisplayOrders() {
+        return ResponseEntity.ok(categoryService.findAllDisplayOrders());
+    }
+
+    @GetMapping("/count")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<Long> countAll() {
+        return ResponseEntity.ok(categoryService.countAll());
+    }
+
     @GetMapping("/available")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Category>> availableCategories() {

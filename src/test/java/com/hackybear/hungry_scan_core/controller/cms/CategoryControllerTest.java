@@ -70,8 +70,32 @@ class CategoryControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"MANAGER"})
+    void shouldGetAllDisplayOrders() throws Exception {
+        List<Integer> displayOrders =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories/display-orders", Integer.class);
+
+        assertEquals(9, displayOrders.size());
+        assertEquals(1, displayOrders.get(0));
+        assertEquals(9, displayOrders.get(8));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"})
+    void shouldCountAll() throws Exception {
+        Integer count =
+                apiRequestUtils.fetchObject(
+                        "/api/cms/categories/count", Integer.class);
+
+        assertEquals(9, count);
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToCategories() throws Exception {
         mockMvc.perform(get("/api/cms/categories")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/cms/categories/display-orders")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/cms/categories/count")).andExpect(status().isUnauthorized());
     }
 
     @Test

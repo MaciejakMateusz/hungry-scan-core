@@ -20,4 +20,7 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Category findByMenuItem(@Param("menuItem") MenuItem menuItem);
 
     List<Category> findAllByOrderByDisplayOrder();
+
+    @Query("SELECT c.displayOrder FROM Category c")
+    List<Integer> findAllDisplayOrders();
 }
