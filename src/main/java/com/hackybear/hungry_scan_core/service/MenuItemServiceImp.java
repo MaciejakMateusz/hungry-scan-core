@@ -1,8 +1,10 @@
 package com.hackybear.hungry_scan_core.service;
 
+import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
@@ -16,12 +18,14 @@ import java.util.List;
 public class MenuItemServiceImp implements MenuItemService {
 
     private final MenuItemRepository menuItemRepository;
+    private final CategoryRepository categoryRepository;
     private final ExceptionHelper exceptionHelper;
     private final SortingHelper sortingHelper;
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository,
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, CategoryRepository categoryRepository,
                               ExceptionHelper exceptionHelper, SortingHelper sortingHelper) {
         this.menuItemRepository = menuItemRepository;
+        this.categoryRepository = categoryRepository;
         this.exceptionHelper = exceptionHelper;
         this.sortingHelper = sortingHelper;
     }
@@ -46,7 +50,16 @@ public class MenuItemServiceImp implements MenuItemService {
     @Override
     public void delete(Integer id) throws LocalizedException {
         MenuItem existingMenuItem = findById(id);
+        Category category = findByMenuItem(existingMenuItem);
         menuItemRepository.delete(existingMenuItem);
+        category.removeMenuItem(existingMenuItem);
+        sortingHelper.updateDisplayOrders(existingMenuItem.getDisplayOrder(), category.getMenuItems(), menuItemRepository::saveAll);
+    }
+
+    private Category findByMenuItem(MenuItem menuItem) throws LocalizedException {
+        return categoryRepository.findByMenuItem(menuItem)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.categoryService.categoryNotFoundByMenuItem", menuItem.getId()));
     }
 
 }

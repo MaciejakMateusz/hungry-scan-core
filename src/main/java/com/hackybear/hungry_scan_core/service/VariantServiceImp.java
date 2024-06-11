@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.service;
 
+import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
@@ -50,6 +51,12 @@ public class VariantServiceImp implements VariantService {
     public void delete(Integer id) throws LocalizedException {
         Variant existingVariant = findById(id);
         variantRepository.delete(existingVariant);
+        List<Variant> menuItemVariants = findAllByMenuItem(existingVariant.getMenuItem());
+        sortingHelper.updateDisplayOrders(existingVariant.getDisplayOrder(), menuItemVariants, variantRepository::saveAll);
+    }
+
+    private List<Variant> findAllByMenuItem(MenuItem menuItem) {
+        return variantRepository.findAllByMenuItemOrderByDisplayOrder(menuItem);
     }
 
     private boolean isFirstVariant(Integer menuItemId) {

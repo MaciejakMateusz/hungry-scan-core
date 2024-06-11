@@ -235,6 +235,41 @@ class VariantControllerTest {
         apiRequestUtils.postAndExpectUnauthorized("/api/cms/variants/add", variant);
     }
 
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin")
+    @Transactional
+    @Rollback
+    void shouldRemoveVariant() throws Exception {
+        Variant variant =
+                apiRequestUtils.postObjectExpect200("/api/cms/variants/show", 4, Variant.class);
+        assertEquals("Średnia", variant.getName().getDefaultTranslation());
+
+        apiRequestUtils.deleteAndExpect200("/api/cms/variants/delete", 4);
+
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/cms/variants/show", 4, status().isBadRequest());
+        assertEquals("Wariant dania z podanym ID = 4 nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin")
+    @Transactional
+    @Rollback
+    void shouldUpdateDisplayOrderAfterRemoval() throws Exception {
+        Variant variant =
+                apiRequestUtils.postObjectExpect200("/api/cms/variants/show", 4, Variant.class);
+        assertEquals("Średnia", variant.getName().getDefaultTranslation());
+
+        apiRequestUtils.deleteAndExpect200("/api/cms/variants/delete", 4);
+
+        List<Variant> variants =
+                apiRequestUtils.postAndGetList(
+                        "/api/cms/variants/item", 21, Variant.class);
+        assertEquals(2, variants.size());
+        assertEquals("Duża", variants.get(1).getName().getDefaultTranslation());
+    }
+
     private Variant createVariant(Integer menuItemId,
                                   String name,
                                   BigDecimal price) {

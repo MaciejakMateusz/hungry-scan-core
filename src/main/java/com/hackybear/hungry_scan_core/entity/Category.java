@@ -57,6 +57,10 @@ public class Category {
         menuItems.add(menuItem);
     }
 
+    public void removeMenuItem(MenuItem menuItem) {
+        menuItems.remove(menuItem);
+    }
+
     public List<MenuItem> getMenuItems() {
         if (!menuItems.isEmpty()) {
             menuItems.sort(Comparator.comparing(MenuItem::getDisplayOrder));

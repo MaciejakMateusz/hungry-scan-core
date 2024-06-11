@@ -8,6 +8,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class CategoryServiceImp implements CategoryService {
         sortingHelper.sortAndSave(category, this::findById);
     }
 
+    @Transactional
     @Override
     public void delete(Integer id) throws LocalizedException {
         Category existingCategory = findById(id);
@@ -64,6 +66,8 @@ public class CategoryServiceImp implements CategoryService {
             exceptionHelper.throwLocalizedMessage("error.categoryService.categoryNotEmpty");
         } else {
             categoryRepository.delete(existingCategory);
+            sortingHelper.updateDisplayOrders(existingCategory.getDisplayOrder(), findAll(), categoryRepository::saveAll);
         }
     }
+
 }

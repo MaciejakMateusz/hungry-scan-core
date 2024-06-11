@@ -87,7 +87,6 @@ class CategoryControllerTest {
         Integer count =
                 apiRequestUtils.fetchObject(
                         "/api/cms/categories/count", Integer.class);
-
         assertEquals(9, count);
     }
 
@@ -467,7 +466,7 @@ class CategoryControllerTest {
     void shouldRemoveCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 7, Category.class);
-        assertNotNull(existingCategory);
+        assertEquals("Dla dzieci", existingCategory.getName().getDefaultTranslation());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 7);
 
@@ -475,6 +474,25 @@ class CategoryControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/categories/show", 7, status().isBadRequest());
         assertEquals("Kategoria z podanym ID = 7 nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin")
+    @Transactional
+    @Rollback
+    void shouldUpdateDisplayOrderAfterRemoval() throws Exception {
+        Category existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 7, Category.class);
+        assertEquals("Dla dzieci", existingCategory.getName().getDefaultTranslation());
+
+        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 7);
+
+        List<Category> categories =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories", Category.class);
+        assertEquals(8, categories.size());
+        assertEquals("Napoje", categories.get(6).getName().getDefaultTranslation());
+
     }
 
     @Test

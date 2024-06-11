@@ -197,6 +197,19 @@ public class SortingHelper {
         }
     }
 
+    public <T> void updateDisplayOrders(Integer removedDisplayOrder,
+                                        List<T> collection,
+                                        Consumer<List<T>> consumer) {
+        for (T t : collection) {
+            Integer currentDisplayOrder = getDisplayOrder(t);
+            if (removedDisplayOrder > currentDisplayOrder) {
+                continue;
+            }
+            setDisplayOrder(t, currentDisplayOrder - 1);
+        }
+        consumer.accept(collection);
+    }
+
     private <T> void updateDisplayOrder(List<T> collection, Integer entityId, Integer newOrder) {
         for (T t : collection) {
             if (getId(t).equals(entityId)) {

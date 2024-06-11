@@ -432,7 +432,7 @@ class MenuItemControllerTest {
     void shouldDeleteMenuItem() throws Exception {
         MenuItem menuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 25, MenuItem.class);
-        assertNotNull(menuItem);
+        assertEquals("Pizza Quattro Formaggi", menuItem.getName().getDefaultTranslation());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", 25);
 
@@ -440,6 +440,27 @@ class MenuItemControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/items/show", 25, status().isBadRequest());
         assertEquals("Danie z podanym ID = 25 nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin")
+    @Transactional
+    @Rollback
+    void shouldUpdateDisplayOrdersAfterRemoval() throws Exception {
+        MenuItem menuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
+        assertEquals("Carpaccio z polędwicy wołowej", menuItem.getName().getDefaultTranslation());
+
+        apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", 2);
+
+        Category category = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 1, Category.class);
+
+        assertEquals(4, category.getMenuItems().size());
+        MenuItem secondMenuItem = category.getMenuItems().get(1);
+        assertNotEquals("Carpaccio z polędwicy wołowej", secondMenuItem.getName().getDefaultTranslation());
+        MenuItem thirdMenuItem = category.getMenuItems().get(2);
+        assertEquals("Roladki z bakłażana", thirdMenuItem.getName().getDefaultTranslation());
     }
 
     @Test

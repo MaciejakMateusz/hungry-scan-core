@@ -45,10 +45,16 @@ public class VariantController {
         return responseHelper.buildResponse(variant, br, variantService::save);
     }
 
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(@RequestBody Integer id) {
+        return responseHelper.getResponseEntity(id, variantService::delete);
+    }
+
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Allow", "GET, POST, DELETE, OPTIONS");
+        headers.add("Allow", "POST, DELETE, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }
