@@ -64,10 +64,10 @@ public class CategoryServiceImp implements CategoryService {
         Category existingCategory = findById(id);
         if (!existingCategory.getMenuItems().isEmpty()) {
             exceptionHelper.throwLocalizedMessage("error.categoryService.categoryNotEmpty");
-        } else {
-            categoryRepository.delete(existingCategory);
-            sortingHelper.updateDisplayOrders(existingCategory.getDisplayOrder(), findAll(), categoryRepository::saveAll);
+            return;
         }
+        categoryRepository.delete(existingCategory);
+        sortingHelper.updateDisplayOrders(existingCategory.getDisplayOrder(), findAll(), categoryRepository::saveAll);
     }
 
 }

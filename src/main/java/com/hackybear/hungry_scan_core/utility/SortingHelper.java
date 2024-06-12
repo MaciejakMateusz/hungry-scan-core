@@ -202,10 +202,9 @@ public class SortingHelper {
                                         Consumer<List<T>> consumer) {
         for (T t : collection) {
             Integer currentDisplayOrder = getDisplayOrder(t);
-            if (removedDisplayOrder > currentDisplayOrder) {
-                continue;
+            if (removedDisplayOrder <= currentDisplayOrder) {
+                setDisplayOrder(t, currentDisplayOrder - 1);
             }
-            setDisplayOrder(t, currentDisplayOrder - 1);
         }
         consumer.accept(collection);
     }
