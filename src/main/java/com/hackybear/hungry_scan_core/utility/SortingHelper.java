@@ -61,7 +61,7 @@ public class SortingHelper {
             adjustDisplayOrders(categoryItems, currentOrder, newOrder);
         }
 
-        updateDisplayOrder(categoryItems, menuItem.getId(), newOrder);
+        updateDisplayOrder(categoryItems, menuItem, newOrder);
         menuItemRepository.saveAll(categoryItems);
     }
 
@@ -86,7 +86,7 @@ public class SortingHelper {
             adjustDisplayOrders(categories, currentOrder, newOrder);
         }
 
-        updateDisplayOrder(categories, category.getId(), newOrder);
+        updateDisplayOrder(categories, category, newOrder);
         categoryRepository.saveAll(categories);
     }
 
@@ -115,7 +115,7 @@ public class SortingHelper {
             adjustDisplayOrders(variants, currentOrder, newOrder);
         }
 
-        updateDisplayOrder(variants, variant.getId(), newOrder);
+        updateDisplayOrder(variants, variant, newOrder);
         variantRepository.saveAll(variants);
     }
 
@@ -209,10 +209,13 @@ public class SortingHelper {
         consumer.accept(collection);
     }
 
-    private <T> void updateDisplayOrder(List<T> collection, Integer entityId, Integer newOrder) {
-        for (T t : collection) {
-            if (getId(t).equals(entityId)) {
-                setDisplayOrder(t, newOrder);
+    private <T> void updateDisplayOrder(List<T> collection, T entity, Integer newOrder) {
+        for (int i = 0; i < collection.size(); i++) {
+            T t = collection.get(i);
+            if (getId(t).equals(getId(entity))) {
+                setDisplayOrder(entity, newOrder);
+                collection.set(i, entity);
+                break;
             }
         }
     }

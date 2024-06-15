@@ -53,6 +53,7 @@ public class CategoryServiceImp implements CategoryService {
                         "error.categoryService.categoryNotFound", id));
     }
 
+    @Transactional
     @Override
     public void save(Category category) throws Exception {
         sortingHelper.sortAndSave(category, this::findById);

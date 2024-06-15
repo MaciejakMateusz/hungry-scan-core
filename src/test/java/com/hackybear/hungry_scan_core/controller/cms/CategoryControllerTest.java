@@ -161,7 +161,7 @@ class CategoryControllerTest {
     @WithMockUser(roles = "ADMIN")
     void shouldNotAddWithIncorrectName() throws Exception {
         Category category = createCategory();
-        category.setName(getTranslationPl(""));
+        category.setName(getDefaultTranslation(""));
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", category);
 
@@ -176,7 +176,7 @@ class CategoryControllerTest {
     void shouldUpdateCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
-        existingCategory.setName(getTranslationPl("Foot"));
+        existingCategory.setName(getDefaultTranslation("Foot"));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
@@ -196,7 +196,7 @@ class CategoryControllerTest {
     void shouldNotUpdateIncorrectCategory() throws Exception {
         Category existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 6, Category.class);
-        existingCategory.setName(getTranslationPl(""));
+        existingCategory.setName(getDefaultTranslation(""));
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", existingCategory);
 
@@ -213,12 +213,14 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
         assertEquals(1, existingCategory.getDisplayOrder());
         existingCategory.setDisplayOrder(3);
+        existingCategory.setName(getDefaultTranslation("Updated category"));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
         assertEquals(3, updatedCategory.getDisplayOrder());
+        assertEquals("Updated category", updatedCategory.getName().getDefaultTranslation());
 
         Category thirdToSecond =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, Category.class);
@@ -238,12 +240,14 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 5, Category.class);
         assertEquals(5, existingCategory.getDisplayOrder());
         existingCategory.setDisplayOrder(2);
+        existingCategory.setName(getDefaultTranslation("Updated category"));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 5, Category.class);
         assertEquals(2, updatedCategory.getDisplayOrder());
+        assertEquals("Updated category", updatedCategory.getName().getDefaultTranslation());
 
         Category secondToThird =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, Category.class);
@@ -263,12 +267,14 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
         assertEquals(1, existingCategory.getDisplayOrder());
         existingCategory.setDisplayOrder(15);
+        existingCategory.setName(getDefaultTranslation("Updated category"));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
         assertEquals(9, updatedCategory.getDisplayOrder());
+        assertEquals("Updated category", updatedCategory.getName().getDefaultTranslation());
 
         Category ninthToEight =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
@@ -288,12 +294,14 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, Category.class);
         assertEquals(3, existingCategory.getDisplayOrder());
         existingCategory.setDisplayOrder(-2);
+        existingCategory.setName(getDefaultTranslation("Updated category"));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, Category.class);
         assertEquals(1, updatedCategory.getDisplayOrder());
+        assertEquals("Updated category", updatedCategory.getName().getDefaultTranslation());
 
         Category firstToSecond =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
@@ -313,12 +321,14 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
         assertEquals(9, existingCategory.getDisplayOrder());
         existingCategory.setDisplayOrder(1);
+        existingCategory.setName(getDefaultTranslation("Updated category"));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, Category.class);
         assertEquals(1, updatedCategory.getDisplayOrder());
+        assertEquals("Updated category", updatedCategory.getName().getDefaultTranslation());
 
         Category firstToSecond =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
@@ -338,12 +348,14 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
         assertEquals(1, existingCategory.getDisplayOrder());
         existingCategory.setDisplayOrder(9);
+        existingCategory.setName(getDefaultTranslation("Updated category"));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", existingCategory);
 
         Category updatedCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, Category.class);
         assertEquals(9, updatedCategory.getDisplayOrder());
+        assertEquals("Updated category", updatedCategory.getName().getDefaultTranslation());
 
         Category secondToFirst =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, Category.class);
@@ -503,14 +515,14 @@ class CategoryControllerTest {
 
     private Category createCategory() {
         Category category = new Category();
-        category.setName(getTranslationPl("Food"));
+        category.setName(getDefaultTranslation("Food"));
         category.setDisplayOrder(10);
         return category;
     }
 
-    private Translatable getTranslationPl(String translationPl) {
+    private Translatable getDefaultTranslation(String value) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(translationPl);
+        translatable.setDefaultTranslation(value);
         return translatable;
     }
 }
