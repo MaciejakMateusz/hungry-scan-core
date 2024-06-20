@@ -1,6 +1,8 @@
 package com.hackybear.hungry_scan_core;
 
 import com.hackybear.hungry_scan_core.filter.JwtAuthFilter;
+import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.List;
+import java.util.Set;
 
 import static jakarta.servlet.DispatcherType.ERROR;
 import static jakarta.servlet.DispatcherType.FORWARD;
@@ -61,6 +64,7 @@ public class SecurityConfig {
             corsConfiguration.addAllowedOrigin("http://localhost:3001"); //customer
             corsConfiguration.addAllowedOrigin("http://localhost:3002"); //cms
             corsConfiguration.addAllowedOrigin("http://localhost:3003"); //admin
+            corsConfiguration.setAllowedOriginPatterns(List.of("*"));
             corsConfiguration.setAllowCredentials(true);
             return corsConfiguration;
         }));
@@ -70,6 +74,8 @@ public class SecurityConfig {
                 c -> c.dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/order-websocket/**")).permitAll()
+                        .requestMatchers(PathRequest.toStaticResources()
+                                .at(Set.of(StaticResourceLocation.IMAGES))).permitAll()
         );
 
         http.httpBasic(Customizer.withDefaults());

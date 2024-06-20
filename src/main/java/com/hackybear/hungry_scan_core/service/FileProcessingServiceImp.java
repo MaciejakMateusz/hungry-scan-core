@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +20,9 @@ public class FileProcessingServiceImp implements FileProcessingService {
 
     @Value("${QR_PATH}")
     private String basePath;
+
+    @Value("${IMAGE_PATH}")
+    private String imagePath;
 
     private final ExceptionHelper exceptionHelper;
 
@@ -38,22 +39,14 @@ public class FileProcessingServiceImp implements FileProcessingService {
     }
 
     @Override
-    public String uploadFile(String fileName, MultipartFile multipartFile) {
-        File dir = new File(basePath + fileName);
-
-        if (dir.exists()) {
-            return "EXIST";
+    public void uploadFile(MultipartFile file) throws IOException {
+        String fileName = file.getOriginalFilename();
+        if (fileName == null || fileName.isEmpty()) {
+            return;
         }
-
-        Path path = Path.of(basePath + fileName);
-
-        try {
-            Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            return "CREATED";
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return "FAILED";
+        File destFile = new File(imagePath, fileName);
+        destFile.getParentFile().mkdirs();
+        file.transferTo(destFile);
     }
 
     @Override
