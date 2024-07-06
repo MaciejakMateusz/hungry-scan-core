@@ -93,20 +93,20 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (34, 'Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
 
 INSERT IGNORE INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
-VALUES (1, 8, 'icon_gluten', 7),
-       (2, 10, 'icon_crustaceans', 9),
-       (3, 12, 'icon_eggs', 11),
-       (4, 14, 'icon_fish', 13),
-       (5, 16, 'icon_peanuts', 15),
-       (6, 18, 'icon_soybeans', 17),
-       (7, 20, 'icon_milk', 19),
-       (8, 22, 'icon_nuts', 21),
-       (9, 24, 'icon_celery', 23),
-       (10, 26, 'icon_mustard', 25),
-       (11, 28, 'icon_sesame', 27),
-       (12, 30, 'icon_sulfur_dioxide', 29),
-       (13, 32, 'icon_lupin', 31),
-       (14, 34, 'icon_molluscs', 33);
+VALUES (1, 8, 'gluten.svg', 7),
+       (2, 10, 'crustaceans.svg', 9),
+       (3, 12, 'eggs.svg', 11),
+       (4, 14, 'fish.svg', 13),
+       (5, 16, 'peanuts.svg', 15),
+       (6, 18, 'soy.svg', 17),
+       (7, 20, 'milk.svg', 19),
+       (8, 22, 'nuts.svg', 21),
+       (9, 24, 'celery.svg', 23),
+       (10, 26, 'mustard.svg', 25),
+       (11, 28, 'sesame.svg', 27),
+       (12, 30, 'SO2.svg', 29),
+       (13, 32, 'lupine.svg', 31),
+       (14, 34, 'molluscs.svg', 33);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (35, 'Bez glutenu', 'Gluten free');
@@ -122,12 +122,12 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (40, 'Ostre', 'Spicy');
 
 INSERT IGNORE INTO labels (id, icon_name, translatable_name_id)
-VALUES (1, 'icon_gluten_free', 35),
-       (2, 'icon_vegan', 36),
-       (3, 'icon_vegetarian', 37),
-       (4, 'icon_coriander', 38),
-       (5, 'icon_lactose_free', 39),
-       (6, 'icon_spicy', 40);
+VALUES (1, 'gluten_free.svg', 35),
+       (2, 'vegan.svg', 36),
+       (3, 'vegetarian.svg', 37),
+       (4, 'coriander.svg', 38),
+       (5, 'lactose_free.svg', 39),
+       (6, 'spicy.svg', 40);
 
 INSERT IGNORE INTO themes(id, name, is_active)
 VALUES (1, 'green', true),

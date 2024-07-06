@@ -52,10 +52,10 @@ public class MenuItem {
     @NotNull
     private BigDecimal price = Money.of(0.00);
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Label> labels = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Allergen> allergens = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
