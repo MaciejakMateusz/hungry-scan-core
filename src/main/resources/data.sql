@@ -122,11 +122,11 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (40, 'Ostre', 'Spicy');
 
 INSERT IGNORE INTO labels (id, icon_name, translatable_name_id)
-VALUES (1, 'gluten_free.svg', 35),
+VALUES (1, 'gluten-free.svg', 35),
        (2, 'vegan.svg', 36),
        (3, 'vegetarian.svg', 37),
        (4, 'coriander.svg', 38),
-       (5, 'lactose_free.svg', 39),
+       (5, 'lactose-free.svg', 39),
        (6, 'spicy.svg', 40);
 
 INSERT IGNORE INTO themes(id, name, is_active)

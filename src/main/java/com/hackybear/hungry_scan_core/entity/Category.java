@@ -32,7 +32,7 @@ public class Category {
     @NotNull
     private Translatable name;
 
-    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<MenuItem> menuItems = new ArrayList<>();
 
     private boolean isAvailable = true;

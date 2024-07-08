@@ -34,13 +34,12 @@ public class MenuItem {
 
     private String imageName;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank
-    @NotNull
     private Translatable name;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "translatable_description_id", referencedColumnName = "id")
     private Translatable description;
 

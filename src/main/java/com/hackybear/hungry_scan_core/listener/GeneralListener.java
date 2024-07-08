@@ -18,7 +18,6 @@ public class GeneralListener {
         try {
             if (Objects.isNull(getFieldValue(entity, "created"))) {
                 setFieldDate(entity, "setCreated");
-                log.info("Creation time set to: {}", LocalDateTime.now());
             } else {
                 log.error("Creation time already exists, cannot overwrite.");
             }
@@ -30,7 +29,6 @@ public class GeneralListener {
     @PreUpdate
     public void preUpdate(final Object entity) {
         setFieldDate(entity, "setUpdated");
-        log.info("Update time set to: {}", LocalDateTime.now());
     }
 
     @PreRemove
