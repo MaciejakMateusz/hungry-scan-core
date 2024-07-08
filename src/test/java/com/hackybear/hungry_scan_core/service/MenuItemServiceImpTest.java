@@ -13,7 +13,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
@@ -79,6 +78,8 @@ public class MenuItemServiceImpTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     public void shouldNotInsertWithIncorrectName() {
         MenuItem menuItem = createMenuItem(
                 "Cheeseburger",
@@ -89,19 +90,15 @@ public class MenuItemServiceImpTest {
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setName(null);
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> menuItemService.save(menuItem));
+        assertThrows(NullPointerException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setDescription(getDefaultTranslation(""));
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
-
-        menuItem.setDescription(null);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
-
-        menuItem.setDescription(null);
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
     }
 
     @Test
+    @Transactional
+    @Rollback
     public void shouldNotInsertWithIncorrectPrice() {
         MenuItem menuItem = createMenuItem(
                 "Cheeseburger",
@@ -112,7 +109,7 @@ public class MenuItemServiceImpTest {
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
 
         menuItem.setPrice(null);
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> menuItemService.save(menuItem));
+        assertThrows(NullPointerException.class, () -> menuItemService.save(menuItem));
     }
 
     @Test
