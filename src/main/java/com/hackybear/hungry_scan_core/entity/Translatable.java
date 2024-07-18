@@ -1,10 +1,10 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
@@ -18,9 +18,10 @@ public class Translatable {
     private Integer id;
 
     @Column(nullable = false)
-    @NotBlank
+    @Length(max = 255)
     private String defaultTranslation;
 
+    @Length(max = 255)
     private String translationEn;
 
 }

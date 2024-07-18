@@ -91,9 +91,6 @@ public class MenuItemServiceImpTest {
 
         menuItem.setName(null);
         assertThrows(NullPointerException.class, () -> menuItemService.save(menuItem));
-
-        menuItem.setDescription(getDefaultTranslation(""));
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItem));
     }
 
     @Test
