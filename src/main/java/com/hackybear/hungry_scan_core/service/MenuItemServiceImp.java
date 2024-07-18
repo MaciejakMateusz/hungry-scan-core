@@ -60,8 +60,8 @@ public class MenuItemServiceImp implements MenuItemService {
         Category category = findByMenuItem(existingMenuItem);
         List<Variant> variants = variantRepository.findAllByMenuItemOrderByDisplayOrder(existingMenuItem);
         variantRepository.deleteAll(variants);
-        menuItemRepository.delete(existingMenuItem);
         category.removeMenuItem(existingMenuItem);
+        menuItemRepository.delete(existingMenuItem);
         sortingHelper.updateDisplayOrders(existingMenuItem.getDisplayOrder(), category.getMenuItems(), menuItemRepository::saveAll);
     }
 
