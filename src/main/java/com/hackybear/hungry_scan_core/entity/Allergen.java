@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
+import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -25,12 +26,14 @@ public class Allergen {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank
+    @LimitTranslationsLength
     @NotNull
     private Translatable name;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_description_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank
+    @LimitTranslationsLength
     @NotNull
     private Translatable description;
 

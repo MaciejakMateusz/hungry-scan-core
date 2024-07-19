@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
+import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
@@ -37,10 +38,12 @@ public class MenuItem {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank
+    @LimitTranslationsLength
     private Translatable name;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "translatable_description_id", referencedColumnName = "id")
+    @LimitTranslationsLength
     private Translatable description;
 
     @NotNull

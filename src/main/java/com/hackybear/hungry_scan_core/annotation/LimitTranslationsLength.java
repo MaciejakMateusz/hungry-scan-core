@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.annotation;
 
-import com.hackybear.hungry_scan_core.annotation.validator.SizeIfNotEmptyValidator;
+import com.hackybear.hungry_scan_core.annotation.validator.LimitTranslationsLengthValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -9,11 +9,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = SizeIfNotEmptyValidator.class)
+@Constraint(validatedBy = LimitTranslationsLengthValidator.class)
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SizeIfNotEmpty {
-    String message() default "Opis kategorii musi mieć minimum 5 znaków";
+public @interface LimitTranslationsLength {
+    String message() default "{jakarta.validation.constraints.LimitTranslationsLength.message}";
 
     Class<?>[] groups() default {};
 

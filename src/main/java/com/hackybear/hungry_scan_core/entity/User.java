@@ -1,11 +1,11 @@
 package com.hackybear.hungry_scan_core.entity;
 
-import com.hackybear.hungry_scan_core.annotation.CollectionNotEmpty;
 import com.hackybear.hungry_scan_core.annotation.Email;
 import com.hackybear.hungry_scan_core.annotation.Password;
 import com.hackybear.hungry_scan_core.annotation.Username;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
@@ -63,8 +64,8 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @CollectionNotEmpty
-    private Set<Role> roles;
+    @NotEmpty
+    private Set<Role> roles = new HashSet<>();
 
     @PrePersist
     private void prePersist() {

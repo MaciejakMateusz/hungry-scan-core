@@ -1,9 +1,9 @@
 package com.hackybear.hungry_scan_core.entity;
 
-import com.hackybear.hungry_scan_core.annotation.CollectionNotEmpty;
 import com.hackybear.hungry_scan_core.listener.BookingListener;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Setter
@@ -47,8 +48,8 @@ public class Booking {
 
     @Column(nullable = false)
     @ManyToMany(fetch = FetchType.EAGER)
-    @CollectionNotEmpty
-    private Set<RestaurantTable> restaurantTables;
+    @NotEmpty
+    private Set<RestaurantTable> restaurantTables = new HashSet<>();
 
     private Byte numTablesBooked;
 }

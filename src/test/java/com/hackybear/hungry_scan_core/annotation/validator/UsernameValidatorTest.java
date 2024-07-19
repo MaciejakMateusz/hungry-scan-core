@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.validator;
+package com.hackybear.hungry_scan_core.annotation.validator;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
