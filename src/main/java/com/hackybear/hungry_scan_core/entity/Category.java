@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -60,7 +61,7 @@ public class Category {
     }
 
     public void removeMenuItem(MenuItem menuItem) {
-        menuItems.remove(menuItem);
+        menuItems.removeIf(item -> Objects.equals(item.getId(), menuItem.getId()));
     }
 
     public List<MenuItem> getMenuItems() {
