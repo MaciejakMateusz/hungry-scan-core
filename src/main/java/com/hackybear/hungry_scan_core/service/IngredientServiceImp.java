@@ -49,8 +49,8 @@ public class IngredientServiceImp implements IngredientService {
     }
 
     @Override
-    public List<Ingredient> filterByName(String name) {
-        String filterValue = "%" + name.toLowerCase() + "%";
+    public List<Ingredient> filterByName(String value) {
+        String filterValue = "%" + value.toLowerCase() + "%";
         return ingredientRepository.filterByName(filterValue);
     }
 }

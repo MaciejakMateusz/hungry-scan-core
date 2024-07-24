@@ -57,6 +57,12 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
+    public List<MenuItem> filterByName(String value) {
+        String filterValue = "%" + value.toLowerCase() + "%";
+        return menuItemRepository.filterByName(filterValue);
+    }
+
+    @Override
     public void delete(Integer id) throws LocalizedException {
         MenuItem existingMenuItem = findById(id);
         Category category = findByMenuItem(existingMenuItem);

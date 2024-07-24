@@ -16,6 +16,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
     @Query("SELECT i FROM Ingredient i ORDER BY i.name.defaultTranslation")
     Page<Ingredient> findAllOrderByDefaultTranslation(Pageable pageable);
 
-    @Query("SELECT i from Ingredient i WHERE i.name.defaultTranslation LIKE LOWER(:name)  ORDER BY i.name.defaultTranslation")
-    List<Ingredient> filterByName(@Param("name") String name);
+    @Query("SELECT i from Ingredient i WHERE i.name.defaultTranslation LIKE LOWER(:filterValue)  ORDER BY i.name.defaultTranslation")
+    List<Ingredient> filterByName(@Param("filterValue") String filterValue);
 }

@@ -52,6 +52,12 @@ public class MenuItemController {
         return responseHelper.buildResponse(menuItem, br, menuItemService::save);
     }
 
+    @PostMapping("/filter")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> filterByName(@RequestBody String value) {
+        return ResponseEntity.ok(menuItemService.filterByName(value));
+    }
+
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> delete(@RequestBody Integer id) {

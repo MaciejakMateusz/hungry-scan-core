@@ -64,8 +64,8 @@ public class IngredientController {
 
     @PostMapping("/filter")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> filterByName(@RequestBody String name) {
-        return ResponseEntity.ok(ingredientService.filterByName(name));
+    public ResponseEntity<?> filterByName(@RequestBody String value) {
+        return ResponseEntity.ok(ingredientService.filterByName(value));
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

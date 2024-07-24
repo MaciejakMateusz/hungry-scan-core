@@ -13,5 +13,7 @@ public interface MenuItemService {
 
     void save(MenuItem menuItem) throws Exception;
 
+    List<MenuItem> filterByName(String name);
+
     void delete(Integer id) throws LocalizedException;
 }
