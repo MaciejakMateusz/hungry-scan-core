@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -51,6 +52,7 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Override
     public void save(MenuItem menuItem) throws Exception {
+        switchCategory(menuItem);
         sortingHelper.sortAndSave(menuItem, this::findById);
     }
 
@@ -69,6 +71,28 @@ public class MenuItemServiceImp implements MenuItemService {
         return categoryRepository.findByMenuItem(menuItem)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.categoryService.categoryNotFoundByMenuItem", menuItem.getId()));
+    }
+
+    private Category findCategoryById(Integer id) throws LocalizedException {
+        return categoryRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.categoryService.categoryNotFound", id));
+    }
+
+    private void switchCategory(MenuItem menuItem) throws LocalizedException {
+        if (Objects.isNull(menuItem.getId())) {
+            return;
+        }
+        Category category = findByMenuItem(menuItem);
+        if (category.getId().equals(menuItem.getCategoryId())) {
+            return;
+        }
+        category.removeMenuItem(menuItem);
+        sortingHelper.updateDisplayOrders(menuItem.getDisplayOrder(), category.getMenuItems(), menuItemRepository::saveAll);
+
+        Category newCategory = findCategoryById(menuItem.getCategoryId());
+        newCategory.addMenuItem(menuItem);
+        categoryRepository.save(newCategory);
     }
 
 }
