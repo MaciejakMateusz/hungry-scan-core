@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.test_utils.MenuItemFactory;
 import com.hackybear.hungry_scan_core.utility.Money;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -47,6 +49,9 @@ class MenuItemControllerTest {
 
     @Autowired
     private MenuItemFactory menuItemFactory;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -164,6 +169,28 @@ class MenuItemControllerTest {
         assertEquals("Updated Item", updatedMenuItem.getName().getDefaultTranslation());
         assertEquals("Updated Description", updatedMenuItem.getDescription().getDefaultTranslation());
         assertEquals("/public/assets/updated.png", updatedMenuItem.getImageName());
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @Transactional
+    @Rollback
+    void shouldSwitchCategory() throws Exception {
+        MenuItem persistedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
+        persistedMenuItem.setCategoryId(1);
+
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+
+        MenuItem updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
+        assertEquals(1, updatedMenuItem.getCategoryId());
+        Category category = categoryService.findById(1);
+        boolean isUpdatedMenuItemPresent = category
+                .getMenuItems()
+                .stream()
+                .anyMatch(menuItem -> Objects.equals(menuItem.getId(), updatedMenuItem.getId()));
+        assertTrue(isUpdatedMenuItemPresent);
     }
 
     @Test

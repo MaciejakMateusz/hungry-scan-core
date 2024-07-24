@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Component
 public class SortingHelper {
@@ -38,24 +40,30 @@ public class SortingHelper {
         Integer currentOrder = getCurrentOrder(currentItem);
         Integer newOrder = getNewOrder(menuItem.getDisplayOrder());
 
-        if (shouldSaveWithoutReordering(currentOrder, menuItem, menuItemRepository::save)) {
-            return;
-        }
-
         Category category = categoryRepository.findById(menuItem.getCategoryId())
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.categoryService.categoryNotFound", menuItem.getCategoryId()));
+        List<MenuItem> categoryItems = category.getMenuItems();
 
-        if (isNew) {
+        Set<Integer> uniqueDisplayOrders = categoryItems.stream()
+                .map(MenuItem::getDisplayOrder)
+                .collect(Collectors.toSet());
+
+        boolean hasDuplicatedDisplayOrders = uniqueDisplayOrders.size() < categoryItems.size();
+
+        if (shouldSaveWithoutReordering(currentOrder, menuItem, menuItemRepository::save) && !hasDuplicatedDisplayOrders) {
+            return;
+        }
+
+        if (isNew && !hasDuplicatedDisplayOrders) {
             menuItemRepository.save(menuItem);
             category.addMenuItem(menuItem);
             categoryRepository.save(category);
         }
 
-        List<MenuItem> categoryItems = category.getMenuItems();
         newOrder = adjustNewOrderIfNeeded(newOrder, categoryItems);
 
-        if (isNew) {
+        if (isNew || hasDuplicatedDisplayOrders) {
             incrementDisplayOrders(categoryItems, newOrder);
         } else {
             adjustDisplayOrders(categoryItems, currentOrder, newOrder);
@@ -202,7 +210,7 @@ public class SortingHelper {
                                         Consumer<List<T>> consumer) {
         for (T t : collection) {
             Integer currentDisplayOrder = getDisplayOrder(t);
-            if (removedDisplayOrder <= currentDisplayOrder) {
+            if (removedDisplayOrder < currentDisplayOrder) {
                 setDisplayOrder(t, currentDisplayOrder - 1);
             }
         }
