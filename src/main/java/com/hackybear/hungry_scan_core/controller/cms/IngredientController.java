@@ -49,7 +49,7 @@ public class IngredientController {
         return ResponseEntity.ok(new Ingredient());
     }
 
-    @PostMapping(value = "/add")
+    @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> add(@RequestBody @Valid Ingredient ingredient,
                                  BindingResult br) {
@@ -60,6 +60,12 @@ public class IngredientController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> delete(@RequestBody Integer id) {
         return responseHelper.buildResponse(id, ingredientService::delete);
+    }
+
+    @PostMapping("/filter")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> filterByName(@RequestBody String name) {
+        return ResponseEntity.ok(ingredientService.filterByName(name));
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class IngredientServiceImp implements IngredientService {
@@ -44,5 +46,11 @@ public class IngredientServiceImp implements IngredientService {
     public void delete(Integer id) throws LocalizedException {
         Ingredient existingIngredient = findById(id);
         ingredientRepository.delete(existingIngredient);
+    }
+
+    @Override
+    public List<Ingredient> filterByName(String name) {
+        String filterValue = "%" + name.toLowerCase() + "%";
+        return ingredientRepository.filterByName(filterValue);
     }
 }
