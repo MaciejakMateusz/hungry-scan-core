@@ -22,23 +22,24 @@ public class TranslatableController {
         this.translatableService = translatableService;
     }
 
-    @GetMapping
+    @PostMapping("/save-all")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, List<Translatable>>> findAll() {
-        return ResponseEntity.ok(translatableService.findAllTranslatables());
+    public ResponseEntity<?> saveAll(@RequestBody List<Translatable> translatables) {
+        translatableService.saveAll(translatables);
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping
+    @PostMapping("/translate")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> saveAll(@RequestBody Map<String, List<Translatable>> translatables) {
-        translatableService.saveAllTranslatables(translatables);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> translate(@RequestBody Map<String, Object> requestData) {
+        String response = translatableService.translate(requestData);
+        return ResponseEntity.ok().body(response);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Allow", "GET, POST, OPTIONS");
+        headers.add("Allow", "POST, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }
