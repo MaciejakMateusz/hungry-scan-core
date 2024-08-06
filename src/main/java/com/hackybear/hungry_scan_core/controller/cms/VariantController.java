@@ -32,6 +32,13 @@ public class VariantController {
         return responseHelper.getResponseEntity(id, variantService::findById);
     }
 
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @GetMapping
+    public ResponseEntity<List<Variant>> findAll() {
+        List<Variant> variants = variantService.findAll();
+        return ResponseEntity.ok(variants);
+    }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/item")
     public ResponseEntity<List<Variant>> findAllByMenuItem(@RequestBody Integer id) {

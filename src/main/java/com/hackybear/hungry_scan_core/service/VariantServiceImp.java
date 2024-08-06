@@ -36,6 +36,11 @@ public class VariantServiceImp implements VariantService {
     }
 
     @Override
+    public List<Variant> findAll() {
+        return variantRepository.findAll();
+    }
+
+    @Override
     public List<Variant> findAllByMenuItemId(Integer menuItemId) {
         return variantRepository.findAllByMenuItemIdOrderByDisplayOrder(menuItemId);
     }
