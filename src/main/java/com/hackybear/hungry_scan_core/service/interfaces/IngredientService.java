@@ -11,7 +11,9 @@ public interface IngredientService {
 
     void save(Ingredient ingredient);
 
-    Page<Ingredient> findAll(Pageable pageable);
+    List<Ingredient> findAll();
+
+    Page<Ingredient> findAllPages(Pageable pageable);
 
     Ingredient findById(Integer id) throws LocalizedException;
 

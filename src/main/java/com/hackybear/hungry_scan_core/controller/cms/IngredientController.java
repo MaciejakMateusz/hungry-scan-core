@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,13 +29,20 @@ public class IngredientController {
         this.responseHelper = responseHelper;
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<List<Ingredient>> findAll() {
+        List<Ingredient> ingredients = ingredientService.findAll();
+        return ResponseEntity.ok(ingredients);
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Page<Ingredient>> list(@RequestBody Map<String, Object> params) {
+    public ResponseEntity<Page<Ingredient>> pages(@RequestBody Map<String, Object> params) {
         Integer pageSize = (Integer) params.get("pageSize");
         Integer pageNumber = (Integer) params.get("pageNumber");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return ResponseEntity.ok(ingredientService.findAll(pageable));
+        return ResponseEntity.ok(ingredientService.findAllPages(pageable));
     }
 
     @PostMapping("/show")

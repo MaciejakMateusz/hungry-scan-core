@@ -21,7 +21,6 @@ public class IngredientServiceImp implements IngredientService {
 
     public IngredientServiceImp(IngredientRepository ingredientRepository, ExceptionHelper exceptionHelper) {
         this.ingredientRepository = ingredientRepository;
-
         this.exceptionHelper = exceptionHelper;
     }
 
@@ -31,7 +30,12 @@ public class IngredientServiceImp implements IngredientService {
     }
 
     @Override
-    public Page<Ingredient> findAll(Pageable pageable) {
+    public List<Ingredient> findAll() {
+        return ingredientRepository.findAll();
+    }
+
+    @Override
+    public Page<Ingredient> findAllPages(Pageable pageable) {
         return ingredientRepository.findAllOrderByDefaultTranslation(pageable);
     }
 
