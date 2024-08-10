@@ -19,8 +19,6 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -36,8 +34,6 @@ public class QRServiceImp implements QRService {
     @Value("${server.port}")
     private String port;
 
-    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmmss");
-
     private final RestaurantTableService restaurantTableService;
 
     public QRServiceImp(RestaurantTableService restaurantTableService) {
@@ -49,8 +45,7 @@ public class QRServiceImp implements QRService {
         String format = "png";
 
         StringBuilder fileNameBuilder = new StringBuilder();
-        fileNameBuilder.append("QR code - HungryScan ");
-        fileNameBuilder.append(LocalDateTime.now().format(dtf));
+        fileNameBuilder.append("QR code - HungryScan");
         String fileName = fileNameBuilder.toString();
 
         StringBuilder urlBuilder = getEndpointAddress();

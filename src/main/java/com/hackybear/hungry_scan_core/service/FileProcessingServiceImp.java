@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 public class FileProcessingServiceImp implements FileProcessingService {
 
     @Value("${QR_PATH}")
-    private String basePath;
+    private String qrPath;
 
     @Value("${IMAGE_PATH}")
     private String imagePath;
@@ -32,10 +33,13 @@ public class FileProcessingServiceImp implements FileProcessingService {
 
     @Override
     public List<File> fileList() {
-        File dir = new File(basePath);
+        File dir = new File(qrPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         File[] files = dir.listFiles();
 
-        return files != null ? Arrays.stream(files).collect(Collectors.toList()) : null;
+        return files != null ? Arrays.stream(files).collect(Collectors.toList()) : new ArrayList<>();
     }
 
     @Override
@@ -55,7 +59,7 @@ public class FileProcessingServiceImp implements FileProcessingService {
 
     @Override
     public Resource downloadFile(String path) throws LocalizedException {
-        String fullPath = basePath + path;
+        String fullPath = qrPath + path;
         File dir = new File(fullPath);
         if (!dir.exists()) {
             exceptionHelper.throwLocalizedMessage("error.fileProcessingService.fileNotFound", fullPath);
@@ -74,7 +78,7 @@ public class FileProcessingServiceImp implements FileProcessingService {
 
     @Override
     public boolean removeFile(String path) throws LocalizedException {
-        String fullPath = basePath + path;
+        String fullPath = qrPath + path;
         File dir = new File(fullPath);
         if (!dir.exists()) {
             exceptionHelper.throwLocalizedMessage("error.fileProcessingService.fileNotFound", fullPath);

@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface FileProcessingService {
 
-    @Deprecated
     List<File> fileList();
 
     boolean uploadFile(MultipartFile file) throws IOException;

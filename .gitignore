@@ -39,3 +39,7 @@ instruction
 
 ### TODO helper ###
 src/main/java/com/hackybear/hungry_scan_core/utility/ToDo.java
+
+
+### TESTS ###
+src/test/files/

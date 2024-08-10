@@ -34,7 +34,7 @@ class QRServiceImpTest {
     private QRService qrService;
 
     @Value("${QR_PATH}")
-    private String directory;
+    private String qrPath;
 
     @Autowired
     RestaurantTableService restaurantTableService;
@@ -51,18 +51,17 @@ class QRServiceImpTest {
         RestaurantTable restaurantTable = restaurantTableService.findById(1);
         qrService.generate(restaurantTable, "");
         String qrName = restaurantTable.getQrName();
-        File file = new File(directory + qrName);
+        File file = new File(qrPath + qrName);
         assertEquals("QR code - Table number 1, Table ID 1.png", file.getName());
         assertTrue(file.delete());
     }
 
     @Test
     void shouldGenerateForGeneralUse() throws Exception {
-        RestaurantTable restaurantTable = restaurantTableService.findById(1);
-        qrService.generate(restaurantTable, "Kod QR do aplikacji klienta");
-        String qrName = restaurantTable.getQrName();
-        File file = new File(directory + qrName);
-        assertEquals("Kod QR do aplikacji klienta.png", file.getName());
+        qrService.generate();
+        File file = new File(qrPath + "QR code - HungryScan.png");
+        assertTrue(file.exists());
+        assertEquals("QR code - HungryScan.png", file.getName());
         assertTrue(file.delete());
     }
 

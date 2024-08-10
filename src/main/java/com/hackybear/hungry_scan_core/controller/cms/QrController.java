@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/cms/qr")
 public class QrController {
@@ -31,6 +34,13 @@ public class QrController {
         this.fileProcessingService = fileProcessingService;
         this.qrService = qrService;
         this.responseHelper = responseHelper;
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> list() {
+        List<File> qrCodes = fileProcessingService.fileList();
+        return ResponseEntity.ok(qrCodes);
     }
 
     @PostMapping("/tables/generate-qr")
