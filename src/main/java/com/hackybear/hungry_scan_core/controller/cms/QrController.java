@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
@@ -12,8 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/cms/qr")
@@ -34,19 +33,7 @@ public class QrController {
         this.responseHelper = responseHelper;
     }
 
-    @GetMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<List<RestaurantTable>> list() {
-        return ResponseEntity.ok(restaurantTableService.findAll());
-    }
-
-    @PatchMapping("/generate-token")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> generateNewToken(@RequestBody Integer id) {
-        return responseHelper.buildResponse(id, restaurantTableService::generateNewToken);
-    }
-
-    @PostMapping("/generate-qr")
+    @PostMapping("/tables/generate-qr")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> generateQr(@RequestBody Integer id) {
         try {
@@ -58,11 +45,22 @@ public class QrController {
         }
     }
 
+    @PostMapping("/generate-qr")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> generateBasicQr() {
+        try {
+            qrService.generate();
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
     @PostMapping(value = "/download")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> downloadQr() {
+    public ResponseEntity<?> downloadBasicQr(@RequestBody String qrPath) {
         try {
-            Resource file = fileProcessingService.downloadFile("qr/Kod QR do aplikacji klienta");
+            Resource file = fileProcessingService.downloadFile(qrPath);
 
             String filename = file.getFilename();
 
@@ -75,6 +73,13 @@ public class QrController {
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
+    }
+
+    @DeleteMapping
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> delete(@RequestBody String qrName) throws LocalizedException {
+        boolean isDeleted = fileProcessingService.removeFile(qrName);
+        return ResponseEntity.ok(isDeleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

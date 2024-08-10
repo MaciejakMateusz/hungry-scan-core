@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TableControllerTest {
+class RestaurantTableControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -204,6 +204,7 @@ class TableControllerTest {
 
         File file = new File(qrPath + table.getQrName());
         assertEquals(table.getQrName(), file.getName());
+        assertTrue(file.delete());
     }
 
     @Test
@@ -248,7 +249,9 @@ class TableControllerTest {
 
         assertEquals("shouldDownloadTest.png", file.getName());
         assertTrue(file.delete());
-        assertFalse(file.exists());
+
+        File table13Qr = new File(qrPath + "QR code - Table number 13, Table ID 13.png");
+        assertTrue(table13Qr.delete());
     }
 
     @Test

@@ -31,22 +31,26 @@ public class FileProcessingServiceImp implements FileProcessingService {
     }
 
     @Override
-    public List<String> fileList() {
+    public List<File> fileList() {
         File dir = new File(basePath);
         File[] files = dir.listFiles();
 
-        return files != null ? Arrays.stream(files).map(File::getName).collect(Collectors.toList()) : null;
+        return files != null ? Arrays.stream(files).collect(Collectors.toList()) : null;
     }
 
     @Override
-    public void uploadFile(MultipartFile file) throws IOException {
+    public boolean uploadFile(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
+
         if (fileName == null || fileName.isEmpty()) {
-            return;
+            return false;
         }
         File destFile = new File(imagePath, fileName);
-        destFile.getParentFile().mkdirs();
-        file.transferTo(destFile);
+        boolean isUploaded = destFile.getParentFile().mkdirs();
+        if (isUploaded) {
+            file.transferTo(destFile);
+        }
+        return isUploaded;
     }
 
     @Override
@@ -68,4 +72,20 @@ public class FileProcessingServiceImp implements FileProcessingService {
         }
     }
 
+    @Override
+    public boolean removeFile(String path) throws LocalizedException {
+        String fullPath = basePath + path;
+        File dir = new File(fullPath);
+        if (!dir.exists()) {
+            exceptionHelper.throwLocalizedMessage("error.fileProcessingService.fileNotFound", fullPath);
+        }
+
+        boolean isDeleted;
+        try {
+            isDeleted = dir.delete();
+        } catch (Exception e) {
+            throw new LocalizedException("error.fileProcessingService.deleteError");
+        }
+        return isDeleted;
+    }
 }

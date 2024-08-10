@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.service;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -12,11 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +36,8 @@ public class QRServiceImp implements QRService {
     @Value("${server.port}")
     private String port;
 
+    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmmss");
+
     private final RestaurantTableService restaurantTableService;
 
     public QRServiceImp(RestaurantTableService restaurantTableService) {
@@ -39,10 +45,28 @@ public class QRServiceImp implements QRService {
     }
 
     @Override
+    public void generate() throws Exception {
+        String format = "png";
+
+        StringBuilder fileNameBuilder = new StringBuilder();
+        fileNameBuilder.append("QR code - HungryScan ");
+        fileNameBuilder.append(LocalDateTime.now().format(dtf));
+        String fileName = fileNameBuilder.toString();
+
+        StringBuilder urlBuilder = getEndpointAddress();
+        urlBuilder.append(fileNameBuilder);
+        String url = urlBuilder.toString();
+
+        createQrFile(format, fileName, url);
+
+        log.info("QR code generated successfully.");
+    }
+
+    @Override
     public void generate(RestaurantTable table, String name) throws Exception {
-        StringBuilder address = getEndpointAddress();
-        address.append(table.getToken());
-        String url = address.toString();
+        StringBuilder urlBuilder = getEndpointAddress();
+        urlBuilder.append(table.getToken());
+        String url = urlBuilder.toString();
 
         String format = "png";
         String fileName;
@@ -52,6 +76,15 @@ public class QRServiceImp implements QRService {
             fileName = "QR code - " + "Table number " + table.getNumber() + ", Table ID " + table.getId();
         }
 
+        createQrFile(format, fileName, url);
+
+        table.setQrName(fileName + "." + format);
+        restaurantTableService.save(table);
+
+        log.info("QR code for table {} generated successfully.", table.getNumber());
+    }
+
+    private void createQrFile(String format, String fileName, String url) throws WriterException, IOException {
         int width = 1000;
         int height = 1000;
 
@@ -62,11 +95,6 @@ public class QRServiceImp implements QRService {
         Files.createDirectories(Paths.get(directory));
         Path qrFilePath = Paths.get(directory, fileName + "." + format);
         MatrixToImageWriter.writeToPath(bitMatrix, format, qrFilePath);
-
-        table.setQrName(fileName + "." + format);
-        restaurantTableService.save(table);
-
-        log.info("QR code for table {} generated successfully.", table.getNumber());
     }
 
     private StringBuilder getEndpointAddress() {

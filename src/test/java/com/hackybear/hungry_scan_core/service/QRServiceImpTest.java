@@ -18,6 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @SpringBootTest
@@ -52,6 +53,7 @@ class QRServiceImpTest {
         String qrName = restaurantTable.getQrName();
         File file = new File(directory + qrName);
         assertEquals("QR code - Table number 1, Table ID 1.png", file.getName());
+        assertTrue(file.delete());
     }
 
     @Test
@@ -61,6 +63,7 @@ class QRServiceImpTest {
         String qrName = restaurantTable.getQrName();
         File file = new File(directory + qrName);
         assertEquals("Kod QR do aplikacji klienta.png", file.getName());
+        assertTrue(file.delete());
     }
 
 }

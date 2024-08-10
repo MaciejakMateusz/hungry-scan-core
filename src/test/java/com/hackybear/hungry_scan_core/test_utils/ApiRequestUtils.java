@@ -2,11 +2,7 @@ package com.hackybear.hungry_scan_core.test_utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.hackybear.hungry_scan_core.entity.Category;
-import com.hackybear.hungry_scan_core.entity.MenuItem;
-import com.hackybear.hungry_scan_core.entity.Translatable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -18,7 +14,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -119,55 +114,6 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Fetches a Map<String, List<Translatable>> from the specified endpoint.
-     *
-     * @param endpointUrl The URL of the endpoint to fetch from.
-     * @return A Map<String, List<Translatable> fetched from the endpoint.
-     * @throws Exception If an error occurs during the request.
-     */
-    public Map<String, List<Translatable>> fetchTranslatablesMap(String endpointUrl) throws Exception {
-        MvcResult result = mockMvc.perform(get(endpointUrl)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-
-        MockHttpServletResponse response = result.getResponse();
-        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
-
-        ObjectMapper objectMapper = prepObjMapper();
-        TypeFactory typeFactory = objectMapper.getTypeFactory();
-        return objectMapper.readValue(jsonResponse,
-                typeFactory.constructMapType(Map.class, typeFactory.constructType(String.class),
-                        typeFactory.constructCollectionType(List.class, Translatable.class)));
-    }
-
-    /**
-     * Fetches a Map<Category, List<MenuItem>> from the specified endpoint.
-     *
-     * @param endpointUrl The URL of the endpoint to fetch from.
-     * @return A Map<Category, List<MenuItem>> fetched from the endpoint.
-     * @throws Exception If an error occurs during the request.
-     */
-    public Map<Category, List<MenuItem>> fetchCategoriesMenuItems(String endpointUrl) throws Exception {
-        MvcResult result = mockMvc.perform(get(endpointUrl)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-
-        MockHttpServletResponse response = result.getResponse();
-        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
-
-        ObjectMapper objectMapper = prepObjMapper();
-        TypeFactory typeFactory = objectMapper.getTypeFactory();
-        return objectMapper.readValue(jsonResponse,
-                typeFactory.constructMapType(Map.class, typeFactory.constructType(Category.class),
-                        typeFactory.constructCollectionType(List.class, MenuItem.class)));
-    }
-
-
-    /**
      * Fetches an object from the specified endpoint URL and converts it into the provided item type.
      *
      * @param endpointUrl The URL endpoint from which to fetch the object.
@@ -226,7 +172,12 @@ public class ApiRequestUtils {
      */
     public <T> Resource postAndFetchResource(String endpointUrl, T object) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
-        String jsonRequest = objectMapper.writeValueAsString(object);
+        String jsonRequest;
+        if (!(object instanceof String)) {
+            jsonRequest = objectMapper.writeValueAsString(object);
+        } else {
+            jsonRequest = (String) object;
+        }
 
         MvcResult result = mockMvc.perform(post(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -240,6 +191,20 @@ public class ApiRequestUtils {
         MockHttpServletResponse response = result.getResponse();
         byte[] bytes = response.getContentAsByteArray();
         return new ByteArrayResource(bytes);
+    }
+
+    /**
+     * Sends a simple post request without body to specified endpoint.
+     *
+     * @param endpointUrl The URL endpoint to request action.
+     */
+    public void simplePost(String endpointUrl) throws Exception {
+        mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
     }
 
     public <R> R fetchObjectWithParam(String endpointUrl, Class<R> itemType) throws Exception {
@@ -482,7 +447,12 @@ public class ApiRequestUtils {
                                     T object,
                                     ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
-        String jsonRequest = objectMapper.writeValueAsString(object);
+        String jsonRequest;
+        if (!(object instanceof String)) {
+            jsonRequest = objectMapper.writeValueAsString(object);
+        } else {
+            jsonRequest = (String) object;
+        }
 
         mockMvc.perform(delete(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
