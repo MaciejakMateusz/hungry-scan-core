@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,9 @@ public class QrController {
     private final FileProcessingService fileProcessingService;
     private final QRService qrService;
     private final ResponseHelper responseHelper;
+
+    @Value("${QR_PATH}")
+    private String qrPath;
 
     public QrController(RestaurantTableService restaurantTableService,
                         FileProcessingService fileProcessingService,
@@ -68,9 +72,10 @@ public class QrController {
 
     @PostMapping(value = "/download")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> downloadBasicQr(@RequestBody String qrPath) {
+    public ResponseEntity<?> downloadBasicQr() {
         try {
-            Resource file = fileProcessingService.downloadFile(qrPath);
+            String fullQrPath = qrPath + "QR code - HungryScan.png";
+            Resource file = fileProcessingService.downloadFile(fullQrPath);
 
             String filename = file.getFilename();
 
