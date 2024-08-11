@@ -194,6 +194,27 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Fetches a Resource from the specified endpoint URL.
+     *
+     * @param endpointUrl The URL endpoint from which to fetch the Resource.
+     * @return The Resource object.
+     * @throws Exception If an error occurs during the fetching or parsing of the byte array.
+     */
+    public Resource getResource(String endpointUrl) throws Exception {
+        MvcResult result = mockMvc.perform(get(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.IMAGE_PNG_VALUE)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        byte[] bytes = response.getContentAsByteArray();
+        return new ByteArrayResource(bytes);
+    }
+
+    /**
      * Sends a simple post request without body to specified endpoint.
      *
      * @param endpointUrl The URL endpoint to request action.

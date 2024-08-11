@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,6 +57,15 @@ public class UserController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
         if (authentication.isAuthenticated()) {
+            //todo zamienić cs jwt na ss jwt cookie handling
+
+            //            String jwt = jwtService.generateToken(authRequestDTO.getUsername(),
+            //                    settings.getEmployeeSessionTime());
+            //            Long maxAgeInSeconds = settings.getEmployeeSessionTime() * 3600;
+            //
+            //            String cookieValue = String.format("jwt=%s; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=%d",
+            //                    jwt, maxAgeInSeconds);
+            //            response.setHeader("Set-Cookie", cookieValue);
             return JwtResponseDTO
                     .builder()
                     .accessToken(jwtService.generateToken(authRequestDTO.getUsername(),
@@ -63,8 +75,14 @@ public class UserController {
         }
     }
 
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response) {
+        String cookieValue = "jwt=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0";
+        response.setHeader("Set-Cookie", cookieValue);
+    }
+
     @GetMapping("/scan/{token}")
-    public JwtResponseDTO scanQR(@PathVariable("token") String token) throws AccessDeniedException, LocalizedException {
+    public JwtResponseDTO scanTableQr(@PathVariable("token") String token) throws AccessDeniedException, LocalizedException {
         Settings settings = settingsService.getSettings();
         RestaurantTable table = getRestaurantTable(token);
         if (table.isActive()) {
@@ -83,6 +101,25 @@ public class UserController {
         }
     }
 
+    @GetMapping("/scan")
+    public ResponseEntity<Void> scanBasicQr(HttpServletResponse response) throws IOException {
+        Settings settings = settingsService.getSettings();
+        String randomUUID = UUID.randomUUID().toString();
+        String accessToken = jwtService.generateToken(randomUUID.substring(0, 12),
+                settings.getEmployeeSessionTime());
+        persistUser(new JwtToken(accessToken), randomUUID);
+
+        // Construct the URL to redirect to, including the access token as a query parameter
+        String redirectUrl = UriComponentsBuilder.fromUriString("https://your-application-url.com")
+                .queryParam("accessToken", accessToken)
+                .build()
+                .toUriString();
+
+        // Perform the redirection
+        response.sendRedirect(redirectUrl);
+        return ResponseEntity.status(HttpServletResponse.SC_FOUND).build();
+    }
+
     private void persistTableAndUser(JwtToken jwtToken, String uuid, RestaurantTable restaurantTable) {
         String username = uuid.substring(1, 13);
         boolean isFirstCustomer = restaurantTable.getUsers().isEmpty();
@@ -90,6 +127,11 @@ public class UserController {
         User customer = userService.findByUsername(username);
         restaurantTable.addCustomer(customer);
         restaurantTableService.save(restaurantTable);
+    }
+
+    private void persistUser(JwtToken jwtToken, String uuid) {
+        String username = uuid.substring(1, 13);
+        userService.save(createTempCustomer(jwtToken, username, false));
     }
 
     private RestaurantTable getRestaurantTable(String token) throws AccessDeniedException {

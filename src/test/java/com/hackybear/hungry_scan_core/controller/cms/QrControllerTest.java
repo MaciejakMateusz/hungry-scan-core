@@ -102,8 +102,7 @@ class QrControllerTest {
     @WithMockUser(roles = {"MANAGER"})
     @Order(4)
     void shouldDownload() throws Exception {
-        String fileName = getFirstQrName();
-        Resource resource = apiRequestUtils.postAndFetchResource("/api/cms/qr/download", fileName);
+        Resource resource = apiRequestUtils.getResource("/api/cms/qr/download");
 
         InputStream inputStream = resource.getInputStream();
         File file = new File("./src/test/files/download/Downloaded HungryScan QR.png");

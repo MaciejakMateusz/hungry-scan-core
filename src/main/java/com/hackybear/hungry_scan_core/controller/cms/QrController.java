@@ -27,8 +27,8 @@ public class QrController {
     private final QRService qrService;
     private final ResponseHelper responseHelper;
 
-    @Value("${QR_PATH}")
-    private String qrPath;
+    @Value("${QR_NAME}")
+    private String qrName;
 
     public QrController(RestaurantTableService restaurantTableService,
                         FileProcessingService fileProcessingService,
@@ -70,12 +70,11 @@ public class QrController {
         }
     }
 
-    @PostMapping(value = "/download")
+    @GetMapping(value = "/download")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> downloadBasicQr() {
         try {
-            String fullQrPath = qrPath + "QR code - HungryScan.png";
-            Resource file = fileProcessingService.downloadFile(fullQrPath);
+            Resource file = fileProcessingService.downloadFile(qrName);
 
             String filename = file.getFilename();
 
