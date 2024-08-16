@@ -53,7 +53,7 @@ public class MenuItemController {
     }
 
     @PostMapping("/filter")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> filterByName(@RequestBody String value) {
         return ResponseEntity.ok(menuItemService.filterByName(value));
     }
