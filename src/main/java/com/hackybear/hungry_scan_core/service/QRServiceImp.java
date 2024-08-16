@@ -43,13 +43,9 @@ public class QRServiceImp implements QRService {
     @Override
     public void generate() throws Exception {
         String format = "png";
-
-        StringBuilder fileNameBuilder = new StringBuilder();
-        fileNameBuilder.append("QR code - HungryScan");
-        String fileName = fileNameBuilder.toString();
+        String fileName = "QR code - HungryScan";
 
         StringBuilder urlBuilder = getEndpointAddress();
-        urlBuilder.append(fileNameBuilder);
         String url = urlBuilder.toString();
 
         createQrFile(format, fileName, url);
@@ -94,7 +90,7 @@ public class QRServiceImp implements QRService {
 
     private StringBuilder getEndpointAddress() {
         StringBuilder sb = new StringBuilder();
-        sb.append("https://").append(getServerIPAddress()).append(":").append(port).append("/api/scan/");
+        sb.append("http://").append(getServerIPAddress()).append(":").append(port).append("/api/scan");
         return sb;
     }
 

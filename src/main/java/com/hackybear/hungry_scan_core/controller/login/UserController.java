@@ -7,6 +7,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.*;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,7 +28,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     private final AuthenticationManager authenticationManager;
@@ -35,6 +37,9 @@ public class UserController {
     private final RoleService roleService;
     private final JwtService jwtService;
     private final ExceptionHelper exceptionHelper;
+
+    @Value("${customer.app.port}")
+    private String customerAppPort;
 
     public UserController(AuthenticationManager authenticationManager,
                           RestaurantTableService restaurantTableService,
@@ -102,20 +107,18 @@ public class UserController {
     }
 
     @GetMapping("/scan")
-    public ResponseEntity<Void> scanBasicQr(HttpServletResponse response) throws IOException {
+    public ResponseEntity<Void> scanGeneralQr(HttpServletResponse response) throws IOException {
         Settings settings = settingsService.getSettings();
         String randomUUID = UUID.randomUUID().toString();
-        String accessToken = jwtService.generateToken(randomUUID.substring(0, 12),
+        String accessToken = jwtService.generateToken(randomUUID.substring(1, 13),
                 settings.getEmployeeSessionTime());
         persistUser(new JwtToken(accessToken), randomUUID);
 
-        // Construct the URL to redirect to, including the access token as a query parameter
-        String redirectUrl = UriComponentsBuilder.fromUriString("https://your-application-url.com")
-                .queryParam("accessToken", accessToken)
+        String redirectUrl = UriComponentsBuilder.fromUriString(getCustomerAppUrl())
+                .queryParam("token", accessToken)
                 .build()
                 .toUriString();
 
-        // Perform the redirection
         response.sendRedirect(redirectUrl);
         return ResponseEntity.status(HttpServletResponse.SC_FOUND).build();
     }
@@ -153,6 +156,26 @@ public class UserController {
         customer.setRoles(new HashSet<>(Collections.singletonList(role)));
         customer.setJwtToken(jwtToken);
         return customer;
+    }
+
+    private String getCustomerAppUrl() {
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder
+                .append("http://")
+                .append(getServerIPAddress())
+                .append(":")
+                .append(customerAppPort)
+                .append("/menu");
+        return urlBuilder.toString();
+    }
+
+    private String getServerIPAddress() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            System.out.println("Failed to determine server IP address: " + e.getMessage());
+            return null;
+        }
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
