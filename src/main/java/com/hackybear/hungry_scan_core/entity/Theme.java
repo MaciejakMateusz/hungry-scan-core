@@ -22,8 +22,8 @@ public class Theme {
     private Integer id;
 
     @NotBlank
-    String name;
+    private String name;
 
-    private boolean isActive;
+    private boolean active;
 
 }

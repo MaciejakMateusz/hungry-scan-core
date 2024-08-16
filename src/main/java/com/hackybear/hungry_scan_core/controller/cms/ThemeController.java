@@ -39,13 +39,13 @@ public class ThemeController {
     }
 
     @GetMapping("/active")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Theme> getActive() throws LocalizedException {
         return ResponseEntity.ok().body(themeService.getActive());
     }
 
     @PostMapping("/set-active")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> setActive(@RequestBody Integer id) {
         return responseHelper.buildResponse(id, themeService::setActive);
     }

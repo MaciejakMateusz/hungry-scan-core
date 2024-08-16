@@ -129,7 +129,7 @@ VALUES (1, 'gluten-free.svg', 35),
        (5, 'lactose-free.svg', 39),
        (6, 'spicy.svg', 40);
 
-INSERT IGNORE INTO themes(id, name, is_active)
+INSERT IGNORE INTO themes(id, name, active)
 VALUES (1, 'green', true),
        (2, 'pink', false),
        (3, 'grey', false),

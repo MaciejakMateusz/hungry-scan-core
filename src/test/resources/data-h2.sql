@@ -819,7 +819,7 @@ VALUES (7, 6);
 INSERT INTO user_role (user_id, role_id)
 VALUES (8, 5);
 
-INSERT INTO themes(name, is_active)
+INSERT INTO themes(name, active)
 VALUES ('green', true),
        ('pink', false),
        ('grey', false),

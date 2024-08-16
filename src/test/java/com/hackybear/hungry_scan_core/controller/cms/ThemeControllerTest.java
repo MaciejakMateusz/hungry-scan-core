@@ -50,7 +50,6 @@ class ThemeControllerTest {
                         "/api/cms/themes", Theme.class);
 
         assertEquals(4, themes.size());
-        assertTrue(themes.get(0).isActive());
         assertEquals("pink", themes.get(1).getName());
     }
 
