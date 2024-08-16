@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,9 +34,12 @@ import static jakarta.servlet.DispatcherType.FORWARD;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final Environment env;
+
     private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(Environment env, JwtAuthFilter jwtAuthFilter) {
+        this.env = env;
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
@@ -62,10 +66,12 @@ public class SecurityConfig {
             corsConfiguration.addAllowedOrigin("http://localhost:8080"); //jenkins
             corsConfiguration.addAllowedOrigin("http://localhost:3000"); //restaurant
             corsConfiguration.addAllowedOrigin("http://localhost:3001"); //customer
+            corsConfiguration.addAllowedOrigin(env.getProperty("CUSTOMER_APP_DOMAIN") + ":3001"); //customer
             corsConfiguration.addAllowedOrigin("http://localhost:3002"); //cms
             corsConfiguration.addAllowedOrigin("http://localhost:3003"); //admin
             corsConfiguration.setAllowedOriginPatterns(List.of("*"));
             corsConfiguration.setAllowCredentials(true);
+            corsConfiguration.setAllowPrivateNetwork(true);
             return corsConfiguration;
         }));
 
