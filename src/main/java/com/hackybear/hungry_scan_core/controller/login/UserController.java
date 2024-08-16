@@ -159,14 +159,11 @@ public class UserController {
     }
 
     private String getCustomerAppUrl() {
-        StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder
-                .append("http://")
-                .append(getServerIPAddress())
-                .append(":")
-                .append(customerAppPort)
-                .append("/menu");
-        return urlBuilder.toString();
+        return "http://" +
+                getServerIPAddress() +
+                ":" +
+                customerAppPort +
+                "/menu";
     }
 
     private String getServerIPAddress() {
