@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.Theme;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.ThemeService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,9 +38,15 @@ public class ThemeController {
         return responseHelper.getResponseEntity(id, themeService::findById);
     }
 
-    @PostMapping("/set-active")
+    @GetMapping("/active")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> setActiveTheme(@RequestBody Integer id) {
+    public ResponseEntity<Theme> getActive() throws LocalizedException {
+        return ResponseEntity.ok().body(themeService.getActive());
+    }
+
+    @PostMapping("/set-active")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> setActive(@RequestBody Integer id) {
         return responseHelper.buildResponse(id, themeService::setActive);
     }
 

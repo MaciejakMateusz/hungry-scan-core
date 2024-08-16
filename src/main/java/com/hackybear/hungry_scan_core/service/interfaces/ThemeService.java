@@ -13,4 +13,5 @@ public interface ThemeService {
 
     void setActive(Integer id) throws LocalizedException;
 
+    Theme getActive() throws LocalizedException;
 }

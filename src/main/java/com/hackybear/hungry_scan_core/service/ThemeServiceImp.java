@@ -41,5 +41,11 @@ public class ThemeServiceImp implements ThemeService {
         themeRepository.saveAll(themes);
     }
 
+    @Override
+    public Theme getActive() throws LocalizedException {
+        return themeRepository.findByActive(true).orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                "error.themeService.noActiveFound"));
+    }
+
 
 }
