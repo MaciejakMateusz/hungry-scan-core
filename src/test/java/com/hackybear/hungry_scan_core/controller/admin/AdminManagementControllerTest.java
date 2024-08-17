@@ -1,6 +1,5 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.entity.User;
@@ -12,13 +11,11 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -27,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -42,9 +38,6 @@ class AdminManagementControllerTest {
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Test
     @Order(1)
@@ -67,9 +60,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    void shouldNotAllowAccessToUsers() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users");
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToUsers() throws Exception {
-        mockMvc.perform(get("/api/admin/users"))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users");
     }
 
     @Test
@@ -85,9 +82,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
+    void shouldNotAllowAccessToWaiters() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/waiters");
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToWaiters() throws Exception {
-        mockMvc.perform(get("/api/admin/users/waiters"))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/waiters");
     }
 
     @Test
@@ -103,9 +104,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    void shouldNotAllowAccessToCooks() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/cooks");
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToCooks() throws Exception {
-        mockMvc.perform(get("/api/admin/users/waiters"))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/cooks");
     }
 
     @Test
@@ -120,9 +125,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    void shouldNotAllowAccessToManagers() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/managers");
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToManagers() throws Exception {
-        mockMvc.perform(get("/api/admin/users/managers"))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/managers");
     }
 
     @Test
@@ -137,9 +146,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
+    void shouldNotAllowAccessToAdmins() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/admins");
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToAdmins() throws Exception {
-        mockMvc.perform(get("/api/admin/users/admins"))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/admins");
     }
 
     @Test
@@ -151,13 +164,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    void shouldNotAllowAccessToShowUser() throws Exception {
+        apiRequestUtils.postAndExpect("/api/admin/users/show", 4, status().isForbidden());
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
-        Integer id = 4;
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/admin/users/show")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.postAndExpectUnauthorized("/api/admin/users/show", 4);
     }
 
     @Test
@@ -178,9 +191,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
+    void shouldNotAllowAccessToNewUserObject() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/add");
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToNewUserObject() throws Exception {
-        mockMvc.perform(get("/api/admin/users/add"))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/add");
     }
 
     @Test
@@ -197,9 +214,15 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    void shouldNotAllowUnauthorizedToAddUser() throws Exception {
+    void shouldNotAllowToAddUser() throws Exception {
         User user = createUser();
         apiRequestUtils.postAndExpect("/api/admin/users/add", user, status().isForbidden());
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToAddUser() throws Exception {
+        User user = createUser();
+        apiRequestUtils.postAndExpectUnauthorized("/api/admin/users/add", user);
     }
 
     @Test
@@ -288,13 +311,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
+    void shouldNotAllowAccessToUpdateUser() throws Exception {
+        apiRequestUtils.patchAndExpect("/api/admin/users/update", new User(), status().isForbidden());
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToUpdateUser() throws Exception {
-        User user = new User();
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(patch("/api/admin/users/update")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.patchAndExpect("/api/admin/users/update", new User(), status().isUnauthorized());
     }
 
     @Test
@@ -327,13 +350,13 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
+    void shouldNotAllowAccessToRemoveUser() throws Exception {
+        apiRequestUtils.deleteAndExpect("/api/admin/users/delete", new User(), status().isForbidden());
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToRemoveUser() throws Exception {
-        User user = new User();
-        ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(delete("/api/admin/users/delete")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.deleteAndExpect("/api/admin/users/delete", new User(), status().isUnauthorized());
     }
 
     @Test
