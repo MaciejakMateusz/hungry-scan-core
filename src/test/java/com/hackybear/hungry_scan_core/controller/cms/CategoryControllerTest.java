@@ -18,14 +18,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -39,14 +37,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CategoryControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private ApiRequestUtils apiRequestUtils;
 
     @Autowired
-    private ApiRequestUtils apiRequestUtils;
-    @Autowired
     private CategoryRepository categoryRepository;
+
     @Autowired
     private MenuItemRepository menuItemRepository;
+
     @Autowired
     private VariantRepository variantRepository;
 
@@ -92,9 +90,9 @@ class CategoryControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToCategories() throws Exception {
-        mockMvc.perform(get("/api/cms/categories")).andExpect(status().isUnauthorized());
-        mockMvc.perform(get("/api/cms/categories/display-orders")).andExpect(status().isUnauthorized());
-        mockMvc.perform(get("/api/cms/categories/count")).andExpect(status().isUnauthorized());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories");
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/display-orders");
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/count");
     }
 
     @Test
@@ -128,9 +126,13 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    void shouldNotAllowUnauthorizedAccessToNewCategoryObject() throws Exception {
-        mockMvc.perform(get("/api/cms/categories/add"))
-                .andExpect(status().isForbidden());
+    void shouldNotAllowAccessToNewCategoryObject() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/add");
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToCategoryObject() throws Exception {
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/add");
     }
 
     @Test
@@ -152,9 +154,15 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
+    void shouldNotAllowAccessToAddCategory() throws Exception {
         Category category = createCategory();
         apiRequestUtils.postAndExpect("/api/cms/categories/add", category, status().isForbidden());
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToAddCategory() throws Exception {
+        Category category = createCategory();
+        apiRequestUtils.postAndExpect("/api/cms/categories/add", category, status().isUnauthorized());
     }
 
     @Test
@@ -187,8 +195,13 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "WAITER")
-    void shouldNotAllowUnauthorizedAccessToUpdateCategory() throws Exception {
+    void shouldNotAllowAccessToUpdateCategory() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/categories/add", new Category(), status().isForbidden());
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToUpdateCategory() throws Exception {
+        apiRequestUtils.postAndExpect("/api/cms/categories/add", new Category(), status().isUnauthorized());
     }
 
     @Test
@@ -509,8 +522,13 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
-    void shouldNotAllowUnauthorizedAccessToRemoveCategory() throws Exception {
+    void shouldNotAllowAccessToRemoveCategory() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isForbidden());
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToRemoveCategory() throws Exception {
+        apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isUnauthorized());
     }
 
     private Category createCategory() {

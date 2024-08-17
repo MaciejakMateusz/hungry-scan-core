@@ -13,13 +13,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -31,9 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AllergenControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     ApiRequestUtils apiRequestUtils;
@@ -58,7 +53,7 @@ class AllergenControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToAllergens() throws Exception {
-        mockMvc.perform(get("/api/cms/allergens")).andExpect(status().isUnauthorized());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/allergens");
     }
 
     @Test
@@ -71,7 +66,7 @@ class AllergenControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToShowAllergen() throws Exception {
-        apiRequestUtils.postAndExpect("/api/cms/allergens/show", 7, status().isUnauthorized());
+        apiRequestUtils.postAndExpectUnauthorized("/api/cms/allergens/show", 7);
     }
 
     @Test
