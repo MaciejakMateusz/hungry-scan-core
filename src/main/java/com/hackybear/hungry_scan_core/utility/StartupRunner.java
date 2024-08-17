@@ -18,8 +18,11 @@ public class StartupRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.info("Starting hungry-scan...");
-        log.info("Generating QR code...");
-        qrService.generate();
+        log.info("Executing StartupRunner...");
+        if (!qrService.generalQrExists()) {
+            log.info("Generating QR code...");
+            qrService.generate();
+            log.info("QR code created successfully.");
+        }
     }
 }

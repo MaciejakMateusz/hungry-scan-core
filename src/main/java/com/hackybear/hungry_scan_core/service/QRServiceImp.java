@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -34,6 +35,8 @@ public class QRServiceImp implements QRService {
     @Value("${server.port}")
     private String port;
 
+    private static final String GENERAL_QR_NAME = "QR code - HungryScan";
+
     private final RestaurantTableService restaurantTableService;
 
     public QRServiceImp(RestaurantTableService restaurantTableService) {
@@ -43,12 +46,11 @@ public class QRServiceImp implements QRService {
     @Override
     public void generate() throws Exception {
         String format = "png";
-        String fileName = "QR code - HungryScan";
 
         StringBuilder urlBuilder = getEndpointAddress();
         String url = urlBuilder.toString();
 
-        createQrFile(format, fileName, url);
+        createQrFile(format, GENERAL_QR_NAME, url);
 
         log.info("QR code generated successfully.");
     }
@@ -73,6 +75,12 @@ public class QRServiceImp implements QRService {
         restaurantTableService.save(table);
 
         log.info("QR code for table {} generated successfully.", table.getNumber());
+    }
+
+    @Override
+    public boolean generalQrExists() {
+        File qr = new File(directory + GENERAL_QR_NAME);
+        return qr.exists();
     }
 
     private void createQrFile(String format, String fileName, String url) throws WriterException, IOException {

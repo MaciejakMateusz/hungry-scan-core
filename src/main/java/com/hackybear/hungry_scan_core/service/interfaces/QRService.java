@@ -7,4 +7,6 @@ public interface QRService {
     void generate() throws Exception;
 
     void generate(RestaurantTable table, String name) throws Exception;
+
+    boolean generalQrExists();
 }
