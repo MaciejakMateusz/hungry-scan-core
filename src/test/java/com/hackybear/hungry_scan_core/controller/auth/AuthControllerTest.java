@@ -31,8 +31,14 @@ class AuthControllerTest {
     }
 
     @Test
-    public void shouldNotAuthorizeForRestaurantModule() throws Exception {
+    public void shouldNotAllowUnauthorizedForRestaurantModule() throws Exception {
         apiRequestUtils.fetchAndExpectUnauthorized("/api/auth/restaurant");
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER", "CUSTOMER_READONLY"})
+    public void shouldNotAllowCustomerForRestaurantModule() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/restaurant");
     }
 
     @Test
@@ -43,7 +49,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER", "COOK"})
+    @WithMockUser(roles = {"WAITER", "COOK", "CUSTOMER", "CUSTOMER_READONLY"})
     public void shouldNotAuthorizeForCmsModule() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/cms");
     }
@@ -56,7 +62,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER", "COOK", "MANAGER"})
+    @WithMockUser(roles = {"WAITER", "COOK", "MANAGER", "CUSTOMER", "CUSTOMER_READONLY"})
     public void shouldNotAuthorizeForAdminPanelModule() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/admin");
     }

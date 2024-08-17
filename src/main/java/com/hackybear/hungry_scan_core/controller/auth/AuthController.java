@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import static com.hackybear.hungry_scan_core.utility.Constants.ROLES_EXCEPT_CUSTOMER;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = {
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     @GetMapping("/restaurant")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public boolean restaurantAuth() {
         return true;
     }
