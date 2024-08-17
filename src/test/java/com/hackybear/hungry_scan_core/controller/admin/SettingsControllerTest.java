@@ -1,6 +1,5 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -11,21 +10,17 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -38,8 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SettingsControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
@@ -66,9 +59,13 @@ class SettingsControllerTest {
 
     @Test
     @WithMockUser(roles = {"WAITER"})
+    void shouldNotAllowAccessToSettings() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/settings");
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToSettings() throws Exception {
-        mockMvc.perform(get("/api/admin/settings"))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/settings");
     }
 
     @Test
@@ -88,13 +85,15 @@ class SettingsControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
+    void shouldNotAllowAccessToUpdateSettings() throws Exception {
+        Settings settings = createSettings();
+        apiRequestUtils.patchAndExpect("/api/admin/settings", settings, status().isForbidden());
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToUpdateSettings() throws Exception {
         Settings settings = createSettings();
-        ObjectMapper objectMapper = apiRequestUtils.prepObjMapper();
-        mockMvc.perform(patch("/api/admin/settings")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(settings)))
-                .andExpect(status().isForbidden());
+        apiRequestUtils.patchAndExpect("/api/admin/settings", settings, status().isUnauthorized());
     }
 
     @Test
