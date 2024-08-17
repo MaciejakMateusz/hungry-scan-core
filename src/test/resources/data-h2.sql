@@ -171,11 +171,11 @@ VALUES (7, true, NOW(), null, false, 7);
 INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
 VALUES (8, true, NOW(), null, true, 8);
 INSERT INTO categories (translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (9, true, NOW(), null, false, 9);
+VALUES (9, false, NOW(), null, false, 9);
 
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
                         is_bestseller, is_new, is_available, price, counter, is_bar_served, category_id)
-VALUES (10, 1, 11, null, null, false, false, true, 19.99, 0, false, 1);
+VALUES (10, 1, 11, null, null, false, false, false, 19.99, 0, false, 1);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
                         is_bestseller, is_new, is_available, price, counter, is_bar_served, category_id)
 VALUES (12, 2, 13, null, null, false, false, true, 24.50, 0, false, 1);

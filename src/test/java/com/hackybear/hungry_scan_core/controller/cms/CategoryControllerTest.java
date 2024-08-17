@@ -80,12 +80,38 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"ADMIN"})
-    void shouldCountAll() throws Exception {
+    @WithMockUser(roles = {"ADMIN", "MANAGER"})
+    void shouldCount() throws Exception {
         Integer count =
                 apiRequestUtils.fetchObject(
                         "/api/cms/categories/count", Integer.class);
         assertEquals(9, count);
+    }
+
+    @Test
+    @WithMockUser(roles = {"WAITER", "COOK", "CUSTOMER_READONLY", "CUSTOMER"})
+    void shouldNotAllowAccessToCount() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/count");
+    }
+
+    @Test
+    @WithMockUser(roles = {"CUSTOMER_READONLY"})
+    void shouldGetAllAvailable() throws Exception {
+        List<Category> categories =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories/available", Category.class);
+        assertEquals(8, categories.size());
+        assertEquals(4, categories.get(0).getMenuItems().size());
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToGetAllAvailable() throws Exception {
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/available");
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToCount() throws Exception {
+        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/count");
     }
 
     @Test

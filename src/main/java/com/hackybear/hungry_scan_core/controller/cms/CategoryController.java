@@ -42,14 +42,20 @@ public class CategoryController {
 
     @GetMapping("/count")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Long> countAll() {
+    public ResponseEntity<Long> count() {
         return ResponseEntity.ok(categoryService.countAll());
     }
 
     @GetMapping("/available")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Category>> availableCategories() {
-        return ResponseEntity.ok(categoryService.findAllAvailable());
+    public ResponseEntity<?> getAvailable() {
+        List<Category> categories;
+        try {
+            categories = categoryService.findAllAvailable();
+            return ResponseEntity.ok(categories);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
+        }
     }
 
     @PostMapping("/show")

@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
-    @Query("SELECT Category from Category c WHERE c.isAvailable = true ORDER BY c.displayOrder")
+    @Query("SELECT c from Category c WHERE c.isAvailable = true ORDER BY c.displayOrder")
     List<Category> findAllAvailable();
 
     @Query("SELECT c FROM Category c WHERE :menuItem MEMBER OF c.menuItems")

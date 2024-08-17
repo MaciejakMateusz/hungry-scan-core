@@ -43,7 +43,8 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public List<Category> findAllAvailable() {
-        return categoryRepository.findAllAvailable();
+        List<Category> categories = categoryRepository.findAllAvailable();
+        return filterUnavailableMenuItems(categories);
     }
 
     @Override
@@ -69,6 +70,13 @@ public class CategoryServiceImp implements CategoryService {
         }
         categoryRepository.delete(existingCategory);
         sortingHelper.updateDisplayOrders(existingCategory.getDisplayOrder(), findAll(), categoryRepository::saveAll);
+    }
+
+    private List<Category> filterUnavailableMenuItems(List<Category> categories) {
+        for (Category category : categories) {
+            category.getMenuItems().removeIf(menuItem -> !menuItem.isAvailable());
+        }
+        return categories;
     }
 
 }
