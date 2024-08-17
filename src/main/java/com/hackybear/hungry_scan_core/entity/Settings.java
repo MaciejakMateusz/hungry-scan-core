@@ -47,4 +47,6 @@ public class Settings {
     private Short capacity;
 
     private boolean isOrderCommentAllowed;
+
+    private boolean showUnavailablePositions;
 }

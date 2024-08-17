@@ -13,8 +13,8 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
 
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
-                             employee_session_time, is_order_comment_allowed)
-VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 3, 20, false);
+                             employee_session_time, is_order_comment_allowed, show_unavailable_positions)
+VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 3, 20, false, false);
 
 INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
 VALUES (1, 'ROLE_WAITER', 1);

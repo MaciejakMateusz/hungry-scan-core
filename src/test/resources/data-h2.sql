@@ -744,8 +744,8 @@ INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_ta
 VALUES (54, 5);
 
 INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
-                      employee_session_time, is_order_comment_allowed)
-VALUES (1, 3, '07:00:00', '23:00:00', 1, 120, 3, 20, false);
+                      employee_session_time, is_order_comment_allowed, show_unavailable_positions)
+VALUES (1, 3, '07:00:00', '23:00:00', 1, 120, 3, 20, false, false);
 
 INSERT INTO jwt_tokens (token, created)
 VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZjNhYmY4LTliNmEiLCJpYXQiOjE3MTM4MTAzNTUsImV4cCI6MTcxMzg4MjM1NX0.EhIv7CDkpXcfXFHeihyju6bdUS2Te41a-m3GaxRWKHM',
