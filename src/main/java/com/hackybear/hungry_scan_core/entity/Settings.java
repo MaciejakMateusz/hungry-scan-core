@@ -46,7 +46,7 @@ public class Settings {
     @Column(nullable = false)
     private Short capacity;
 
-    private boolean isOrderCommentAllowed;
+    private boolean orderCommentAllowed = true;
 
-    private boolean showUnavailablePositions;
+    private boolean waiterCommentAllowed = true;
 }

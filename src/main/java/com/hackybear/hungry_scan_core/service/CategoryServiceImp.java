@@ -42,7 +42,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public List<Category> findAllAvailable() {
+    public List<Category> findAllAvailableAndVisible() {
         List<Category> categories = categoryRepository.findAllAvailable();
         return filterUnavailableMenuItems(categories);
     }
@@ -74,7 +74,7 @@ public class CategoryServiceImp implements CategoryService {
 
     private List<Category> filterUnavailableMenuItems(List<Category> categories) {
         for (Category category : categories) {
-            category.getMenuItems().removeIf(menuItem -> !menuItem.isAvailable());
+            category.getMenuItems().removeIf(menuItem -> !menuItem.isVisible());
         }
         return categories;
     }

@@ -12,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -30,14 +29,22 @@ public class CategoryController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Category>> getAll() {
-        return ResponseEntity.ok(categoryService.findAll());
+    public ResponseEntity<?> getAll() {
+        try {
+            return ResponseEntity.ok(categoryService.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
+        }
     }
 
     @GetMapping("/display-orders")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<List<Integer>> getDisplayOrders() {
-        return ResponseEntity.ok(categoryService.findAllDisplayOrders());
+    public ResponseEntity<?> getDisplayOrders() {
+        try {
+            return ResponseEntity.ok(categoryService.findAllDisplayOrders());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
+        }
     }
 
     @GetMapping("/count")
@@ -48,11 +55,9 @@ public class CategoryController {
 
     @GetMapping("/available")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getAvailable() {
-        List<Category> categories;
+    public ResponseEntity<?> getAvailableAndVisible() {
         try {
-            categories = categoryService.findAllAvailable();
-            return ResponseEntity.ok(categories);
+            return ResponseEntity.ok(categoryService.findAllAvailableAndVisible());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
         }

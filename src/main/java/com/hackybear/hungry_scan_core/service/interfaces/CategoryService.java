@@ -13,7 +13,7 @@ public interface CategoryService {
 
     Long countAll();
 
-    List<Category> findAllAvailable();
+    List<Category> findAllAvailableAndVisible();
 
     Category findById(Integer id) throws LocalizedException;
 

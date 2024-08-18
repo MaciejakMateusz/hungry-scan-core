@@ -73,6 +73,8 @@ public class MenuItem {
 
     private boolean isAvailable = true;
 
+    private boolean isVisible = true;
+
     private boolean isNew;
 
     private boolean isBestseller;
