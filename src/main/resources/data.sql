@@ -14,7 +14,7 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
                              employee_session_time, order_comment_allowed, waiter_comment_allowed)
-VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 3, 20, true, true);
+VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true);
 
 INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
 VALUES (1, 'ROLE_WAITER', 1);
@@ -625,8 +625,6 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en)
 VALUES (141, 'Papryka', 'Bell pepper');
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
 VALUES (142, 'Ser parmezan', 'Parmesan cheese');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (143, 'Ser parmezan', 'Parmesan cheese');
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
 VALUES (144, 'Oregano', 'Oregano');
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)

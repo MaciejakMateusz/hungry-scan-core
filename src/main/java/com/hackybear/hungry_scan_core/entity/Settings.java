@@ -36,11 +36,11 @@ public class Settings {
 
     @NotNull
     @Column(nullable = false)
-    private Long employeeSessionTime;
+    private Long employeeSessionTime = 20L;
 
     @NotNull
     @Column(nullable = false)
-    private Long customerSessionTime;
+    private Long customerSessionTime = 20L;
 
     @NotNull
     @Column(nullable = false)

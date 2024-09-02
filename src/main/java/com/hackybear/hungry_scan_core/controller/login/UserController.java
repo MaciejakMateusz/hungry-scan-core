@@ -111,7 +111,7 @@ public class UserController {
         Settings settings = settingsService.getSettings();
         String randomUUID = UUID.randomUUID().toString();
         String accessToken = jwtService.generateToken(randomUUID.substring(1, 13),
-                settings.getEmployeeSessionTime());
+                settings.getCustomerSessionTime());
         persistUser(new JwtToken(accessToken), randomUUID);
 
         String redirectUrl = UriComponentsBuilder.fromUriString(getCustomerAppUrl())
