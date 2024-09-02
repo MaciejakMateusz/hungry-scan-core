@@ -25,8 +25,8 @@ public class ImageController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> uploadImage(@RequestBody MultipartFile file) {
         try {
-            boolean isUploaded = fileProcessingService.uploadFile(file);
-            return ResponseEntity.ok().body(isUploaded);
+            fileProcessingService.uploadFile(file);
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }

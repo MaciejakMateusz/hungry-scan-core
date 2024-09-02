@@ -12,7 +12,7 @@ public interface FileProcessingService {
 
     List<File> fileList();
 
-    boolean uploadFile(MultipartFile file) throws IOException;
+    void uploadFile(MultipartFile file) throws IOException;
 
     Resource downloadFile(String fileName) throws LocalizedException;
 

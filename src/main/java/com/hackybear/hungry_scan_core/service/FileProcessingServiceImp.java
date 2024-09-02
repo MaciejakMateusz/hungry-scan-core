@@ -43,18 +43,15 @@ public class FileProcessingServiceImp implements FileProcessingService {
     }
 
     @Override
-    public boolean uploadFile(MultipartFile file) throws IOException {
+    public void uploadFile(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
 
         if (fileName == null || fileName.isEmpty()) {
-            return false;
+            return;
         }
         File destFile = new File(imagePath, fileName);
-        boolean isUploaded = destFile.getParentFile().mkdirs();
-        if (isUploaded) {
-            file.transferTo(destFile);
-        }
-        return isUploaded;
+        destFile.getParentFile().mkdirs();
+        file.transferTo(destFile);
     }
 
     @Override
