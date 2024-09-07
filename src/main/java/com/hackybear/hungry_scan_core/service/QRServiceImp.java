@@ -45,6 +45,8 @@ public class QRServiceImp implements QRService {
 
     @Override
     public void generate() throws Exception {
+        log.info("Generating QR code...");
+
         String format = "png";
 
         StringBuilder urlBuilder = getEndpointAddress();

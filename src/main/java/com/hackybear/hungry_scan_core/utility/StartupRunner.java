@@ -20,9 +20,8 @@ public class StartupRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         log.info("Executing StartupRunner...");
         if (!qrService.generalQrExists()) {
-            log.info("Generating QR code...");
             qrService.generate();
-            log.info("QR code created successfully.");
         }
+        log.info("StartupRunner completed.");
     }
 }
