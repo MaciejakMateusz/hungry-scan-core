@@ -12,6 +12,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +24,7 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 @Table(name = "zones")
-@EntityListeners(GeneralListener.class)
+@EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
 public class Zone {
 
@@ -46,5 +49,11 @@ public class Zone {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @CreatedBy
+    private String createdBy;
 
 }

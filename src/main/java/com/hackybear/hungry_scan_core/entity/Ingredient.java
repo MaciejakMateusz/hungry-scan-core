@@ -12,6 +12,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,7 +26,7 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 @Table(name = "ingredients")
-@EntityListeners(GeneralListener.class)
+@EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
 public class Ingredient {
 
@@ -50,6 +53,12 @@ public class Ingredient {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @CreatedBy
+    private String createdBy;
 
     public BigDecimal getPrice() {
         return this.price.setScale(2, RoundingMode.HALF_UP);

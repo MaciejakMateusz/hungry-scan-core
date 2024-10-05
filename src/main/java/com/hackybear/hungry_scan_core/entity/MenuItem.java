@@ -13,6 +13,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,7 +27,7 @@ import java.util.Set;
 @Setter
 @ToString
 @EqualsAndHashCode
-@EntityListeners(GeneralListener.class)
+@EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Table(name = "menu_items")
 @Entity
 public class MenuItem {
@@ -86,6 +89,12 @@ public class MenuItem {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @CreatedBy
+    private String createdBy;
 
     public void addLabel(Label label) {
         this.labels.add(label);

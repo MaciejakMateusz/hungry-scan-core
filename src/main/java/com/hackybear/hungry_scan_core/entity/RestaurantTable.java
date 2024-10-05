@@ -9,6 +9,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +23,7 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode
 @Table(name = "restaurant_tables")
-@EntityListeners(GeneralListener.class)
+@EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
 public class RestaurantTable {
 
@@ -63,6 +66,12 @@ public class RestaurantTable {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @CreatedBy
+    private String createdBy;
 
     public void addCustomer(User user) {
         this.users.add(user);

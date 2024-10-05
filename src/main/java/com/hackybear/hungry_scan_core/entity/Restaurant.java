@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @EqualsAndHashCode
 @Table(name = "restaurants")
-@EntityListeners(GeneralListener.class)
+@EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
 public class Restaurant {
 
@@ -34,6 +37,12 @@ public class Restaurant {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @CreatedBy
+    private String createdBy;
 
     @Override
     public String toString() {
