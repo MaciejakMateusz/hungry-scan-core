@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,35 +35,12 @@ public class PasswordValidatorTest {
 
     @Test
     public void shouldNotApprove() {
-
-        String password1 = "Example123";
-        String password2 = "example123!";
-        String password3 = "EXAMPLE123!";
-        String password4 = "example";
-        String password5 = "123123123";
-        String password6 = "EXAMPLE";
-        String password7 = "!@#$$#!@^$";
-        String password8 = "example123";
-        String password9 = "!!!!!!!!!";
-
-        Matcher matcher = PASSWORD_REGEX.matcher(password1);
-        assertFalse(matcher.matches());
-        matcher = PASSWORD_REGEX.matcher(password2);
-        assertFalse(matcher.matches());
-        matcher = PASSWORD_REGEX.matcher(password3);
-        assertFalse(matcher.matches());
-        matcher = PASSWORD_REGEX.matcher(password4);
-        assertFalse(matcher.matches());
-        matcher = PASSWORD_REGEX.matcher(password5);
-        assertFalse(matcher.matches());
-        matcher = PASSWORD_REGEX.matcher(password6);
-        assertFalse(matcher.matches());
-        matcher = PASSWORD_REGEX.matcher(password7);
-        assertFalse(matcher.matches());
-        matcher = PASSWORD_REGEX.matcher(password8);
-        assertFalse(matcher.matches());
-        matcher = PASSWORD_REGEX.matcher(password9);
-        assertFalse(matcher.matches());
+        List<String> wrongPasswords = Arrays.asList("Example123", "example123!", "EXAMPLE123!", "example", "123123123",
+                "EXAMPLE", "!@#$$#!@^$", "example123", "!!!!!!!!!");
+        for (String password : wrongPasswords) {
+            Matcher matcher = PASSWORD_REGEX.matcher(password);
+            assertFalse(matcher.matches());
+        }
     }
 
     @Test

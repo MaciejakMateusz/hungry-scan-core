@@ -67,6 +67,19 @@ public class User {
     @NotEmpty
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "users_profiles", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "profile_id"))
+    private Set<Profile> profiles = new HashSet<>();
+
+    public void addUserProfile(Profile profile) {
+        this.profiles.add(profile);
+    }
+
+    public void removeUserProfile(Profile profile) {
+        this.profiles.remove(profile);
+    }
+
     @PrePersist
     private void prePersist() {
         this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());

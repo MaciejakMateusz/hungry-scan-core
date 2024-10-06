@@ -819,6 +819,20 @@ VALUES (7, 6);
 INSERT INTO user_role (user_id, role_id)
 VALUES (8, 5);
 
+INSERT INTO profiles (name, pin, is_active, username)
+VALUES ('Profile 1', '$2y$10$LFiMNY13zaGrJam/A0t83.lLf7YChbFoBSBLuSa/O4TEwUjpXSytO', true, 'admin');
+INSERT INTO profiles (name, pin, is_active, username)
+VALUES ('Profile 2', '$2y$10$LFiMNY13zaGrJam/A0t83.lLf7YChbFoBSBLuSa/O4TEwUjpXSytO', false, 'admin');
+INSERT INTO profiles (name, pin, is_active, username)
+VALUES ('Profile 3', '$2y$10$LFiMNY13zaGrJam/A0t83.lLf7YChbFoBSBLuSa/O4TEwUjpXSytO', false, 'admin');
+
+INSERT INTO users_profiles (user_id, profile_id)
+VALUES (2, 1);
+INSERT INTO users_profiles (user_id, profile_id)
+VALUES (2, 2);
+INSERT INTO users_profiles (user_id, profile_id)
+VALUES (2, 3);
+
 INSERT INTO themes(name, active)
 VALUES ('green', true),
        ('pink', false),

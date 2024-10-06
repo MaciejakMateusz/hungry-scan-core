@@ -33,7 +33,14 @@ INSERT IGNORE INTO users (id, created, email, enabled, password, updated, userna
 VALUES (1, NOW(), 'admin@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin',null, null, '', '', '');
 
-INSERT IGNORE INTO user_role(user_id, role_id) VALUES (1, 2);
+INSERT IGNORE INTO user_role (user_id, role_id)
+VALUES (1, 2);
+
+INSERT IGNORE INTO profiles (id, created, modified_by, name, pin, is_active)
+VALUES (1, NOW(), 'auto_inserted', 'profile1', '$2y$10$LFiMNY13zaGrJam/A0t83.lLf7YChbFoBSBLuSa/O4TEwUjpXSytO', true);
+
+INSERT IGNORE INTO users_profiles (user_id, profile_id)
+VALUES (1, 1);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (7, 'Gluten', 'Gluten');
