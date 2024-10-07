@@ -13,6 +13,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 @Entity
 public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
