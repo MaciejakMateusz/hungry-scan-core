@@ -120,6 +120,7 @@ public class ProfileServiceImpTest {
     }
 
     @Test
+    @WithMockUser(username = "admin")
     @Transactional
     @Rollback
     public void shouldDelete() throws LocalizedException {

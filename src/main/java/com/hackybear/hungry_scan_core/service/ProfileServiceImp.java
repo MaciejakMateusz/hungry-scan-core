@@ -8,6 +8,7 @@ import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.ProfileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -34,17 +35,10 @@ public class ProfileServiceImp implements ProfileService {
 
     @Override
     public void save(Profile profile) throws LocalizedException {
-        Object principal = getPrincipal();
-        String username;
-        if (principal instanceof User user) {
-            username = user.getUsername();
-            profile.setUsername(username);
-        } else {
-            throw new LocalizedException("User details not found");
-        }
-        com.hackybear.hungry_scan_core.entity.User existingUser = userRepository.findUserByUsername(username);
-        existingUser.addUserProfile(profile);
-        userRepository.save(existingUser);
+        com.hackybear.hungry_scan_core.entity.User currentUser = getCurrentUser();
+        profile.setUsername(currentUser.getUsername());
+        currentUser.addUserProfile(profile);
+        userRepository.save(currentUser);
     }
 
     @Override
@@ -72,7 +66,10 @@ public class ProfileServiceImp implements ProfileService {
 
     @Override
     public void delete(Integer id) throws LocalizedException {
+        com.hackybear.hungry_scan_core.entity.User currentUser = getCurrentUser();
         Profile profile = findById(id);
+        currentUser.removeUserProfile(profile);
+        userRepository.save(currentUser);
         profileRepository.delete(profile);
     }
 
@@ -94,11 +91,24 @@ public class ProfileServiceImp implements ProfileService {
         profileRepository.save(destinationProfile);
     }
 
+    private com.hackybear.hungry_scan_core.entity.User getCurrentUser() throws LocalizedException {
+        Object principal = getPrincipal();
+        String username;
+        if (principal instanceof User user) {
+            username = user.getUsername();
+        } else {
+            throw new LocalizedException("User details not found");
+        }
+        return userRepository.findUserByUsername(username);
+    }
+
     private Object getPrincipal() throws LocalizedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
         if (Objects.isNull(authentication)) {
             throw new LocalizedException("Unauthorized request, please log in.");
         }
         return authentication.getPrincipal();
     }
+
 }
