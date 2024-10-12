@@ -1,16 +1,12 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.entity.Profile;
-import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Getter
 public class CustomUserDetails extends User implements UserDetails {
@@ -20,17 +16,11 @@ public class CustomUserDetails extends User implements UserDetails {
     private final String activeProfile;
     Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(User byUsername) {
+    public CustomUserDetails(User byUsername, Collection<? extends GrantedAuthority> authorities) {
         this.username = byUsername.getUsername();
         this.password = byUsername.getPassword();
         this.activeProfile = getActiveProfile(byUsername);
-        List<GrantedAuthority> auths = new ArrayList<>();
-
-        for (Role role : byUsername.getRoles()) {
-
-            auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
-        }
-        this.authorities = auths;
+        this.authorities = authorities;
     }
 
     @Override

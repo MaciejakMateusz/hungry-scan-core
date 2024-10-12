@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,10 +25,12 @@ import java.net.UnknownHostException;
 import java.nio.file.AccessDeniedException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("http://localhost:3002")
 public class UserController {
 
     private final AuthenticationManager authenticationManager;
@@ -57,33 +60,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public JwtResponseDTO login(@RequestBody AuthRequestDTO authRequestDTO) {
-        Settings settings = settingsService.getSettings();
+    public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
         if (authentication.isAuthenticated()) {
-            //todo zamienić cs jwt na ss jwt cookie handling
-
-            //            String jwt = jwtService.generateToken(authRequestDTO.getUsername(),
-            //                    settings.getEmployeeSessionTime());
-            //            Long maxAgeInSeconds = settings.getEmployeeSessionTime() * 3600;
-            //
-            //            String cookieValue = String.format("jwt=%s; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=%d",
-            //                    jwt, maxAgeInSeconds);
-            //            response.setHeader("Set-Cookie", cookieValue);
-            return JwtResponseDTO
-                    .builder()
-                    .accessToken(jwtService.generateToken(authRequestDTO.getUsername(),
-                            settings.getEmployeeSessionTime())).build();
+            String jwtCookie = prepareJwtCookie(authRequestDTO);
+            response.addHeader("Set-Cookie", jwtCookie);
+            return ResponseEntity.ok().body(Map.of("message", "Login successful"));
         } else {
             throw new UsernameNotFoundException("Not authorized - invalid user request");
         }
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletResponse response) {
-        String cookieValue = "jwt=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0";
-        response.setHeader("Set-Cookie", cookieValue);
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        String invalidatedJwtCookie = invalidateJwtCookie();
+        response.setHeader("Set-Cookie", invalidatedJwtCookie);
+        return ResponseEntity.ok().body(Map.of("message", "Logout successful"));
     }
 
     @GetMapping("/scan/{token}")
@@ -121,6 +114,34 @@ public class UserController {
 
         response.sendRedirect(redirectUrl);
         return ResponseEntity.status(HttpServletResponse.SC_FOUND).build();
+    }
+
+    private String prepareJwtCookie(AuthRequestDTO authRequestDTO) {
+        Settings settings = settingsService.getSettings();
+        String jwt = jwtService.generateToken(authRequestDTO.getUsername(),
+                settings.getEmployeeSessionTime());
+        long maxAgeInSeconds = settings.getEmployeeSessionTime() * 3600;
+
+        ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(maxAgeInSeconds)
+                .sameSite("Strict")
+                .build();
+
+        return cookie.toString();
+    }
+
+    private String invalidateJwtCookie() {
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+        return cookie.toString();
     }
 
     private void persistTableAndUser(JwtToken jwtToken, String uuid, RestaurantTable restaurantTable) {
