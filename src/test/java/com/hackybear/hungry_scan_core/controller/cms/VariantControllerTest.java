@@ -229,10 +229,10 @@ class VariantControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccess() throws Exception {
-        apiRequestUtils.postAndExpectUnauthorized("/api/cms/variants/show", 4);
-        apiRequestUtils.postAndExpectUnauthorized("/api/cms/variants/item", 14);
+        apiRequestUtils.postAndExpectForbidden("/api/cms/variants/show", 4);
+        apiRequestUtils.postAndExpectForbidden("/api/cms/variants/item", 14);
         Variant variant = createVariant(12, "Not hehe", Money.of(5.50));
-        apiRequestUtils.postAndExpectUnauthorized("/api/cms/variants/add", variant);
+        apiRequestUtils.postAndExpectForbidden("/api/cms/variants/add", variant);
     }
 
     @Test

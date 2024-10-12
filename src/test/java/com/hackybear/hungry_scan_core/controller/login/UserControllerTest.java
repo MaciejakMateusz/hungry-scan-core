@@ -18,6 +18,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
@@ -48,18 +50,15 @@ class UserControllerTest {
     @Rollback
     void shouldAuthenticateAndLoginUser() throws Exception {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("mati", "Lubieplacki123!");
-
-        JwtResponseDTO jwtResponseDTO =
-                apiRequestUtils.postAndFetchObject("/api/login", authRequestDTO, JwtResponseDTO.class);
-
-        assertNotNull(jwtResponseDTO);
-        assertEquals(129, jwtResponseDTO.getAccessToken().length());
+        Map<String, Object> response =
+                apiRequestUtils.postAndFetchObject("/api/login", authRequestDTO, Map.class);
+        assertEquals("Login successful", response.get("message"));
     }
 
     @Test
     void shouldLoginAndReturnUnauthorized() throws Exception {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("iDoNotExist", "DoesNotMatter123!");
-        apiRequestUtils.postAndExpectUnauthorized("/api/login", authRequestDTO);
+        apiRequestUtils.postAndExpectForbidden("/api/login", authRequestDTO);
     }
 
     @Test

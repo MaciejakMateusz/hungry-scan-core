@@ -55,7 +55,7 @@ class ThemeControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToThemes() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/themes");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/themes");
     }
 
     @Test
@@ -67,7 +67,7 @@ class ThemeControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToShowMenuItem() throws Exception {
-        apiRequestUtils.postAndExpect("/api/cms/themes/show", 3, status().isUnauthorized());
+        apiRequestUtils.postAndExpectForbidden("/api/cms/themes/show", 3);
     }
 
     @Test

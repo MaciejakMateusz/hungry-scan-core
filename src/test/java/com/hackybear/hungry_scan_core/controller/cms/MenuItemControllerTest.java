@@ -15,6 +15,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -72,8 +73,9 @@ class MenuItemControllerTest {
     }
 
     @Test
+    @WithAnonymousUser
     void shouldNotAllowUnauthorizedAccessToMenuItems() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/items");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/items");
     }
 
     @Test
@@ -85,7 +87,7 @@ class MenuItemControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToShowMenuItem() throws Exception {
-        apiRequestUtils.postAndExpect("/api/cms/items/show", 4, status().isUnauthorized());
+        apiRequestUtils.postAndExpect("/api/cms/items/show", 4, status().isForbidden());
     }
 
     @Test

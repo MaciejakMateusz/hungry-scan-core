@@ -32,7 +32,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldNotAllowUnauthorizedForRestaurantModule() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/auth/restaurant");
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/restaurant");
     }
 
     @Test

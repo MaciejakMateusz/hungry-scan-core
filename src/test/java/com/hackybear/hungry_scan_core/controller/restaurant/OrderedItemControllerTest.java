@@ -92,7 +92,7 @@ public class OrderedItemControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedToFindAll() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/restaurant/ordered-items");
+        apiRequestUtils.fetchAndExpectForbidden("/api/restaurant/ordered-items");
     }
 
     @Test
@@ -110,7 +110,7 @@ public class OrderedItemControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedToFindAllDrinks() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/restaurant/ordered-items/drinks");
+        apiRequestUtils.fetchAndExpectForbidden("/api/restaurant/ordered-items/drinks");
     }
 
     @Test
@@ -137,7 +137,7 @@ public class OrderedItemControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedToShow() throws Exception {
-        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/ordered-items/show", 4);
+        apiRequestUtils.postAndExpectForbidden("/api/restaurant/ordered-items/show", 4);
     }
 
     @Test

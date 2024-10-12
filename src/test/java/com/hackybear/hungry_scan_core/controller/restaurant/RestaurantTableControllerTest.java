@@ -62,7 +62,7 @@ public class RestaurantTableControllerTest {
     @Test
     void shouldNotAllowUnauthorizedAccessToTables() throws Exception {
         mockMvc.perform(get("/api/restaurant/tables"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class RestaurantTableControllerTest {
         mockMvc.perform(post("/api/restaurant/tables/show")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class RestaurantTableControllerTest {
         mockMvc.perform(patch("/api/restaurant/tables/toggle")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(id)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
 //    @Test
@@ -236,9 +236,9 @@ public class RestaurantTableControllerTest {
 
     @Test
     public void shouldNotAllowAccessWithoutAuthorization() throws Exception {
-        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/tables/call-waiter", 6L);
+        apiRequestUtils.patchAndExpectForbidden("/api/restaurant/tables/call-waiter", 6L);
         apiRequestUtils.patchAndExpect(
-                "/api/restaurant/tables/request-bill", 6L, PaymentMethod.CARD, status().isUnauthorized());
-        apiRequestUtils.patchAndExpectUnauthorized("/api/restaurant/tables/resolve-call", 6L);
+                "/api/restaurant/tables/request-bill", 6L, PaymentMethod.CARD, status().isForbidden());
+        apiRequestUtils.patchAndExpectForbidden("/api/restaurant/tables/resolve-call", 6L);
     }
 }

@@ -65,7 +65,7 @@ class SettingsControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToSettings() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/settings");
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/settings");
     }
 
     @Test
@@ -93,7 +93,7 @@ class SettingsControllerTest {
     @Test
     void shouldNotAllowUnauthorizedAccessToUpdateSettings() throws Exception {
         Settings settings = createSettings();
-        apiRequestUtils.patchAndExpect("/api/admin/settings", settings, status().isUnauthorized());
+        apiRequestUtils.patchAndExpectForbidden("/api/admin/settings", settings);
     }
 
     @Test

@@ -66,7 +66,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToUsers() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users");
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users");
     }
 
     @Test
@@ -88,7 +88,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToWaiters() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/waiters");
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/waiters");
     }
 
     @Test
@@ -110,7 +110,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToCooks() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/cooks");
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/cooks");
     }
 
     @Test
@@ -131,7 +131,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToManagers() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/managers");
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/managers");
     }
 
     @Test
@@ -152,7 +152,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToAdmins() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/admins");
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/admins");
     }
 
     @Test
@@ -170,7 +170,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
-        apiRequestUtils.postAndExpectUnauthorized("/api/admin/users/show", 4);
+        apiRequestUtils.postAndExpectForbidden("/api/admin/users/show", 4);
     }
 
     @Test
@@ -197,7 +197,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToNewUserObject() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/admin/users/add");
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/add");
     }
 
     @Test
@@ -222,7 +222,7 @@ class AdminManagementControllerTest {
     @Test
     void shouldNotAllowUnauthorizedAccessToAddUser() throws Exception {
         User user = createUser();
-        apiRequestUtils.postAndExpectUnauthorized("/api/admin/users/add", user);
+        apiRequestUtils.postAndExpectForbidden("/api/admin/users/add", user);
     }
 
     @Test
@@ -317,7 +317,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToUpdateUser() throws Exception {
-        apiRequestUtils.patchAndExpect("/api/admin/users/update", new User(), status().isUnauthorized());
+        apiRequestUtils.patchAndExpectForbidden("/api/admin/users/update", new User());
     }
 
     @Test
@@ -356,7 +356,7 @@ class AdminManagementControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToRemoveUser() throws Exception {
-        apiRequestUtils.deleteAndExpect("/api/admin/users/delete", new User(), status().isUnauthorized());
+        apiRequestUtils.deleteAndExpect("/api/admin/users/delete", new User(), status().isForbidden());
     }
 
     @Test

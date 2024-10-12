@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @SpringBootTest
@@ -53,8 +52,8 @@ class HistoryBookingControllerTest {
 
     @Test
     public void shouldNotAllowUnauthorizedAccessToHistoryBookingById() throws Exception {
-        apiRequestUtils.postAndExpect(
-                "/api/restaurant/history-bookings/show", 51, status().isUnauthorized());
+        apiRequestUtils.postAndExpectForbidden(
+                "/api/restaurant/history-bookings/show", 51);
     }
 
     @Test
@@ -91,8 +90,8 @@ class HistoryBookingControllerTest {
     @Test
     public void shouldNotAllowAccessWithoutAuthorization() throws Exception {
         Map<String, Object> requestParams = getPageableAndDateRange();
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/restaurant/bookings/count-all");
-        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/bookings/count-dates", requestParams);
+        apiRequestUtils.fetchAndExpectForbidden("/api/restaurant/bookings/count-all");
+        apiRequestUtils.postAndExpectForbidden("/api/restaurant/bookings/count-dates", requestParams);
     }
 
     private Map<String, Object> getPageableAndDateRange() {

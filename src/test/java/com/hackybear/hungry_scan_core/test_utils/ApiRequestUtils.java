@@ -564,6 +564,18 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Performs a POST request to the specified URL with the provided object and expects 403 forbidden response.
+     *
+     * @param url The URL to which the POST request will be sent.
+     * @param t   The object to be sent as part of the request.
+     * @param <T> The type of the object.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> void postAndExpectForbidden(String url, T t) throws Exception {
+        postAndExpect(url, t, status().isForbidden());
+    }
+
+    /**
      * Performs a PATCH request to the specified URL with the provided object and expects unauthorized response.
      *
      * @param url The URL to which the POST request will be sent.
@@ -573,6 +585,18 @@ public class ApiRequestUtils {
      */
     public <T> void patchAndExpectUnauthorized(String url, T t) throws Exception {
         patchAndExpect(url, t, status().isUnauthorized());
+    }
+
+    /**
+     * Performs a PATCH request to the specified URL with the provided object and expects 403 forbidden response.
+     *
+     * @param url The URL to which the POST request will be sent.
+     * @param t   The object to be sent as part of the request.
+     * @param <T> The type of the object.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> void patchAndExpectForbidden(String url, T t) throws Exception {
+        patchAndExpect(url, t, status().isForbidden());
     }
 
     /**

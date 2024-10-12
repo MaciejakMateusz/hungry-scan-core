@@ -172,12 +172,12 @@ class BookingControllerTest {
                 (short) 2);
         Map<String, Object> requestParams = getPageableAndDateRanges();
 
-        apiRequestUtils.postAndExpect("/api/restaurant/bookings/show", 1, status().isUnauthorized());
-        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/bookings", booking);
-        apiRequestUtils.deleteAndExpect("/api/restaurant/bookings/delete", 3L, status().isUnauthorized());
-        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/bookings/date", requestParams);
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/restaurant/bookings/count-all");
-        apiRequestUtils.postAndExpectUnauthorized("/api/restaurant/bookings/count-dates", requestParams);
+        apiRequestUtils.postAndExpectForbidden("/api/restaurant/bookings/show", 1);
+        apiRequestUtils.postAndExpectForbidden("/api/restaurant/bookings", booking);
+        apiRequestUtils.deleteAndExpect("/api/restaurant/bookings/delete", 3L, status().isForbidden());
+        apiRequestUtils.postAndExpectForbidden("/api/restaurant/bookings/date", requestParams);
+        apiRequestUtils.fetchAndExpectForbidden("/api/restaurant/bookings/count-all");
+        apiRequestUtils.postAndExpectForbidden("/api/restaurant/bookings/count-dates", requestParams);
     }
 
     private Booking createBooking(LocalDate date,

@@ -53,7 +53,7 @@ class AllergenControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToAllergens() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/allergens");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/allergens");
     }
 
     @Test
@@ -66,7 +66,7 @@ class AllergenControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToShowAllergen() throws Exception {
-        apiRequestUtils.postAndExpectUnauthorized("/api/cms/allergens/show", 7);
+        apiRequestUtils.postAndExpectForbidden("/api/cms/allergens/show", 7);
     }
 
     @Test

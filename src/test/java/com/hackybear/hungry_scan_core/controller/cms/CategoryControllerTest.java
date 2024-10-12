@@ -106,19 +106,19 @@ class CategoryControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToGetAllAvailable() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/available");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/available");
     }
 
     @Test
     void shouldNotAllowUnauthorizedAccessToCount() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/count");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/count");
     }
 
     @Test
     void shouldNotAllowUnauthorizedAccessToCategories() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories");
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/display-orders");
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/count");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/display-orders");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/count");
     }
 
     @Test
@@ -131,7 +131,7 @@ class CategoryControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
-        apiRequestUtils.postAndExpect("/api/cms/categories/show", 4, status().isUnauthorized());
+        apiRequestUtils.postAndExpectForbidden("/api/cms/categories/show", 4);
     }
 
     @Test
@@ -158,7 +158,7 @@ class CategoryControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToCategoryObject() throws Exception {
-        apiRequestUtils.fetchAndExpectUnauthorized("/api/cms/categories/add");
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/add");
     }
 
     @Test
@@ -188,7 +188,7 @@ class CategoryControllerTest {
     @Test
     void shouldNotAllowUnauthorizedAccessToAddCategory() throws Exception {
         Category category = createCategory();
-        apiRequestUtils.postAndExpect("/api/cms/categories/add", category, status().isUnauthorized());
+        apiRequestUtils.postAndExpectForbidden("/api/cms/categories/add", category);
     }
 
     @Test
@@ -227,7 +227,7 @@ class CategoryControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToUpdateCategory() throws Exception {
-        apiRequestUtils.postAndExpect("/api/cms/categories/add", new Category(), status().isUnauthorized());
+        apiRequestUtils.postAndExpectForbidden("/api/cms/categories/add", new Category());
     }
 
     @Test
@@ -554,7 +554,7 @@ class CategoryControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToRemoveCategory() throws Exception {
-        apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isUnauthorized());
+        apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isForbidden());
     }
 
     private Category createCategory() {

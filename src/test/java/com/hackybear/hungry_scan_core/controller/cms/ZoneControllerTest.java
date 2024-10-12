@@ -67,7 +67,7 @@ class ZoneControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToZones() throws Exception {
-        mockMvc.perform(get("/api/cms/zones")).andExpect(status().isUnauthorized());
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/zones");
     }
 
     @Test

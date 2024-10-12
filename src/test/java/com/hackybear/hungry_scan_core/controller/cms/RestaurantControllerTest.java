@@ -61,7 +61,7 @@ public class RestaurantControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToRestaurants() throws Exception {
-        mockMvc.perform(get("/api/cms/restaurants")).andExpect(status().isUnauthorized());
+        apiRequestUtils.fetchAndExpectForbidden("/api/cms/restaurants");
     }
 
     @Test
@@ -74,7 +74,7 @@ public class RestaurantControllerTest {
 
     @Test
     void shouldNotAllowUnauthorizedAccessToShowRestaurant() throws Exception {
-        apiRequestUtils.postAndExpect("/api/cms/restaurants/show", 2, status().isUnauthorized());
+        apiRequestUtils.postAndExpectForbidden("/api/cms/restaurants/show", 2);
     }
 
     @Test
