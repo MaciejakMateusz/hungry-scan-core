@@ -371,6 +371,7 @@ class AdminManagementControllerTest {
 
     private User createUser() {
         User user = new User();
+        user.setTenantId(2L);
         user.setEmail("example@example.com");
         user.setUsername("exampleUser");
         user.setPassword("Example123!");

@@ -757,45 +757,53 @@ INSERT INTO jwt_tokens (token, created)
 VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwYzllNjgzLTg1NzYiLCJpYXQiOjE3MTM4ODA5MjMsImV4cCI6MTcxMzk1MjkyM30.M28dOa0W5FApG8p2sgfUhLHylHO4hM5bAgOOgF2k5oU',
         NOW());
 
-INSERT INTO users (created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number,
+INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+                   phone_number,
                    surname)
-VALUES ('2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
+VALUES (1, '2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
         '$2a$10$z/0edEimosa3QjYYxjiHuO8bNZHfI3jxDVwqDNd5bc2vCr5TERDz6', '2024-02-02 20:54:41.531670', 'mati', null,
         null,
         'Mati', '+48 123 123 123', 'Memek');
-INSERT INTO users (created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number,
+INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+                   phone_number,
                    surname)
-VALUES ('2024-01-20 19:09:00.000000', 'admin@example.com', 1,
+VALUES (2, '2024-01-20 19:09:00.000000', 'admin@example.com', 1,
         '$2a$04$OI8NalP4M4rxpRFgVR3eO.8C/6hmP.AdYadtTPd3BLHm3zx3wLLWm', '2024-02-04 07:50:29.047589', 'admin',
         null, null, '', '', '');
-INSERT INTO users (created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number,
+INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+                   phone_number,
                    surname)
-VALUES ('2024-01-24 19:06:36.680304', 'netka@test.com', 1,
+VALUES (3, '2024-01-24 19:06:36.680304', 'netka@test.com', 1,
         '$2a$10$ViUyMtRUmZgeZWRBME67g.Wp3K9p8UyJPfQd2GB9uXbQnBiDe4FJ.', null, 'neta', null, null, null, null, null);
-INSERT INTO users (created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number,
+INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+                   phone_number,
                    surname)
-VALUES ('2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1,
+VALUES (4, '2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1,
         '$2a$10$.HWarZkysOgBF0/tOXmmtONdRkZHGZCsRFs27Q7FcNrDc4bSzE0fW', '2024-02-03 10:33:07.307903', 'kucharz', null,
         null,
         'ada', '', 'asdqwe');
-INSERT INTO users (created, email, enabled, password, updated, username, email_token, jwt_token_id, name, phone_number,
+INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+                   phone_number,
                    surname)
-VALUES ('2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
+VALUES (5, '2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
         '$2a$10$tykyevzP4v1WV/FyuYWNOO6wspbmAHnzI.deEAZQU6SA8NSxod3Vy', null, 'owner', null, null, 'Właściciel', '',
         'Biznesmen');
-INSERT INTO users (created, email, email_token, enabled, name, password, phone_number, surname, updated, username,
+INSERT INTO users (tenant_id, created, email, email_token, enabled, name, password, phone_number, surname, updated,
+                   username,
                    jwt_token_id)
-VALUES ('2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', null, 1, null,
+VALUES (6, '2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', null, 1, null,
         '$2a$10$fb4q1jBqnMLDkUBi2YXQ4eHZ0M17bP5gxzwU84UwCkEUbyekGRDlC',
         null, null, null, 'ff3abf8-9b6a', 1);
-INSERT INTO users (created, email, email_token, enabled, name, password, phone_number, surname, updated, username,
+INSERT INTO users (tenant_id, created, email, email_token, enabled, name, password, phone_number, surname, updated,
+                   username,
                    jwt_token_id)
-VALUES ('2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', null, 1, null,
+VALUES (7, '2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', null, 1, null,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.',
         null, null, null, '2c73bfc-16fc', 2);
-INSERT INTO users (created, email, email_token, enabled, name, password, phone_number, surname, updated, username,
+INSERT INTO users (tenant_id, created, email, email_token, enabled, name, password, phone_number, surname, updated,
+                   username,
                    jwt_token_id)
-VALUES (NOW(), '0c9e683-8576@temp.it', null, 1, null, '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW',
+VALUES (8, NOW(), '0c9e683-8576@temp.it', null, 1, null, '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW',
         null, null, null, '0c9e683-8576', 3);
 
 INSERT INTO user_role (user_id, role_id)

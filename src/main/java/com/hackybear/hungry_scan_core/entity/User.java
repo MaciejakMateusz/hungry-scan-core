@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.annotation.Username;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +27,11 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+
+    @Column(nullable = false)
+    @NotNull
+    private Long tenantId;
 
     @Column(nullable = false, unique = true, length = 60)
     @NotBlank

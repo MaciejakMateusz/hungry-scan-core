@@ -17,11 +17,11 @@ public interface UserService {
 
     Page<User> findAll(Pageable pageable);
 
-    User findById(Integer id) throws LocalizedException;
+    User findById(Long id) throws LocalizedException;
 
     void save(User user);
 
-    void delete(Integer id) throws LocalizedException;
+    void delete(Long id) throws LocalizedException;
 
     boolean existsByEmail(String email);
 

@@ -1,9 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.login;
 
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
-import com.hackybear.hungry_scan_core.dto.JwtResponseDTO;
-import com.hackybear.hungry_scan_core.entity.RestaurantTable;
-import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
 import com.hackybear.hungry_scan_core.test_utils.ApiJwtRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -20,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @SpringBootTest
@@ -34,9 +31,6 @@ class UserControllerTest {
 
     @Autowired
     private ApiJwtRequestUtils apiRequestUtils;
-
-    @Autowired
-    private RestaurantTableService restaurantTableService;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -59,97 +53,6 @@ class UserControllerTest {
     void shouldLoginAndReturnUnauthorized() throws Exception {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("iDoNotExist", "DoesNotMatter123!");
         apiRequestUtils.postAndExpectForbidden("/api/login", authRequestDTO);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void shouldAuthenticateForCollaborativeOrdering() throws Exception {
-        shouldAuthenticateQrScanForTable1FirstCustomer();
-        shouldAuthenticateQrScanForTable1SecondCustomer();
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void shouldAuthenticateQrScanForTable6AndCallWaiter() throws Exception {
-        RestaurantTable restaurantTable = restaurantTableService.findById(6);
-        restaurantTable.setActive(true);
-        restaurantTableService.save(restaurantTable);
-
-        String tableToken = restaurantTable.getToken();
-        JwtResponseDTO jwtResponseDTO =
-                apiRequestUtils.fetchObjectWithParam("/api/scan/" + tableToken, JwtResponseDTO.class);
-
-        assertNotNull(jwtResponseDTO);
-        assertEquals(140, jwtResponseDTO.getAccessToken().length());
-
-        apiRequestUtils.patchAndExpect200("/api/restaurant/tables/call-waiter", 6, jwtResponseDTO.getAccessToken());
-        restaurantTable = restaurantTableService.findById(6);
-        assertTrue(restaurantTable.isWaiterCalled());
-    }
-
-    private void shouldAuthenticateQrScanForTable1FirstCustomer() throws Exception {
-        RestaurantTable restaurantTable = restaurantTableService.findById(3);
-        assertFalse(restaurantTable.isActive());
-        assertTrue(restaurantTable.getUsers().isEmpty());
-
-        restaurantTable.setActive(true);
-        restaurantTableService.save(restaurantTable);
-
-        String tableToken = restaurantTable.getToken();
-        JwtResponseDTO jwtResponseDTO =
-                apiRequestUtils.fetchObjectWithParam("/api/scan/" + tableToken, JwtResponseDTO.class);
-
-        assertNotNull(jwtResponseDTO);
-        assertEquals(140, jwtResponseDTO.getAccessToken().length());
-
-        restaurantTable = restaurantTableService.findById(3);
-        assertEquals(1, restaurantTable.getUsers().size());
-        assertEquals(12, restaurantTable.getUsers()
-                .stream()
-                .findFirst()
-                .orElseThrow()
-                .getUsername()
-                .length());
-
-        assertEquals(20, restaurantTable.getUsers()
-                .stream()
-                .findFirst()
-                .orElseThrow()
-                .getEmail()
-                .length());
-    }
-
-    private void shouldAuthenticateQrScanForTable1SecondCustomer() throws Exception {
-        RestaurantTable restaurantTable = restaurantTableService.findById(3);
-        assertTrue(restaurantTable.isActive());
-        assertEquals(1, restaurantTable.getUsers().size());
-
-        String tableToken = restaurantTable.getToken();
-        JwtResponseDTO jwtResponseDTO =
-                apiRequestUtils.fetchObjectWithParam("/api/scan/" + tableToken, JwtResponseDTO.class);
-
-        assertNotNull(jwtResponseDTO);
-        assertEquals(140, jwtResponseDTO.getAccessToken().length());
-
-        restaurantTable = restaurantTableService.findById(3);
-        assertEquals(2, restaurantTable.getUsers().size());
-        assertEquals(12, restaurantTable.getUsers()
-                .stream()
-                .skip(1)
-                .findFirst()
-                .orElseThrow()
-                .getUsername()
-                .length());
-
-        assertEquals(20, restaurantTable.getUsers()
-                .stream()
-                .skip(1)
-                .findFirst()
-                .orElseThrow()
-                .getEmail()
-                .length());
     }
 
 }

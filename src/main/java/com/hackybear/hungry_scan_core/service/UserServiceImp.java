@@ -45,7 +45,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User findById(Integer id) throws LocalizedException {
+    public User findById(Long id) throws LocalizedException {
         return userRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.userService.userNotFound", id));
     }
@@ -56,7 +56,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public void delete(Integer id) throws LocalizedException {
+    public void delete(Long id) throws LocalizedException {
         User existingUser = findById(id);
         userRepository.delete(existingUser);
     }

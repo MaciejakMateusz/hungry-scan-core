@@ -81,6 +81,7 @@ public class UserController {
         return ResponseEntity.ok().body(Map.of("message", "Logout successful"));
     }
 
+    @Deprecated //TODO metoda do wywalenia po zmianach w założeniach skanowania kodów
     @GetMapping("/scan/{token}")
     public JwtResponseDTO scanTableQr(@PathVariable("token") String token) throws AccessDeniedException, LocalizedException {
         Settings settings = settingsService.getSettings();
@@ -102,7 +103,7 @@ public class UserController {
     }
 
     @GetMapping("/scan")
-    public ResponseEntity<Void> scanGeneralQr(HttpServletResponse response) throws IOException {
+    public ResponseEntity<Void> scanQr(HttpServletResponse response) throws IOException {
         Settings settings = settingsService.getSettings();
         String randomUUID = UUID.randomUUID().toString();
         String accessToken = jwtService.generateToken(randomUUID.substring(1, 13),
