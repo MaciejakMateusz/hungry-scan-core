@@ -1,6 +1,5 @@
 package com.hackybear.hungry_scan_core.utility;
 
-import com.hackybear.hungry_scan_core.service.CustomUserDetails;
 import io.micrometer.common.lang.NonNullApi;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -23,13 +22,9 @@ public class AuditorAwareImpl implements AuditorAware<String> {
             return Optional.of("anonymous");
         }
 
-        String currentUserName = "unknown";
+        String currentUserName = "anonymous";
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             currentUserName = authentication.getName();
-        }
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails customUserDetails) {
-            currentUserName = customUserDetails.getActiveProfile();
         }
 
         return Optional.ofNullable(currentUserName);

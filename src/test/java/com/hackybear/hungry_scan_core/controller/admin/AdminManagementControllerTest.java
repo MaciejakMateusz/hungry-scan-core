@@ -51,14 +51,14 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldGetAllUsers() throws Exception {
         List<User> users =
                 apiRequestUtils.fetchAsList(
                         "/api/admin/users", User.class);
 
         assertEquals(5, users.size());
-        assertEquals("mati", users.get(0).getUsername());
+        assertEquals("matimemek@test.com", users.get(0).getUsername());
         assertEquals("2c73bfc-16fc@temp.it", users.get(4).getEmail());
         assertTrue(users.stream().allMatch(user -> user.getOrganizationId() == 1L));
     }
@@ -82,7 +82,7 @@ class AdminManagementControllerTest {
                         "/api/admin/users/waiters", User.class);
 
         assertEquals(2, users.size());
-        assertEquals("neta", users.get(1).getUsername());
+        assertEquals("netka@test.com", users.get(1).getUsername());
     }
 
     @Test
@@ -104,7 +104,7 @@ class AdminManagementControllerTest {
                         "/api/admin/users/cooks", User.class);
 
         assertEquals(1, users.size());
-        assertEquals("kucharz", users.get(0).getUsername());
+        assertEquals("kucharz@antek.pl", users.get(0).getUsername());
     }
 
     @Test
@@ -125,7 +125,7 @@ class AdminManagementControllerTest {
                 "/api/admin/users/managers", User.class);
 
         assertEquals(1, users.size());
-        assertEquals("neta", users.get(0).getUsername());
+        assertEquals("netka@test.com", users.get(0).getUsername());
     }
 
     @Test
@@ -146,7 +146,7 @@ class AdminManagementControllerTest {
                 "/api/admin/users/admins", User.class);
 
         assertEquals(2, users.size());
-        assertEquals("admin", users.get(0).getUsername());
+        assertEquals("admin@example.com", users.get(0).getUsername());
     }
 
     @Test
@@ -164,7 +164,7 @@ class AdminManagementControllerTest {
     @WithMockUser(roles = "ADMIN")
     void shouldShowUserById() throws Exception {
         User user = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 7, User.class);
-        assertEquals("owner", user.getUsername());
+        assertEquals("restaurator@rarytas.pl", user.getUsername());
     }
 
     @Test
@@ -206,7 +206,7 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Rollback
     @Transactional
     void shouldAddNewUser() throws Exception {
@@ -214,7 +214,7 @@ class AdminManagementControllerTest {
         apiRequestUtils.postAndExpect200("/api/admin/users/add", user);
 
         User persistedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 9, User.class);
-        assertEquals("exampleUser", persistedUser.getUsername());
+        assertEquals("example@example.com", persistedUser.getUsername());
     }
 
     @Test
@@ -243,7 +243,7 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "owner")
+    @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     void shouldNotAddWithIncorrectUsername() throws Exception {
         User user = createUser(2L, 2L);
         user.setUsername("ex");
@@ -252,12 +252,12 @@ class AdminManagementControllerTest {
 
         assertEquals(1, errors.size());
         assertEquals(
-                "Nazwa użytkownika musi posiadać od 3 do 20 znaków i nie może zawierać spacji",
+                "Niepoprawny format adresu email",
                 errors.get("username"));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotAddWithIncorrectPassword() throws Exception {
         User user = createUser(1L, 1L);
         user.setPassword("example123");
@@ -272,25 +272,23 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "owner")
-    void shouldNotAddWithExistingEmail() throws Exception {
+    @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
+    void shouldNotAddWithExistingUsername() throws Exception {
         User user = createUser(2L, 2L);
-        user.setUsername("mleczyk");
+        user.setUsername("netka@test.com");
         user.setEmail("netka@test.com");
 
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/add", user, status().isBadRequest());
 
-        assertTrue((Boolean) responseParams.get("emailExists"));
+        assertTrue((Boolean) responseParams.get("usernameExists"));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotAddWithNotMatchingPasswords() throws Exception {
         User user = createUser(1L, 1L);
-        user.setUsername("ExampleUser2");
-        user.setEmail("test21@gmail.com");
         user.setRepeatedPassword("Examplepass123");
 
         Map<String, Object> responseParams =
@@ -338,7 +336,7 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Rollback
     @Transactional
     void shouldRemoveUser() throws Exception {
@@ -365,7 +363,7 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotSelfRemove() throws Exception {
         User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 2, User.class);
         Map<String, Object> responseBody =
@@ -378,7 +376,7 @@ class AdminManagementControllerTest {
         User user = new User();
         user.setOrganizationId(organizationId);
         user.setEmail("example@example.com");
-        user.setUsername("exampleUser");
+        user.setUsername("example@example.com");
         user.setPassword("Example123!");
         user.setRepeatedPassword("Example123!");
         user.setRoles(new HashSet<>(Collections.singletonList(createRole())));

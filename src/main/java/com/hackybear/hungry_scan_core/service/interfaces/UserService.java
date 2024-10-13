@@ -18,6 +18,8 @@ public interface UserService {
 
     void save(User user);
 
+    void addToOrganization(User user);
+
     void delete(Long id) throws LocalizedException;
 
     boolean existsByEmail(String email);

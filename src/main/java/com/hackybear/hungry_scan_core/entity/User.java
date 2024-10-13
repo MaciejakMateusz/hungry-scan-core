@@ -2,7 +2,6 @@ package com.hackybear.hungry_scan_core.entity;
 
 import com.hackybear.hungry_scan_core.annotation.Email;
 import com.hackybear.hungry_scan_core.annotation.Password;
-import com.hackybear.hungry_scan_core.annotation.Username;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -33,17 +32,15 @@ public class User {
     @NotNull
     private Long organizationId;
 
-    @Column(nullable = false, unique = true, length = 60)
+    @Column(length = 100, nullable = false, unique = true)
     @NotBlank
-    @Username
+    @Email
     private String username;
 
     private String name;
     private String surname;
     private String phoneNumber;
 
-    @Column(length = 100, nullable = false, unique = true)
-    @NotBlank
     @Email
     private String email;
 
@@ -75,13 +72,7 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_restaurants", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "restaurant_id"))
-    @NotEmpty
     private Set<Restaurant> restaurants = new HashSet<>();
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "users_profiles", joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "profile_id"))
-    private Set<Profile> profiles = new HashSet<>();
 
     public void addRestaurant(Restaurant restaurant) {
         restaurants.add(restaurant);
@@ -93,14 +84,6 @@ public class User {
 
     public void removeRestaurant(Restaurant restaurant) {
         restaurants.remove(restaurant);
-    }
-
-    public void addUserProfile(Profile profile) {
-        this.profiles.add(profile);
-    }
-
-    public void removeUserProfile(Profile profile) {
-        this.profiles.remove(profile);
     }
 
     @PrePersist

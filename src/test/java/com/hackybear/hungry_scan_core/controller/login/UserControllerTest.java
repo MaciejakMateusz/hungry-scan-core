@@ -43,7 +43,7 @@ class UserControllerTest {
     @Transactional
     @Rollback
     void shouldAuthenticateAndLoginUser() throws Exception {
-        AuthRequestDTO authRequestDTO = new AuthRequestDTO("mati", "Lubieplacki123!");
+        AuthRequestDTO authRequestDTO = new AuthRequestDTO("matimemek@test.com", "Lubieplacki123!");
         Map<String, Object> response =
                 apiRequestUtils.postAndFetchObject("/api/login", authRequestDTO, Map.class);
         assertEquals("Login successful", response.get("message"));

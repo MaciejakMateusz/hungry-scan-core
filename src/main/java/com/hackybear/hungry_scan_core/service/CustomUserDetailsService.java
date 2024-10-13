@@ -30,4 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 grantedAuthorities.add(new SimpleGrantedAuthority(role.getName())));
         return new CustomUserDetails(user, grantedAuthorities);
     }
+
+
 }

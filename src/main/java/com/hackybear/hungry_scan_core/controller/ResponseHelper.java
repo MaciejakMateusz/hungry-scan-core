@@ -1,5 +1,7 @@
 package com.hackybear.hungry_scan_core.controller;
 
+import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingBiConsumer;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingConsumer;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingFunction;
@@ -24,6 +26,12 @@ import java.util.Map;
 @Slf4j
 @Component
 public class ResponseHelper {
+
+    private final UserService userService;
+
+    public ResponseHelper(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * Creates ResponseEntity based on provided parameters.
@@ -161,14 +169,26 @@ public class ResponseHelper {
         return ResponseEntity.ok(entities);
     }
 
-    private ResponseEntity<?> createErrorResponse(BindingResult br) {
-        return ResponseEntity.badRequest().body(getFieldErrors(br));
-    }
-
     public ResponseEntity<Map<String, Object>> createErrorResponse(Exception e) {
         log.error(e.getMessage());
         Map<String, Object> params = Map.of("exceptionMsg", e.getMessage());
         return ResponseEntity.badRequest().body(params);
+    }
+
+    public Map<String, Object> getErrorParams(User user) {
+        Map<String, Object> params = new HashMap<>();
+        if (userService.existsByUsername(user.getUsername())) {
+            params.put("usernameExists", true);
+        } else if (userService.existsByEmail(user.getEmail())) {
+            params.put("emailExists", true);
+        } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
+            params.put("passwordsNotMatch", true);
+        }
+        return params;
+    }
+
+    private ResponseEntity<?> createErrorResponse(BindingResult br) {
+        return ResponseEntity.badRequest().body(getFieldErrors(br));
     }
 
     private <ENTITY> ResponseEntity<Map<String, Object>> createSuccessResponse(ENTITY entity) {

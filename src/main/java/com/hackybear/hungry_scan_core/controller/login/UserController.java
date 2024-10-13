@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.login;
 
+import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
 import com.hackybear.hungry_scan_core.dto.JwtResponseDTO;
 import com.hackybear.hungry_scan_core.entity.*;
@@ -7,6 +8,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.*;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -41,6 +44,7 @@ public class UserController {
     private final RoleService roleService;
     private final JwtService jwtService;
     private final ExceptionHelper exceptionHelper;
+    private final ResponseHelper responseHelper;
 
     @Value("${customer.app.port}")
     private String customerAppPort;
@@ -50,7 +54,7 @@ public class UserController {
                           SettingsService settingsService,
                           UserService userService,
                           RoleService roleService,
-                          JwtService jwtService, ExceptionHelper exceptionHelper) {
+                          JwtService jwtService, ExceptionHelper exceptionHelper, ResponseHelper responseHelper) {
         this.authenticationManager = authenticationManager;
         this.restaurantTableService = restaurantTableService;
         this.settingsService = settingsService;
@@ -58,6 +62,20 @@ public class UserController {
         this.roleService = roleService;
         this.jwtService = jwtService;
         this.exceptionHelper = exceptionHelper;
+        this.responseHelper = responseHelper;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> add(@Valid @RequestBody User user, BindingResult br) {
+        if (br.hasErrors()) {
+            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
+        }
+        Map<String, Object> errorParams = responseHelper.getErrorParams(user);
+        if (!errorParams.isEmpty()) {
+            return ResponseEntity.badRequest().body(errorParams);
+        }
+        userService.save(user);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
@@ -148,7 +166,7 @@ public class UserController {
     }
 
     private void persistTableAndUser(JwtToken jwtToken, String uuid, RestaurantTable restaurantTable) {
-        String username = uuid.substring(1, 13);
+        String username = uuid.substring(1, 13) + "@temp.it";
         boolean isFirstCustomer = restaurantTable.getUsers().isEmpty();
         userService.save(createTempCustomer(jwtToken, username, isFirstCustomer));
         User customer = userService.findByUsername(username);
@@ -157,7 +175,7 @@ public class UserController {
     }
 
     private void persistUser(JwtToken jwtToken, String uuid) {
-        String username = uuid.substring(1, 13);
+        String username = uuid.substring(1, 13) + "@temp.it";
         userService.save(createTempCustomer(jwtToken, username, false));
     }
 
@@ -174,7 +192,7 @@ public class UserController {
     private User createTempCustomer(JwtToken jwtToken, String username, boolean isFirstCustomer) {
         User customer = new User();
         customer.setUsername(username);
-        customer.setEmail(username + "@temp.it");
+        customer.setEmail(username);
         customer.setPassword(UUID.randomUUID().toString());
         Role role = roleService.findByName(isFirstCustomer ? "ROLE_CUSTOMER" : "ROLE_CUSTOMER_READONLY");
         customer.setRoles(new HashSet<>(Collections.singletonList(role)));

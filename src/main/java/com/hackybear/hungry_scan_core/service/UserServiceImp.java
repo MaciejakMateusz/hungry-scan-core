@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -50,6 +51,13 @@ public class UserServiceImp implements UserService {
 
     @Override
     public void save(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public void addToOrganization(User user) {
+        User currentUser = getCurrentUser();
+        user.setOrganizationId(currentUser.getOrganizationId());
         userRepository.save(user);
     }
 
@@ -100,9 +108,9 @@ public class UserServiceImp implements UserService {
     public User getCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
-        if (authentication == null) {
+        if (Objects.isNull(authentication) || !authentication.isAuthenticated()) {
             throw new AuthenticationCredentialsNotFoundException("Authentication is null");
         }
-        return userRepository.findUserByUsername(authentication.getName());
+        return userRepository.findByUsername(authentication.getName()).orElseThrow();
     }
 }

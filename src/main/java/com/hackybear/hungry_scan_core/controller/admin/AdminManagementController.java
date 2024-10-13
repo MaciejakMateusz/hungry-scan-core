@@ -78,32 +78,27 @@ public class AdminManagementController {
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@Valid @RequestBody User user, BindingResult br) {
-        Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
-        } else if (userService.existsByUsername(user.getUsername())) {
-            return badRequestWithParam("usernameExists");
-        } else if (userService.existsByEmail(user.getEmail())) {
-            return badRequestWithParam("emailExists");
-        } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
-            return badRequestWithParam("passwordsNotMatch");
         }
-        userService.save(user);
-        return ResponseEntity.ok(params);
+        Map<String, Object> errorParams = responseHelper.getErrorParams(user);
+        if (!errorParams.isEmpty()) {
+            return ResponseEntity.badRequest().body(errorParams);
+        }
+        userService.addToOrganization(user);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/update")
     public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult br) throws LocalizedException {
-        Map<String, Object> params = new HashMap<>();
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
-        if (userService.isUpdatedUserValid(user)) {
-            userService.save(user);
-            return ResponseEntity.ok(params);
-        } else {
+        if (!userService.isUpdatedUserValid(user)) {
             return badRequestWithParam(userService.getErrorParam(user));
         }
+        userService.save(user);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete")
