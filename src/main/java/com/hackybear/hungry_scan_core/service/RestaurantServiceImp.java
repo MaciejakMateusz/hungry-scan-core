@@ -26,7 +26,7 @@ public class RestaurantServiceImp implements RestaurantService {
     }
 
     @Override
-    public Restaurant findById(Integer id) throws LocalizedException {
+    public Restaurant findById(Long id) throws LocalizedException {
         return restaurantRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.restaurantService.restaurantNotFound", id));
@@ -38,7 +38,7 @@ public class RestaurantServiceImp implements RestaurantService {
     }
 
     @Override
-    public void delete(Integer id) throws LocalizedException {
+    public void delete(Long id) throws LocalizedException {
         Restaurant existingRestaurant = findById(id);
         restaurantRepository.delete(existingRestaurant);
     }

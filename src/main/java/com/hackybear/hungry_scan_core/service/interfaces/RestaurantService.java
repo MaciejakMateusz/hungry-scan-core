@@ -8,9 +8,9 @@ import java.util.List;
 public interface RestaurantService {
     List<Restaurant> findAll();
 
-    Restaurant findById(Integer id) throws LocalizedException;
+    Restaurant findById(Long id) throws LocalizedException;
 
     void save(Restaurant restaurant);
 
-    void delete(Integer id) throws LocalizedException;
+    void delete(Long id) throws LocalizedException;
 }

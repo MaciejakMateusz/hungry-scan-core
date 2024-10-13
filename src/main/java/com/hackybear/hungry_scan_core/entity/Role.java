@@ -27,8 +27,4 @@ public class Role {
     @NotNull
     private Translatable displayedName;
 
-    @Override
-    public String toString() {
-        return displayedName.getDefaultTranslation();
-    }
 }

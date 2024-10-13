@@ -6,8 +6,10 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,12 +38,8 @@ public class UserServiceImp implements UserService {
 
     @Override
     public List<User> findAll() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        User currentUser = getCurrentUser();
+        return userRepository.findAllByOrganizationId(currentUser.getOrganizationId());
     }
 
     @Override
@@ -96,5 +94,15 @@ public class UserServiceImp implements UserService {
     @Override
     public List<User> findAllCustomers() {
         return userRepository.findAllCustomers();
+    }
+
+    @Override
+    public User getCurrentUser() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication == null) {
+            throw new AuthenticationCredentialsNotFoundException("Authentication is null");
+        }
+        return userRepository.findUserByUsername(authentication.getName());
     }
 }

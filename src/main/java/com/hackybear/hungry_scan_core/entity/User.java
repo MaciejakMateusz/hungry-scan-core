@@ -31,7 +31,7 @@ public class User {
 
     @Column(nullable = false)
     @NotNull
-    private Long tenantId;
+    private Long organizationId;
 
     @Column(nullable = false, unique = true, length = 60)
     @NotBlank
@@ -72,10 +72,28 @@ public class User {
     @NotEmpty
     private Set<Role> roles = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_restaurants", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "restaurant_id"))
+    @NotEmpty
+    private Set<Restaurant> restaurants = new HashSet<>();
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "users_profiles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "profile_id"))
     private Set<Profile> profiles = new HashSet<>();
+
+    public void addRestaurant(Restaurant restaurant) {
+        restaurants.add(restaurant);
+    }
+
+    public void addAllRestaurants(Set<Restaurant> restaurants) {
+        this.restaurants.addAll(restaurants);
+    }
+
+    public void removeRestaurant(Restaurant restaurant) {
+        restaurants.remove(restaurant);
+    }
 
     public void addUserProfile(Profile profile) {
         this.profiles.add(profile);

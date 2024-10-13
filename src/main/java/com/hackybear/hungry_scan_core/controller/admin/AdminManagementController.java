@@ -6,7 +6,6 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +34,12 @@ public class AdminManagementController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> users() {
-        List<User> users = userService.findAll(PageRequest.ofSize(100)).stream().toList();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<?> users() {
+        try {
+            return ResponseEntity.ok(userService.findAll());
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @GetMapping("/waiters")

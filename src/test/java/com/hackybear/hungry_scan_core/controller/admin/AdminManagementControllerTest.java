@@ -1,8 +1,10 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
+import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -38,6 +40,8 @@ class AdminManagementControllerTest {
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
     @Test
     @Order(1)
@@ -47,15 +51,16 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin")
     void shouldGetAllUsers() throws Exception {
         List<User> users =
                 apiRequestUtils.fetchAsList(
                         "/api/admin/users", User.class);
 
-        assertEquals(8, users.size());
+        assertEquals(5, users.size());
         assertEquals("mati", users.get(0).getUsername());
-        assertEquals("kucharz@antek.pl", users.get(3).getEmail());
+        assertEquals("2c73bfc-16fc@temp.it", users.get(4).getEmail());
+        assertTrue(users.stream().allMatch(user -> user.getOrganizationId() == 1L));
     }
 
     @Test
@@ -119,7 +124,7 @@ class AdminManagementControllerTest {
         List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/managers", User.class);
 
-        assertEquals(2, users.size());
+        assertEquals(1, users.size());
         assertEquals("neta", users.get(0).getUsername());
     }
 
@@ -158,7 +163,7 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldShowUserById() throws Exception {
-        User user = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 5, User.class);
+        User user = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 7, User.class);
         assertEquals("owner", user.getUsername());
     }
 
@@ -201,11 +206,11 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin")
     @Rollback
     @Transactional
     void shouldAddNewUser() throws Exception {
-        User user = createUser();
+        User user = createUser(1L, 1L);
         apiRequestUtils.postAndExpect200("/api/admin/users/add", user);
 
         User persistedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 9, User.class);
@@ -215,20 +220,20 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowToAddUser() throws Exception {
-        User user = createUser();
+        User user = createUser(1L, 1L);
         apiRequestUtils.postAndExpect("/api/admin/users/add", user, status().isForbidden());
     }
 
     @Test
     void shouldNotAllowUnauthorizedAccessToAddUser() throws Exception {
-        User user = createUser();
+        User user = createUser(1L, 1L);
         apiRequestUtils.postAndExpectForbidden("/api/admin/users/add", user);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldNotAddWithIncorrectEmail() throws Exception {
-        User user = createUser();
+        User user = createUser(1L, 1L);
         user.setEmail("mordo@gmailcom");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
@@ -238,9 +243,9 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "owner")
     void shouldNotAddWithIncorrectUsername() throws Exception {
-        User user = createUser();
+        User user = createUser(2L, 2L);
         user.setUsername("ex");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
@@ -252,9 +257,9 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin")
     void shouldNotAddWithIncorrectPassword() throws Exception {
-        User user = createUser();
+        User user = createUser(1L, 1L);
         user.setPassword("example123");
         user.setRepeatedPassword("example123");
 
@@ -267,9 +272,9 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "owner")
     void shouldNotAddWithExistingEmail() throws Exception {
-        User user = createUser();
+        User user = createUser(2L, 2L);
         user.setUsername("mleczyk");
         user.setEmail("netka@test.com");
 
@@ -281,9 +286,9 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin")
     void shouldNotAddWithNotMatchingPasswords() throws Exception {
-        User user = createUser();
+        User user = createUser(1L, 1L);
         user.setUsername("ExampleUser2");
         user.setEmail("test21@gmail.com");
         user.setRepeatedPassword("Examplepass123");
@@ -369,14 +374,15 @@ class AdminManagementControllerTest {
         assertTrue((Boolean) responseBody.get("illegalRemoval"));
     }
 
-    private User createUser() {
+    private User createUser(Long restaurantId, Long organizationId) {
         User user = new User();
-        user.setTenantId(2L);
+        user.setOrganizationId(organizationId);
         user.setEmail("example@example.com");
         user.setUsername("exampleUser");
         user.setPassword("Example123!");
         user.setRepeatedPassword("Example123!");
         user.setRoles(new HashSet<>(Collections.singletonList(createRole())));
+        user.addRestaurant(getRestaurant(restaurantId));
         return user;
     }
 
@@ -392,5 +398,9 @@ class AdminManagementControllerTest {
         Translatable translatable = new Translatable();
         translatable.setDefaultTranslation("Kelner");
         return translatable;
+    }
+
+    private Restaurant getRestaurant(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId).orElse(new Restaurant());
     }
 }

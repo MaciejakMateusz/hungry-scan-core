@@ -375,39 +375,56 @@ VALUES ('Średnia');
 INSERT INTO translatable(default_translation)
 VALUES ('Duża');
 
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, true, 76, '0.00', null, 4, 1);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 77, '4.00', null, 4, 2);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, true, 78, '0.00', null, 21, 1);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 79, '5.00', null, 21, 2);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 80, '10.00', null, 21, 3);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, true, 81, '0.00', null, 22, 1);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 82, '5.00', null, 22, 2);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 83, '10.00', null, 22, 3);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, true, 84, '0.00', null, 23, 1);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 85, '5.00', null, 23, 2);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 86, '10.00', null, 23, 3);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, true, 87, '0.00', null, 24, 1);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 88, '5.00', null, 24, 2);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 89, '10.00', null, 24, 3);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, true, 90, '0.00', null, 25, 1);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 91, '5.00', null, 25, 2);
-INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id, display_order)
+INSERT INTO variants(created, is_available, is_default_variant, translatable_name_id, price, updated, menu_item_id,
+                     display_order)
 VALUES (NOW(), true, false, 92, '10.00', null, 25, 3);
 
 INSERT INTO restaurants (address, name)
@@ -415,18 +432,18 @@ VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
 INSERT INTO restaurants (address, name)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
 
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Kelner', 'Waiter');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Administrator', 'Admin');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Menadżer', 'Manager');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Kucharz', 'Cook');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Klient', 'Customer');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Klient (tylko odczyt)', 'Customer (read only)');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Kelner', 'Waiter');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Administrator', 'Admin');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Menadżer', 'Manager');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Kucharz', 'Cook');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Klient', 'Customer');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Klient (tylko odczyt)', 'Customer (read only)');
 
 INSERT INTO role (name, translatable_displayed_name_id)
 VALUES ('ROLE_WAITER', 93);
@@ -441,62 +458,65 @@ VALUES ('ROLE_CUSTOMER', 97);
 INSERT INTO role (name, translatable_displayed_name_id)
 VALUES ('ROLE_CUSTOMER_READONLY', 98);
 
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Gluten', 'Gluten');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.', 'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Skorupiaki', 'Crustaceans');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Skorupiaki i produkty pochodne.', 'Crustaceans and derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Jaja', 'Eggs');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Jaja i produkty pochodne.', 'Eggs and derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Ryby', 'Fish');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Ryby i produkty pochodne.', 'Fish and derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Orzeszki ziemne', 'Peanuts');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'Peanuts and related products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Soja', 'Soybeans');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Soja i produkty pochodne.', 'Soybeans and derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Mleko', 'Milk');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Mleko i produkty pochodne (łącznie z laktozą).', 'Milk and derived products (including lactose).');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Orzechy', 'Nuts');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.', 'Nuts, i.e. almonds, hazelnuts, walnuts, cashews, pecans, Brazil nuts, pistachios/pistachio nuts, macadamia nuts and related products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Seler', 'Celery');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Seler i produkty pochodne.', 'Celery amd derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Gorczyca', 'Mustard');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Gorczyca i produkty pochodne.', 'Mustard and derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Nasiona sezamu', 'Sesame');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Nasiona sezamu i produkty pochodne.', 'Sesame and derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Dwutlenek siarki', 'Sulfur dioxide');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.', 'Sulfur dioxide and sulphites in concentrations above 10 mg/kg or 10 mg/l expressed as SO2.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Łubin', 'Lupin');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Łubin i produkty pochodne.', 'Lupin and derived products.');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Mięczaki', 'Molluscs');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Gluten', 'Gluten');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.',
+        'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Skorupiaki', 'Crustaceans');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Skorupiaki i produkty pochodne.', 'Crustaceans and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Jaja', 'Eggs');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Jaja i produkty pochodne.', 'Eggs and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Ryby', 'Fish');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Ryby i produkty pochodne.', 'Fish and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Orzeszki ziemne', 'Peanuts');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'Peanuts and related products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Soja', 'Soybeans');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Soja i produkty pochodne.', 'Soybeans and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Mleko', 'Milk');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Mleko i produkty pochodne (łącznie z laktozą).', 'Milk and derived products (including lactose).');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Orzechy', 'Nuts');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.',
+        'Nuts, i.e. almonds, hazelnuts, walnuts, cashews, pecans, Brazil nuts, pistachios/pistachio nuts, macadamia nuts and related products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Seler', 'Celery');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Seler i produkty pochodne.', 'Celery amd derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Gorczyca', 'Mustard');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Gorczyca i produkty pochodne.', 'Mustard and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Nasiona sezamu', 'Sesame');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Nasiona sezamu i produkty pochodne.', 'Sesame and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Dwutlenek siarki', 'Sulfur dioxide');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.',
+        'Sulfur dioxide and sulphites in concentrations above 10 mg/kg or 10 mg/l expressed as SO2.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Łubin', 'Lupin');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Łubin i produkty pochodne.', 'Lupin and derived products.');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Mięczaki', 'Molluscs');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
 
 INSERT INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
 VALUES (1, 100, 'icon_gluten', 99),
@@ -514,18 +534,18 @@ VALUES (1, 100, 'icon_gluten', 99),
        (13, 124, 'icon_lupin', 123),
        (14, 126, 'icon_molluscs', 125);
 
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Bez glutenu', 'Gluten free');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Wegańskie', 'Vegan');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Wegetariańskie', 'Vegetarian');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Kolendra', 'Coriander');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Bez laktozy', 'Lactose free');
-INSERT INTO translatable (default_translation, translation_en) VALUES
-    ('Ostre', 'Spicy');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Bez glutenu', 'Gluten free');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Wegańskie', 'Vegan');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Wegetariańskie', 'Vegetarian');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Kolendra', 'Coriander');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Bez laktozy', 'Lactose free');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Ostre', 'Spicy');
 
 INSERT INTO labels (icon_name, translatable_name_id)
 VALUES ('icon_gluten_free', 127),
@@ -535,33 +555,60 @@ VALUES ('icon_gluten_free', 127),
        ('icon_lactose_free', 131),
        ('icon_spicy', 132);
 
-INSERT INTO translatable (default_translation, translation_en) VALUES('Pomidory', 'Tomatoes');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Cebula', 'Onion');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Czosnek', 'Garlic');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Oliwa z oliwek', 'Olive oil');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Bazylia', 'Basil');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Mozzarella', 'Mozzarella');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Makaron penne', 'Pasta penne');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Mięso mielone', 'Minced meat');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Papryka', 'Bell pepper');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Ser parmezan', 'Parmesan cheese');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Ser parmezan', 'Parmesan cheese');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Oregano', 'Oregano');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Sól', 'Salt');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Pieprz', 'Pepper');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Kiełbasa', 'Sausage');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Makaron spaghetti', 'Spaghetti pasta');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Kurczak', 'Chicken');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Szpinak', 'Spinach');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Kapusta', 'Cabbage');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Masło', 'Butter');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Marchew', 'Carrot');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Sos pomidorowy', 'Tomato sauce');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Cukier', 'Sugar');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Cukinia', 'Zucchini');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Pietruszka', 'Parsley');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Koper', 'Dill');
-INSERT INTO translatable (default_translation, translation_en) VALUES('Ser biały', 'White cheese');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Pomidory', 'Tomatoes');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Cebula', 'Onion');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Czosnek', 'Garlic');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Oliwa z oliwek', 'Olive oil');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Bazylia', 'Basil');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Mozzarella', 'Mozzarella');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Makaron penne', 'Pasta penne');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Mięso mielone', 'Minced meat');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Papryka', 'Bell pepper');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Ser parmezan', 'Parmesan cheese');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Ser parmezan', 'Parmesan cheese');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Oregano', 'Oregano');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Sól', 'Salt');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Pieprz', 'Pepper');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Kiełbasa', 'Sausage');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Makaron spaghetti', 'Spaghetti pasta');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Kurczak', 'Chicken');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Szpinak', 'Spinach');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Kapusta', 'Cabbage');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Masło', 'Butter');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Marchew', 'Carrot');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Sos pomidorowy', 'Tomato sauce');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Cukier', 'Sugar');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Cukinia', 'Zucchini');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Pietruszka', 'Parsley');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Koper', 'Dill');
+INSERT INTO translatable (default_translation, translation_en)
+VALUES ('Ser biały', 'White cheese');
 
 INSERT INTO ingredients(created, is_available, translatable_name_id, updated, price)
 VALUES ('2024-03-30', 1, 133, '2024-03-30', '4.00');
@@ -757,73 +804,81 @@ INSERT INTO jwt_tokens (token, created)
 VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwYzllNjgzLTg1NzYiLCJpYXQiOjE3MTM4ODA5MjMsImV4cCI6MTcxMzk1MjkyM30.M28dOa0W5FApG8p2sgfUhLHylHO4hM5bAgOOgF2k5oU',
         NOW());
 
-INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+INSERT INTO users (organization_id, created, email, enabled, password, updated, username, email_token, jwt_token_id,
+                   name,
                    phone_number,
                    surname)
 VALUES (1, '2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
         '$2a$10$z/0edEimosa3QjYYxjiHuO8bNZHfI3jxDVwqDNd5bc2vCr5TERDz6', '2024-02-02 20:54:41.531670', 'mati', null,
         null,
         'Mati', '+48 123 123 123', 'Memek');
-INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+INSERT INTO users (organization_id, created, email, enabled, password, updated, username, email_token, jwt_token_id,
+                   name,
                    phone_number,
                    surname)
-VALUES (2, '2024-01-20 19:09:00.000000', 'admin@example.com', 1,
+VALUES (1, '2024-01-20 19:09:00.000000', 'admin@example.com', 1,
         '$2a$04$OI8NalP4M4rxpRFgVR3eO.8C/6hmP.AdYadtTPd3BLHm3zx3wLLWm', '2024-02-04 07:50:29.047589', 'admin',
         null, null, '', '', '');
-INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+INSERT INTO users (organization_id, created, email, enabled, password, updated, username, email_token, jwt_token_id,
+                   name,
                    phone_number,
                    surname)
-VALUES (3, '2024-01-24 19:06:36.680304', 'netka@test.com', 1,
+VALUES (1, '2024-01-24 19:06:36.680304', 'netka@test.com', 1,
         '$2a$10$ViUyMtRUmZgeZWRBME67g.Wp3K9p8UyJPfQd2GB9uXbQnBiDe4FJ.', null, 'neta', null, null, null, null, null);
-INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+INSERT INTO users (organization_id, created, email, email_token, enabled, name, password, phone_number, surname,
+                   updated,
+                   username,
+                   jwt_token_id)
+VALUES (1, '2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', null, 1, null,
+        '$2a$10$fb4q1jBqnMLDkUBi2YXQ4eHZ0M17bP5gxzwU84UwCkEUbyekGRDlC',
+        null, null, null, 'ff3abf8-9b6a', 1);
+INSERT INTO users (organization_id, created, email, email_token, enabled, name, password, phone_number, surname,
+                   updated,
+                   username,
+                   jwt_token_id)
+VALUES (1, '2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', null, 1, null,
+        '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.',
+        null, null, null, '2c73bfc-16fc', 2);
+
+
+INSERT INTO users (organization_id, created, email, enabled, password, updated, username, email_token, jwt_token_id,
+                   name,
                    phone_number,
                    surname)
-VALUES (4, '2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1,
+VALUES (2, '2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1,
         '$2a$10$.HWarZkysOgBF0/tOXmmtONdRkZHGZCsRFs27Q7FcNrDc4bSzE0fW', '2024-02-03 10:33:07.307903', 'kucharz', null,
         null,
         'ada', '', 'asdqwe');
-INSERT INTO users (tenant_id, created, email, enabled, password, updated, username, email_token, jwt_token_id, name,
+INSERT INTO users (organization_id, created, email, enabled, password, updated, username, email_token, jwt_token_id,
+                   name,
                    phone_number,
                    surname)
-VALUES (5, '2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
+VALUES (2, '2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
         '$2a$10$tykyevzP4v1WV/FyuYWNOO6wspbmAHnzI.deEAZQU6SA8NSxod3Vy', null, 'owner', null, null, 'Właściciel', '',
         'Biznesmen');
-INSERT INTO users (tenant_id, created, email, email_token, enabled, name, password, phone_number, surname, updated,
+INSERT INTO users (organization_id, created, email, email_token, enabled, name, password, phone_number, surname,
+                   updated,
                    username,
                    jwt_token_id)
-VALUES (6, '2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', null, 1, null,
-        '$2a$10$fb4q1jBqnMLDkUBi2YXQ4eHZ0M17bP5gxzwU84UwCkEUbyekGRDlC',
-        null, null, null, 'ff3abf8-9b6a', 1);
-INSERT INTO users (tenant_id, created, email, email_token, enabled, name, password, phone_number, surname, updated,
-                   username,
-                   jwt_token_id)
-VALUES (7, '2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', null, 1, null,
-        '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.',
-        null, null, null, '2c73bfc-16fc', 2);
-INSERT INTO users (tenant_id, created, email, email_token, enabled, name, password, phone_number, surname, updated,
-                   username,
-                   jwt_token_id)
-VALUES (8, NOW(), '0c9e683-8576@temp.it', null, 1, null, '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW',
+VALUES (2, NOW(), '0c9e683-8576@temp.it', null, 1, null, '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW',
         null, null, null, '0c9e683-8576', 3);
 
 INSERT INTO user_role (user_id, role_id)
 VALUES (1, 1);
 INSERT INTO user_role (user_id, role_id)
-VALUES (3, 1);
-INSERT INTO user_role (user_id, role_id)
 VALUES (2, 2);
 INSERT INTO user_role (user_id, role_id)
-VALUES (5, 2);
+VALUES (3, 1);
 INSERT INTO user_role (user_id, role_id)
 VALUES (3, 3);
 INSERT INTO user_role (user_id, role_id)
-VALUES (5, 3);
+VALUES (4, 6);
 INSERT INTO user_role (user_id, role_id)
-VALUES (4, 4);
+VALUES (5, 6);
 INSERT INTO user_role (user_id, role_id)
-VALUES (6, 5);
+VALUES (6, 4);
 INSERT INTO user_role (user_id, role_id)
-VALUES (7, 6);
+VALUES (7, 2);
 INSERT INTO user_role (user_id, role_id)
 VALUES (8, 5);
 
@@ -840,6 +895,23 @@ INSERT INTO users_profiles (user_id, profile_id)
 VALUES (2, 2);
 INSERT INTO users_profiles (user_id, profile_id)
 VALUES (2, 3);
+
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (1, 1);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (2, 1);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (3, 1);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (4, 1);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (5, 1);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (6, 2);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (7, 2);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (8, 2);
 
 INSERT INTO themes(name, active)
 VALUES ('green', true),

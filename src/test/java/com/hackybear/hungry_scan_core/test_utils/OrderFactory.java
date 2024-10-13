@@ -26,7 +26,7 @@ public class OrderFactory {
 
     public Order createOrder(Integer tableId, boolean isForTakeAway, OrderedItem... chosenItems) throws LocalizedException {
         Order order = new Order();
-        Restaurant restaurant = restaurantService.findById(1);
+        Restaurant restaurant = restaurantService.findById(1L);
         order.setRestaurant(restaurant);
         RestaurantTable restaurantTable = restaurantTableService.findById(tableId);
         order.setRestaurantTable(restaurantTable);
