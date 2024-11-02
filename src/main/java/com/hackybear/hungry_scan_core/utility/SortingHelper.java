@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Component
 public class SortingHelper {
@@ -50,10 +49,7 @@ public class SortingHelper {
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.categoryService.categoryNotFound", categoryId));
 
-        List<MenuItem> categoryItems = category.getMenuItems()
-                .stream()
-                .sorted()
-                .collect(Collectors.toList());
+        List<MenuItem> categoryItems = category.getMenuItems();
 
         if (!isNew) {
             categoryItems.remove(currentItem);
