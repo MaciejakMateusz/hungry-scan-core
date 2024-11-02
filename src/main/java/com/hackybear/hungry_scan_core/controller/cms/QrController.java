@@ -49,7 +49,7 @@ public class QrController {
 
     @PostMapping("/tables/generate-qr")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> generateQr(@RequestBody Integer id) {
+    public ResponseEntity<?> generateQr(@RequestBody Long id) {
         try {
             RestaurantTable restaurantTable = restaurantTableService.generateNewToken(id);
             qrService.generate(restaurantTable, "");

@@ -11,8 +11,8 @@ public interface ZoneService {
 
     List<Zone> findAll();
 
-    Zone findById(Integer id) throws LocalizedException;
+    Zone findById(Long id) throws LocalizedException;
 
-    void delete(Integer id) throws LocalizedException;
+    void delete(Long id) throws LocalizedException;
 
 }

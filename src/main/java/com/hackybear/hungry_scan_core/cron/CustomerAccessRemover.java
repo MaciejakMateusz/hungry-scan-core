@@ -1,10 +1,8 @@
 package com.hackybear.hungry_scan_core.cron;
 
 import com.hackybear.hungry_scan_core.entity.JwtToken;
-import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.SettingsService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,11 +18,9 @@ import java.util.Objects;
 public class CustomerAccessRemover {
 
     private final UserService userService;
-    private final SettingsService settingsService;
 
-    public CustomerAccessRemover(UserService userService, SettingsService settingsService) {
+    public CustomerAccessRemover(UserService userService) {
         this.userService = userService;
-        this.settingsService = settingsService;
     }
 
     @Scheduled(initialDelay = 60000, fixedDelay = 60000 * 60)
@@ -47,16 +43,13 @@ public class CustomerAccessRemover {
     }
 
     private boolean isTokenExpired(JwtToken token) {
-        Settings settings = settingsService.getSettings();
-        Long sessionTime = settings.getCustomerSessionTime();
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expirationTime = now.minusHours(sessionTime);
+        LocalDateTime expirationTime = LocalDateTime.now().minusHours(3);
         return token.getCreated().isBefore(expirationTime);
     }
 
     private void handleDeletion(User user) {
         try {
-            userService.delete(user.getId());
+            userService.delete(user.getUsername());
             log.info("CustomerAccessRemover - User {} deleted", user.getId());
         } catch (LocalizedException e) {
             log.error("CustomerAccessRemover - User {} could not be deleted", user.getId(), e);

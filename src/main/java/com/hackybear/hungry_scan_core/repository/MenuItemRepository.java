@@ -9,8 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MenuItemRepository extends JpaRepository<MenuItem, Integer> {
+public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
 
     @Query("SELECT mi from MenuItem mi WHERE mi.name.defaultTranslation LIKE LOWER(:filterValue)  ORDER BY mi.name.defaultTranslation")
     List<MenuItem> filterByName(@Param("filterValue") String filterValue);
+
+    List<MenuItem> findAllByCategoryIdOrderByDisplayOrder(Long categoryId);
 }

@@ -200,7 +200,7 @@ class RestaurantTableControllerTest {
         apiRequestUtils.postAndExpect200(
                 "/api/cms/tables/generate-qr", 15);
 
-        RestaurantTable table = restaurantTableRepository.findById(15).orElseThrow();
+        RestaurantTable table = restaurantTableRepository.findById(15L).orElseThrow();
 
         File file = new File(qrPath + table.getQrName());
         assertEquals(table.getQrName(), file.getName());

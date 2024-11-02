@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RestaurantTableRepository extends CustomRepository<RestaurantTable, Integer> {
+public interface RestaurantTableRepository extends CustomRepository<RestaurantTable, Long> {
 
     Optional<RestaurantTable> findByToken(String token);
 

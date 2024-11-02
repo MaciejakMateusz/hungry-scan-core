@@ -23,5 +23,5 @@ public interface BookingRepository extends CustomRepository<Booking, Long> {
 
     Long countAllByDateBetween(LocalDate dateFrom, LocalDate dateTo);
 
-    List<Booking> findAllByRestaurantTablesId(Integer tableId);
+    List<Booking> findAllByRestaurantTablesId(Long tableId);
 }

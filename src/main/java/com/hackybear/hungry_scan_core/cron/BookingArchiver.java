@@ -4,7 +4,6 @@ import com.hackybear.hungry_scan_core.entity.Booking;
 import com.hackybear.hungry_scan_core.entity.history.HistoryBooking;
 import com.hackybear.hungry_scan_core.repository.BookingRepository;
 import com.hackybear.hungry_scan_core.repository.history.HistoryBookingRepository;
-import com.hackybear.hungry_scan_core.service.interfaces.SettingsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,23 +19,19 @@ public class BookingArchiver {
 
     private final BookingRepository bookingRepository;
     private final HistoryBookingRepository historyBookingRepository;
-    private final SettingsService settingsService;
 
     public BookingArchiver(BookingRepository bookingRepository,
-                           HistoryBookingRepository historyBookingRepository,
-                           SettingsService settingsService) {
+                           HistoryBookingRepository historyBookingRepository) {
         this.bookingRepository = bookingRepository;
         this.historyBookingRepository = historyBookingRepository;
-        this.settingsService = settingsService;
     }
 
     @Scheduled(initialDelay = 60000, fixedDelay = 60000 * 5)
     @Transactional
     public void checkAndArchive() {
         log.info("Running checkAndArchive() job...");
-        long expirationTime = settingsService.getSettings().getCustomerSessionTime();
         Set<Booking> expiredBookings =
-                bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(expirationTime));
+                bookingRepository.findExpiredBookings(LocalDate.now(), LocalTime.now().minusHours(3));
         for (Booking expiredBooking : expiredBookings) {
             HistoryBooking historyBooking = new HistoryBooking(expiredBooking);
             historyBookingRepository.saveAndFlush(historyBooking);

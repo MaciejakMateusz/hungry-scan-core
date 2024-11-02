@@ -16,7 +16,10 @@ public class Settings {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+
+    @Column(name = "restaurant_id", nullable = false)
+    private Long restaurantId;
 
     @NotNull
     @Column(nullable = false)

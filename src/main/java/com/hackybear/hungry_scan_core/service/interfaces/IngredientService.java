@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
-import com.hackybear.hungry_scan_core.entity.Ingredient;
+import com.hackybear.hungry_scan_core.dto.IngredientDTO;
+import com.hackybear.hungry_scan_core.dto.IngredientSimpleDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,16 +10,18 @@ import java.util.List;
 
 public interface IngredientService {
 
-    void save(Ingredient ingredient);
+    void save(IngredientSimpleDTO ingredientDTO) throws LocalizedException;
 
-    List<Ingredient> findAll();
+    void update(IngredientSimpleDTO ingredientDTO) throws LocalizedException;
 
-    Page<Ingredient> findAllPages(Pageable pageable);
+    List<IngredientDTO> findAll() throws LocalizedException;
 
-    Ingredient findById(Integer id) throws LocalizedException;
+    Page<IngredientDTO> findAllPages(Pageable pageable) throws LocalizedException;
 
-    void delete(Integer id) throws LocalizedException;
+    IngredientDTO findById(Long id) throws LocalizedException;
 
-    List<Ingredient> filterByName(String name);
+    void delete(Long id) throws LocalizedException;
+
+    List<IngredientDTO> filterByName(String name) throws LocalizedException;
 
 }

@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
@@ -30,53 +31,61 @@ import java.util.Set;
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Table(name = "menu_items")
 @Entity
-public class MenuItem {
+public class MenuItem implements Comparable<MenuItem> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String imageName;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank
     @LimitTranslationsLength
     private Translatable name;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_description_id", referencedColumnName = "id")
     @LimitTranslationsLength
     private Translatable description;
 
     @NotNull
-    private Integer categoryId;
+    private Long categoryId;
 
     @Column(nullable = false)
     @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
     @NotNull
     private BigDecimal price = Money.of(0.00);
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    @JsonIgnore
     private Set<Label> labels = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    @JsonIgnore
     private Set<Allergen> allergens = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    @JsonIgnore
     private Set<Ingredient> ingredients = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    @JsonIgnore
     private Set<Ingredient> additionalIngredients = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.MERGE)
+    @JsonIgnore
+    private Set<Variant> variants = new HashSet<>();
 
     @NotNull
     private Integer displayOrder;
 
-    private boolean isBarServed;
+    private boolean barServed;
 
-    private boolean isAvailable = true;
+    private boolean available = true;
 
-    private boolean isVisible = true;
+    private boolean visible = true;
 
     private boolean isNew;
 
@@ -110,6 +119,15 @@ public class MenuItem {
 
     public void addAdditionalIngredient(Ingredient additionalIngredient) {
         this.additionalIngredients.add(additionalIngredient);
+    }
+
+    public void removeVariant(Variant variant) {
+        this.variants.remove(variant);
+    }
+
+    @Override
+    public int compareTo(MenuItem other) {
+        return this.displayOrder.compareTo(other.displayOrder);
     }
 
 }

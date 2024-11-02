@@ -47,7 +47,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
-    public RestaurantTable findById(Integer id) throws LocalizedException {
+    public RestaurantTable findById(Long id) throws LocalizedException {
         return restaurantTableRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.restaurantTableService.tableNotFound", id));
@@ -79,14 +79,14 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
-    public void delete(Integer id) throws LocalizedException {
+    public void delete(Long id) throws LocalizedException {
         RestaurantTable existingTable = findById(id);
         assertTableNotActivatedElseThrow(existingTable);
         restaurantTableRepository.delete(existingTable);
     }
 
     @Override
-    public RestaurantTable generateNewToken(Integer id) throws LocalizedException {
+    public RestaurantTable generateNewToken(Long id) throws LocalizedException {
         RestaurantTable existingTable = findById(id);
         assertTableNotActivatedElseThrow(existingTable);
         String token = String.valueOf(UUID.randomUUID());
@@ -96,7 +96,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
-    public void toggleActivation(Integer id) throws LocalizedException {
+    public void toggleActivation(Long id) throws LocalizedException {
         RestaurantTable table = findById(id);
         if (isToggleValid(table)) {
             removeUsersAccess(table);
@@ -108,7 +108,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
-    public void callWaiter(Integer id) throws LocalizedException {
+    public void callWaiter(Long id) throws LocalizedException {
         RestaurantTable restaurantTable = findById(id);
         validateTableAction(restaurantTable);
         restaurantTable.setWaiterCalled(true);
@@ -117,7 +117,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
-    public void resolveWaiterCall(Integer id) throws LocalizedException {
+    public void resolveWaiterCall(Long id) throws LocalizedException {
         RestaurantTable restaurantTable = findById(id);
         restaurantTable.setWaiterCalled(false);
         save(restaurantTable);
@@ -125,7 +125,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     }
 
     @Override
-    public void requestBill(Integer id, PaymentMethod paymentMethod) throws LocalizedException {
+    public void requestBill(Long id, PaymentMethod paymentMethod) throws LocalizedException {
         RestaurantTable restaurantTable = findById(id);
         validateTableAction(restaurantTable);
         notifyRelatedOrderSummary(id, paymentMethod);
@@ -134,7 +134,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         messagingTemplate.convertAndSend("/topic/tables", findAll());
     }
 
-    private void notifyRelatedOrderSummary(Integer tableNumber, PaymentMethod paymentMethod) throws LocalizedException {
+    private void notifyRelatedOrderSummary(Long tableNumber, PaymentMethod paymentMethod) throws LocalizedException {
         OrderSummary existingSummary = orderSummaryRepository.findFirstByRestaurantTableId(tableNumber)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.orderSummaryService.summaryNotFound", tableNumber));
@@ -164,7 +164,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         return true;
     }
 
-    private OrderSummary getSummaryForTable(Integer id) {
+    private OrderSummary getSummaryForTable(Long id) {
         return orderSummaryRepository.findFirstByRestaurantTableId(id)
                 .orElse(new OrderSummary());
     }

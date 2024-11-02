@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
-import com.hackybear.hungry_scan_core.entity.Allergen;
+import com.hackybear.hungry_scan_core.dto.AllergenDTO;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -43,12 +43,12 @@ class AllergenControllerTest {
     @Test
     @WithMockUser(roles = {"MANAGER"})
     void shouldGetAllAllergens() throws Exception {
-        List<Allergen> allergens =
+        List<AllergenDTO> allergens =
                 apiRequestUtils.fetchAsList(
-                        "/api/cms/allergens", Allergen.class);
+                        "/api/cms/allergens", AllergenDTO.class);
 
         assertEquals(14, allergens.size());
-        assertEquals("Gluten", allergens.get(0).getName().getDefaultTranslation());
+        assertEquals("Gluten", allergens.get(0).name().defaultTranslation());
     }
 
     @Test
@@ -59,9 +59,9 @@ class AllergenControllerTest {
     @Test
     @WithMockUser(roles = {"CUSTOMER_READONLY"})
     void shouldShowAllergenById() throws Exception {
-        Allergen allergen =
-                apiRequestUtils.postObjectExpect200("/api/cms/allergens/show", 6, Allergen.class);
-        assertEquals("Soja", allergen.getName().getDefaultTranslation());
+        AllergenDTO allergen =
+                apiRequestUtils.postObjectExpect200("/api/cms/allergens/show", 6, AllergenDTO.class);
+        assertEquals("Soja", allergen.name().defaultTranslation());
     }
 
     @Test

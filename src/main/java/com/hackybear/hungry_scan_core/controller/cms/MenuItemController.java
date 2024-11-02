@@ -1,7 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.MenuItem;
+import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,29 +26,24 @@ public class MenuItemController {
         this.responseHelper = responseHelper;
     }
 
-    @GetMapping
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<MenuItem>> list() {
-        return ResponseEntity.ok(menuItemService.findAll());
-    }
-
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, menuItemService::findById);
-    }
-
-    @GetMapping("/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<MenuItem> add() {
-        return ResponseEntity.ok(new MenuItem());
     }
 
     @PostMapping(value = "/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> add(@RequestBody @Valid MenuItem menuItem,
+    public ResponseEntity<?> add(@RequestBody @Valid MenuItemFormDTO menuItem,
                                  BindingResult br) {
         return responseHelper.buildResponse(menuItem, br, menuItemService::save);
+    }
+
+    @PatchMapping(value = "/update")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> update(@RequestBody @Valid MenuItemFormDTO menuItem,
+                                    BindingResult br) {
+        return responseHelper.buildResponse(menuItem, br, menuItemService::update);
     }
 
     @PostMapping("/filter")
@@ -60,14 +54,14 @@ public class MenuItemController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> delete(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> delete(@RequestBody Long id) {
         return responseHelper.buildResponse(id, menuItemService::delete);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Allow", "GET, POST, DELETE, OPTIONS");
+        headers.add("Allow", "GET, POST, PATCH, DELETE, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

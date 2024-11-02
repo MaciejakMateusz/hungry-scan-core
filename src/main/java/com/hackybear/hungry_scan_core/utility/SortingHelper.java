@@ -1,18 +1,22 @@
 package com.hackybear.hungry_scan_core.utility;
 
 import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
+import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingFunction;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -22,116 +26,166 @@ public class SortingHelper {
     private final MenuItemRepository menuItemRepository;
     private final CategoryRepository categoryRepository;
     private final VariantRepository variantRepository;
+    private final MenuRepository menuRepository;
     private final ExceptionHelper exceptionHelper;
 
     public SortingHelper(MenuItemRepository menuItemRepository,
                          CategoryRepository categoryRepository,
                          VariantRepository variantRepository,
-                         ExceptionHelper exceptionHelper) {
+                         MenuRepository menuRepository, ExceptionHelper exceptionHelper) {
         this.menuItemRepository = menuItemRepository;
         this.categoryRepository = categoryRepository;
         this.variantRepository = variantRepository;
+        this.menuRepository = menuRepository;
         this.exceptionHelper = exceptionHelper;
     }
 
-    public void sortAndSave(MenuItem menuItem, ThrowingFunction<Integer, MenuItem> findFunction) throws Exception {
+    public void sortAndSave(MenuItem menuItem, ThrowingFunction<Long, MenuItem> findFunction) throws Exception {
         boolean isNew = isNewEntity(menuItem);
         MenuItem currentItem = getCurrentEntity(menuItem, findFunction, isNew, MenuItem.class);
-        Integer currentOrder = getCurrentOrder(currentItem);
-        Integer newOrder = getNewOrder(menuItem.getDisplayOrder());
+        int newOrder = getNewOrder(menuItem.getDisplayOrder());
 
-        Category category = categoryRepository.findById(menuItem.getCategoryId())
+        Long categoryId = menuItem.getCategoryId();
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.categoryService.categoryNotFound", menuItem.getCategoryId()));
-        List<MenuItem> categoryItems = category.getMenuItems();
+                        "error.categoryService.categoryNotFound", categoryId));
 
-        Set<Integer> uniqueDisplayOrders = categoryItems.stream()
-                .map(MenuItem::getDisplayOrder)
-                .collect(Collectors.toSet());
+        List<MenuItem> categoryItems = category.getMenuItems()
+                .stream()
+                .sorted()
+                .collect(Collectors.toList());
 
-        boolean hasDuplicatedDisplayOrders = uniqueDisplayOrders.size() < categoryItems.size();
-
-        if (shouldSaveWithoutReordering(currentOrder, menuItem, menuItemRepository::save) && !hasDuplicatedDisplayOrders) {
-            return;
+        if (!isNew) {
+            categoryItems.remove(currentItem);
+            updateDisplayOrdersAfterRemoval(categoryItems);
         }
 
-        if (isNew && !hasDuplicatedDisplayOrders) {
-            menuItemRepository.save(menuItem);
-            category.addMenuItem(menuItem);
-            categoryRepository.save(category);
-        }
+        adjustDisplayOrdersForInsertion(menuItem, categoryItems, newOrder);
 
-        newOrder = adjustNewOrderIfNeeded(newOrder, categoryItems);
-
-        if (isNew || hasDuplicatedDisplayOrders) {
-            incrementDisplayOrders(categoryItems, newOrder);
-        } else {
-            adjustDisplayOrders(categoryItems, currentOrder, newOrder);
-        }
-
-        updateDisplayOrder(categoryItems, menuItem, newOrder);
+        category.setMenuItems(categoryItems);
+        categoryRepository.save(category);
         menuItemRepository.saveAll(categoryItems);
     }
 
-    public void sortAndSave(Category category, ThrowingFunction<Integer, Category> findFunction) throws Exception {
+    public void sortAndSave(Category category, ThrowingFunction<Long, Category> findFunction) throws Exception {
         boolean isNew = isNewEntity(category);
         Category currentCategory = getCurrentEntity(category, findFunction, isNew, Category.class);
-        Integer currentOrder = getCurrentOrder(currentCategory);
-        Integer newOrder = getNewOrder(category.getDisplayOrder());
+        int newOrder = getNewOrder(category.getDisplayOrder());
 
-        if (shouldSaveWithoutReordering(currentOrder, category, categoryRepository::save)) {
-            return;
+        Long menuId = category.getMenuId();
+        List<Category> menuCategories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(menuId);
+
+        if (!isNew) {
+            menuCategories.remove(currentCategory);
+            updateDisplayOrdersAfterRemoval(menuCategories);
         }
 
-        category = persistIfNew(category, categoryRepository::save, isNew);
+        adjustDisplayOrdersForInsertion(category, menuCategories, newOrder);
 
-        List<Category> categories = categoryRepository.findAllByOrderByDisplayOrder();
-        newOrder = adjustNewOrderIfNeeded(newOrder, categories);
-
-        if (isNew) {
-            incrementDisplayOrders(categories, newOrder);
-        } else {
-            adjustDisplayOrders(categories, currentOrder, newOrder);
-        }
-
-        updateDisplayOrder(categories, category, newOrder);
-        categoryRepository.saveAll(categories);
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuService.menuNotFound", menuId));
+        menu.setCategories(menuCategories);
+        categoryRepository.save(category);
+        menuRepository.save(menu);
     }
 
     private Integer getNewOrder(Integer displayOrder) {
         return Objects.isNull(displayOrder) ? 1 : displayOrder;
     }
 
-    public void sortAndSave(Variant variant, ThrowingFunction<Integer, Variant> findFunction) throws Exception {
+    public void sortAndSave(Variant variant, ThrowingFunction<Long, Variant> findFunction) throws Exception {
         boolean isNew = isNewEntity(variant);
-        Variant currentVariant = getCurrentEntity(variant, findFunction, isNew, Variant.class);
-        Integer currentOrder = getCurrentOrder(currentVariant);
-        Integer newOrder = getNewOrder(variant.getDisplayOrder());
+        Variant currentItem = getCurrentEntity(variant, findFunction, isNew, Variant.class);
+        int newOrder = getNewOrder(variant.getDisplayOrder());
 
-        if (shouldSaveWithoutReordering(currentOrder, variant, variantRepository::save)) {
-            return;
+        MenuItem menuItem = getMenuItem(variant.getMenuItemId());
+        List<Variant> menuItemVariants = variantRepository.findAllByMenuItemIdOrderByDisplayOrder(variant.getMenuItemId());
+
+        if (!isNew) {
+            menuItemVariants.remove(currentItem);
+            updateDisplayOrdersAfterRemoval(menuItemVariants);
         }
 
-        variant = persistIfNew(variant, variantRepository::save, isNew);
+        adjustDisplayOrdersForInsertion(variant, menuItemVariants, newOrder);
 
-        List<Variant> variants = variantRepository.findAllByMenuItemIdOrderByDisplayOrder(variant.getMenuItem().getId());
-        newOrder = adjustNewOrderIfNeeded(newOrder, variants);
+        menuItem.setVariants(new HashSet<>(menuItemVariants));
+        menuItemRepository.save(menuItem);
+    }
 
-        if (isNew) {
-            incrementDisplayOrders(variants, newOrder);
-        } else {
-            adjustDisplayOrders(variants, currentOrder, newOrder);
+    public void removeAndAdjust(MenuItem menuItem) throws LocalizedException {
+        Long categoryId = menuItem.getCategoryId();
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(
+                        exceptionHelper.supplyLocalizedMessage(
+                                "error.categoryService.categoryNotFound", categoryId));
+
+        List<MenuItem> categoryItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(categoryId);
+
+        categoryItems.remove(menuItem);
+        updateDisplayOrdersAfterRemoval(categoryItems);
+
+        category.setMenuItems(categoryItems);
+        categoryRepository.save(category);
+        menuItemRepository.delete(menuItem);
+    }
+
+    public void removeAndAdjust(Category category) throws LocalizedException {
+        Long menuId = category.getMenuId();
+        List<Category> menuCategories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(menuId);
+
+        menuCategories.remove(category);
+        updateDisplayOrdersAfterRemoval(menuCategories);
+
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuService.menuNotFound", menuId));
+        menu.setCategories(menuCategories);
+        menuRepository.save(menu);
+        categoryRepository.delete(category);
+    }
+
+    public void removeAndAdjust(Variant variant) throws LocalizedException {
+        Long menuItemId = variant.getMenuItemId();
+        MenuItem menuItem = getMenuItem(menuItemId);
+        menuItem.removeVariant(variant);
+        List<Variant> menuItemVariants = new ArrayList<>(menuItem.getVariants().stream().sorted().toList());
+
+        updateDisplayOrdersAfterRemoval(menuItemVariants);
+        menuItem.setVariants(new HashSet<>(menuItemVariants));
+        menuItemRepository.save(menuItem);
+        variantRepository.delete(variant);
+    }
+
+    private <T extends Comparable<T>> void updateDisplayOrdersAfterRemoval(List<T> collection) {
+        for (int i = 0; i < collection.size(); i++) {
+            setDisplayOrder(collection.get(i), i + 1);
+        }
+    }
+
+    private <T extends Comparable<T>> void renumberDisplayOrders(List<T> collection) {
+        int order = 1;
+        for (T item : collection) {
+            setDisplayOrder(item, order++);
+        }
+    }
+
+    private <T extends Comparable<T>> void adjustDisplayOrdersForInsertion(T newItem, List<T> collection, int newOrder) {
+        if (newOrder < 1) {
+            newOrder = 1;
+        } else if (newOrder > collection.size()) {
+            newOrder = collection.size() + 1;
         }
 
-        updateDisplayOrder(variants, variant, newOrder);
-        variantRepository.saveAll(variants);
+        collection.add(newOrder - 1, newItem);
+        renumberDisplayOrders(collection);
     }
 
     private <T> boolean isNewEntity(T entity) {
         return Objects.isNull(getId(entity));
     }
 
-    private <T> T getCurrentEntity(T entity, ThrowingFunction<Integer, T> function, boolean isNew, Class<T> clazz) throws Exception {
+    private <T> T getCurrentEntity(T entity, ThrowingFunction<Long, T> function, boolean isNew, Class<T> clazz) throws Exception {
         if (!isNew) {
             return function.apply(getId(entity));
         }
@@ -142,67 +196,10 @@ public class SortingHelper {
         }
     }
 
-    private <T> T persistIfNew(T entity, ThrowingFunction<T, T> saveFunction, boolean isNew) throws Exception {
-        if (isNew) {
-            return saveFunction.apply(entity);
-        }
-        return entity;
-    }
-
-    private <T> Integer getCurrentOrder(T currentEntity) {
-        return Objects.isNull(getDisplayOrder(currentEntity)) ? 0 : getDisplayOrder(currentEntity);
-    }
-
-    private <T> boolean shouldSaveWithoutReordering(Integer currentOrder, T t, Consumer<T> save) {
-        if (currentOrder.equals(getDisplayOrder(t)) && getDisplayOrder(t) != 0) {
-            save.accept(t);
-            return true;
-        }
-        return false;
-    }
-
-    private <T> Integer adjustNewOrderIfNeeded(Integer newOrder, List<T> collection) {
-        if (collection.size() == 1) {
-            return 1;
-        }
-
-        int maxOrder = collection.size();
-        if (newOrder > maxOrder) {
-            return maxOrder;
-        } else if (newOrder < 1) {
-            return 1;
-        }
-        return newOrder;
-    }
-
-    private <T> void incrementDisplayOrders(List<T> collection, Integer newOrder) {
-        if (collection.size() == 1) {
-            return;
-        }
-        for (T t : collection) {
-            if (getDisplayOrder(t) >= newOrder) {
-                setDisplayOrder(t, getDisplayOrder(t) + 1);
-            }
-        }
-    }
-
-    private <T> void adjustDisplayOrders(List<T> collection, Integer currentOrder, Integer newOrder) {
-        if (collection.size() == 1) {
-            return;
-        }
-        if (newOrder > currentOrder) {
-            for (T t : collection) {
-                if (getDisplayOrder(t) > currentOrder && getDisplayOrder(t) <= newOrder) {
-                    setDisplayOrder(t, getDisplayOrder(t) - 1);
-                }
-            }
-        } else {
-            for (T t : collection) {
-                if (getDisplayOrder(t) >= newOrder && getDisplayOrder(t) < currentOrder) {
-                    setDisplayOrder(t, getDisplayOrder(t) + 1);
-                }
-            }
-        }
+    private MenuItem getMenuItem(Long id) throws LocalizedException {
+        return menuItemRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuItemService.menuItemNotFound", id));
     }
 
     public <T> void updateDisplayOrders(Integer removedDisplayOrder,
@@ -215,17 +212,6 @@ public class SortingHelper {
             }
         }
         consumer.accept(collection);
-    }
-
-    private <T> void updateDisplayOrder(List<T> collection, T entity, Integer newOrder) {
-        for (int i = 0; i < collection.size(); i++) {
-            T t = collection.get(i);
-            if (getId(t).equals(getId(entity))) {
-                setDisplayOrder(entity, newOrder);
-                collection.set(i, entity);
-                break;
-            }
-        }
     }
 
     private Integer getDisplayOrder(Object obj) {
@@ -251,7 +237,7 @@ public class SortingHelper {
         }
     }
 
-    private Integer getId(Object obj) {
+    private Long getId(Object obj) {
         if (obj instanceof MenuItem) {
             return ((MenuItem) obj).getId();
         } else if (obj instanceof Category) {

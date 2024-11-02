@@ -4,5 +4,8 @@ import com.hackybear.hungry_scan_core.entity.Settings;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SettingsRepository extends CustomRepository<Settings, Integer> {
+public interface SettingsRepository extends CustomRepository<Settings, Long> {
+
+    Settings findByRestaurantId(Long restaurantId);
+
 }

@@ -74,7 +74,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public OrderSummary findByTable(Integer id) throws LocalizedException {
+    public OrderSummary findByTable(Long id) throws LocalizedException {
         return orderSummaryRepository.findFirstByRestaurantTableId(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.orderSummaryService.summaryNotFoundForTable", id));
@@ -88,7 +88,7 @@ public class OrderServiceImp implements OrderService {
         return getOrderSummary(order.getRestaurantTable().getId());
     }
 
-    private OrderSummary getOrderSummary(Integer tableId) {
+    private OrderSummary getOrderSummary(Long tableId) {
         return orderSummaryRepository.findFirstByRestaurantTableId(tableId)
                 .orElse(new OrderSummary());
     }
@@ -159,7 +159,7 @@ public class OrderServiceImp implements OrderService {
         }
     }
 
-    private MenuItem getMenuItemById(Integer id) throws LocalizedException {
+    private MenuItem getMenuItemById(Long id) throws LocalizedException {
         return menuItemRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.menuItemService.menuItemNotFound", id));

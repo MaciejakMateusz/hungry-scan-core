@@ -42,7 +42,7 @@ public class RestaurantTableController {
 
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/show")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::findById);
     }
 
@@ -60,19 +60,19 @@ public class RestaurantTableController {
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @PostMapping
-    public ResponseEntity<?> delete(@RequestBody Integer id) {
+    public ResponseEntity<?> delete(@RequestBody Long id) {
         return responseHelper.buildResponse(id, restaurantTableService::delete);
     }
 
     @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @PatchMapping("/toggle")
-    public ResponseEntity<Map<String, Object>> toggleActivation(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> toggleActivation(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::toggleActivation);
     }
 
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PatchMapping("/request-bill")
-    public ResponseEntity<Map<String, Object>> requestBill(@RequestParam("id") Integer id,
+    public ResponseEntity<Map<String, Object>> requestBill(@RequestParam("id") Long id,
                                                            @RequestParam("value") PaymentMethod paymentMethod) {
         return responseHelper.buildResponse(id, paymentMethod, restaurantTableService::requestBill);
     }
@@ -85,13 +85,13 @@ public class RestaurantTableController {
 
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PatchMapping("/call-waiter")
-    public ResponseEntity<Map<String, Object>> callWaiter(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> callWaiter(@RequestBody Long id) {
         return responseHelper.buildResponse(id, restaurantTableService::callWaiter);
     }
 
     @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
     @PatchMapping("/resolve-call")
-    public ResponseEntity<Map<String, Object>> resolveWaiterCall(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> resolveWaiterCall(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::resolveWaiterCall);
     }
 

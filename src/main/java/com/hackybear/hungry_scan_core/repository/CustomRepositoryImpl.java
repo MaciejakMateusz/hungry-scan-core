@@ -12,6 +12,7 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
 
     private final EntityManager entityManager;
 
+    @SuppressWarnings("unchecked")
     public CustomRepositoryImpl(JpaEntityInformation entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
         this.entityManager = entityManager;

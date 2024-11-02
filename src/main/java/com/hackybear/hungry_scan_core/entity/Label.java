@@ -21,7 +21,11 @@ public class Label {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+
+    @Column(name = "restaurant_id", nullable = false)
+    @NotNull
+    private Long restaurantId;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")

@@ -51,13 +51,13 @@ public class RestaurantTableServiceImpTest {
 
     @Test
     void shouldFindById() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(10);
+        RestaurantTable restaurantTable = restaurantTableService.findById(10L);
         assertEquals("88ca9c82-e630-40f2-9bf9-47f7d14f6bff", restaurantTable.getToken());
     }
 
     @Test
     void shouldNotFindById() {
-        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.findById(98));
+        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.findById(98L));
         assertEquals("Stolik z ID = 98 nie istnieje.", exception.getLocalizedMessage());
     }
 
@@ -91,7 +91,7 @@ public class RestaurantTableServiceImpTest {
     void shouldCreateNew() throws LocalizedException {
         RestaurantTable restaurantTable = createRestaurantTable();
         restaurantTableService.createNew(restaurantTable);
-        RestaurantTable persistedRestaurantTable = restaurantTableService.findById(20);
+        RestaurantTable persistedRestaurantTable = restaurantTableService.findById(20L);
         assertEquals(restaurantTable.getToken(), persistedRestaurantTable.getToken());
     }
 
@@ -108,11 +108,11 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldSave() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(4);
+        RestaurantTable restaurantTable = restaurantTableService.findById(4L);
         restaurantTable.setMaxNumOfPpl(5);
         restaurantTable.setNumber(33);
         restaurantTableService.save(restaurantTable);
-        RestaurantTable persistedRestaurantTable = restaurantTableService.findById(4);
+        RestaurantTable persistedRestaurantTable = restaurantTableService.findById(4L);
         assertEquals(restaurantTable.getToken(), persistedRestaurantTable.getToken());
         assertEquals(restaurantTable.getNumber(), persistedRestaurantTable.getNumber());
         assertEquals(restaurantTable.getMaxNumOfPpl(), persistedRestaurantTable.getMaxNumOfPpl());
@@ -132,18 +132,18 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldDelete() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(4);
+        RestaurantTable restaurantTable = restaurantTableService.findById(4L);
         assertEquals("5afb9629-990a-4934-87f2-793b1aa2f35e", restaurantTable.getToken());
 
-        restaurantTableService.delete(4);
+        restaurantTableService.delete(4L);
 
-        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.findById(4));
+        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.findById(4L));
         assertEquals("Stolik z ID = 4 nie istnieje.", exception.getLocalizedMessage());
     }
 
     @Test
     void shouldNotDeleteWithIncorrectId() {
-        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.delete(69));
+        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.delete(69L));
         assertEquals("Stolik z ID = 69 nie istnieje.", exception.getLocalizedMessage());
     }
 
@@ -151,12 +151,12 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldNotDeleteWhenTableIsActive() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(4);
+        RestaurantTable restaurantTable = restaurantTableService.findById(4L);
         assertEquals("5afb9629-990a-4934-87f2-793b1aa2f35e", restaurantTable.getToken());
 
-        restaurantTableService.toggleActivation(4);
+        restaurantTableService.toggleActivation(4L);
 
-        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.delete(4));
+        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.delete(4L));
         assertEquals("Stolik z ID = 4 jest jeszcze aktywny.", exception.getLocalizedMessage());
     }
 
@@ -164,13 +164,13 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldGenerateNewToken() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(9);
+        RestaurantTable restaurantTable = restaurantTableService.findById(9L);
         String originalToken = restaurantTable.getToken();
         assertEquals("fe2cce7c-7c4c-4076-9eb4-3e91b440fec2", originalToken);
 
-        restaurantTableService.generateNewToken(9);
+        restaurantTableService.generateNewToken(9L);
 
-        restaurantTable = restaurantTableService.findById(9);
+        restaurantTable = restaurantTableService.findById(9L);
         assertNotEquals(originalToken, restaurantTable.getToken());
     }
 
@@ -178,13 +178,13 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldNotGenerateNewTokenWhenTableIsActive() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(9);
+        RestaurantTable restaurantTable = restaurantTableService.findById(9L);
         String originalToken = restaurantTable.getToken();
 
-        restaurantTableService.toggleActivation(9);
+        restaurantTableService.toggleActivation(9L);
 
         LocalizedException exception = assertThrows(LocalizedException.class, () ->
-                restaurantTableService.generateNewToken(9));
+                restaurantTableService.generateNewToken(9L));
         assertEquals("Stolik z ID = 9 jest jeszcze aktywny.", exception.getLocalizedMessage());
         assertEquals(originalToken, restaurantTable.getToken());
     }
@@ -193,22 +193,22 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldToggleActivation() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(9);
+        RestaurantTable restaurantTable = restaurantTableService.findById(9L);
         assertFalse(restaurantTable.isActive());
 
-        restaurantTableService.toggleActivation(9);
-        restaurantTable = restaurantTableService.findById(9);
+        restaurantTableService.toggleActivation(9L);
+        restaurantTable = restaurantTableService.findById(9L);
         assertTrue(restaurantTable.isActive());
 
-        restaurantTableService.toggleActivation(9);
-        restaurantTable = restaurantTableService.findById(9);
+        restaurantTableService.toggleActivation(9L);
+        restaurantTable = restaurantTableService.findById(9L);
         assertFalse(restaurantTable.isActive());
     }
 
     @Test
     void shouldNotToggleWithIncorrectId() {
         LocalizedException exception = assertThrows(LocalizedException.class, () ->
-                restaurantTableService.toggleActivation(55));
+                restaurantTableService.toggleActivation(55L));
         assertEquals("Stolik z ID = 55 nie istnieje.", exception.getLocalizedMessage());
     }
 
@@ -216,21 +216,21 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldCallWaiter() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(9);
-        restaurantTableService.toggleActivation(9);
+        RestaurantTable restaurantTable = restaurantTableService.findById(9L);
+        restaurantTableService.toggleActivation(9L);
         assertFalse(restaurantTable.isWaiterCalled());
 
-        restaurantTableService.callWaiter(9);
-        restaurantTable = restaurantTableService.findById(9);
+        restaurantTableService.callWaiter(9L);
+        restaurantTable = restaurantTableService.findById(9L);
         assertTrue(restaurantTable.isWaiterCalled());
     }
 
     @Test
     void shouldNotCallWaiterWhenTableNotActive() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(9);
+        RestaurantTable restaurantTable = restaurantTableService.findById(9L);
         assertFalse(restaurantTable.isWaiterCalled());
 
-        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.callWaiter(9));
+        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.callWaiter(9L));
         assertEquals("Stolik z ID = 9 nie jest aktywny.", exception.getLocalizedMessage());
     }
 
@@ -238,14 +238,14 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldNotCallWaiterWhenWaiterCalled() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(9);
+        RestaurantTable restaurantTable = restaurantTableService.findById(9L);
         assertFalse(restaurantTable.isWaiterCalled());
 
-        restaurantTableService.toggleActivation(9);
-        restaurantTableService.callWaiter(9);
+        restaurantTableService.toggleActivation(9L);
+        restaurantTableService.callWaiter(9L);
         assertTrue(restaurantTable.isWaiterCalled());
 
-        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.callWaiter(9));
+        LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.callWaiter(9L));
         assertEquals("Stolik posiada już aktywne wezwanie kelnera lub prośbę o rachunek.", exception.getLocalizedMessage());
     }
 
@@ -253,14 +253,14 @@ public class RestaurantTableServiceImpTest {
     @Transactional
     @Rollback
     void shouldResolveWaiterCall() throws LocalizedException {
-        RestaurantTable restaurantTable = restaurantTableService.findById(9);
-        restaurantTableService.toggleActivation(9);
-        restaurantTableService.callWaiter(9);
+        RestaurantTable restaurantTable = restaurantTableService.findById(9L);
+        restaurantTableService.toggleActivation(9L);
+        restaurantTableService.callWaiter(9L);
         assertTrue(restaurantTable.isWaiterCalled());
 
-        restaurantTableService.resolveWaiterCall(9);
+        restaurantTableService.resolveWaiterCall(9L);
 
-        RestaurantTable updatedTable = restaurantTableService.findById(9);
+        RestaurantTable updatedTable = restaurantTableService.findById(9L);
         assertFalse(updatedTable.isWaiterCalled());
     }
 
@@ -269,7 +269,7 @@ public class RestaurantTableServiceImpTest {
     @Rollback
     void shouldNotResolveWaiterCallWithIncorrectTableId() {
         LocalizedException exception = assertThrows(LocalizedException.class, () ->
-                restaurantTableService.resolveWaiterCall(69));
+                restaurantTableService.resolveWaiterCall(69L));
         assertEquals("Stolik z ID = 69 nie istnieje.", exception.getLocalizedMessage());
     }
 

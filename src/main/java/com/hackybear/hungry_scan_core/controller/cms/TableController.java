@@ -45,7 +45,7 @@ public class TableController {
 
     @PostMapping("/show")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::findById);
     }
 
@@ -64,13 +64,13 @@ public class TableController {
 
     @PatchMapping("/generate-token")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> generateNewToken(@RequestBody Integer id) {
+    public ResponseEntity<?> generateNewToken(@RequestBody Long id) {
         return responseHelper.buildResponse(id, restaurantTableService::generateNewToken);
     }
 
     @PostMapping("/generate-qr")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> generateQr(@RequestBody Integer id) {
+    public ResponseEntity<?> generateQr(@RequestBody Long id) {
         try {
             RestaurantTable restaurantTable = restaurantTableService.generateNewToken(id);
             qrService.generate(restaurantTable, "");
@@ -82,7 +82,7 @@ public class TableController {
 
     @PostMapping(value = "/download")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> downloadFile(@RequestBody Integer id) {
+    public ResponseEntity<?> downloadFile(@RequestBody Long id) {
         try {
             RestaurantTable restaurantTable = restaurantTableService.findById(id);
             Resource file = fileProcessingService.downloadFile(restaurantTable.getQrName());
@@ -102,7 +102,7 @@ public class TableController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> delete(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> delete(@RequestBody Long id) {
         return responseHelper.buildResponse(id, restaurantTableService::delete);
     }
 

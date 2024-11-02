@@ -1,6 +1,9 @@
 package com.hackybear.hungry_scan_core.service;
 
+import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
@@ -21,12 +24,14 @@ public class EmailServiceImp implements EmailService {
 
     private final JavaMailSender emailSender;
     private final UserServiceImp userServiceImp;
+    private final UserMapper userMapper;
     private static final String LOCAL_HOST = "http://localhost:8080/";
 
     public EmailServiceImp(JavaMailSender emailSender,
-                           UserServiceImp userServiceImp) {
+                           UserServiceImp userServiceImp, UserMapper userMapper) {
         this.emailSender = emailSender;
         this.userServiceImp = userServiceImp;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -40,7 +45,7 @@ public class EmailServiceImp implements EmailService {
     }
 
     @Override
-    public void passwordRecovery(String to) {
+    public void passwordRecovery(String to) throws LocalizedException {
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("noreply@restauracjararytas.pl");
@@ -49,7 +54,8 @@ public class EmailServiceImp implements EmailService {
 
         User user = userServiceImp.findByUsername(to);
         user.setEmailToken(UUID.randomUUID().toString());
-        userServiceImp.update(user);
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        userServiceImp.update(registrationDTO);
 
         String link = determineBaseUrl() + "/login/" + user.getEmailToken();
         message.setText("Twój link do zmiany hasła: " + link);
@@ -58,7 +64,7 @@ public class EmailServiceImp implements EmailService {
     }
 
     @Override
-    public void activateAccount(String to) {
+    public void activateAccount(String to) throws LocalizedException {
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("noreply@restauracjararytas.pl");
@@ -67,7 +73,8 @@ public class EmailServiceImp implements EmailService {
 
         User user = userServiceImp.findByUsername(to);
         user.setEmailToken(UUID.randomUUID().toString());
-        userServiceImp.update(user);
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        userServiceImp.update(registrationDTO);
 
         String link = determineBaseUrl() + "/register/" + user.getEmailToken();
         message.setText("Kliknij w ten link, aby aktywować swoje konto: " + link);

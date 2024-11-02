@@ -9,9 +9,9 @@ public interface ThemeService {
 
     List<Theme> findAll();
 
-    Theme findById(Integer id) throws LocalizedException;
+    Theme findById(Long id) throws LocalizedException;
 
-    void setActive(Integer id) throws LocalizedException;
+    void setActive(Long id) throws LocalizedException;
 
     Theme getActive() throws LocalizedException;
 }

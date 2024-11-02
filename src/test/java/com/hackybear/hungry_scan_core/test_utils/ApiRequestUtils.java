@@ -307,7 +307,13 @@ public class ApiRequestUtils {
                                                              T object,
                                                              ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
-        String jsonRequest = objectMapper.writeValueAsString(object);
+        String jsonRequest;
+        if (!(object instanceof String)) {
+            jsonRequest = objectMapper.writeValueAsString(object);
+        } else {
+            jsonRequest = (String) object;
+        }
+
 
         ResultActions resultActions = mockMvc.perform(post(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -397,7 +403,12 @@ public class ApiRequestUtils {
                                                                T object,
                                                                ResultMatcher matcher) throws Exception {
         ObjectMapper objectMapper = prepObjMapper();
-        String jsonRequest = objectMapper.writeValueAsString(object);
+        String jsonRequest;
+        if (!(object instanceof String)) {
+            jsonRequest = objectMapper.writeValueAsString(object);
+        } else {
+            jsonRequest = (String) object;
+        }
 
         ResultActions resultActions = mockMvc.perform(delete(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -1,7 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.Variant;
+import com.hackybear.hungry_scan_core.dto.VariantDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.VariantService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -28,33 +28,31 @@ public class VariantController {
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @PostMapping("/show")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, variantService::findById);
-    }
-
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    @GetMapping
-    public ResponseEntity<List<Variant>> findAll() {
-        List<Variant> variants = variantService.findAll();
-        return ResponseEntity.ok(variants);
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/item")
-    public ResponseEntity<List<Variant>> findAllByMenuItem(@RequestBody Integer id) {
-        List<Variant> variants = variantService.findAllByMenuItemId(id);
-        return ResponseEntity.ok(variants);
+    public ResponseEntity<List<VariantDTO>> findAllByMenuItem(@RequestBody Long id) {
+        return ResponseEntity.ok(variantService.findAllByMenuItemId(id));
     }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<?> persist(@RequestBody @Valid Variant variant, BindingResult br) {
+    public ResponseEntity<?> persist(@RequestBody @Valid VariantDTO variant, BindingResult br) {
         return responseHelper.buildResponse(variant, br, variantService::save);
     }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PatchMapping("/update")
+    public ResponseEntity<?> update(@RequestBody @Valid VariantDTO variant, BindingResult br) {
+        return responseHelper.buildResponse(variant, br, variantService::update);
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(@RequestBody Integer id) {
+    public ResponseEntity<?> delete(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, variantService::delete);
     }
 

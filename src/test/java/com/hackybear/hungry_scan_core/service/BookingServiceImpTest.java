@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
@@ -53,6 +54,7 @@ class BookingServiceImpTest {
     @Test
     @Transactional
     @Rollback
+    @WithMockUser(username = "matimemek@test.com")
     void shouldBookTable3() throws LocalizedException {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -60,7 +62,7 @@ class BookingServiceImpTest {
                 LocalTime.of(12, 0),
                 (short) 2,
                 "Maciejak",
-                3);
+                3L);
         bookingService.save(booking);
         Page<Booking> foundBookings =
                 bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
@@ -76,13 +78,14 @@ class BookingServiceImpTest {
                 LocalTime.of(19, 30),
                 (short) 3,
                 "Górecki",
-                3);
+                3L);
         assertThrows(LocalizedException.class, () -> bookingService.save(booking));
     }
 
     @Test
     @Transactional
     @Rollback
+    @WithMockUser(username = "matimemek@test.com")
     void shouldBookTable2() throws LocalizedException {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -90,7 +93,7 @@ class BookingServiceImpTest {
                 LocalTime.of(13, 0),
                 (short) 4,
                 "Makaron",
-                2);
+                2L);
         bookingService.save(booking);
         Page<Booking> foundBookings =
                 bookingService.findAllByDateBetween(PageRequest.of(0, 20), bookingDate, bookingDate);
@@ -99,6 +102,7 @@ class BookingServiceImpTest {
     }
 
     @Test
+    @WithMockUser(username = "matimemek@test.com")
     void shouldNotBookTableBeforeOpening() {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -106,11 +110,12 @@ class BookingServiceImpTest {
                 LocalTime.of(6, 0),
                 (short) 2,
                 "Poranny",
-                7);
+                7L);
         assertThrows(LocalizedException.class, () -> bookingService.save(booking));
     }
 
     @Test
+    @WithMockUser(username = "matimemek@test.com")
     void shouldNotBookTableAfterClosing() {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking = createBooking(
@@ -118,13 +123,14 @@ class BookingServiceImpTest {
                 LocalTime.of(23, 0),
                 (short) 2,
                 "Nocny",
-                9);
+                9L);
         assertThrows(LocalizedException.class, () -> bookingService.save(booking));
     }
 
     @Test
     @Transactional
     @Rollback
+    @WithMockUser(username = "matimemek@test.com")
     void shouldNotLetBookATableTwice() throws LocalizedException {
         LocalDate bookingDate = LocalDate.now().plusDays(2L);
         Booking booking1 = createBooking(
@@ -132,13 +138,13 @@ class BookingServiceImpTest {
                 LocalTime.of(15, 0),
                 (short) 4,
                 "Pierwszy",
-                12);
+                12L);
         Booking booking2 = createBooking(
                 bookingDate,
                 LocalTime.of(14, 30),
                 (short) 2,
                 "Drugi",
-                12);
+                12L);
         bookingService.save(booking1);
         assertThrows(LocalizedException.class, () -> bookingService.save(booking2));
     }
@@ -159,7 +165,7 @@ class BookingServiceImpTest {
                                   LocalTime time,
                                   Short numOfPpl,
                                   String surname,
-                                  Integer tableId) {
+                                  Long tableId) {
         Booking booking = new Booking();
         booking.setDate(date);
         booking.setTime(time);

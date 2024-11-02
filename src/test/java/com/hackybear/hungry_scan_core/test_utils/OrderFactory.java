@@ -24,7 +24,7 @@ public class OrderFactory {
         this.restaurantTableService = restaurantTableService;
     }
 
-    public Order createOrder(Integer tableId, boolean isForTakeAway, OrderedItem... chosenItems) throws LocalizedException {
+    public Order createOrder(Long tableId, boolean isForTakeAway, OrderedItem... chosenItems) throws LocalizedException {
         Order order = new Order();
         Restaurant restaurant = restaurantService.findById(1L);
         order.setRestaurant(restaurant);

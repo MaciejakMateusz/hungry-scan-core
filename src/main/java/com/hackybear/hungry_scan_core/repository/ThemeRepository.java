@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ThemeRepository extends JpaRepository<Theme, Integer> {
+public interface ThemeRepository extends JpaRepository<Theme, Long> {
     Optional<Theme> findByActive(boolean active);
 }

@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
+import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
@@ -67,8 +68,8 @@ public class AdminManagementController {
     }
 
     @PostMapping("/show")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
-        return responseHelper.getResponseEntity(id, userService::findById);
+    public ResponseEntity<Map<String, Object>> show(@RequestBody String username) {
+        return responseHelper.getResponseEntity(username, userService::findByUsername);
     }
 
     @GetMapping("/add")
@@ -77,39 +78,41 @@ public class AdminManagementController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @RequestBody User user, BindingResult br) {
+    public ResponseEntity<?> add(@Valid @RequestBody RegistrationDTO registrationDTO, BindingResult br) {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
-        Map<String, Object> errorParams = responseHelper.getErrorParams(user);
+        Map<String, Object> errorParams = responseHelper.getErrorParams(registrationDTO);
         if (!errorParams.isEmpty()) {
             return ResponseEntity.badRequest().body(errorParams);
         }
-        userService.addToOrganization(user);
+        try {
+            userService.addToOrganization(registrationDTO);
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult br) throws LocalizedException {
+    public ResponseEntity<?> update(@Valid @RequestBody RegistrationDTO registrationDTO, BindingResult br) throws LocalizedException {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
-        if (!userService.isUpdatedUserValid(user)) {
-            return badRequestWithParam(userService.getErrorParam(user));
+        if (!userService.isUpdatedUserValid(registrationDTO)) {
+            return badRequestWithParam(userService.getErrorParam(registrationDTO));
         }
-        userService.save(user);
-        return ResponseEntity.ok().build();
+        return responseHelper.getResponseEntity(registrationDTO, userService::update);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Map<String, Object>> delete(@RequestBody User user, Principal principal) {
+    public ResponseEntity<Map<String, Object>> delete(@RequestBody String username, Principal principal) {
         Map<String, Object> params = new HashMap<>();
-        User currentAdmin = userService.findByUsername(principal.getName());
-        if (currentAdmin.getId().equals(user.getId())) {
+        if (principal.getName().equals(username)) {
             params.put("illegalRemoval", true);
             return ResponseEntity.badRequest().body(params);
         }
-        return responseHelper.buildResponse(user.getId(), userService::delete);
+        return responseHelper.buildResponse(username, userService::delete);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

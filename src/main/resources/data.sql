@@ -16,8 +16,8 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
 
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
-                             employee_session_time, order_comment_allowed, waiter_comment_allowed)
-VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true);
+                             employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
+VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true, 1);
 
 INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
 VALUES (1, 'ROLE_WAITER', 1);
@@ -33,10 +33,10 @@ INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
 VALUES (6, 'ROLE_CUSTOMER_READONLY', 6);
 
 INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
-                          jwt_token_id, name, phone_number, surname)
+                          jwt_token_id, name, phone_number, surname, active_restaurant_id, active_menu_id)
 VALUES (1, 1, NOW(), 'admin@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, '', '',
-        '');
+        '', 1, 1);
 
 INSERT IGNORE INTO users_restaurants (user_id, restaurant_id)
 VALUES (1, 1);
@@ -101,21 +101,21 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (34, 'Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
 
-INSERT IGNORE INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
-VALUES (1, 8, 'gluten.svg', 7),
-       (2, 10, 'crustaceans.svg', 9),
-       (3, 12, 'eggs.svg', 11),
-       (4, 14, 'fish.svg', 13),
-       (5, 16, 'peanuts.svg', 15),
-       (6, 18, 'soy.svg', 17),
-       (7, 20, 'milk.svg', 19),
-       (8, 22, 'nuts.svg', 21),
-       (9, 24, 'celery.svg', 23),
-       (10, 26, 'mustard.svg', 25),
-       (11, 28, 'sesame.svg', 27),
-       (12, 30, 'SO2.svg', 29),
-       (13, 32, 'lupine.svg', 31),
-       (14, 34, 'molluscs.svg', 33);
+INSERT IGNORE INTO allergens(id, restaurant_id, translatable_description_id, icon_name, translatable_name_id)
+VALUES (1, 1, 8, 'gluten.svg', 7),
+       (2, 1, 10, 'crustaceans.svg', 9),
+       (3, 1, 12, 'eggs.svg', 11),
+       (4, 1, 14, 'fish.svg', 13),
+       (5, 1, 16, 'peanuts.svg', 15),
+       (6, 1, 18, 'soy.svg', 17),
+       (7, 1, 20, 'milk.svg', 19),
+       (8, 1, 22, 'nuts.svg', 21),
+       (9, 1, 24, 'celery.svg', 23),
+       (10, 1, 26, 'mustard.svg', 25),
+       (11, 1, 28, 'sesame.svg', 27),
+       (12, 1, 30, 'SO2.svg', 29),
+       (13, 1, 32, 'lupine.svg', 31),
+       (14, 1, 34, 'molluscs.svg', 33);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (35, 'Bez glutenu', 'Gluten free');
@@ -130,22 +130,22 @@ INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (40, 'Ostre', 'Spicy');
 
-INSERT IGNORE INTO labels (id, icon_name, translatable_name_id)
-VALUES (1, 'gluten-free.svg', 35),
-       (2, 'vegan.svg', 36),
-       (3, 'vegetarian.svg', 37),
-       (4, 'coriander.svg', 38),
-       (5, 'lactose-free.svg', 39),
-       (6, 'spicy.svg', 40);
+INSERT IGNORE INTO labels (id, restaurant_id, icon_name, translatable_name_id)
+VALUES (1, 1, 'gluten-free.svg', 35),
+       (2, 1, 'vegan.svg', 36),
+       (3, 1, 'vegetarian.svg', 37),
+       (4, 1, 'coriander.svg', 38),
+       (5, 1, 'lactose-free.svg', 39),
+       (6, 1, 'spicy.svg', 40);
 
-INSERT IGNORE INTO themes(id, name, active)
-VALUES (1, 'green', true),
-       (2, 'pink', false),
-       (3, 'grey', false),
-       (4, 'orange', false);
+INSERT IGNORE INTO themes(id, name, active, restaurant_id)
+VALUES (1, 'green', true, 1),
+       (2, 'pink', false, 1),
+       (3, 'grey', false, 1),
+       (4, 'orange', false, 1);
 
-INSERT IGNORE INTO onboarding_images(id, image_name, is_active)
-VALUES (1, 'default', true);
+INSERT IGNORE INTO onboarding_images(id, restaurant_id, image_name, is_active)
+VALUES (1, 1, 'default', true);
 
 INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
                                zone_id, has_qr_code, qr_name)
@@ -303,160 +303,172 @@ VALUES (114, 'Coca-cola');
 INSERT IGNORE INTO translatable(id, default_translation)
 VALUES (115, '250ml');
 
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (1, 41, true, NOW(), null, false, 1);
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (2, 42, true, NOW(), null, false, 2);
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (3, 43, true, NOW(), null, false, 3);
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (4, 44, true, NOW(), null, false, 4);
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (5, 45, true, NOW(), null, false, 5);
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (6, 46, true, NOW(), null, false, 6);
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (7, 47, true, NOW(), null, false, 7);
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (8, 48, true, NOW(), null, true, 8);
-INSERT IGNORE INTO categories (id, translatable_name_id, is_available, created, updated, is_bar_served, display_order)
-VALUES (9, 49, true, NOW(), null, false, 9);
+INSERT IGNORE INTO menu (id, is_all_day, name, restaurant_id)
+VALUES (1, true, 'Całodniowe', 1);
+
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (1, 1, 41, true, NOW(), null, false, 1);
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (2, 1, 42, true, NOW(), null, false, 2);
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (3, 1, 43, true, NOW(), null, false, 3);
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (4, 1, 44, true, NOW(), null, false, 4);
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (5, 1, 45, true, NOW(), null, false, 5);
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (6, 1, 46, true, NOW(), null, false, 6);
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (7, 1, 47, true, NOW(), null, false, 7);
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (8, 1, 48, true, NOW(), null, true, 8);
+INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
+                               display_order)
+VALUES (9, 1, 49, true, NOW(), null, false, 9);
 
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (1, 50, 1, 51, null, null, false, false, true, true, 19.99, 0, false, 1);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (2, 52, 2, 53, null, null, false, false, true, true, 24.50, 0, false, 1);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (3, 54, 3, 55, null, null, false, false, true, true, 22.00, 0, false, 1);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (4, 56, 4, 57, null, null, false, false, true, true, 18.75, 0, false, 1);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (5, 58, 5, 59, null, null, false, false, true, true, 16.99, 0, false, 1);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (6, 60, 1, 61, null, null, false, false, true, true, 24.00, 0, false, 2);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (7, 62, 2, 63, null, null, false, false, true, true, 22.50, 0, false, 2);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (8, 64, 3, 65, null, null, false, false, true, true, 23.25, 0, false, 2);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (9, 66, 4, 67, null, null, false, false, true, true, 26.50, 0, false, 2);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (10, 68, 5, 69, null, null, false, false, true, true, 21.75, 0, false, 2);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (11, 70, 1, 71, null, null, false, false, true, true, 18.50, 0, false, 3);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (12, 72, 2, 73, null, null, false, false, true, true, 20.75, 0, false, 3);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (13, 74, 3, 75, null, null, false, false, true, true, 22.00, 0, false, 3);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (14, 76, 4, 77, null, null, false, false, true, true, 21.50, 0, false, 3);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (15, 78, 5, 79, null, null, false, false, true, true, 23.75, 0, false, 3);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (16, 80, 1, 81, null, null, false, false, true, true, 15.50, 0, false, 4);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (17, 82, 2, 83, null, null, false, false, true, true, 16.25, 0, false, 4);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (18, 84, 3, 85, null, null, false, false, true, true, 17.50, 0, false, 4);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (19, 86, 4, 87, null, null, false, false, true, true, 15.75, 0, false, 4);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (20, 88, 5, 89, null, null, false, false, true, true, 18.00, 0, false, 4);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id,
                                image_name)
 VALUES (21, 90, 1, 91, null, null, false, false, true, true, 26.00, 0, false, 5, 'pizza1.jpg');
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id,
                                image_name)
 VALUES (22, 92, 2, 93, null, null, false, false, true, true, 28.50, 0, false, 5, 'pizza2.jpg');
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id,
                                image_name)
 VALUES (23, 94, 3, 95, null, null, false, false, true, true, 30.25, 0, false, 5, 'pizza3.jpg');
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id,
                                image_name)
 VALUES (24, 96, 4, 97, null, null, false, false, true, true, 27.75, 0, false, 5, 'pizza4.jpg');
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id,
                                image_name)
 VALUES (25, 98, 5, 99, null, null, false, false, true, true, 29.00, 0, false, 5, 'pizza5.jpg');
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (26, 100, 1, 101, null, null, false, false, true, true, 24.50, 0, false, 6);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (27, 102, 2, 103, null, null, false, false, true, true, 22.75, 0, false, 6);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (28, 104, 3, 105, null, null, false, false, true, true, 20.00, 0, false, 6);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (29, 106, 4, 107, null, null, false, false, true, true, 21.25, 0, false, 6);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (30, 108, 5, 109, null, null, false, false, true, true, 23.00, 0, false, 6);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (31, 110, 1, 111, null, null, false, false, true, true, 9.00, 0, true, 8);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (32, 112, 2, 113, null, null, false, false, true, true, 7.00, 0, true, 8);
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               is_bestseller, is_new, is_available, is_visible, price, counter, is_bar_served,
+                               is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (33, 114, 3, 115, null, null, false, false, true, true, 7.00, 0, true, 8);
 
@@ -562,55 +574,55 @@ VALUES (131, 'Średnia');
 INSERT IGNORE INTO translatable(id, default_translation)
 VALUES (132, 'Duża');
 
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (1, NOW(), true, true, 116, '0.00', null, 4, 1);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (2, NOW(), true, false, 117, '4.00', null, 4, 2);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (3, NOW(), true, true, 118, '0.00', null, 21, 1);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (4, NOW(), true, false, 119, '5.00', null, 21, 2);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (5, NOW(), true, false, 120, '10.00', null, 21, 3);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (6, NOW(), true, true, 121, '0.00', null, 22, 1);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (7, NOW(), true, false, 122, '5.00', null, 22, 2);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (8, NOW(), true, false, 123, '10.00', null, 22, 3);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (9, NOW(), true, true, 124, '0.00', null, 23, 1);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (10, NOW(), true, false, 125, '5.00', null, 23, 2);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (11, NOW(), true, false, 126, '10.00', null, 23, 3);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (12, NOW(), true, true, 127, '0.00', null, 24, 1);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (13, NOW(), true, false, 128, '5.00', null, 24, 2);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (14, NOW(), true, false, 129, '10.00', null, 24, 3);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (15, NOW(), true, true, 130, '0.00', null, 25, 1);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (16, NOW(), true, false, 131, '5.00', null, 25, 2);
-INSERT IGNORE INTO variants(id, created, is_available, is_default_variant, translatable_name_id, price, updated,
+INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
 VALUES (17, NOW(), true, false, 132, '10.00', null, 25, 3);
 
@@ -667,57 +679,57 @@ VALUES (158, 'Koper', 'Dill');
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
 VALUES (159, 'Ser biały', 'White cheese');
 
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (1, '2024-03-30', 1, 133, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (2, '2024-03-30', 1, 134, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (3, '2024-03-30', 1, 135, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (4, '2024-03-30', 1, 136, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (5, '2024-03-30', 1, 137, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (6, '2024-03-30', 1, 138, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (7, '2024-03-30', 1, 139, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (8, '2024-03-30', 1, 140, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (9, '2024-03-30', 1, 141, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (10, '2024-03-30', 1, 142, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (11, '2024-03-30', 1, 143, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (12, '2024-03-30', 1, 144, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (13, '2024-03-30', 1, 145, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (14, '2024-03-30', 1, 146, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (15, '2024-03-30', 1, 147, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (16, '2024-03-30', 1, 148, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (17, '2024-03-30', 1, 149, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (18, '2024-03-30', 1, 150, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (19, '2024-03-30', 1, 151, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (20, '2024-03-30', 1, 152, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (21, '2024-03-30', 1, 153, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (22, '2024-03-30', 1, 154, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (23, '2024-03-30', 1, 155, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (24, '2024-03-30', 1, 156, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (25, '2024-03-30', 1, 157, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (26, '2024-03-30', 1, 158, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, created, is_available, translatable_name_id, updated, price)
-VALUES (27, '2024-03-30', 1, 159, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (1, 1, '2024-03-30', 1, 133, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (2, 1, '2024-03-30', 1, 134, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (3, 1, '2024-03-30', 1, 135, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (4, 1, '2024-03-30', 1, 136, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (5, 1, '2024-03-30', 1, 137, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (6, 1, '2024-03-30', 1, 138, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (7, 1, '2024-03-30', 1, 139, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (8, 1, '2024-03-30', 1, 140, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (9, 1, '2024-03-30', 1, 141, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (10, 1, '2024-03-30', 1, 142, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (11, 1, '2024-03-30', 1, 143, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (12, 1, '2024-03-30', 1, 144, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (13, 1, '2024-03-30', 1, 145, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (14, 1, '2024-03-30', 1, 146, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (15, 1, '2024-03-30', 1, 147, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (16, 1, '2024-03-30', 1, 148, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (17, 1, '2024-03-30', 1, 149, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (18, 1, '2024-03-30', 1, 150, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (19, 1, '2024-03-30', 1, 151, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (20, 1, '2024-03-30', 1, 152, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (21, 1, '2024-03-30', 1, 153, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (22, 1, '2024-03-30', 1, 154, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (23, 1, '2024-03-30', 1, 155, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (24, 1, '2024-03-30', 1, 156, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (25, 1, '2024-03-30', 1, 157, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00');
+INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
+VALUES (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');

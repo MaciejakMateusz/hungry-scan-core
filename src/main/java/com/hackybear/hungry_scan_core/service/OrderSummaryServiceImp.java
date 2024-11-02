@@ -2,8 +2,6 @@ package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.entity.Order;
 import com.hackybear.hungry_scan_core.entity.OrderSummary;
-import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.OrderSummaryRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantTableRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.OrderSummaryService;
@@ -20,23 +18,15 @@ import java.math.BigDecimal;
 public class OrderSummaryServiceImp implements OrderSummaryService {
 
     private final OrderSummaryRepository orderSummaryRepository;
-    private final ExceptionHelper exceptionHelper;
     private final PaymentProcessor paymentProcessor;
     private final RestaurantTableRepository restaurantTableRepository;
 
     public OrderSummaryServiceImp(OrderSummaryRepository orderSummaryRepository,
-                                  ExceptionHelper exceptionHelper, PaymentProcessor paymentProcessor, RestaurantTableRepository restaurantTableRepository) {
+                                  PaymentProcessor paymentProcessor,
+                                  RestaurantTableRepository restaurantTableRepository) {
         this.orderSummaryRepository = orderSummaryRepository;
-        this.exceptionHelper = exceptionHelper;
         this.paymentProcessor = paymentProcessor;
         this.restaurantTableRepository = restaurantTableRepository;
-    }
-
-    @Override
-    public OrderSummary findByTableNumber(Integer tableNumber) throws LocalizedException {
-        return orderSummaryRepository.findFirstByRestaurantTableId(tableNumber)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.orderService.orderNotFoundByTable", tableNumber));
     }
 
     @Transactional
@@ -44,7 +34,6 @@ public class OrderSummaryServiceImp implements OrderSummaryService {
     public OrderSummary pay(OrderSummary orderSummary) {
         prepareSummary(orderSummary);
         return paymentProcessor.pay(orderSummary);
-//        dataTransferServiceImpl.archiveSummary(orderSummary);
     }
 
     @Override

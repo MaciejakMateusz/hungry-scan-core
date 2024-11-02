@@ -24,7 +24,7 @@ public class FeedbackServiceImp implements FeedbackService {
     }
 
     @Override
-    public Feedback findById(Integer id) throws LocalizedException {
+    public Feedback findById(Long id) throws LocalizedException {
         return feedbackRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.feedbackService.feedbackNotFound", id));

@@ -1,16 +1,17 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
-import com.hackybear.hungry_scan_core.entity.Allergen;
+import com.hackybear.hungry_scan_core.dto.AllergenDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 
 import java.util.List;
 
 public interface AllergenService {
-    void save(Allergen allergen);
 
-    List<Allergen> findAll();
+    void save(AllergenDTO allergenDTO);
 
-    Allergen findById(Integer id) throws LocalizedException;
+    List<AllergenDTO> findAll();
 
-    void delete(Integer id) throws LocalizedException;
+    AllergenDTO findById(Long id) throws LocalizedException;
+
+    void delete(Long id) throws LocalizedException;
 }

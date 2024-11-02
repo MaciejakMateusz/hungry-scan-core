@@ -1,23 +1,30 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
-import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.dto.CategoryCustomerDTO;
+import com.hackybear.hungry_scan_core.dto.CategoryDTO;
+import com.hackybear.hungry_scan_core.dto.CategoryFormDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 
 public interface CategoryService {
 
-    List<Category> findAll();
+    List<CategoryDTO> findAll() throws LocalizedException, AuthenticationException;
 
-    List<Integer> findAllDisplayOrders();
+    List<Integer> findAllDisplayOrders() throws LocalizedException;
 
-    Long countAll();
+    Long countAll() throws LocalizedException;
 
-    List<Category> findAllAvailableAndVisible();
+    List<CategoryCustomerDTO> findAllAvailableAndVisible() throws LocalizedException;
 
-    Category findById(Integer id) throws LocalizedException;
+    CategoryFormDTO findById(Long id) throws LocalizedException;
 
-    void save(Category category) throws Exception;
+    void save(CategoryFormDTO category) throws Exception;
 
-    void delete(Integer id) throws LocalizedException;
+    @Transactional
+    void update(CategoryFormDTO categoryFormDTO) throws Exception;
+
+    void delete(Long id) throws LocalizedException, AuthenticationException;
 }

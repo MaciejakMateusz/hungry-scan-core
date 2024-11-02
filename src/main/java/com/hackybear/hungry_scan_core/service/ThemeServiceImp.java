@@ -26,14 +26,14 @@ public class ThemeServiceImp implements ThemeService {
     }
 
     @Override
-    public Theme findById(Integer id) throws LocalizedException {
+    public Theme findById(Long id) throws LocalizedException {
         return themeRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.themeService.themeNotFound", id));
     }
 
     @Override
-    public void setActive(Integer id) {
+    public void setActive(Long id) {
         List<Theme> themes = findAll();
         for (Theme theme : themes) {
             theme.setActive(theme.getId().equals(id));

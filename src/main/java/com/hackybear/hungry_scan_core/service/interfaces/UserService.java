@@ -1,38 +1,42 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
+import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 
-import javax.naming.AuthenticationException;
 import java.util.List;
 
 public interface UserService {
 
-    User findByUsername(String email);
+    User findByUsername(String email) throws LocalizedException;
 
-    void update(User user);
+    List<User> findAll() throws LocalizedException;
 
-    List<User> findAll();
+    void save(RegistrationDTO registrationDTO);
 
-    User findById(Long id) throws LocalizedException;
+    void addToOrganization(RegistrationDTO registrationDTO) throws LocalizedException;
 
-    void save(User user);
+    void update(RegistrationDTO registrationDTO) throws LocalizedException;
 
-    void addToOrganization(User user);
+    void delete(String username) throws LocalizedException;
 
-    void delete(Long id) throws LocalizedException;
+    void switchRestaurant(Long restaurantId) throws LocalizedException;
 
-    boolean existsByEmail(String email);
+    void switchMenu(Long menuId) throws LocalizedException;
 
     boolean existsByUsername(String username);
 
-    boolean isUpdatedUserValid(User user) throws LocalizedException;
+    boolean isUpdatedUserValid(RegistrationDTO registrationDTO) throws LocalizedException;
 
-    String getErrorParam(User user) throws LocalizedException;
+    String getErrorParam(RegistrationDTO registrationDTO) throws LocalizedException;
 
     List<User> findAllByRole(String roleName);
 
     List<User> findAllCustomers();
 
-    User getCurrentUser() throws AuthenticationException;
+    User getCurrentUser() throws LocalizedException;
+
+    Long getActiveRestaurantId() throws LocalizedException;
+
+    Long getActiveMenuId() throws LocalizedException;
 }

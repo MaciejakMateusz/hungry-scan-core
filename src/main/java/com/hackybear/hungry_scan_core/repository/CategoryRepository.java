@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.repository;
 
 import com.hackybear.hungry_scan_core.entity.Category;
-import com.hackybear.hungry_scan_core.entity.MenuItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,16 +11,24 @@ import java.util.Optional;
 
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Integer> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    @Query("SELECT c from Category c WHERE c.isAvailable = true ORDER BY c.displayOrder")
-    List<Category> findAllAvailable();
+    @Query("SELECT c from Category c WHERE c.available = true AND c.menuId = :menuId ORDER BY c.displayOrder")
+    List<Category> findAllAvailableByMenuId(@Param("menuId") Long menuId);
 
-    @Query("SELECT c FROM Category c WHERE :menuItem MEMBER OF c.menuItems")
-    Optional<Category> findByMenuItem(@Param("menuItem") MenuItem menuItem);
+    @Query("""
+            SELECT c FROM Category c
+            JOIN FETCH c.menuItems
+            WHERE c.id = (SELECT m.categoryId FROM MenuItem m WHERE m.id = :menuItemId)""")
+    Optional<Category> findByMenuItemId(@Param("menuItemId") Long menuItemId);
 
-    List<Category> findAllByOrderByDisplayOrder();
+    @Query("SELECT c FROM Category c " +
+            "WHERE c.menuId = :menuId ORDER BY c.displayOrder")
+    List<Category> findAllByMenuIdOrderByDisplayOrder(@Param("menuId") Long menuId);
 
-    @Query("SELECT c.displayOrder FROM Category c ORDER BY c.displayOrder")
-    List<Integer> findAllDisplayOrders();
+    @Query("SELECT c.displayOrder FROM Category c WHERE c.menuId = :menuId ORDER BY c.displayOrder")
+    List<Integer> findAllDisplayOrdersByMenu(@Param("menuId") Long menuId);
+
+    Long countByMenuId(Long menuId);
+
 }

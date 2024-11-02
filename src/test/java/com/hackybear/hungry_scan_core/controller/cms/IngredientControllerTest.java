@@ -1,5 +1,8 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.dto.IngredientDTO;
+import com.hackybear.hungry_scan_core.dto.IngredientSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.IngredientMapper;
 import com.hackybear.hungry_scan_core.entity.Ingredient;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -17,7 +20,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -26,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -41,10 +41,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class IngredientControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    ApiRequestUtils apiRequestUtils;
 
     @Autowired
-    ApiRequestUtils apiRequestUtils;
+    IngredientMapper ingredientMapper;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -54,15 +54,15 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER"})
+    @WithMockUser(roles = {"MANAGER"}, username = "netka@test.com")
     void shouldGetAllIngredients() throws Exception {
-        Page<Ingredient> ingredients =
+        Page<IngredientDTO> ingredients =
                 apiRequestUtils.fetchAsPage(
-                        "/api/cms/ingredients", getPageableParams(), Ingredient.class);
+                        "/api/cms/ingredients", getPageableParams(), IngredientDTO.class);
 
-        List<Ingredient> ingredientList = ingredients.getContent();
+        List<IngredientDTO> ingredientList = ingredients.getContent();
         assertEquals(27, ingredientList.size());
-        assertEquals("Bazylia", ingredientList.get(0).getName().getDefaultTranslation());
+        assertEquals("Bazylia", ingredientList.get(0).name().defaultTranslation());
     }
 
     @Test
@@ -74,9 +74,9 @@ class IngredientControllerTest {
     @Test
     @WithMockUser(roles = {"ADMIN"})
     void shouldShowIngredientById() throws Exception {
-        Ingredient ingredient =
-                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, Ingredient.class);
-        assertEquals("Mozzarella", ingredient.getName().getDefaultTranslation());
+        IngredientDTO ingredient =
+                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
+        assertEquals("Mozzarella", ingredient.name().defaultTranslation());
     }
 
     @Test
@@ -95,46 +95,36 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    void shouldGetNewIngredientObject() throws Exception {
-        Object ingredient = apiRequestUtils.fetchObject("/api/cms/ingredients/add", Ingredient.class);
-        assertInstanceOf(Ingredient.class, ingredient);
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER"})
-    void shouldNotAllowUnauthorizedAccessToIngredientObject() throws Exception {
-        mockMvc.perform(get("/api/cms/ingredients/add")).andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldAddNewIngredient() throws Exception {
         Ingredient ingredient = createIngredient("Majeranek", Money.of(1.00));
+        IngredientSimpleDTO ingredientDTO = ingredientMapper.toSimpleDTO(ingredient);
 
-        apiRequestUtils.postAndExpect200("/api/cms/ingredients/add", ingredient);
+        apiRequestUtils.postAndExpect200("/api/cms/ingredients/add", ingredientDTO);
 
-        Ingredient persistedIngredient =
-                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 28, Ingredient.class);
-        assertEquals("Majeranek", persistedIngredient.getName().getDefaultTranslation());
-        assertEquals(Money.of(1.00), persistedIngredient.getPrice());
+        IngredientDTO persistedIngredient =
+                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 28, IngredientDTO.class);
+        assertEquals("Majeranek", persistedIngredient.name().defaultTranslation());
+        assertEquals(BigDecimal.valueOf(1.0), persistedIngredient.price());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowUnauthorizedAccessToAddIngredient() throws Exception {
         Ingredient ingredient = createIngredient("Muchomor", Money.of(350.00));
-        apiRequestUtils.postAndExpect("/api/cms/ingredients/add", ingredient, status().isForbidden());
+        IngredientSimpleDTO ingredientDTO = ingredientMapper.toSimpleDTO(ingredient);
+        apiRequestUtils.postAndExpect("/api/cms/ingredients/add", ingredientDTO, status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
     void shouldNotAddWithIncorrectName() throws Exception {
         Ingredient ingredient = createIngredient("", Money.of(0.00));
+        IngredientSimpleDTO ingredientDTO = ingredientMapper.toSimpleDTO(ingredient);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/ingredients/add", ingredient);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/ingredients/add", ingredientDTO);
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
@@ -145,19 +135,21 @@ class IngredientControllerTest {
     @Transactional
     @Rollback
     void shouldUpdateExistingIngredient() throws Exception {
-        Ingredient existingIngredient =
-                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, Ingredient.class);
-        assertEquals("Mozzarella", existingIngredient.getName().getDefaultTranslation());
+        IngredientDTO ingredientDTO =
+                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
+        assertEquals("Mozzarella", ingredientDTO.name().defaultTranslation());
 
+        Ingredient existingIngredient = ingredientMapper.toIngredient(ingredientDTO);
         existingIngredient.setName(getDefaultTranslation("Updated mozzarella"));
         existingIngredient.setPrice(Money.of(4.00));
+        IngredientSimpleDTO simpleDTO = ingredientMapper.toSimpleDTO(existingIngredient);
 
-        apiRequestUtils.postAndExpect200("/api/cms/ingredients/add", existingIngredient);
+        apiRequestUtils.patchAndExpect200("/api/cms/ingredients/update", simpleDTO);
 
-        Ingredient updatedIngredient =
-                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, Ingredient.class);
-        assertEquals("Updated mozzarella", updatedIngredient.getName().getDefaultTranslation());
-        assertEquals(Money.of(4.00), updatedIngredient.getPrice());
+        IngredientDTO updatedIngredient =
+                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
+        assertEquals("Updated mozzarella", updatedIngredient.name().defaultTranslation());
+        assertEquals(BigDecimal.valueOf(4.0), updatedIngredient.price());
     }
 
     @Test
@@ -165,9 +157,9 @@ class IngredientControllerTest {
     @Transactional
     @Rollback
     void shouldDeleteIngredient() throws Exception {
-        Ingredient ingredient =
-                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, Ingredient.class);
-        assertEquals("Mozzarella", ingredient.getName().getDefaultTranslation());
+        IngredientDTO ingredient =
+                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
+        assertEquals("Mozzarella", ingredient.name().defaultTranslation());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/ingredients/delete", 6);
 

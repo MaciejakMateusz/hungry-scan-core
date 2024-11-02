@@ -12,11 +12,15 @@ public class CustomUserDetails extends User implements UserDetails {
 
     private final String username;
     private final String password;
+    private final Long activeRestaurantId;
+    private final Long activeMenuId;
     Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User byUsername, Collection<? extends GrantedAuthority> authorities) {
         this.username = byUsername.getUsername();
         this.password = byUsername.getPassword();
+        this.activeRestaurantId = byUsername.getActiveRestaurantId();
+        this.activeMenuId = byUsername.getActiveMenuId();
         this.authorities = authorities;
     }
 

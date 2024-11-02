@@ -2,10 +2,9 @@ package com.hackybear.hungry_scan_core.test_utils;
 
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.AllergenService;
-import com.hackybear.hungry_scan_core.service.interfaces.IngredientService;
-import com.hackybear.hungry_scan_core.service.interfaces.LabelService;
+import com.hackybear.hungry_scan_core.repository.AllergenRepository;
+import com.hackybear.hungry_scan_core.repository.IngredientRepository;
+import com.hackybear.hungry_scan_core.repository.LabelRepository;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,22 +12,22 @@ import java.math.BigDecimal;
 @Component
 public class MenuItemFactory {
 
-    private final IngredientService ingredientService;
-    private final AllergenService allergenService;
-    private final LabelService labelService;
+    private final AllergenRepository allergenRepository;
+    private final LabelRepository labelRepository;
+    private final IngredientRepository ingredientRepository;
 
-    public MenuItemFactory(IngredientService ingredientService,
-                           AllergenService allergenService,
-                           LabelService labelService) {
-        this.ingredientService = ingredientService;
-        this.allergenService = allergenService;
-        this.labelService = labelService;
+    public MenuItemFactory(AllergenRepository allergenRepository,
+                           LabelRepository labelRepository,
+                           IngredientRepository ingredientRepository) {
+        this.allergenRepository = allergenRepository;
+        this.labelRepository = labelRepository;
+        this.ingredientRepository = ingredientRepository;
     }
 
     public MenuItem createMenuItem(String name,
                                    String description,
-                                   Integer categoryId,
-                                   BigDecimal price) throws LocalizedException {
+                                   Long categoryId,
+                                   BigDecimal price) {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(getDefaultTranslation(name));
         menuItem.setDescription(getDefaultTranslation(description));
@@ -44,25 +43,25 @@ public class MenuItemFactory {
         return menuItem;
     }
 
-    private void setIngredients(MenuItem menuItem) throws LocalizedException {
-        for (int i = 1; i <= 5; i++) {
-            menuItem.addIngredient(ingredientService.findById(i));
+    private void setIngredients(MenuItem menuItem) {
+        for (long i = 1L; i <= 5; i++) {
+            menuItem.addIngredient(ingredientRepository.findById(i).orElseThrow());
         }
     }
 
-    private void setAdditionalIngredients(MenuItem menuItem) throws LocalizedException {
-        for (int i = 6; i <= 10; i++) {
-            menuItem.addAdditionalIngredient(ingredientService.findById(i));
+    private void setAdditionalIngredients(MenuItem menuItem) {
+        for (long i = 6; i <= 10; i++) {
+            menuItem.addAdditionalIngredient(ingredientRepository.findById(i).orElseThrow());
         }
     }
 
-    private void setLabels(MenuItem menuItem) throws LocalizedException {
-        menuItem.addLabel(labelService.findById(3));
-        menuItem.addLabel(labelService.findById(5));
+    private void setLabels(MenuItem menuItem) {
+        menuItem.addLabel(labelRepository.findById(3L).orElseThrow());
+        menuItem.addLabel(labelRepository.findById(5L).orElseThrow());
     }
 
-    private void setAllergen(MenuItem menuItem) throws LocalizedException {
-        menuItem.addAlergen(allergenService.findById(1));
+    private void setAllergen(MenuItem menuItem) {
+        menuItem.addAlergen(allergenRepository.findById(1L).orElseThrow());
     }
 
     private Translatable getDefaultTranslation(String translation) {

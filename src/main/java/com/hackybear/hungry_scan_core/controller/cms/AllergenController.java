@@ -1,7 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.Allergen;
+import com.hackybear.hungry_scan_core.dto.AllergenDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.AllergenService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,13 +26,13 @@ public class AllergenController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Allergen>> list() {
+    public ResponseEntity<List<AllergenDTO>> list() {
         return ResponseEntity.ok(allergenService.findAll());
     }
 
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, allergenService::findById);
     }
 

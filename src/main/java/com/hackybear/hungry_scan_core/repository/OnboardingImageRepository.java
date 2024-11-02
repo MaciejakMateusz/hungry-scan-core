@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OnboardingImageRepository extends JpaRepository<OnboardingImage, Integer> {
+public interface OnboardingImageRepository extends JpaRepository<OnboardingImage, Long> {
 }

@@ -1,8 +1,9 @@
 package com.hackybear.hungry_scan_core.utility;
 
+import com.hackybear.hungry_scan_core.dto.SettingsDTO;
 import com.hackybear.hungry_scan_core.entity.Booking;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
-import com.hackybear.hungry_scan_core.entity.Settings;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.BookingRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.SettingsService;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ public class BookingValidator {
         this.settingsService = settingsService;
     }
 
-    public boolean isValidBooking(Booking booking) {
+    public boolean isValidBooking(Booking booking) throws LocalizedException {
         return DateTimeHelper.isNotInPast(LocalDateTime.of(booking.getDate(), booking.getTime())) &&
                 !hasBookingCollision(booking) &&
                 isWithinOpeningHours(booking);
@@ -32,10 +33,16 @@ public class BookingValidator {
             List<Booking> existingBookings =
                     bookingRepository.findAllByRestaurantTablesId(restaurantTable.getId());
             boolean hasCollision = existingBookings.stream()
-                    .anyMatch(existingBooking -> existingBooking.getDate().equals(booking.getDate()) &&
-                            (existingBooking.getTime().equals(booking.getTime()) ||
-                                    isInBookingTimeRange(booking, existingBooking) ||
-                                    bookingIntersects(booking, existingBooking)));
+                    .anyMatch(existingBooking -> {
+                        try {
+                            return existingBooking.getDate().equals(booking.getDate()) &&
+                                    (existingBooking.getTime().equals(booking.getTime()) ||
+                                            isInBookingTimeRange(booking, existingBooking) ||
+                                            bookingIntersects(booking, existingBooking));
+                        } catch (LocalizedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
             if (hasCollision) {
                 return true;
             }
@@ -50,19 +57,19 @@ public class BookingValidator {
                 existingBooking.getExpirationTime());
     }
 
-    private boolean bookingIntersects(Booking booking, Booking existingBooking) {
+    private boolean bookingIntersects(Booking booking, Booking existingBooking) throws LocalizedException {
         return DateTimeHelper.doTimeRangesOverlap(
-                booking.getTime().plusHours(getSettings().getBookingDuration()),
+                booking.getTime().plusHours(getSettings().bookingDuration()),
                 existingBooking.getTime(),
                 existingBooking.getExpirationTime());
     }
 
-    private boolean isWithinOpeningHours(Booking booking) {
-        return booking.getTime().isAfter(getSettings().getOpeningTime()) &&
-                booking.getTime().isBefore(getSettings().getClosingTime());
+    private boolean isWithinOpeningHours(Booking booking) throws LocalizedException {
+        return booking.getTime().isAfter(getSettings().openingTime()) &&
+                booking.getTime().isBefore(getSettings().closingTime());
     }
 
-    private Settings getSettings() {
+    private SettingsDTO getSettings() throws LocalizedException {
         return settingsService.getSettings();
     }
 }

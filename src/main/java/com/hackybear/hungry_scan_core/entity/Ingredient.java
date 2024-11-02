@@ -17,7 +17,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -28,11 +27,15 @@ import java.time.LocalDateTime;
 @Table(name = "ingredients")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class Ingredient {
+public class Ingredient implements Comparable<Ingredient> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+
+    @Column(name = "restaurant_id", nullable = false)
+    @NotNull
+    private Long restaurantId;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
@@ -46,7 +49,7 @@ public class Ingredient {
     private BigDecimal price = Money.of(0.00);
 
     @Column(nullable = false)
-    private boolean isAvailable = true;
+    private boolean available = true;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
@@ -61,11 +64,16 @@ public class Ingredient {
     private String createdBy;
 
     public BigDecimal getPrice() {
-        return this.price.setScale(2, RoundingMode.HALF_UP);
+        return Money.of(this.price);
     }
 
-    public void setPrice(BigDecimal totalAmount) {
-        this.price = totalAmount.setScale(2, RoundingMode.HALF_UP);
+    public void setPrice(BigDecimal price) {
+        this.price = Money.of(price);
+    }
+
+    @Override
+    public int compareTo(Ingredient other) {
+        return this.name.getDefaultTranslation().compareTo(other.getName().getDefaultTranslation());
     }
 
 }

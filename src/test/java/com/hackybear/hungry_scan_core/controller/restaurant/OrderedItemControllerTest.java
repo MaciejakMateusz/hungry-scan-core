@@ -7,6 +7,7 @@ import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.test_utils.OrderFactory;
 import com.hackybear.hungry_scan_core.test_utils.OrderedItemFactory;
 import com.hackybear.hungry_scan_core.utility.Money;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -48,35 +50,26 @@ public class OrderedItemControllerTest {
     @Autowired
     private OrderedItemFactory orderedItemFactory;
 
+    @Autowired
+    EntityManager entityManager;
+
     private Order table9Order = new Order();
     private Order table11Order = new Order();
 
     @Sql("/data-h2.sql")
     @Test
     @org.junit.jupiter.api.Order(1)
-    @WithMockUser(roles = {"CUSTOMER"})
-    void init() throws Exception {
+    void init() {
         log.info("Initializing H2 database...");
         log.info("Database initialized.");
-        log.info("Preparing orders for tests...");
-        this.table9Order = orderFactory.createOrder(9, false,
-                orderedItemFactory.createOrderedItem(31, null, "Extra warm please.", 2),
-                orderedItemFactory.createOrderedItem(21, 4, null, 1),
-                orderedItemFactory.createOrderedItem(32, null, null, 1));
-        this.table11Order = orderFactory.createOrder(11, false,
-                orderedItemFactory.createOrderedItem(22, 6, "no salt please", 1),
-                orderedItemFactory.createOrderedItem(32, null, null, 1),
-                orderedItemFactory.createOrderedItem(33, null, "with ice pls", 1));
-        this.table9Order.getRestaurantTable().setActive(true);
-        apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table9Order, OrderSummary.class);
-        this.table11Order.getRestaurantTable().setActive(true);
-        apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table11Order, OrderSummary.class);
-        log.info("Orders prepared.");
     }
 
     @Test
     @org.junit.jupiter.api.Order(2)
-    void orderInitializationCheck() {
+    @WithMockUser(roles = {"WAITER"})
+    @Transactional
+    void orderInitializationCheck() throws Exception {
+        prepareOrders();
         assertNotNull(table9Order);
         assertEquals(Money.of(56.00), table9Order.getTotalAmount());
         assertNotNull(table11Order);
@@ -85,7 +78,9 @@ public class OrderedItemControllerTest {
 
     @Test
     @WithMockUser(roles = {"WAITER"})
+    @Transactional
     void shouldFindAll() throws Exception {
+        prepareOrders();
         List<OrderedItem> items = apiRequestUtils.fetchAsList("/api/restaurant/ordered-items", OrderedItem.class);
         assertEquals(6, items.size());
     }
@@ -103,7 +98,9 @@ public class OrderedItemControllerTest {
 
     @Test
     @WithMockUser(roles = {"WAITER"})
+    @Transactional
     void shouldFindAllDrinks() throws Exception {
+        prepareOrders();
         List<OrderedItem> drinks = apiRequestUtils.fetchAsList("/api/restaurant/ordered-items/drinks", OrderedItem.class);
         assertEquals(4, drinks.size());
     }
@@ -121,10 +118,14 @@ public class OrderedItemControllerTest {
 
     @Test
     @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
     void shouldShow() throws Exception {
+        prepareOrders();
         OrderedItem item =
-                apiRequestUtils.postAndFetchObject("/api/restaurant/ordered-items/show", 5, OrderedItem.class);
-        assertEquals(5, item.getId());
+                apiRequestUtils.postAndFetchObject("/api/restaurant/ordered-items/show", 14, OrderedItem.class);
+        assertEquals(14, item.getId());
+        assertEquals(1, item.getQuantity());
+        assertEquals(Money.of(31.00), item.getPrice());
     }
 
     @Test
@@ -146,5 +147,22 @@ public class OrderedItemControllerTest {
         apiRequestUtils.postAndExpect("/api/restaurant/ordered-items/show", 4, status().isForbidden());
     }
 
+    @WithMockUser(roles = {"WAITER"})
+    void prepareOrders() throws Exception {
+        log.info("Preparing orders for test...");
+        this.table9Order = orderFactory.createOrder(9L, false,
+                orderedItemFactory.createOrderedItem(31L, null, "Extra warm please.", 2),
+                orderedItemFactory.createOrderedItem(21L, 4L, null, 1),
+                orderedItemFactory.createOrderedItem(32L, null, null, 1));
+        this.table11Order = orderFactory.createOrder(11L, false,
+                orderedItemFactory.createOrderedItem(22L, 6L, "no salt please", 1),
+                orderedItemFactory.createOrderedItem(32L, null, null, 1),
+                orderedItemFactory.createOrderedItem(33L, null, "with ice pls", 1));
+        this.table9Order.getRestaurantTable().setActive(true);
+        apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table9Order, OrderSummary.class);
+        this.table11Order.getRestaurantTable().setActive(true);
+        apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table11Order, OrderSummary.class);
+        log.info("Orders prepared.");
+    }
 
 }

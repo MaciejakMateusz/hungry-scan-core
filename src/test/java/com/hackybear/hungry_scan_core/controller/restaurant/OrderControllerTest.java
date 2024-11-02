@@ -56,24 +56,17 @@ class OrderControllerTest {
     @Sql("/data-h2.sql")
     @Test
     @org.junit.jupiter.api.Order(1)
-    void init() throws LocalizedException {
+    void init() {
         log.info("Initializing H2 database...");
         log.info("Database initialized.");
-        log.info("Creating test Order objects...");
-        this.table15Order = orderFactory.createOrder(15, false,
-                orderedItemFactory.createOrderedItem(4, 2, "Extra warm please.", 2, "Pomidory", "Mozzarella"),
-                orderedItemFactory.createOrderedItem(21, 4, null, 1),
-                orderedItemFactory.createOrderedItem(22, 8, "Spicy af", 1, "Cebula", "Kurczak"));
-        this.table12Order = orderFactory.createOrder(12, false,
-                orderedItemFactory.createOrderedItem(4, 1, null, 1, "Bazylia"),
-                orderedItemFactory.createOrderedItem(21, 3, "i want it cold", 3),
-                orderedItemFactory.createOrderedItem(22, 6, "no salt please", 1));
-        log.info("Order objects created.");
     }
 
     @Test
     @org.junit.jupiter.api.Order(2)
-    void orderInitializationCheck() {
+    @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
+    void orderInitializationCheck() throws LocalizedException {
+        prepareOrders();
         assertNotNull(table15Order);
         assertEquals(Money.of(135.00), table15Order.getTotalAmount());
         assertNotNull(table12Order);
@@ -85,6 +78,7 @@ class OrderControllerTest {
     @Transactional
     @Rollback
     void shouldSaveDineInOrder() throws Exception {
+        prepareOrders();
         table15Order.getRestaurantTable().setActive(true);
         OrderSummary summary =
                 apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
@@ -98,6 +92,7 @@ class OrderControllerTest {
     @Transactional
     @Rollback
     void shouldSaveMultipleOrders() throws Exception {
+        prepareOrders();
         table15Order.getRestaurantTable().setActive(true);
         apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
         apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
@@ -112,6 +107,7 @@ class OrderControllerTest {
     @Transactional
     @Rollback
     void shouldSaveForSeparateTables() throws Exception {
+        prepareOrders();
         table15Order.getRestaurantTable().setActive(true);
         table12Order.getRestaurantTable().setActive(true);
         OrderSummary table15Summary = apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
@@ -124,7 +120,9 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
     void shouldNotSaveWithNullTable() throws Exception {
+        prepareOrders();
         table12Order.setRestaurantTable(null);
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/dine-in", table12Order);
         assertEquals("Podany numer stolika jest niepoprawny.", errors.get("exceptionMsg"));
@@ -132,7 +130,9 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
     void shouldNotSaveWithInactiveTable() throws Exception {
+        prepareOrders();
         table15Order.getRestaurantTable().setActive(false);
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/dine-in", table15Order);
         assertEquals("Stolik z ID = 15 nie jest aktywny.", errors.get("exceptionMsg"));
@@ -140,7 +140,9 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = {"CUSTOMER"})
+    @Transactional
     void shouldNotSaveWithEmptyOrderedItems() throws Exception {
+        prepareOrders();
         table15Order.getRestaurantTable().setActive(true);
         table15Order.setOrderedItems(new ArrayList<>());
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/dine-in", table15Order);
@@ -149,7 +151,9 @@ class OrderControllerTest {
 
     @Test
     @WithMockUser(roles = {"CUSTOMER_READONLY"})
+    @Transactional
     void shouldNotAllowUnauthorizedAccessToSaveOrder() throws Exception {
+        prepareOrders();
         table15Order.getRestaurantTable().setActive(true);
         apiRequestUtils.postAndExpect("/api/restaurant/orders/dine-in", table15Order, status().isForbidden());
     }
@@ -159,6 +163,7 @@ class OrderControllerTest {
     @Transactional
     @Rollback
     void shouldGetByTable() throws Exception {
+        prepareOrders();
         table15Order.getRestaurantTable().setActive(true);
         apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
 
@@ -178,6 +183,19 @@ class OrderControllerTest {
     void shouldNotGetByTableWithNonExistingTable() throws Exception {
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/show/table", 400);
         assertEquals("Podsumowanie z podanym ID stolika = 400 nie istnieje.", errors.get("exceptionMsg"));
+    }
+
+    void prepareOrders() throws LocalizedException {
+        log.info("Preparing order objects...");
+        this.table15Order = orderFactory.createOrder(15L, false,
+                orderedItemFactory.createOrderedItem(4L, 2L, "Extra warm please.", 2, "Pomidory", "Mozzarella"),
+                orderedItemFactory.createOrderedItem(21L, 4L, null, 1),
+                orderedItemFactory.createOrderedItem(22L, 8L, "Spicy af", 1, "Cebula", "Kurczak"));
+        this.table12Order = orderFactory.createOrder(12L, false,
+                orderedItemFactory.createOrderedItem(4L, 1L, null, 1, "Bazylia"),
+                orderedItemFactory.createOrderedItem(21L, 3L, "i want it cold", 3),
+                orderedItemFactory.createOrderedItem(22L, 6L, "no salt please", 1));
+        log.info("Order objects created.");
     }
 
 }

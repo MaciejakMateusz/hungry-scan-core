@@ -10,7 +10,7 @@ public interface RestaurantTableService {
 
     List<RestaurantTable> findAll();
 
-    RestaurantTable findById(Integer id) throws LocalizedException;
+    RestaurantTable findById(Long id) throws LocalizedException;
 
     RestaurantTable findByNumber(Integer number) throws LocalizedException;
 
@@ -20,16 +20,16 @@ public interface RestaurantTableService {
 
     void save(RestaurantTable restaurantTable);
 
-    void delete(Integer id) throws LocalizedException;
+    void delete(Long id) throws LocalizedException;
 
-    RestaurantTable generateNewToken(Integer id) throws LocalizedException;
+    RestaurantTable generateNewToken(Long id) throws LocalizedException;
 
-    void toggleActivation(Integer id) throws LocalizedException;
+    void toggleActivation(Long id) throws LocalizedException;
 
-    void callWaiter(Integer id) throws LocalizedException;
+    void callWaiter(Long id) throws LocalizedException;
 
-    void resolveWaiterCall(Integer id) throws LocalizedException;
+    void resolveWaiterCall(Long id) throws LocalizedException;
 
-    void requestBill(Integer id, PaymentMethod paymentMethod) throws LocalizedException;
+    void requestBill(Long id, PaymentMethod paymentMethod) throws LocalizedException;
 
 }

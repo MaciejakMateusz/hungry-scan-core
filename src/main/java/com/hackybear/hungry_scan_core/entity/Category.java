@@ -25,11 +25,14 @@ import java.util.Objects;
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Table(name = "categories")
 @Entity
-public class Category {
+public class Category implements Comparable<Category> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+
+    @NotNull
+    private Long menuId;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
@@ -38,12 +41,12 @@ public class Category {
     @NotNull
     private Translatable name;
 
-    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<MenuItem> menuItems = new ArrayList<>();
 
-    private boolean isAvailable = true;
+    private boolean available = true;
 
-    private boolean isBarServed;
+    private boolean barServed;
 
     @NotNull
     private Integer displayOrder;
@@ -78,6 +81,11 @@ public class Category {
             menuItems.sort(Comparator.comparing(MenuItem::getDisplayOrder));
         }
         return menuItems;
+    }
+
+    @Override
+    public int compareTo(Category other) {
+        return this.displayOrder.compareTo(other.displayOrder);
     }
 
 }

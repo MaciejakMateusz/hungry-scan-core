@@ -48,7 +48,7 @@ class QRServiceImpTest {
 
     @Test
     void shouldGenerateForTable() throws Exception {
-        RestaurantTable restaurantTable = restaurantTableService.findById(1);
+        RestaurantTable restaurantTable = restaurantTableService.findById(1L);
         qrService.generate(restaurantTable, "");
         String qrName = restaurantTable.getQrName();
         File file = new File(qrPath + qrName);

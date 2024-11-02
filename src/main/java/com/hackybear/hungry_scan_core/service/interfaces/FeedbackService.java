@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface FeedbackService {
 
-    Feedback findById(Integer id) throws LocalizedException;
+    Feedback findById(Long id) throws LocalizedException;
 
     Page<Feedback> findAll(Pageable pageable);
 

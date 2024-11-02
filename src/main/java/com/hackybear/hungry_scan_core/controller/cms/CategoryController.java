@@ -1,7 +1,8 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.dto.CategoryFormDTO;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +50,12 @@ public class CategoryController {
 
     @GetMapping("/count")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Long> count() {
-        return ResponseEntity.ok(categoryService.countAll());
+    public ResponseEntity<?> count() {
+        try {
+            return ResponseEntity.ok(categoryService.countAll());
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @GetMapping("/available")
@@ -65,32 +70,32 @@ public class CategoryController {
 
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, categoryService::findById);
-    }
-
-    @GetMapping("/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Category> add() {
-        return ResponseEntity.ok(new Category());
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> add(@Valid @RequestBody Category category, BindingResult br) {
+    public ResponseEntity<?> add(@Valid @RequestBody CategoryFormDTO category, BindingResult br) {
         return responseHelper.buildResponse(category, br, categoryService::save);
+    }
+
+    @PatchMapping("/update")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> update(@Valid @RequestBody CategoryFormDTO category, BindingResult br) {
+        return responseHelper.buildResponse(category, br, categoryService::update);
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> delete(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> delete(@RequestBody Long id) {
         return responseHelper.buildResponse(id, categoryService::delete);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Allow", "GET, POST, DELETE, OPTIONS");
+        headers.add("Allow", "GET, POST, PATCH, DELETE, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }

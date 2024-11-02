@@ -4,7 +4,6 @@ import com.hackybear.hungry_scan_core.entity.Order;
 import com.hackybear.hungry_scan_core.entity.OrderSummary;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import com.hackybear.hungry_scan_core.enums.PaymentMethod;
-import com.hackybear.hungry_scan_core.repository.RestaurantTableRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.test_utils.OrderFactory;
 import com.hackybear.hungry_scan_core.test_utils.OrderedItemFactory;
@@ -50,37 +49,20 @@ public class OrderSummaryControllerTest {
     private OrderSummary table9Summary = new OrderSummary();
     private OrderSummary table11Summary = new OrderSummary();
 
-    @Autowired
-    private RestaurantTableRepository restaurantTableRepository;
-
     @Sql("/data-h2.sql")
     @Test
     @org.junit.jupiter.api.Order(1)
-    @WithMockUser(roles = {"CUSTOMER"})
-    void init() throws Exception {
+    void init() {
         log.info("Initializing H2 database...");
         log.info("Database initialized.");
-        log.info("Preparing summaries for tests...");
-        Order table9Order = orderFactory.createOrder(9, false,
-                orderedItemFactory.createOrderedItem(31, null, "Extra warm please.", 2),
-                orderedItemFactory.createOrderedItem(21, 4, null, 1),
-                orderedItemFactory.createOrderedItem(32, null, null, 1));
-        Order table11Order = orderFactory.createOrder(11, false,
-                orderedItemFactory.createOrderedItem(22, 6, "no salt please", 1),
-                orderedItemFactory.createOrderedItem(32, null, null, 1),
-                orderedItemFactory.createOrderedItem(33, null, "with ice pls", 1));
-        table9Order.getRestaurantTable().setActive(true);
-        this.table9Summary =
-                apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table9Order, OrderSummary.class);
-        table11Order.getRestaurantTable().setActive(true);
-        this.table11Summary =
-                apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table11Order, OrderSummary.class);
-        log.info("Summaries prepared.");
     }
 
     @Test
     @org.junit.jupiter.api.Order(2)
-    void orderInitializationCheck() {
+    @Transactional
+    @WithMockUser(roles = "CUSTOMER")
+    void orderInitializationCheck() throws Exception {
+        prepareSummaries();
         assertNotNull(table9Summary);
         assertEquals(Money.of(56.00), table9Summary.getTotalAmount());
         assertNotNull(table11Summary);
@@ -92,6 +74,7 @@ public class OrderSummaryControllerTest {
     @Transactional
     @Rollback
     void shouldPayByCash() throws Exception {
+        prepareSummaries();
         RestaurantTable table = table9Summary.getRestaurantTable();
         assertFalse(table.isBillRequested());
 
@@ -111,6 +94,7 @@ public class OrderSummaryControllerTest {
     @Transactional
     @Rollback
     void shouldPayByCard() throws Exception {
+        prepareSummaries();
         RestaurantTable table = table11Summary.getRestaurantTable();
         assertFalse(table.isBillRequested());
 
@@ -124,21 +108,23 @@ public class OrderSummaryControllerTest {
         assertEquals(PaymentMethod.CARD, summary.getPaymentMethod());
     }
 
-//    @Test
-//    @WithMockUser(roles = {"CUSTOMER"})
-//    @Transactional
-//    @Rollback
-//    void shouldPayByBlik() throws Exception {
-//        RestaurantTable table = table9Summary.getRestaurantTable();
-//        assertFalse(table.isBillRequested());
-//        table.setActive(true);
-//        restaurantTableRepository.save(table);
-//
-//        table9Summary.setPaymentMethod(PaymentMethod.BLIK);
-//        OrderSummary summary = apiRequestUtils.postAndFetchObject("/api/restaurant/summaries/pay", table9Summary, OrderSummary.class);
-//
-//        assertEquals(Money.of(00.00), summary.getTotalAmount());
-//        assertNull(summary.getPaymentMethod());
-//    }
-
+    @Transactional
+    void prepareSummaries() throws Exception {
+        log.info("Preparing summaries for tests...");
+        Order table9Order = orderFactory.createOrder(9L, false,
+                orderedItemFactory.createOrderedItem(31L, null, "Extra warm please.", 2),
+                orderedItemFactory.createOrderedItem(21L, 4L, null, 1),
+                orderedItemFactory.createOrderedItem(32L, null, null, 1));
+        Order table11Order = orderFactory.createOrder(11L, false,
+                orderedItemFactory.createOrderedItem(22L, 6L, "no salt please", 1),
+                orderedItemFactory.createOrderedItem(32L, null, null, 1),
+                orderedItemFactory.createOrderedItem(33L, null, "with ice pls", 1));
+        table9Order.getRestaurantTable().setActive(true);
+        this.table9Summary =
+                apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table9Order, OrderSummary.class);
+        table11Order.getRestaurantTable().setActive(true);
+        this.table11Summary =
+                apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table11Order, OrderSummary.class);
+        log.info("Summaries prepared.");
+    }
 }

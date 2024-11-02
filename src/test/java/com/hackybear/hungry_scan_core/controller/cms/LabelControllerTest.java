@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
-import com.hackybear.hungry_scan_core.entity.Label;
+import com.hackybear.hungry_scan_core.dto.LabelDTO;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -43,12 +43,12 @@ class LabelControllerTest {
     @Test
     @WithMockUser(roles = {"MANAGER"})
     void shouldGetAllLabels() throws Exception {
-        List<Label> labels =
+        List<LabelDTO> labels =
                 apiRequestUtils.fetchAsList(
-                        "/api/cms/labels", Label.class);
+                        "/api/cms/labels", LabelDTO.class);
 
         assertEquals(6, labels.size());
-        assertEquals("Bez glutenu", labels.get(0).getName().getDefaultTranslation());
+        assertEquals("Bez glutenu", labels.get(0).name().defaultTranslation());
     }
 
     @Test
@@ -59,9 +59,9 @@ class LabelControllerTest {
     @Test
     @WithMockUser(roles = {"CUSTOMER_READONLY"})
     void shouldShowLabelById() throws Exception {
-        Label label =
-                apiRequestUtils.postObjectExpect200("/api/cms/labels/show", 6, Label.class);
-        assertEquals("Ostre", label.getName().getDefaultTranslation());
+        LabelDTO label =
+                apiRequestUtils.postObjectExpect200("/api/cms/labels/show", 6, LabelDTO.class);
+        assertEquals("Ostre", label.name().defaultTranslation());
     }
 
     @Test

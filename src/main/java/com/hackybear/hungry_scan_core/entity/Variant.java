@@ -29,31 +29,30 @@ import java.time.LocalDateTime;
 @Table(name = "variants")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class Variant {
+public class Variant implements Comparable<Variant> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank
     @LimitTranslationsLength
-    @NotNull
     private Translatable name;
 
-    @ManyToOne
     @NotNull
-    private MenuItem menuItem;
+    private Long menuItemId;
 
     @DecimalMin(value = "0.00")
     private BigDecimal price = Money.of(0.00);
 
-    private boolean isAvailable = true;
+    private boolean available = true;
 
-    private boolean isDefaultVariant;
+    private boolean defaultVariant;
 
     @Min(1)
+    @NotNull
     private Integer displayOrder;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -67,4 +66,9 @@ public class Variant {
 
     @CreatedBy
     private String createdBy;
+
+    @Override
+    public int compareTo(Variant other) {
+        return this.displayOrder.compareTo(other.displayOrder);
+    }
 }

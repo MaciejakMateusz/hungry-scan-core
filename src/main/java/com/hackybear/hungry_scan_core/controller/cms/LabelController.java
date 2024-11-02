@@ -1,7 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.Label;
+import com.hackybear.hungry_scan_core.dto.LabelDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.LabelService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,13 +26,13 @@ public class LabelController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Label>> list() {
+    public ResponseEntity<List<LabelDTO>> list() {
         return ResponseEntity.ok(labelService.findAll());
     }
 
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, labelService::findById);
     }
 

@@ -47,9 +47,9 @@ public class JwtServiceImp implements JwtService {
     }
 
     @Override
-    public String generateToken(String username, long hoursToExpire) {
+    public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username, hoursToExpire);
+        return createToken(claims, username);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class JwtServiceImp implements JwtService {
                 .getPayload();
     }
 
-    private String createToken(Map<String, Object> claims, String username, long hoursToExpire) {
-        long expirationTimeMillis = System.currentTimeMillis() + (hoursToExpire * 60 * 60 * 1000); // 20 hours
+    private String createToken(Map<String, Object> claims, String username) {
+        long expirationTimeMillis = System.currentTimeMillis() + (60 * 60 * 1000);
 
         return Jwts.builder()
                 .claims(claims)

@@ -3,10 +3,18 @@ package com.hackybear.hungry_scan_core.controller.login;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
 import com.hackybear.hungry_scan_core.dto.JwtResponseDTO;
-import com.hackybear.hungry_scan_core.entity.*;
+import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
+import com.hackybear.hungry_scan_core.entity.JwtToken;
+import com.hackybear.hungry_scan_core.entity.RestaurantTable;
+import com.hackybear.hungry_scan_core.entity.Role;
+import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.*;
+import com.hackybear.hungry_scan_core.service.interfaces.JwtService;
+import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import com.hackybear.hungry_scan_core.service.interfaces.RoleService;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,14 +41,14 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 @CrossOrigin("http://localhost:3002")
 public class UserController {
 
     private final AuthenticationManager authenticationManager;
     private final RestaurantTableService restaurantTableService;
-    private final SettingsService settingsService;
     private final UserService userService;
+    private final UserMapper userMapper;
     private final RoleService roleService;
     private final JwtService jwtService;
     private final ExceptionHelper exceptionHelper;
@@ -51,14 +59,15 @@ public class UserController {
 
     public UserController(AuthenticationManager authenticationManager,
                           RestaurantTableService restaurantTableService,
-                          SettingsService settingsService,
-                          UserService userService,
+                          UserService userService, UserMapper userMapper,
                           RoleService roleService,
-                          JwtService jwtService, ExceptionHelper exceptionHelper, ResponseHelper responseHelper) {
+                          JwtService jwtService,
+                          ExceptionHelper exceptionHelper,
+                          ResponseHelper responseHelper) {
         this.authenticationManager = authenticationManager;
         this.restaurantTableService = restaurantTableService;
-        this.settingsService = settingsService;
         this.userService = userService;
+        this.userMapper = userMapper;
         this.roleService = roleService;
         this.jwtService = jwtService;
         this.exceptionHelper = exceptionHelper;
@@ -66,16 +75,15 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> add(@Valid @RequestBody User user, BindingResult br) {
+    public ResponseEntity<?> add(@Valid @RequestBody RegistrationDTO registrationDTO, BindingResult br) {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
-        Map<String, Object> errorParams = responseHelper.getErrorParams(user);
+        Map<String, Object> errorParams = responseHelper.getErrorParams(registrationDTO);
         if (!errorParams.isEmpty()) {
             return ResponseEntity.badRequest().body(errorParams);
         }
-        userService.save(user);
-        return ResponseEntity.ok().build();
+        return responseHelper.getResponseEntity(registrationDTO, userService::save);
     }
 
     @PostMapping("/login")
@@ -99,15 +107,25 @@ public class UserController {
         return ResponseEntity.ok().body(Map.of("message", "Logout successful"));
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/restaurant")
+    public ResponseEntity<?> switchRestaurant(@RequestBody Long restaurantId) {
+        return responseHelper.getResponseEntity(restaurantId, userService::switchRestaurant);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/menu")
+    public ResponseEntity<?> switchMenu(@RequestBody Long menuId) {
+        return responseHelper.getResponseEntity(menuId, userService::switchMenu);
+    }
+
     @Deprecated //TODO metoda do wywalenia po zmianach w założeniach skanowania kodów
     @GetMapping("/scan/{token}")
     public JwtResponseDTO scanTableQr(@PathVariable("token") String token) throws AccessDeniedException, LocalizedException {
-        Settings settings = settingsService.getSettings();
         RestaurantTable table = getRestaurantTable(token);
         if (table.isActive()) {
             String randomUUID = UUID.randomUUID().toString();
-            String accessToken = jwtService.generateToken(randomUUID.substring(1, 13),
-                    settings.getEmployeeSessionTime());
+            String accessToken = jwtService.generateToken(randomUUID.substring(1, 13));
             persistTableAndUser(new JwtToken(accessToken), randomUUID, table);
             return JwtResponseDTO
                     .builder()
@@ -122,10 +140,8 @@ public class UserController {
 
     @GetMapping("/scan")
     public ResponseEntity<Void> scanQr(HttpServletResponse response) throws IOException {
-        Settings settings = settingsService.getSettings();
         String randomUUID = UUID.randomUUID().toString();
-        String accessToken = jwtService.generateToken(randomUUID.substring(1, 13),
-                settings.getCustomerSessionTime());
+        String accessToken = jwtService.generateToken(randomUUID.substring(1, 13));
         persistUser(new JwtToken(accessToken), randomUUID);
 
         String redirectUrl = UriComponentsBuilder.fromUriString(getCustomerAppUrl())
@@ -138,16 +154,13 @@ public class UserController {
     }
 
     private String prepareJwtCookie(AuthRequestDTO authRequestDTO) {
-        Settings settings = settingsService.getSettings();
-        String jwt = jwtService.generateToken(authRequestDTO.getUsername(),
-                settings.getEmployeeSessionTime());
-        long maxAgeInSeconds = settings.getEmployeeSessionTime() * 3600;
+        String jwt = jwtService.generateToken(authRequestDTO.getUsername());
 
         ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
                 .path("/")
                 .httpOnly(true)
                 .secure(false)
-                .maxAge(maxAgeInSeconds)
+                .maxAge(3600)
                 .sameSite("Strict")
                 .build();
 
@@ -165,7 +178,7 @@ public class UserController {
         return cookie.toString();
     }
 
-    private void persistTableAndUser(JwtToken jwtToken, String uuid, RestaurantTable restaurantTable) {
+    private void persistTableAndUser(JwtToken jwtToken, String uuid, RestaurantTable restaurantTable) throws LocalizedException {
         String username = uuid.substring(1, 13) + "@temp.it";
         boolean isFirstCustomer = restaurantTable.getUsers().isEmpty();
         userService.save(createTempCustomer(jwtToken, username, isFirstCustomer));
@@ -189,15 +202,17 @@ public class UserController {
         return restaurantTable;
     }
 
-    private User createTempCustomer(JwtToken jwtToken, String username, boolean isFirstCustomer) {
+    private RegistrationDTO createTempCustomer(JwtToken jwtToken, String username, boolean isFirstCustomer) {
         User customer = new User();
         customer.setUsername(username);
         customer.setEmail(username);
+        customer.setName(username.substring(4));
+        customer.setSurname(username.substring(4));
         customer.setPassword(UUID.randomUUID().toString());
         Role role = roleService.findByName(isFirstCustomer ? "ROLE_CUSTOMER" : "ROLE_CUSTOMER_READONLY");
         customer.setRoles(new HashSet<>(Collections.singletonList(role)));
         customer.setJwtToken(jwtToken);
-        return customer;
+        return userMapper.toDTO(customer);
     }
 
     private String getCustomerAppUrl() {

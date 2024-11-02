@@ -1,5 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
+import com.hackybear.hungry_scan_core.dto.SettingsDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.SettingsMapper;
 import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -33,9 +35,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SettingsControllerTest {
 
-
     @Autowired
     private ApiRequestUtils apiRequestUtils;
+
+    @Autowired
+    private SettingsMapper settingsMapper;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -45,16 +49,16 @@ class SettingsControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"ADMIN"})
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
     void shouldGetSettings() throws Exception {
-        Settings settings =
+        SettingsDTO settings =
                 apiRequestUtils.fetchObject(
-                        "/api/admin/settings", Settings.class);
+                        "/api/admin/settings", SettingsDTO.class);
 
-        assertEquals(3, settings.getBookingDuration());
-        assertEquals(LocalTime.of(7, 0), settings.getOpeningTime());
-        assertEquals(LocalTime.of(23, 0), settings.getClosingTime());
-        assertEquals(Language.ENG, settings.getLanguage());
+        assertEquals(3, settings.bookingDuration());
+        assertEquals(LocalTime.of(7, 0), settings.openingTime());
+        assertEquals(LocalTime.of(23, 0), settings.closingTime());
+        assertEquals(Language.ENG, settings.language());
     }
 
     @Test
@@ -69,18 +73,22 @@ class SettingsControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldUpdateSettings() throws Exception {
         Settings settings = createSettings();
-        apiRequestUtils.patchAndExpect200("/api/admin/settings", settings);
+        SettingsDTO settingsDTO = settingsMapper.toDTO(settings);
+        apiRequestUtils.patchAndExpect200("/api/admin/settings", settingsDTO);
 
-        assertEquals(2, settings.getBookingDuration());
-        assertEquals(LocalTime.of(10, 30), settings.getOpeningTime());
-        assertEquals(LocalTime.of(22, 0), settings.getClosingTime());
-        assertEquals(Language.PL, settings.getLanguage());
-        assertEquals((short) 90, settings.getCapacity());
+        SettingsDTO updatedSettings =
+                apiRequestUtils.fetchObject(
+                        "/api/admin/settings", SettingsDTO.class);
+        assertEquals(2, updatedSettings.bookingDuration());
+        assertEquals(LocalTime.of(10, 30), updatedSettings.openingTime());
+        assertEquals(LocalTime.of(22, 0), updatedSettings.closingTime());
+        assertEquals(Language.PL, updatedSettings.language());
+        assertEquals((short) 90, updatedSettings.capacity());
     }
 
     @Test
@@ -112,7 +120,7 @@ class SettingsControllerTest {
 
     private Settings createSettings() {
         Settings settings = new Settings();
-        settings.setId(1);
+        settings.setId(1L);
         settings.setCapacity((short) 90);
         settings.setBookingDuration(2L);
         settings.setLanguage(Language.PL);

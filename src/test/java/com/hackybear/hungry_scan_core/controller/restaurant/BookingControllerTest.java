@@ -60,7 +60,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
     @Transactional
     @Rollback
     @Order(3)
@@ -69,7 +69,7 @@ class BookingControllerTest {
                 LocalDate.now().plusDays(4),
                 LocalTime.of(12, 0),
                 "Garnek",
-                List.of(11),
+                List.of(11L),
                 (short) 3);
 
         apiRequestUtils.postAndExpect200("/api/restaurant/bookings", booking);
@@ -86,7 +86,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
     @Transactional
     @Rollback
     @Order(4)
@@ -95,7 +95,7 @@ class BookingControllerTest {
                 LocalDate.now().plusDays(5),
                 LocalTime.of(15, 0),
                 "Cieślak",
-                List.of(6, 7),
+                List.of(6L, 7L),
                 (short) 7);
 
         apiRequestUtils.postAndExpect200("/api/restaurant/bookings", booking);
@@ -168,7 +168,7 @@ class BookingControllerTest {
                 LocalDate.now().plusDays(2),
                 LocalTime.of(14, 0),
                 "Karagor",
-                List.of(14),
+                List.of(14L),
                 (short) 2);
         Map<String, Object> requestParams = getPageableAndDateRanges();
 
@@ -183,7 +183,7 @@ class BookingControllerTest {
     private Booking createBooking(LocalDate date,
                                   LocalTime time,
                                   String surname,
-                                  List<Integer> tableNumbers,
+                                  List<Long> tableNumbers,
                                   short numOfPpl) {
         Booking booking = new Booking();
         booking.setDate(date);
@@ -191,7 +191,7 @@ class BookingControllerTest {
         booking.setSurname(surname);
 
         Set<RestaurantTable> restaurantTables = new HashSet<>();
-        for (Integer tableNum : tableNumbers) {
+        for (Long tableNum : tableNumbers) {
             RestaurantTable restaurantTable;
             try {
                 restaurantTable = restaurantTableService.findById(tableNum);

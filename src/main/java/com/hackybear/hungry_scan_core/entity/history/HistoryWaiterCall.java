@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class HistoryWaiterCall {
 
     public HistoryWaiterCall(Long id,
-                             Integer tableId,
+                             Long tableId,
                              Integer tableNumber,
                              LocalDateTime callTime,
                              LocalDateTime resolvedTime,
@@ -34,7 +34,7 @@ public class HistoryWaiterCall {
     @Id
     private Long id;
 
-    private Integer tableId;
+    private Long tableId;
 
     private Integer tableNumber;
 

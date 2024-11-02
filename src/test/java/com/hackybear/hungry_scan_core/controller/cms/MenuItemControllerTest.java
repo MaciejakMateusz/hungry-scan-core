@@ -1,10 +1,11 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
+import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.test_utils.MenuItemFactory;
 import com.hackybear.hungry_scan_core.utility.Money;
@@ -15,13 +16,11 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -43,16 +41,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class MenuItemControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private ApiRequestUtils apiRequestUtils;
 
     @Autowired
     private MenuItemFactory menuItemFactory;
 
     @Autowired
-    private CategoryService categoryService;
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private MenuItemMapper menuItemMapper;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -62,27 +60,10 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
-    void shouldGetAllMenuItems() throws Exception {
-        List<MenuItem> menuItems =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/items", MenuItem.class);
-
-        assertEquals(33, menuItems.size());
-        assertEquals("Krewetki marynowane w cytrynie", menuItems.get(0).getName().getDefaultTranslation());
-    }
-
-    @Test
-    @WithAnonymousUser
-    void shouldNotAllowUnauthorizedAccessToMenuItems() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/cms/items");
-    }
-
-    @Test
     @WithMockUser(roles = {"COOK"})
     void shouldShowMenuItemById() throws Exception {
-        MenuItem menuItem = apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
-        assertEquals("Roladki z bakłażana", menuItem.getName().getDefaultTranslation());
+        MenuItemFormDTO menuItemFormDTO = fetchMenuItemFormDTO(4L);
+        assertEquals("Roladki z bakłażana", menuItemFormDTO.name().defaultTranslation());
     }
 
     @Test
@@ -101,44 +82,30 @@ class MenuItemControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    void shouldGetNewMenuItemObject() throws Exception {
-        Object menuItem = apiRequestUtils.fetchObject("/api/cms/items/add", MenuItem.class);
-        assertInstanceOf(MenuItem.class, menuItem);
-    }
-
-    @Test
-    @WithMockUser(roles = "COOK")
-    void shouldNotAllowUnauthorizedAccessToNewMenuItemObject() throws Exception {
-        mockMvc.perform(get("/api/cms/items/add")).andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
     @Transactional
     @Rollback
     void shouldAddNewMenuItem() throws Exception {
         MenuItem menuItem = createMenuItem();
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItemFormDTO);
 
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200(
-                        "/api/cms/items/show", 36, MenuItem.class);
+        MenuItemFormDTO persistedMenuItem = fetchMenuItemFormDTO(36L);
 
-        assertEquals("Sample Item", persistedMenuItem.getName().getDefaultTranslation());
-        assertEquals("Sample description", persistedMenuItem.getDescription().getDefaultTranslation());
-        assertEquals(5, persistedMenuItem.getIngredients().size());
-        assertEquals(5, persistedMenuItem.getAdditionalIngredients().size());
-        assertEquals(1, persistedMenuItem.getAllergens().size());
-        assertEquals(2, persistedMenuItem.getLabels().size());
-        assertEquals("/public/assets/sample.png", persistedMenuItem.getImageName());
+        assertEquals("Sample Item", persistedMenuItem.name().defaultTranslation());
+        assertEquals("Sample description", persistedMenuItem.description().defaultTranslation());
+        assertEquals(5, persistedMenuItem.additionalIngredients().size());
+        assertEquals(1, persistedMenuItem.allergens().size());
+        assertEquals(2, persistedMenuItem.labels().size());
+        assertEquals("/public/assets/sample.png", persistedMenuItem.imageName());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowUnauthorizedAccessToItemsAdd() throws Exception {
         MenuItem menuItem = createMenuItem();
-        apiRequestUtils.postAndExpect("/api/cms/items/add", menuItem, status().isForbidden());
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
+        apiRequestUtils.postAndExpect("/api/cms/items/add", menuItemFormDTO, status().isForbidden());
     }
 
     @Test
@@ -146,8 +113,9 @@ class MenuItemControllerTest {
     void shouldNotAddWithIncorrectName() throws Exception {
         MenuItem menuItem = createMenuItem();
         menuItem.setName(getDefaultTranslation(""));
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItem);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItemFormDTO);
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
@@ -158,19 +126,20 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldUpdateExistingMenuItem() throws Exception {
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         persistedMenuItem.setName(getDefaultTranslation("Updated Item"));
         persistedMenuItem.setDescription(getDefaultTranslation("Updated Description"));
         persistedMenuItem.setImageName("/public/assets/updated.png");
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
-        MenuItem updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
-        assertEquals("Updated Item", updatedMenuItem.getName().getDefaultTranslation());
-        assertEquals("Updated Description", updatedMenuItem.getDescription().getDefaultTranslation());
-        assertEquals("/public/assets/updated.png", updatedMenuItem.getImageName());
+        MenuItemFormDTO updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItemFormDTO.class);
+        assertEquals("Updated Item", updatedMenuItem.name().defaultTranslation());
+        assertEquals("Updated Description", updatedMenuItem.description().defaultTranslation());
+        assertEquals("/public/assets/updated.png", updatedMenuItem.imageName());
     }
 
     @Test
@@ -178,20 +147,22 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldSwitchCategory() throws Exception {
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
-        persistedMenuItem.setCategoryId(1);
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
+        persistedMenuItem.setCategoryId(1L);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
-        MenuItem updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItem.class);
-        assertEquals(1, updatedMenuItem.getCategoryId());
-        Category category = categoryService.findById(1);
+        MenuItemFormDTO updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItemFormDTO.class);
+
+        Category category = getCategoryById(1L);
+        assertEquals(1L, updatedMenuItem.categoryId());
         boolean isUpdatedMenuItemPresent = category
                 .getMenuItems()
                 .stream()
-                .anyMatch(menuItem -> Objects.equals(menuItem.getId(), updatedMenuItem.getId()));
+                .anyMatch(menuItem -> Objects.equals(menuItem.getId(), updatedMenuItem.id()));
         assertTrue(isUpdatedMenuItemPresent);
     }
 
@@ -200,24 +171,25 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldChangeDisplayOrderToBigger() throws Exception {
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(1L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         assertEquals(1, persistedMenuItem.getDisplayOrder());
         persistedMenuItem.setDisplayOrder(3);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
-        MenuItem updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
-        assertEquals(3, updatedMenuItem.getDisplayOrder());
+        MenuItemFormDTO updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItemFormDTO.class);
+        assertEquals(3, updatedMenuItem.displayOrder());
 
-        MenuItem thirdToSecond =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItem.class);
-        assertEquals(2, thirdToSecond.getDisplayOrder());
+        MenuItemFormDTO thirdToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItemFormDTO.class);
+        assertEquals(2, thirdToSecond.displayOrder());
 
-        MenuItem secondToFirst =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
-        assertEquals(1, secondToFirst.getDisplayOrder());
+        MenuItemFormDTO secondToFirst =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItemFormDTO.class);
+        assertEquals(1, secondToFirst.displayOrder());
     }
 
     @Test
@@ -225,24 +197,25 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldChangeDisplayOrderToLower() throws Exception {
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(5L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         assertEquals(5, persistedMenuItem.getDisplayOrder());
         persistedMenuItem.setDisplayOrder(2);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
-        MenuItem updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
-        assertEquals(2, updatedMenuItem.getDisplayOrder());
+        MenuItemFormDTO updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItemFormDTO.class);
+        assertEquals(2, updatedMenuItem.displayOrder());
 
-        MenuItem secondToThird =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
-        assertEquals(3, secondToThird.getDisplayOrder());
+        MenuItemFormDTO secondToThird =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItemFormDTO.class);
+        assertEquals(3, secondToThird.displayOrder());
 
-        MenuItem fourthToFifth =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
-        assertEquals(5, fourthToFifth.getDisplayOrder());
+        MenuItemFormDTO fourthToFifth =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItemFormDTO.class);
+        assertEquals(5, fourthToFifth.displayOrder());
     }
 
     @Test
@@ -250,24 +223,25 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldChangeDisplayOrderToLastWithTooBigValue() throws Exception {
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(1L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         assertEquals(1, persistedMenuItem.getDisplayOrder());
         persistedMenuItem.setDisplayOrder(15);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
-        MenuItem updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
-        assertEquals(5, updatedMenuItem.getDisplayOrder());
+        MenuItemFormDTO updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItemFormDTO.class);
+        assertEquals(5, updatedMenuItem.displayOrder());
 
-        MenuItem fifthToFourth =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
-        assertEquals(4, fifthToFourth.getDisplayOrder());
+        MenuItemFormDTO fifthToFourth =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItemFormDTO.class);
+        assertEquals(4, fifthToFourth.displayOrder());
 
-        MenuItem thirdToSecond =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItem.class);
-        assertEquals(2, thirdToSecond.getDisplayOrder());
+        MenuItemFormDTO thirdToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItemFormDTO.class);
+        assertEquals(2, thirdToSecond.displayOrder());
     }
 
     @Test
@@ -275,24 +249,25 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldChangeDisplayOrderToFirstWithTooLowValue() throws Exception {
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItem.class);
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(3L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         assertEquals(3, persistedMenuItem.getDisplayOrder());
         persistedMenuItem.setDisplayOrder(-2);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
-        MenuItem updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItem.class);
-        assertEquals(1, updatedMenuItem.getDisplayOrder());
+        MenuItemFormDTO updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 3, MenuItemFormDTO.class);
+        assertEquals(1, updatedMenuItem.displayOrder());
 
-        MenuItem firstToSecond =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
-        assertEquals(2, firstToSecond.getDisplayOrder());
+        MenuItemFormDTO firstToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItemFormDTO.class);
+        assertEquals(2, firstToSecond.displayOrder());
 
-        MenuItem secondToThird =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
-        assertEquals(3, secondToThird.getDisplayOrder());
+        MenuItemFormDTO secondToThird =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItemFormDTO.class);
+        assertEquals(3, secondToThird.displayOrder());
     }
 
     @Test
@@ -300,24 +275,25 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldChangeDisplayOrderFromLastToFirst() throws Exception {
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(5L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         assertEquals(5, persistedMenuItem.getDisplayOrder());
         persistedMenuItem.setDisplayOrder(1);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
-        MenuItem updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
-        assertEquals(1, updatedMenuItem.getDisplayOrder());
+        MenuItemFormDTO updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItemFormDTO.class);
+        assertEquals(1, updatedMenuItem.displayOrder());
 
-        MenuItem firstToSecond =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
-        assertEquals(2, firstToSecond.getDisplayOrder());
+        MenuItemFormDTO firstToSecond =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItemFormDTO.class);
+        assertEquals(2, firstToSecond.displayOrder());
 
-        MenuItem fourthToFifth =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
-        assertEquals(5, fourthToFifth.getDisplayOrder());
+        MenuItemFormDTO fourthToFifth =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItemFormDTO.class);
+        assertEquals(5, fourthToFifth.displayOrder());
     }
 
     @Test
@@ -325,24 +301,25 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldChangeDisplayOrderFromFirstToLast() throws Exception {
-        MenuItem persistedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(1L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         assertEquals(1, persistedMenuItem.getDisplayOrder());
         persistedMenuItem.setDisplayOrder(5);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", persistedMenuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
-        MenuItem updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItem.class);
-        assertEquals(5, updatedMenuItem.getDisplayOrder());
+        MenuItemFormDTO updatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 1, MenuItemFormDTO.class);
+        assertEquals(5, updatedMenuItem.displayOrder());
 
-        MenuItem secondToFirst =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
-        assertEquals(1, secondToFirst.getDisplayOrder());
+        MenuItemFormDTO secondToFirst =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItemFormDTO.class);
+        assertEquals(1, secondToFirst.displayOrder());
 
-        MenuItem fifthToFourth =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItem.class);
-        assertEquals(4, fifthToFourth.getDisplayOrder());
+        MenuItemFormDTO fifthToFourth =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 5, MenuItemFormDTO.class);
+        assertEquals(4, fifthToFourth.displayOrder());
     }
 
     @Test
@@ -352,11 +329,11 @@ class MenuItemControllerTest {
     void shouldAddNewWithExistingDisplayOrder() throws Exception {
         MenuItem menuItem = createMenuItem();
         menuItem.setDisplayOrder(2);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItemFormDTO);
 
-        Category category = apiRequestUtils.postObjectExpect200(
-                "/api/cms/categories/show", 2, Category.class);
+        Category category = getCategoryById(2L);
         List<MenuItem> menuItems = category.getMenuItems();
 
         assertEquals(6, menuItems.size());
@@ -374,16 +351,17 @@ class MenuItemControllerTest {
         MenuItem menuItem = menuItemFactory.createMenuItem(
                 "Sample Item",
                 "Sample description",
-                9,
+                9L,
                 Money.of(23.55));
         menuItem.setDisplayOrder(22);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItemFormDTO);
 
-        MenuItem persistedMenuItem = apiRequestUtils.postObjectExpect200(
-                "/api/cms/items/show", 37, MenuItem.class);
-        assertEquals("Sample Item", persistedMenuItem.getName().getDefaultTranslation());
-        assertEquals(1, persistedMenuItem.getDisplayOrder());
+        MenuItemFormDTO persistedMenuItem = apiRequestUtils.postObjectExpect200(
+                "/api/cms/items/show", 37, MenuItemFormDTO.class);
+        assertEquals("Sample Item", persistedMenuItem.name().defaultTranslation());
+        assertEquals(1, persistedMenuItem.displayOrder());
     }
 
     @Test
@@ -393,11 +371,11 @@ class MenuItemControllerTest {
     void shouldHandleBoundaryDisplayOrders() throws Exception {
         MenuItem menuItem = createMenuItem();
         menuItem.setDisplayOrder(Integer.MIN_VALUE);
+        MenuItemFormDTO minIntOrder = menuItemMapper.toFormDTO(menuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", minIntOrder);
 
-        Category category = apiRequestUtils.postObjectExpect200(
-                "/api/cms/categories/show", 2, Category.class);
+        Category category = getCategoryById(2L);
         List<MenuItem> menuItems = category.getMenuItems();
         assertEquals(6, menuItems.size());
         menuItem = menuItems.get(0);
@@ -407,10 +385,10 @@ class MenuItemControllerTest {
         assertEquals(2, menuItems.get(1).getDisplayOrder());
 
         menuItem.setDisplayOrder(Integer.MAX_VALUE);
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+        MenuItemFormDTO maxIntOrder = menuItemMapper.toFormDTO(menuItem);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", maxIntOrder);
 
-        category = apiRequestUtils.postObjectExpect200(
-                "/api/cms/categories/show", 2, Category.class);
+        category = getCategoryById(2L);
         menuItems = category.getMenuItems();
         menuItem = menuItems.get(menuItems.size() - 1);
 
@@ -428,11 +406,11 @@ class MenuItemControllerTest {
     void shouldHandleMiddleReordering() throws Exception {
         MenuItem menuItem = createMenuItem();
         menuItem.setDisplayOrder(3);
+        MenuItemFormDTO thirdDisplayOrder = menuItemMapper.toFormDTO(menuItem);
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", thirdDisplayOrder);
 
-        Category category = apiRequestUtils.postObjectExpect200(
-                "/api/cms/categories/show", 2, Category.class);
+        Category category = getCategoryById(2L);
         List<MenuItem> menuItems = category.getMenuItems();
         assertEquals(6, menuItems.size());
         menuItem = menuItems.get(2);
@@ -442,10 +420,11 @@ class MenuItemControllerTest {
         assertEquals(4, menuItems.get(3).getDisplayOrder());
 
         menuItem.setDisplayOrder(2);
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItem);
+        MenuItemFormDTO secondDisplayOrder = menuItemMapper.toFormDTO(menuItem);
 
-        category = apiRequestUtils.postObjectExpect200(
-                "/api/cms/categories/show", 2, Category.class);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", secondDisplayOrder);
+
+        category = getCategoryById(2L);
         menuItems = category.getMenuItems();
         menuItem = menuItems.get(1);
         assertEquals("Sample Item", menuItem.getName().getDefaultTranslation());
@@ -459,9 +438,8 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldDeleteMenuItem() throws Exception {
-        MenuItem menuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 25, MenuItem.class);
-        assertEquals("Pizza Quattro Formaggi", menuItem.getName().getDefaultTranslation());
+        MenuItemFormDTO menuItem = fetchMenuItemFormDTO(25L);
+        assertEquals("Pizza Quattro Formaggi", menuItem.name().defaultTranslation());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", 25);
 
@@ -476,14 +454,12 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldUpdateDisplayOrdersAfterRemoval() throws Exception {
-        MenuItem menuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 2, MenuItem.class);
-        assertEquals("Carpaccio z polędwicy wołowej", menuItem.getName().getDefaultTranslation());
+        MenuItemFormDTO menuItem = fetchMenuItemFormDTO(2L);
+        assertEquals("Carpaccio z polędwicy wołowej", menuItem.name().defaultTranslation());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/items/delete", 2);
 
-        Category category = apiRequestUtils.postObjectExpect200(
-                "/api/cms/categories/show", 1, Category.class);
+        Category category = getCategoryById(1L);
 
         assertEquals(4, category.getMenuItems().size());
         MenuItem secondMenuItem = category.getMenuItems().get(1);
@@ -498,11 +474,16 @@ class MenuItemControllerTest {
         apiRequestUtils.deleteAndExpect("/api/cms/items/delete", 15, status().isForbidden());
     }
 
-    private MenuItem createMenuItem() throws LocalizedException {
+    private MenuItemFormDTO fetchMenuItemFormDTO(Long id) throws Exception {
+        return apiRequestUtils.postObjectExpect200(
+                "/api/cms/items/show", id, MenuItemFormDTO.class);
+    }
+
+    private MenuItem createMenuItem() {
         return menuItemFactory.createMenuItem(
                 "Sample Item",
                 "Sample description",
-                2,
+                2L,
                 Money.of(23.55));
     }
 
@@ -510,6 +491,10 @@ class MenuItemControllerTest {
         Translatable translatable = new Translatable();
         translatable.setDefaultTranslation(translation);
         return translatable;
+    }
+
+    private Category getCategoryById(Long id) {
+        return categoryRepository.findById(id).orElseThrow();
     }
 
 }

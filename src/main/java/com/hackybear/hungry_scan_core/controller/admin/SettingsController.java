@@ -1,7 +1,8 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.Settings;
+import com.hackybear.hungry_scan_core.dto.SettingsDTO;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.SettingsService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -26,13 +27,17 @@ public class SettingsController {
     }
 
     @GetMapping
-    public ResponseEntity<Settings> getSettings() {
-        return ResponseEntity.ok(settingsService.getSettings());
+    public ResponseEntity<?> getSettings() {
+        try {
+            return ResponseEntity.ok(settingsService.getSettings());
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateSettings(@RequestBody @Valid Settings settings, BindingResult br) {
-        return responseHelper.buildResponse(settings, br, settingsService::save);
+    public ResponseEntity<?> updateSettings(@RequestBody @Valid SettingsDTO settingsDTO, BindingResult br) {
+        return responseHelper.buildResponse(settingsDTO, br, settingsService::save);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

@@ -16,8 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findUserByUsername(String username);
 
-    boolean existsByEmail(String email);
-
     boolean existsByUsername(String username);
 
     @Query("SELECT u FROM User u JOIN u.roles r WHERE r.name = :roleName")
@@ -27,4 +25,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllCustomers();
 
     Optional<User> findByUsername(String username);
+
+    @Query("SELECT u.activeMenuId FROM User u WHERE u.username = :username")
+    Long getActiveMenuIdByUsername(@Param("username") String username);
+
+    @Query("SELECT u.activeRestaurantId FROM User u WHERE u.username = :username")
+    Long getActiveRestaurantIdByUsername(@Param("username") String username);
+
+    void deleteByUsername(String username);
+
+    @Query("SELECT MAX(u.organizationId) FROM User u")
+    Long findMaxOrganizationId();
 }

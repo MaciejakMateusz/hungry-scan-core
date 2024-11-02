@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.controller;
 
-import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingBiConsumer;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingConsumer;
@@ -175,13 +175,11 @@ public class ResponseHelper {
         return ResponseEntity.badRequest().body(params);
     }
 
-    public Map<String, Object> getErrorParams(User user) {
+    public Map<String, Object> getErrorParams(RegistrationDTO registrationDTO) {
         Map<String, Object> params = new HashMap<>();
-        if (userService.existsByUsername(user.getUsername())) {
+        if (userService.existsByUsername(registrationDTO.username())) {
             params.put("usernameExists", true);
-        } else if (userService.existsByEmail(user.getEmail())) {
-            params.put("emailExists", true);
-        } else if (!user.getPassword().equals(user.getRepeatedPassword())) {
+        } else if (!registrationDTO.password().equals(registrationDTO.repeatedPassword())) {
             params.put("passwordsNotMatch", true);
         }
         return params;

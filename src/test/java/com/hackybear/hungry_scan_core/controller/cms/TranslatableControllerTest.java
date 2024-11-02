@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
-import com.hackybear.hungry_scan_core.entity.MenuItem;
+import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.TranslatableMapper;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,9 @@ class TranslatableControllerTest {
     @Autowired
     private ApiRequestUtils apiRequestUtils;
 
+    @Autowired
+    private TranslatableMapper translatableMapper;
+
     @Order(1)
     @Sql("/data-h2.sql")
     @Test
@@ -47,23 +51,24 @@ class TranslatableControllerTest {
     @Transactional
     @Rollback
     void shouldSaveAll() throws Exception {
-        MenuItem menuItem = apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
-        assertNull(menuItem.getName().getTranslationEn());
-        assertNull(menuItem.getDescription().getTranslationEn());
+        MenuItemFormDTO menuItem = apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItemFormDTO.class);
+        assertNull(menuItem.name().translationEn());
+        assertNull(menuItem.description().translationEn());
 
-        Translatable nameTranslation = menuItem.getName();
+        Translatable nameTranslation = translatableMapper.toTranslatable(menuItem.name());
         nameTranslation.setTranslationEn("English name");
 
-        Translatable descriptionTranslation = menuItem.getDescription();
+        Translatable descriptionTranslation = translatableMapper.toTranslatable(menuItem.description());
         descriptionTranslation.setTranslationEn("English description");
 
         List<Translatable> translatables = List.of(nameTranslation, descriptionTranslation);
 
         apiRequestUtils.postAndExpect200("/api/cms/translatable/save-all", translatables);
 
-        menuItem = apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItem.class);
-        assertEquals("English name", menuItem.getName().getTranslationEn());
-        assertEquals("English description", menuItem.getDescription().getTranslationEn());
+        MenuItemFormDTO translatedMenuItem =
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItemFormDTO.class);
+        assertEquals("English name", translatedMenuItem.name().translationEn());
+        assertEquals("English description", translatedMenuItem.description().translationEn());
     }
 
 }

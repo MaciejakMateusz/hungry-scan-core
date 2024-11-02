@@ -1,5 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
+import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.Translatable;
@@ -40,8 +42,12 @@ class AdminManagementControllerTest {
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
+
     @Autowired
     private RestaurantRepository restaurantRepository;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Test
     @Order(1)
@@ -162,8 +168,8 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void shouldShowUserById() throws Exception {
-        User user = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 7, User.class);
+    void shouldShowUserByUsername() throws Exception {
+        User user = apiRequestUtils.postObjectExpect200("/api/admin/users/show", "restaurator@rarytas.pl", User.class);
         assertEquals("restaurator@rarytas.pl", user.getUsername());
     }
 
@@ -183,8 +189,8 @@ class AdminManagementControllerTest {
     void shouldNotShowUserById() throws Exception {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/show", 55, status().isBadRequest());
-        assertEquals("Użytkownik z podanym ID = 55 nie istnieje.", responseBody.get("exceptionMsg"));
+                        "/api/admin/users/show", "nonExisting@email.com", status().isBadRequest());
+        assertEquals("Nie znaleziono użytkownika.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -210,33 +216,37 @@ class AdminManagementControllerTest {
     @Rollback
     @Transactional
     void shouldAddNewUser() throws Exception {
-        User user = createUser(1L, 1L);
-        apiRequestUtils.postAndExpect200("/api/admin/users/add", user);
+        User user = createUser(1L);
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        apiRequestUtils.postAndExpect200("/api/admin/users/add", registrationDTO);
 
-        User persistedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 9, User.class);
+        User persistedUser = findUser("example@example.com");
         assertEquals("example@example.com", persistedUser.getUsername());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowToAddUser() throws Exception {
-        User user = createUser(1L, 1L);
-        apiRequestUtils.postAndExpect("/api/admin/users/add", user, status().isForbidden());
+        User user = createUser(1L);
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        apiRequestUtils.postAndExpect("/api/admin/users/add", registrationDTO, status().isForbidden());
     }
 
     @Test
     void shouldNotAllowUnauthorizedAccessToAddUser() throws Exception {
-        User user = createUser(1L, 1L);
-        apiRequestUtils.postAndExpectForbidden("/api/admin/users/add", user);
+        User user = createUser(1L);
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        apiRequestUtils.postAndExpectForbidden("/api/admin/users/add", registrationDTO);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldNotAddWithIncorrectEmail() throws Exception {
-        User user = createUser(1L, 1L);
+        User user = createUser(1L);
         user.setEmail("mordo@gmailcom");
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
 
         assertEquals(1, errors.size());
         assertEquals("Niepoprawny format adresu email", errors.get("email"));
@@ -245,10 +255,11 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     void shouldNotAddWithIncorrectUsername() throws Exception {
-        User user = createUser(2L, 2L);
+        User user = createUser(2L);
         user.setUsername("ex");
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
 
         assertEquals(1, errors.size());
         assertEquals(
@@ -259,11 +270,12 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotAddWithIncorrectPassword() throws Exception {
-        User user = createUser(1L, 1L);
+        User user = createUser(1L);
         user.setPassword("example123");
         user.setRepeatedPassword("example123");
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", user);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
 
         assertEquals(1, errors.size());
         assertEquals(
@@ -274,13 +286,14 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     void shouldNotAddWithExistingUsername() throws Exception {
-        User user = createUser(2L, 2L);
+        User user = createUser(2L);
         user.setUsername("netka@test.com");
         user.setEmail("netka@test.com");
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
 
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/add", user, status().isBadRequest());
+                        "/api/admin/users/add", registrationDTO, status().isBadRequest());
 
         assertTrue((Boolean) responseParams.get("usernameExists"));
     }
@@ -288,12 +301,13 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotAddWithNotMatchingPasswords() throws Exception {
-        User user = createUser(1L, 1L);
+        User user = createUser(1L);
         user.setRepeatedPassword("Examplepass123");
+        RegistrationDTO registrationDTO = userMapper.toDTO(user);
 
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/add", user, status().isBadRequest());
+                        "/api/admin/users/add", registrationDTO, status().isBadRequest());
 
         assertTrue((Boolean) responseParams.get("passwordsNotMatch"));
     }
@@ -303,12 +317,13 @@ class AdminManagementControllerTest {
     @Rollback
     @Transactional
     void shouldUpdateUser() throws Exception {
-        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 3, User.class);
+        User existingUser = findUser("admin@example.com");
         existingUser.setEmail("updated@email.com");
+        RegistrationDTO registrationDTO = userMapper.toDTO(existingUser);
 
-        apiRequestUtils.patchAndExpect200("/api/admin/users/update", existingUser);
+        apiRequestUtils.patchAndExpect200("/api/admin/users/update", registrationDTO);
 
-        User updatedUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 3, User.class);
+        User updatedUser = findUser("admin@example.com");
         assertEquals("updated@email.com", updatedUser.getEmail());
     }
 
@@ -326,10 +341,11 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldNotUpdateIncorrectUser() throws Exception {
-        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 3, User.class);
+        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", "netka@test.com", User.class);
         existingUser.setEmail("wronk@email");
+        RegistrationDTO registrationDTO = userMapper.toDTO(existingUser);
 
-        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/admin/users/update", existingUser);
+        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/admin/users/update", registrationDTO);
 
         assertEquals(1, errors.size());
         assertEquals("Niepoprawny format adresu email", errors.get("email"));
@@ -340,15 +356,15 @@ class AdminManagementControllerTest {
     @Rollback
     @Transactional
     void shouldRemoveUser() throws Exception {
-        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 4, User.class);
+        User existingUser = findUser("netka@test.com");
         assertNotNull(existingUser);
 
-        apiRequestUtils.deleteAndExpect200("/api/admin/users/delete", existingUser);
+        apiRequestUtils.deleteAndExpect200("/api/admin/users/delete", "netka@test.com");
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/show", 4, status().isBadRequest());
-        assertEquals("Użytkownik z podanym ID = 4 nie istnieje.", responseBody.get("exceptionMsg"));
+                        "/api/admin/users/show", "netka@test.com", status().isBadRequest());
+        assertEquals("Nie znaleziono użytkownika.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -365,17 +381,16 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotSelfRemove() throws Exception {
-        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", 2, User.class);
         Map<String, Object> responseBody =
                 apiRequestUtils.deleteAndReturnResponseBody(
-                        "/api/admin/users/delete", existingUser, status().isBadRequest());
+                        "/api/admin/users/delete", "admin@example.com", status().isBadRequest());
         assertTrue((Boolean) responseBody.get("illegalRemoval"));
     }
 
-    private User createUser(Long restaurantId, Long organizationId) {
+    private User createUser(Long restaurantId) {
         User user = new User();
-        user.setOrganizationId(organizationId);
-        user.setEmail("example@example.com");
+        user.setName("Name");
+        user.setSurname("Surname");
         user.setUsername("example@example.com");
         user.setPassword("Example123!");
         user.setRepeatedPassword("Example123!");
@@ -400,5 +415,9 @@ class AdminManagementControllerTest {
 
     private Restaurant getRestaurant(Long restaurantId) {
         return restaurantRepository.findById(restaurantId).orElse(new Restaurant());
+    }
+
+    private User findUser(String username) throws Exception {
+        return apiRequestUtils.postObjectExpect200("/api/admin/users/show", username, User.class);
     }
 }

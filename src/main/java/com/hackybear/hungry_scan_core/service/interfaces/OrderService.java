@@ -15,7 +15,7 @@ public interface OrderService {
 
     Order findById(Long id) throws LocalizedException;
 
-    OrderSummary findByTable(Integer id) throws LocalizedException;
+    OrderSummary findByTable(Long id) throws LocalizedException;
 
     OrderSummary saveDineIn(Order order) throws LocalizedException;
 

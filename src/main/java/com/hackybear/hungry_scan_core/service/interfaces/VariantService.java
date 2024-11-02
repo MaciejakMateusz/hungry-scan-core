@@ -1,19 +1,19 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
-import com.hackybear.hungry_scan_core.entity.Variant;
+import com.hackybear.hungry_scan_core.dto.VariantDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 
 import java.util.List;
 
 public interface VariantService {
 
-    Variant findById(Integer id) throws LocalizedException;
+    VariantDTO findById(Long id) throws LocalizedException;
 
-    List<Variant> findAll();
+    List<VariantDTO> findAllByMenuItemId(Long menuItemId);
 
-    List<Variant> findAllByMenuItemId(Integer menuItemId);
+    void save(VariantDTO variantDTO) throws Exception;
 
-    void save(Variant variant) throws Exception;
+    void update(VariantDTO variantDTO) throws Exception;
 
-    void delete(Integer id) throws LocalizedException;
+    void delete(Long id) throws LocalizedException;
 }

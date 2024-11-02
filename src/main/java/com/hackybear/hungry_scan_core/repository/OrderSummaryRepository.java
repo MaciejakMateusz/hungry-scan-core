@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface OrderSummaryRepository extends CustomRepository<OrderSummary, Long> {
 
-    Optional<OrderSummary> findFirstByRestaurantTableId(Integer tableNumber);
+    Optional<OrderSummary> findFirstByRestaurantTableId(Long tableNumber);
 
     boolean existsByRestaurantTable(RestaurantTable restaurantTable);
 }

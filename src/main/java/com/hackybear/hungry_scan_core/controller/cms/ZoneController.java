@@ -35,7 +35,7 @@ public class ZoneController {
 
     @PostMapping("/show")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, zoneService::findById);
     }
 
@@ -54,7 +54,7 @@ public class ZoneController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> delete(@RequestBody Integer id) {
+    public ResponseEntity<Map<String, Object>> delete(@RequestBody Long id) {
         return responseHelper.buildResponse(id, zoneService::delete);
     }
 

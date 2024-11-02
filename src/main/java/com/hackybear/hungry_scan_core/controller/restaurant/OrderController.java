@@ -34,7 +34,7 @@ public class OrderController {
 
     @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/show/table")
-    public ResponseEntity<?> getByTable(@RequestBody Integer tableId) {
+    public ResponseEntity<?> getByTable(@RequestBody Long tableId) {
         return responseHelper.getObjectAndBuildResponse(tableId, orderService::findByTable);
     }
 

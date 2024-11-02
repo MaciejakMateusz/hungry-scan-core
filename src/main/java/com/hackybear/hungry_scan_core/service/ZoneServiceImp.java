@@ -33,14 +33,14 @@ public class ZoneServiceImp implements ZoneService {
     }
 
     @Override
-    public Zone findById(Integer id) throws LocalizedException {
+    public Zone findById(Long id) throws LocalizedException {
         return zoneRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.zoneService.zoneNotFound", id));
     }
 
     @Override
-    public void delete(Integer id) throws LocalizedException {
+    public void delete(Long id) throws LocalizedException {
         Zone existingZone = findById(id);
         zoneRepository.delete(existingZone);
     }
