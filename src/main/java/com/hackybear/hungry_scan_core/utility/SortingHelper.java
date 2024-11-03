@@ -1,14 +1,12 @@
 package com.hackybear.hungry_scan_core.utility;
 
 import com.hackybear.hungry_scan_core.entity.Category;
-import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
-import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingFunction;
 import org.springframework.stereotype.Component;
@@ -25,17 +23,15 @@ public class SortingHelper {
     private final MenuItemRepository menuItemRepository;
     private final CategoryRepository categoryRepository;
     private final VariantRepository variantRepository;
-    private final MenuRepository menuRepository;
     private final ExceptionHelper exceptionHelper;
 
     public SortingHelper(MenuItemRepository menuItemRepository,
                          CategoryRepository categoryRepository,
                          VariantRepository variantRepository,
-                         MenuRepository menuRepository, ExceptionHelper exceptionHelper) {
+                         ExceptionHelper exceptionHelper) {
         this.menuItemRepository = menuItemRepository;
         this.categoryRepository = categoryRepository;
         this.variantRepository = variantRepository;
-        this.menuRepository = menuRepository;
         this.exceptionHelper = exceptionHelper;
     }
 
@@ -61,29 +57,6 @@ public class SortingHelper {
         category.setMenuItems(categoryItems);
         categoryRepository.save(category);
         menuItemRepository.saveAll(categoryItems);
-    }
-
-    public void sortAndSave(Category category, ThrowingFunction<Long, Category> findFunction) throws Exception {
-        boolean isNew = isNewEntity(category);
-        Category currentCategory = getCurrentEntity(category, findFunction, isNew, Category.class);
-        int newOrder = getNewOrder(category.getDisplayOrder());
-
-        Long menuId = category.getMenuId();
-        List<Category> menuCategories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(menuId);
-
-        if (!isNew) {
-            menuCategories.remove(currentCategory);
-            updateDisplayOrdersAfterRemoval(menuCategories);
-        }
-
-        adjustDisplayOrdersForInsertion(category, menuCategories, newOrder);
-
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.menuService.menuNotFound", menuId));
-        menu.setCategories(menuCategories);
-        categoryRepository.save(category);
-        menuRepository.save(menu);
     }
 
     private Integer getNewOrder(Integer displayOrder) {
@@ -126,21 +99,6 @@ public class SortingHelper {
         menuItemRepository.delete(menuItem);
     }
 
-    public void removeAndAdjust(Category category) throws LocalizedException {
-        Long menuId = category.getMenuId();
-        List<Category> menuCategories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(menuId);
-
-        menuCategories.remove(category);
-        updateDisplayOrdersAfterRemoval(menuCategories);
-
-        Menu menu = menuRepository.findById(menuId)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.menuService.menuNotFound", menuId));
-        menu.setCategories(menuCategories);
-        menuRepository.save(menu);
-        categoryRepository.delete(category);
-    }
-
     public void removeAndAdjust(Variant variant) throws LocalizedException {
         Long menuItemId = variant.getMenuItemId();
         MenuItem menuItem = getMenuItem(menuItemId);
@@ -151,6 +109,14 @@ public class SortingHelper {
         menuItem.setVariants(new HashSet<>(menuItemVariants));
         menuItemRepository.save(menuItem);
         variantRepository.delete(variant);
+    }
+
+    public <T> void reassignDisplayOrders(List<T> collection, Consumer<List<T>> consumer) {
+        for (int i = 0; i <= collection.size() - 1; i++) {
+            T t = collection.get(i);
+            setDisplayOrder(t, i + 1);
+        }
+        consumer.accept(collection);
     }
 
     private <T extends Comparable<T>> void updateDisplayOrdersAfterRemoval(List<T> collection) {

@@ -30,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Component
 public class ApiRequestUtils {
 
+    protected final ObjectMapper objectMapper;
+
     protected final MockMvc mockMvc;
 
     /**
@@ -39,15 +41,15 @@ public class ApiRequestUtils {
      */
     public ApiRequestUtils(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
+        this.objectMapper = prepObjMapper();
     }
 
 
     /**
-     * Fetches a List<T> collection of objects from the specified endpoint.
+     * Executes GET HTTP request and fetches a List collection of objects from the specified endpoint.
      *
      * @param endpointUrl The URL of the endpoint to fetch from.
      * @param itemType    The type of objects to fetch.
-     * @param <T>         The type of objects to fetch.
      * @return A List of objects fetched from the endpoint.
      * @throws Exception If an error occurs during the request.
      */
@@ -61,16 +63,80 @@ public class ApiRequestUtils {
         MockHttpServletResponse response = result.getResponse();
         String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
-        ObjectMapper objectMapper = prepObjMapper();
         return objectMapper.readValue(jsonResponse,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
     }
 
+    /**
+     * Executes POST HTTP request and fetches a List collection of objects from the specified
+     * endpoint based on passed object.
+     *
+     * @param endpointUrl The URL of the endpoint to fetch from.
+     * @param itemType    The type of objects to fetch.
+     * @param object      Object to pass to the request body.
+     * @return A List of objects fetched from the endpoint.
+     * @throws Exception If an error occurs during the request.
+     */
     public <T, R> List<T> postAndGetList(String endpointUrl, R object, Class<T> itemType) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
         MvcResult result = mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        return objectMapper.readValue(jsonResponse,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
+    }
+
+    /**
+     * Executes PATCH HTTP request and fetches a List collection of objects from the specified
+     * endpoint based on passed object.
+     *
+     * @param endpointUrl The URL of the endpoint to fetch from.
+     * @param itemType    The type of objects to fetch.
+     * @param object      Object to pass to the request body.
+     * @return A List of objects fetched from the endpoint.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T, R> List<T> patchAndGetList(String endpointUrl, R object, Class<T> itemType) throws Exception {
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        MvcResult result = mockMvc.perform(patch(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        return objectMapper.readValue(jsonResponse,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
+    }
+
+    /**
+     * Executes DELETE HTTP request and fetches a List collection of objects from the specified
+     * endpoint based on passed object.
+     *
+     * @param endpointUrl The URL of the endpoint to fetch from.
+     * @param itemType    The type of objects to fetch.
+     * @param object      Object to pass to the request body.
+     * @return A List of objects fetched from the endpoint.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T, R> List<T> deleteAndGetList(String endpointUrl, R object, Class<T> itemType) throws Exception {
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        MvcResult result = mockMvc.perform(delete(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest)
                         .accept(MediaType.APPLICATION_JSON))
@@ -95,7 +161,6 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the request.
      */
     public <T> Page<T> fetchAsPage(String endpointUrl, Map<String, Object> requestParams, Class<T> itemType) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(requestParams);
 
         MvcResult result = mockMvc.perform(post(endpointUrl)
@@ -145,7 +210,6 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the fetching or parsing of the object.
      */
     public <T, R> R postAndFetchObject(String endpointUrl, T object, Class<R> itemType) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
         MvcResult result = mockMvc.perform(post(endpointUrl)
@@ -171,7 +235,6 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the fetching or parsing of the byte array.
      */
     public <T> Resource postAndFetchResource(String endpointUrl, T object) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest;
         if (!(object instanceof String)) {
             jsonRequest = objectMapper.writeValueAsString(object);
@@ -215,7 +278,7 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a simple post request without body to specified endpoint.
+     * Sends a simple POST HTTP request without body to specified endpoint.
      *
      * @param endpointUrl The URL endpoint to request action.
      */
@@ -226,20 +289,6 @@ public class ApiRequestUtils {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn();
-    }
-
-    public <R> R fetchObjectWithParam(String endpointUrl, Class<R> itemType) throws Exception {
-        MvcResult result = mockMvc.perform(get(endpointUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
-
-        MockHttpServletResponse response = result.getResponse();
-        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
-
-        return prepObjMapper().readValue(jsonResponse, itemType);
     }
 
     /**
@@ -280,7 +329,6 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the posting or matching of the response.
      */
     public <T> void postAndExpect(String endpointUrl, T object, ResultMatcher matcher) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
         mockMvc.perform(post(endpointUrl)
@@ -306,7 +354,6 @@ public class ApiRequestUtils {
     public <T> Map<String, Object> postAndReturnResponseBody(String endpointUrl,
                                                              T object,
                                                              ResultMatcher matcher) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest;
         if (!(object instanceof String)) {
             jsonRequest = objectMapper.writeValueAsString(object);
@@ -342,7 +389,6 @@ public class ApiRequestUtils {
     public <T> Map<String, Object> patchAndReturnResponseBody(String endpointUrl,
                                                               T object,
                                                               ResultMatcher matcher) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
         ResultActions resultActions = mockMvc.perform(patch(endpointUrl)
@@ -402,7 +448,6 @@ public class ApiRequestUtils {
     public <T> Map<String, Object> deleteAndReturnResponseBody(String endpointUrl,
                                                                T object,
                                                                ResultMatcher matcher) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest;
         if (!(object instanceof String)) {
             jsonRequest = objectMapper.writeValueAsString(object);
@@ -434,7 +479,6 @@ public class ApiRequestUtils {
     public <T> void patchAndExpect(String endpointUrl,
                                    T object,
                                    ResultMatcher matcher) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest = objectMapper.writeValueAsString(object);
 
         mockMvc.perform(patch(endpointUrl)
@@ -478,7 +522,6 @@ public class ApiRequestUtils {
     public <T> void deleteAndExpect(String endpointUrl,
                                     T object,
                                     ResultMatcher matcher) throws Exception {
-        ObjectMapper objectMapper = prepObjMapper();
         String jsonRequest;
         if (!(object instanceof String)) {
             jsonRequest = objectMapper.writeValueAsString(object);

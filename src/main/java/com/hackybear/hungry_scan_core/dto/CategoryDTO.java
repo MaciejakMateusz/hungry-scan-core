@@ -8,17 +8,17 @@ public record CategoryDTO(long id,
                           TranslatableDTO name,
                           List<MenuItemSimpleDTO> menuItems,
                           boolean available,
-                          int displayOrder,
+                          Integer displayOrder,
                           LocalDateTime created,
                           LocalDateTime updated,
                           String modifiedBy,
-                          String createdBy) {
+                          String createdBy) implements Comparable<CategoryDTO> {
 
     public CategoryDTO(long id,
                        TranslatableDTO name,
                        List<MenuItemSimpleDTO> menuItems,
                        boolean available,
-                       int displayOrder,
+                       Integer displayOrder,
                        LocalDateTime created,
                        LocalDateTime updated,
                        String modifiedBy,
@@ -38,4 +38,8 @@ public record CategoryDTO(long id,
         return List.copyOf(this.menuItems);
     }
 
+    @Override
+    public int compareTo(CategoryDTO other) {
+        return this.displayOrder.compareTo(other.displayOrder);
+    }
 }

@@ -3,12 +3,8 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.dto.mapper.CategoryMapper;
 import com.hackybear.hungry_scan_core.entity.Category;
-import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
-import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
-import com.hackybear.hungry_scan_core.repository.VariantRepository;
-import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,15 +43,6 @@ class CategoryControllerTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
-
-    @Autowired
-    private MenuItemRepository menuItemRepository;
-
-    @Autowired
-    private VariantRepository variantRepository;
-
-    @Autowired
-    private MenuService menuService;
 
     @Autowired
     private CategoryMapper categoryMapper;
@@ -94,6 +82,61 @@ class CategoryControllerTest {
         assertEquals(9, displayOrders.size());
         assertEquals(1, displayOrders.get(0));
         assertEquals(9, displayOrders.get(8));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER"}, username = "netka@test.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateDisplayOrders() throws Exception {
+        List<CategoryDTO> categoryDTOs =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories", CategoryDTO.class);
+        List<Category> categories = categoryDTOs.stream().map(categoryMapper::toCategory).toList();
+
+        assertEquals(1, categories.get(0).getDisplayOrder());
+        assertEquals("Przystawki", categories.get(0).getName().getDefaultTranslation());
+
+        assertEquals(2, categories.get(1).getDisplayOrder());
+
+        assertEquals(3, categories.get(2).getDisplayOrder());
+        assertEquals("Sałatki", categories.get(2).getName().getDefaultTranslation());
+
+        assertEquals(4, categories.get(3).getDisplayOrder());
+        assertEquals(5, categories.get(4).getDisplayOrder());
+
+        assertEquals(6, categories.get(5).getDisplayOrder());
+        assertEquals("Wegetariańskie", categories.get(5).getName().getDefaultTranslation());
+
+        assertEquals(7, categories.get(6).getDisplayOrder());
+
+        assertEquals(8, categories.get(7).getDisplayOrder());
+
+        assertEquals(9, categories.get(8).getDisplayOrder());
+        assertEquals("Pusta", categories.get(8).getName().getDefaultTranslation());
+
+        categories.get(0).setDisplayOrder(9);
+        categories.get(8).setDisplayOrder(1);
+
+        categories.get(5).setDisplayOrder(3);
+        categories.get(2).setDisplayOrder(6);
+
+        List<CategoryFormDTO> categoryFormDTOs = categories.stream().map(categoryMapper::toFormDTO).toList();
+        List<CategoryDTO> updatedCategoryDTOs =
+                apiRequestUtils.patchAndGetList(
+                        "/api/cms/categories/display-orders", categoryFormDTOs, CategoryDTO.class);
+
+        assertEquals("Pusta", updatedCategoryDTOs.get(0).name().defaultTranslation());
+        assertEquals(1, updatedCategoryDTOs.get(0).displayOrder());
+
+        assertEquals("Przystawki", updatedCategoryDTOs.get(8).name().defaultTranslation());
+        assertEquals(9, updatedCategoryDTOs.get(8).displayOrder());
+
+        assertEquals("Sałatki", updatedCategoryDTOs.get(5).name().defaultTranslation());
+        assertEquals(6, updatedCategoryDTOs.get(5).displayOrder());
+
+        assertEquals("Wegetariańskie", updatedCategoryDTOs.get(2).name().defaultTranslation());
+        assertEquals(3, updatedCategoryDTOs.get(2).displayOrder());
     }
 
     @Test
@@ -165,7 +208,9 @@ class CategoryControllerTest {
     @Transactional
     @Rollback
     void shouldAddNewCategory() throws Exception {
-        CategoryFormDTO category = createCategoryFormDTO(null, "Food", 10);
+        CategoryFormDTO category = createCategoryFormDTO("Food");
+        Integer maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(1L);
+        assertEquals(9, maxDisplayOrder);
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
 
@@ -175,25 +220,26 @@ class CategoryControllerTest {
         CategoryDTO persistedCategory = categories.get(categories.size() - 1);
         assertEquals("Food", persistedCategory.name().defaultTranslation());
         assertNull(persistedCategory.name().translationEn());
+        assertEquals(10, persistedCategory.displayOrder());
     }
 
     @Test
     @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
     void shouldNotAllowAccessToAddCategory() throws Exception {
-        CategoryFormDTO category = createCategoryFormDTO(null, "Food", 10);
+        CategoryFormDTO category = createCategoryFormDTO("Food");
         apiRequestUtils.postAndExpect("/api/cms/categories/add", category, status().isForbidden());
     }
 
     @Test
     void shouldNotAllowUnauthorizedAccessToAddCategory() throws Exception {
-        CategoryFormDTO category = createCategoryFormDTO(null, "Food", 10);
+        CategoryFormDTO category = createCategoryFormDTO("Food");
         apiRequestUtils.postAndExpectForbidden("/api/cms/categories/add", category);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotAddWithIncorrectName() throws Exception {
-        CategoryFormDTO category = createCategoryFormDTO(null, "", 10);
+        CategoryFormDTO category = createCategoryFormDTO("");
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", category);
 
@@ -228,12 +274,12 @@ class CategoryControllerTest {
     @Test
     @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
     void shouldNotAllowAccessToUpdateCategory() throws Exception {
-        apiRequestUtils.postAndExpect("/api/cms/categories/add", new Category(), status().isForbidden());
+        apiRequestUtils.patchAndExpectForbidden("/api/cms/categories/update", new Category());
     }
 
     @Test
     void shouldNotAllowUnauthorizedAccessToUpdateCategory() throws Exception {
-        apiRequestUtils.postAndExpectForbidden("/api/cms/categories/add", new Category());
+        apiRequestUtils.patchAndExpectForbidden("/api/cms/categories/update", new Category());
     }
 
     @Test
@@ -243,283 +289,10 @@ class CategoryControllerTest {
         existingCategory.setName(getDefaultTranslation(""));
         CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", categoryFormDTO);
+        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/cms/categories/update", categoryFormDTO);
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldChangeDisplayOrderToBigger() throws Exception {
-        Category existingCategory = getCategory(1L);
-        assertEquals(1, existingCategory.getDisplayOrder());
-        existingCategory.setDisplayOrder(3);
-        existingCategory.setName(getDefaultTranslation("Updated category"));
-        existingCategory.setMenuId(1L);
-        CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
-
-        apiRequestUtils.patchAndExpect200("/api/cms/categories/update", categoryFormDTO);
-
-        CategoryFormDTO updatedCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
-        assertEquals(3, updatedCategory.displayOrder());
-        assertEquals("Updated category", updatedCategory.name().defaultTranslation());
-
-        CategoryFormDTO thirdToSecond =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, CategoryFormDTO.class);
-        assertEquals(2, thirdToSecond.displayOrder());
-
-        CategoryFormDTO secondToFirst =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, CategoryFormDTO.class);
-        assertEquals(1, secondToFirst.displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldChangeDisplayOrderToLower() throws Exception {
-        Category existingCategory = getCategory(5L);
-        assertEquals(5, existingCategory.getDisplayOrder());
-        existingCategory.setDisplayOrder(2);
-        existingCategory.setName(getDefaultTranslation("Updated category"));
-        CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
-
-        apiRequestUtils.patchAndExpect200("/api/cms/categories/update", categoryFormDTO);
-
-        CategoryFormDTO updatedCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 5, CategoryFormDTO.class);
-        assertEquals(2, updatedCategory.displayOrder());
-        assertEquals("Updated category", updatedCategory.name().defaultTranslation());
-
-        CategoryFormDTO secondToThird =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, CategoryFormDTO.class);
-        assertEquals(3, secondToThird.displayOrder());
-
-        CategoryFormDTO fourthToFifth =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 4, CategoryFormDTO.class);
-        assertEquals(5, fourthToFifth.displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldChangeDisplayOrderToLastWithTooBigValue() throws Exception {
-        Category existingCategory = getCategory(1L);
-        assertEquals(1, existingCategory.getDisplayOrder());
-        existingCategory.setDisplayOrder(15);
-        existingCategory.setName(getDefaultTranslation("Updated category"));
-        CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
-
-        apiRequestUtils.patchAndExpect200("/api/cms/categories/update", categoryFormDTO);
-
-        CategoryFormDTO updatedCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
-        assertEquals(9, updatedCategory.displayOrder());
-        assertEquals("Updated category", updatedCategory.name().defaultTranslation());
-
-        CategoryFormDTO ninthToEight =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, CategoryFormDTO.class);
-        assertEquals(8, ninthToEight.displayOrder());
-
-        CategoryFormDTO thirdToSecond =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, CategoryFormDTO.class);
-        assertEquals(2, thirdToSecond.displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldChangeDisplayOrderToFirstWithTooLowValue() throws Exception {
-        Category existingCategory = getCategory(3L);
-        assertEquals(3, existingCategory.getDisplayOrder());
-        existingCategory.setDisplayOrder(-2);
-        existingCategory.setName(getDefaultTranslation("Updated category"));
-        CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
-
-        apiRequestUtils.patchAndExpect200("/api/cms/categories/update", categoryFormDTO);
-
-        CategoryFormDTO updatedCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 3, CategoryFormDTO.class);
-        assertEquals(1, updatedCategory.displayOrder());
-        assertEquals("Updated category", updatedCategory.name().defaultTranslation());
-
-        CategoryFormDTO firstToSecond =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
-        assertEquals(2, firstToSecond.displayOrder());
-
-        CategoryFormDTO secondToThird =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, CategoryFormDTO.class);
-        assertEquals(3, secondToThird.displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldChangeDisplayOrderFromLastToFirst() throws Exception {
-        Category existingCategory = getCategory(9L);
-        assertEquals(9, existingCategory.getDisplayOrder());
-        existingCategory.setDisplayOrder(1);
-        existingCategory.setName(getDefaultTranslation("Updated category"));
-        CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
-
-        apiRequestUtils.patchAndExpect200("/api/cms/categories/update", categoryFormDTO);
-
-        CategoryFormDTO updatedCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, CategoryFormDTO.class);
-        assertEquals(1, updatedCategory.displayOrder());
-        assertEquals("Updated category", updatedCategory.name().defaultTranslation());
-
-        CategoryFormDTO firstToSecond =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
-        assertEquals(2, firstToSecond.displayOrder());
-
-        CategoryFormDTO eightToNinth =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 8, CategoryFormDTO.class);
-        assertEquals(9, eightToNinth.displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldChangeDisplayOrderFromFirstToLast() throws Exception {
-        Category existingCategory = getCategory(1L);
-        assertEquals(1, existingCategory.getDisplayOrder());
-        existingCategory.setDisplayOrder(9);
-        existingCategory.setName(getDefaultTranslation("Updated category"));
-        CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
-
-        apiRequestUtils.patchAndExpect200("/api/cms/categories/update", categoryFormDTO);
-
-        CategoryFormDTO updatedCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
-        assertEquals(9, updatedCategory.displayOrder());
-        assertEquals("Updated category", updatedCategory.name().defaultTranslation());
-
-        CategoryFormDTO secondToFirst =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 2, CategoryFormDTO.class);
-        assertEquals(1, secondToFirst.displayOrder());
-
-        CategoryFormDTO ninthToEight =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, CategoryFormDTO.class);
-        assertEquals(8, ninthToEight.displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldAddNewWithExistingDisplayOrder() throws Exception {
-        CategoryFormDTO categoryFormDTO = createCategoryFormDTO(null, "Food", 2);
-
-        apiRequestUtils.postAndExpect200("/api/cms/categories/add", categoryFormDTO);
-
-        List<CategoryDTO> categories =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/categories", CategoryDTO.class);
-
-        assertEquals(10, categories.size());
-        assertEquals("Food", categories.get(1).name().defaultTranslation());
-        assertEquals(2, categories.get(1).displayOrder());
-        assertEquals("Przystawki", categories.get(0).name().defaultTranslation());
-        assertEquals("Makarony", categories.get(2).name().defaultTranslation());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldAddFirstAssertDisplayOrder1() throws Exception {
-        CategoryFormDTO categoryFormDTO = createCategoryFormDTO(null, "Food", 55);
-
-        variantRepository.deleteAll();
-        menuItemRepository.deleteAll();
-        categoryRepository.deleteAll();
-
-        apiRequestUtils.postAndExpect200("/api/cms/categories/add", categoryFormDTO);
-
-        List<CategoryDTO> categories =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/categories", CategoryDTO.class);
-        assertEquals(1, categories.size());
-        CategoryDTO categoryDTO = categories.get(0);
-        assertEquals("Food", categoryDTO.name().defaultTranslation());
-        assertEquals(1, categoryDTO.displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldHandleBoundaryDisplayOrders() throws Exception {
-        CategoryFormDTO food = createCategoryFormDTO(null, "Food", Integer.MIN_VALUE);
-
-        List<CategoryDTO> categories =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/categories", CategoryDTO.class);
-        assertEquals(9, categories.size());
-
-        apiRequestUtils.postAndExpect200("/api/cms/categories/add", food);
-
-        categories =
-                apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
-        Menu updatedMenu = menuService.findById(1L);
-
-        assertEquals(10, updatedMenu.getCategories().size());
-        assertEquals(10, categories.size());
-        CategoryDTO foodDTO = categories.get(0);
-        assertEquals("Food", foodDTO.name().defaultTranslation());
-        assertEquals(1, foodDTO.displayOrder());
-        assertEquals("Przystawki", categories.get(1).name().defaultTranslation());
-        assertEquals("Starters", categories.get(1).name().translationEn());
-        assertEquals(2, categories.get(1).displayOrder());
-
-        food = createCategoryFormDTO(foodDTO.id(), "Food", Integer.MAX_VALUE);
-        apiRequestUtils.patchAndExpect200("/api/cms/categories/update", food);
-
-        categories = apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
-        foodDTO = categories.get(categories.size() - 1);
-
-        assertEquals("Food", foodDTO.name().defaultTranslation());
-        assertEquals(10, foodDTO.displayOrder());
-        assertEquals("Przystawki", categories.get(0).name().defaultTranslation());
-        assertEquals(1, categories.get(0).displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldHandleMiddleReordering() throws Exception {
-        CategoryFormDTO food = createCategoryFormDTO(null, "Food", 3);
-
-        apiRequestUtils.postAndExpect200("/api/cms/categories/add", food);
-
-        List<CategoryDTO> categories =
-                apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
-        assertEquals(10, categories.size());
-        CategoryDTO foodDTO = categories.get(2);
-        assertEquals("Food", foodDTO.name().defaultTranslation());
-        assertEquals(3, foodDTO.displayOrder());
-        assertEquals("Sałatki", categories.get(3).name().defaultTranslation());
-        assertEquals(4, categories.get(3).displayOrder());
-
-        food = createCategoryFormDTO(foodDTO.id(), "Food", 5);
-        apiRequestUtils.postAndExpect200("/api/cms/categories/add", food);
-
-        categories = apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
-        foodDTO = categories.get(4);
-        assertEquals("Food", foodDTO.name().defaultTranslation());
-        assertEquals(5, foodDTO.displayOrder());
-        assertEquals("Pizza", categories.get(5).name().defaultTranslation());
-        assertEquals(6, categories.get(5).displayOrder());
     }
 
     @Test
@@ -547,17 +320,85 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 7, CategoryFormDTO.class);
         assertEquals("Dla dzieci", existingCategory.name().defaultTranslation());
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 7);
-
         List<CategoryDTO> categories =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/categories", CategoryDTO.class);
+                apiRequestUtils.deleteAndGetList("/api/cms/categories/delete", 7, CategoryDTO.class);
+
         assertEquals(8, categories.size());
         assertEquals("Napoje", categories.get(6).name().defaultTranslation());
         assertEquals(5, categories.get(4).displayOrder());
         assertEquals(6, categories.get(5).displayOrder());
         assertEquals(7, categories.get(6).displayOrder());
         assertEquals(8, categories.get(7).displayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldRemoveLast() throws Exception {
+        CategoryFormDTO existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, CategoryFormDTO.class);
+        assertEquals("Pusta", existingCategory.name().defaultTranslation());
+
+        List<CategoryDTO> categories =
+                apiRequestUtils.deleteAndGetList("/api/cms/categories/delete", 9, CategoryDTO.class);
+
+        assertEquals(8, categories.size());
+        assertEquals("Napoje", categories.get(7).name().defaultTranslation());
+        assertEquals(1, categories.get(0).displayOrder());
+        assertEquals(2, categories.get(1).displayOrder());
+        assertEquals(3, categories.get(2).displayOrder());
+        assertEquals(4, categories.get(3).displayOrder());
+        assertEquals(5, categories.get(4).displayOrder());
+        assertEquals(6, categories.get(5).displayOrder());
+        assertEquals(7, categories.get(6).displayOrder());
+        assertEquals(8, categories.get(7).displayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldRemoveFirst() throws Exception {
+        CategoryFormDTO existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
+        assertEquals("Przystawki", existingCategory.name().defaultTranslation());
+
+        Category category = categoryMapper.toCategory(existingCategory);
+        category.setMenuId(1L);
+        category.setMenuItems(new ArrayList<>());
+        categoryRepository.saveAndFlush(category);
+
+        List<CategoryDTO> categories =
+                apiRequestUtils.deleteAndGetList("/api/cms/categories/delete", 1, CategoryDTO.class);
+
+        assertEquals(8, categories.size());
+
+        assertEquals("Makarony", categories.get(0).name().defaultTranslation());
+        assertEquals(1, categories.get(0).displayOrder());
+
+        assertEquals(2, categories.get(1).displayOrder());
+
+        assertEquals("Zupy", categories.get(2).name().defaultTranslation());
+        assertEquals(3, categories.get(2).displayOrder());
+
+        assertEquals(4, categories.get(3).displayOrder());
+        assertEquals(5, categories.get(4).displayOrder());
+        assertEquals(6, categories.get(5).displayOrder());
+        assertEquals(7, categories.get(6).displayOrder());
+        assertEquals(8, categories.get(7).displayOrder());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotRemoveWithMenuItems() throws Exception {
+        CategoryFormDTO existingCategory =
+                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
+        assertEquals("Przystawki", existingCategory.name().defaultTranslation());
+
+        apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 1, status().isBadRequest());
     }
 
     @Test
@@ -571,9 +412,9 @@ class CategoryControllerTest {
         apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isForbidden());
     }
 
-    private CategoryFormDTO createCategoryFormDTO(Long id, String name, Integer displayOrder) {
+    private CategoryFormDTO createCategoryFormDTO(String name) {
         TranslatableDTO translatableDTO = new TranslatableDTO(null, name, null);
-        return new CategoryFormDTO(id, translatableDTO, true, displayOrder);
+        return new CategoryFormDTO(null, translatableDTO, true, null);
     }
 
     private Translatable getDefaultTranslation(String value) {

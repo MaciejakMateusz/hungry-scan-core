@@ -132,6 +132,7 @@ class CategoryServiceImpTest {
     @Test
     @Transactional
     @Rollback
+    @WithMockUser(username = "admin@example.com")
     public void shouldDelete() throws LocalizedException, AuthenticationException {
         categoryService.delete(7L);
         assertThrows(LocalizedException.class, () -> categoryService.findById(7L));

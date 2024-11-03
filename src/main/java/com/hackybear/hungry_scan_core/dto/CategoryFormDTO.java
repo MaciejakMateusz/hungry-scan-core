@@ -14,6 +14,5 @@ public record CategoryFormDTO(
 
         boolean available,
 
-        @NotNull
         Integer displayOrder) {
 }

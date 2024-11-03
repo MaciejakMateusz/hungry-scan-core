@@ -56,9 +56,8 @@ class IngredientControllerTest {
     @Test
     @WithMockUser(roles = {"MANAGER"}, username = "netka@test.com")
     void shouldGetAllIngredients() throws Exception {
-        Page<IngredientDTO> ingredients =
-                apiRequestUtils.fetchAsPage(
-                        "/api/cms/ingredients", getPageableParams(), IngredientDTO.class);
+        Page<IngredientDTO> ingredients = apiRequestUtils.fetchAsPage(
+                "/api/cms/ingredients", getPageableParams(), IngredientDTO.class);
 
         List<IngredientDTO> ingredientList = ingredients.getContent();
         assertEquals(27, ingredientList.size());

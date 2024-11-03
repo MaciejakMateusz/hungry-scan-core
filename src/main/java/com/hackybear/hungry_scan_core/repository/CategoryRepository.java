@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.repository;
 
 import com.hackybear.hungry_scan_core.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,8 +28,15 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findAllByMenuIdOrderByDisplayOrder(@Param("menuId") Long menuId);
 
     @Query("SELECT c.displayOrder FROM Category c WHERE c.menuId = :menuId ORDER BY c.displayOrder")
-    List<Integer> findAllDisplayOrdersByMenu(@Param("menuId") Long menuId);
+    List<Integer> findAllDisplayOrdersByMenuId(@Param("menuId") Long menuId);
+
+    @Query("SELECT MAX(c.displayOrder) FROM Category c WHERE c.menuId = :menuId")
+    Integer findMaxDisplayOrderByMenuId(@Param("menuId") Long menuId);
 
     Long countByMenuId(Long menuId);
+
+    @Modifying
+    @Query("UPDATE Category c SET c.displayOrder = :displayOrder WHERE c.id = :categoryId")
+    void updateDisplayOrders(@Param("categoryId") Long categoryId, @Param("displayOrder") Integer displayOrder);
 
 }

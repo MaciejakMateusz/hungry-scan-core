@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.AuthenticationException;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -45,6 +47,16 @@ public class CategoryController {
             return ResponseEntity.ok(categoryService.findAllDisplayOrders());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
+        }
+    }
+
+    @PatchMapping("/display-orders")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> updateDisplayOrders(@RequestBody List<CategoryFormDTO> categories) {
+        try {
+            return ResponseEntity.ok().body(categoryService.updateDisplayOrders(categories));
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
         }
     }
 
@@ -88,8 +100,12 @@ public class CategoryController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<Map<String, Object>> delete(@RequestBody Long id) {
-        return responseHelper.buildResponse(id, categoryService::delete);
+    public ResponseEntity<?> delete(@RequestBody Long id) {
+        try {
+            return ResponseEntity.ok(categoryService.delete(id));
+        } catch (LocalizedException | AuthenticationException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

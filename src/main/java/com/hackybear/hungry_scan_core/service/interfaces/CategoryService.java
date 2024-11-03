@@ -4,7 +4,6 @@ import com.hackybear.hungry_scan_core.dto.CategoryCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.CategoryDTO;
 import com.hackybear.hungry_scan_core.dto.CategoryFormDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.AuthenticationException;
 import java.util.List;
@@ -15,6 +14,8 @@ public interface CategoryService {
 
     List<Integer> findAllDisplayOrders() throws LocalizedException;
 
+    List<CategoryDTO> updateDisplayOrders(List<CategoryFormDTO> categories) throws LocalizedException;
+
     Long countAll() throws LocalizedException;
 
     List<CategoryCustomerDTO> findAllAvailableAndVisible() throws LocalizedException;
@@ -23,8 +24,7 @@ public interface CategoryService {
 
     void save(CategoryFormDTO category) throws Exception;
 
-    @Transactional
     void update(CategoryFormDTO categoryFormDTO) throws Exception;
 
-    void delete(Long id) throws LocalizedException, AuthenticationException;
+    List<CategoryDTO> delete(Long id) throws LocalizedException, AuthenticationException;
 }
