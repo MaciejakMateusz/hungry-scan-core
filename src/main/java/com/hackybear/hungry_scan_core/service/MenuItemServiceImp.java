@@ -13,6 +13,7 @@ import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,12 +36,13 @@ public class MenuItemServiceImp implements MenuItemService {
     private final AllergenMapper allergenMapper;
     private final LabelMapper labelMapper;
     private final IngredientMapper ingredientMapper;
+    private final EntityManager entityManager;
 
     public MenuItemServiceImp(MenuItemRepository menuItemRepository,
                               CategoryRepository categoryRepository,
                               ExceptionHelper exceptionHelper,
                               SortingHelper sortingHelper,
-                              VariantRepository variantRepository, MenuItemMapper menuItemMapper, TranslatableMapper translatableMapper, AllergenMapper allergenMapper, LabelMapper labelMapper, IngredientMapper ingredientMapper) {
+                              VariantRepository variantRepository, MenuItemMapper menuItemMapper, TranslatableMapper translatableMapper, AllergenMapper allergenMapper, LabelMapper labelMapper, IngredientMapper ingredientMapper, EntityManager entityManager) {
         this.menuItemRepository = menuItemRepository;
         this.categoryRepository = categoryRepository;
         this.exceptionHelper = exceptionHelper;
@@ -51,6 +53,7 @@ public class MenuItemServiceImp implements MenuItemService {
         this.allergenMapper = allergenMapper;
         this.labelMapper = labelMapper;
         this.ingredientMapper = ingredientMapper;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -63,7 +66,9 @@ public class MenuItemServiceImp implements MenuItemService {
     @Transactional
     public void save(MenuItemFormDTO menuItemFormDTO) throws Exception {
         MenuItem menuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
-        sortingHelper.sortAndSave(menuItem, this::getMenuItem);
+        Integer maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategoryId());
+        menuItem.setDisplayOrder(maxDisplayOrder + 1);
+        menuItemRepository.save(menuItem);
     }
 
     @Override
@@ -73,7 +78,19 @@ public class MenuItemServiceImp implements MenuItemService {
         Category category = findByMenuItemId(existingMenuItem.getId());
         updateMenuItem(existingMenuItem, menuItemFormDTO);
         switchCategory(existingMenuItem, category);
-        sortingHelper.sortAndSave(existingMenuItem, this::getMenuItem);
+        menuItemRepository.save(existingMenuItem);
+    }
+
+    @Override
+    @Transactional
+    public List<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItemsDTOs) {
+        List<MenuItem> menuItems = menuItemsDTOs.stream().map(menuItemMapper::toMenuItem).toList();
+        for (MenuItem menuItem : menuItems) {
+            menuItemRepository.updateDisplayOrders(menuItem.getId(), menuItem.getDisplayOrder());
+        }
+        entityManager.clear();
+        Long categoryId = menuItems.get(0).getCategoryId();
+        return getSimpleDTOs(categoryId);
     }
 
     @Override
@@ -84,11 +101,15 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public void delete(Long id) throws LocalizedException {
+    @Transactional
+    public List<MenuItemSimpleDTO> delete(Long id) throws LocalizedException {
         MenuItem existingMenuItem = getMenuItem(id);
-        List<Variant> variants = variantRepository.findAllByMenuItemIdOrderByDisplayOrder(id);
-        variantRepository.deleteAll(variants);
-        sortingHelper.removeAndAdjust(existingMenuItem);
+        removeVariants(existingMenuItem);
+        Category category = findCategoryById(existingMenuItem.getCategoryId());
+        removeMenuItem(category, existingMenuItem);
+        List<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
+        sortingHelper.reassignDisplayOrders(menuItems, menuItemRepository::saveAllAndFlush);
+        return getSimpleDTOs(category.getId());
     }
 
     private MenuItem getMenuItem(Long id) throws LocalizedException {
@@ -137,11 +158,27 @@ public class MenuItemServiceImp implements MenuItemService {
                 .map(allergenMapper::toAllergen).collect(Collectors.toSet()));
         existingMenuItem.setAdditionalIngredients(menuItemFormDTO.additionalIngredients().stream()
                 .map(ingredientMapper::toIngredient).collect(Collectors.toSet()));
-        existingMenuItem.setDisplayOrder(menuItemFormDTO.displayOrder());
         existingMenuItem.setAvailable(menuItemFormDTO.available());
         existingMenuItem.setVisible(menuItemFormDTO.visible());
         existingMenuItem.setNew(menuItemFormDTO.isNew());
         existingMenuItem.setBestseller(menuItemFormDTO.isBestseller());
     }
 
+    private List<MenuItemSimpleDTO> getSimpleDTOs(Long categoryId) {
+        List<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(categoryId);
+        return menuItems.stream().map(menuItemMapper::toDTO).toList();
+    }
+
+    private void removeVariants(MenuItem menuItem) {
+        if (!menuItem.getVariants().isEmpty()) {
+            List<Variant> variants = variantRepository.findAllByMenuItemIdOrderByDisplayOrder(menuItem.getId());
+            variantRepository.deleteAll(variants);
+        }
+    }
+
+    private void removeMenuItem(Category category, MenuItem menuItem) {
+        category.removeMenuItem(menuItem);
+        categoryRepository.save(category);
+        menuItemRepository.deleteById(menuItem.getId());
+    }
 }

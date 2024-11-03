@@ -31,9 +31,6 @@ public record MenuItemFormDTO(Long id,
                               Set<IngredientSimpleDTO> additionalIngredients,
                               Set<VariantDTO> variants,
 
-                              @NotNull
-                              Integer displayOrder,
-
                               boolean available,
                               boolean visible,
                               boolean isNew,

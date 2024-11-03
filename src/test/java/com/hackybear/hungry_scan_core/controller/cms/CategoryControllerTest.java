@@ -393,12 +393,18 @@ class CategoryControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotRemoveWithMenuItems() throws Exception {
-        CategoryFormDTO existingCategory =
-                apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
-        assertEquals("Przystawki", existingCategory.name().defaultTranslation());
+    void shouldRemoveWithMenuItems() throws Exception {
+        Category existingCategory = getCategory(1L);
+        assertEquals("Przystawki", existingCategory.getName().getDefaultTranslation());
 
-        apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 1, status().isBadRequest());
+        List<CategoryDTO> categories =
+                apiRequestUtils.deleteAndGetList("/api/cms/categories/delete", 1, CategoryDTO.class);
+        assertEquals(8, categories.size());
+
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/cms/categories/show", 1, status().isBadRequest());
+        assertEquals("Kategoria z podanym ID = 1 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test

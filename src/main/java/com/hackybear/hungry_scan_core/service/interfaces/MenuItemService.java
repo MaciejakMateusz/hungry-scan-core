@@ -14,7 +14,9 @@ public interface MenuItemService {
 
     void update(MenuItemFormDTO menuItem) throws Exception;
 
+    List<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItems);
+
     List<MenuItemSimpleDTO> filterByName(String name);
 
-    void delete(Long id) throws LocalizedException;
+    List<MenuItemSimpleDTO> delete(Long id) throws LocalizedException;
 }

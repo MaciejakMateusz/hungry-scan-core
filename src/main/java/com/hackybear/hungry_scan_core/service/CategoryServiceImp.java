@@ -6,9 +6,12 @@ import com.hackybear.hungry_scan_core.dto.CategoryFormDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.CategoryMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.TranslatableMapper;
 import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
+import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
+import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
@@ -30,6 +33,8 @@ public class CategoryServiceImp implements CategoryService {
     private final ExceptionHelper exceptionHelper;
     private final SortingHelper sortingHelper;
     private final EntityManager entityManager;
+    private final MenuItemRepository menuItemRepository;
+    private final VariantRepository variantRepository;
 
     public CategoryServiceImp(CategoryRepository categoryRepository,
                               CategoryMapper categoryMapper,
@@ -37,7 +42,7 @@ public class CategoryServiceImp implements CategoryService {
                               UserService userService,
                               ExceptionHelper exceptionHelper,
                               SortingHelper sortingHelper,
-                              EntityManager entityManager) {
+                              EntityManager entityManager, MenuItemRepository menuItemRepository, VariantRepository variantRepository) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
         this.translatableMapper = translatableMapper;
@@ -45,6 +50,8 @@ public class CategoryServiceImp implements CategoryService {
         this.exceptionHelper = exceptionHelper;
         this.sortingHelper = sortingHelper;
         this.entityManager = entityManager;
+        this.menuItemRepository = menuItemRepository;
+        this.variantRepository = variantRepository;
     }
 
     @Override
@@ -115,7 +122,7 @@ public class CategoryServiceImp implements CategoryService {
     public List<CategoryDTO> delete(Long id) throws LocalizedException {
         Category existingCategory = getCategory(id);
         if (!existingCategory.getMenuItems().isEmpty()) {
-            exceptionHelper.throwLocalizedMessage("error.categoryService.categoryNotEmpty");
+            cascadeRemoveMenuItems(existingCategory);
         }
         categoryRepository.deleteById(id);
         List<Category> categories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(existingCategory.getMenuId());
@@ -138,6 +145,14 @@ public class CategoryServiceImp implements CategoryService {
 
     private CategoryDTO mapToCategoryDTO(Category category) {
         return categoryMapper.toDTO(category);
+    }
+
+    private void cascadeRemoveMenuItems(Category category) {
+        List<MenuItem> menuItems = category.getMenuItems();
+        for (MenuItem menuItem : menuItems) {
+            variantRepository.deleteAll(menuItem.getVariants());
+        }
+        menuItemRepository.deleteAll(menuItems);
     }
 
 }

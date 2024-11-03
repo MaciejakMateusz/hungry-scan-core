@@ -5,7 +5,6 @@ import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingFunction;
@@ -21,42 +20,15 @@ import java.util.function.Consumer;
 public class SortingHelper {
 
     private final MenuItemRepository menuItemRepository;
-    private final CategoryRepository categoryRepository;
     private final VariantRepository variantRepository;
     private final ExceptionHelper exceptionHelper;
 
     public SortingHelper(MenuItemRepository menuItemRepository,
-                         CategoryRepository categoryRepository,
                          VariantRepository variantRepository,
                          ExceptionHelper exceptionHelper) {
         this.menuItemRepository = menuItemRepository;
-        this.categoryRepository = categoryRepository;
         this.variantRepository = variantRepository;
         this.exceptionHelper = exceptionHelper;
-    }
-
-    public void sortAndSave(MenuItem menuItem, ThrowingFunction<Long, MenuItem> findFunction) throws Exception {
-        boolean isNew = isNewEntity(menuItem);
-        MenuItem currentItem = getCurrentEntity(menuItem, findFunction, isNew, MenuItem.class);
-        int newOrder = getNewOrder(menuItem.getDisplayOrder());
-
-        Long categoryId = menuItem.getCategoryId();
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.categoryService.categoryNotFound", categoryId));
-
-        List<MenuItem> categoryItems = category.getMenuItems();
-
-        if (!isNew) {
-            categoryItems.remove(currentItem);
-            updateDisplayOrdersAfterRemoval(categoryItems);
-        }
-
-        adjustDisplayOrdersForInsertion(menuItem, categoryItems, newOrder);
-
-        category.setMenuItems(categoryItems);
-        categoryRepository.save(category);
-        menuItemRepository.saveAll(categoryItems);
     }
 
     private Integer getNewOrder(Integer displayOrder) {
@@ -80,23 +52,6 @@ public class SortingHelper {
 
         menuItem.setVariants(new HashSet<>(menuItemVariants));
         menuItemRepository.save(menuItem);
-    }
-
-    public void removeAndAdjust(MenuItem menuItem) throws LocalizedException {
-        Long categoryId = menuItem.getCategoryId();
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(
-                        exceptionHelper.supplyLocalizedMessage(
-                                "error.categoryService.categoryNotFound", categoryId));
-
-        List<MenuItem> categoryItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(categoryId);
-
-        categoryItems.remove(menuItem);
-        updateDisplayOrdersAfterRemoval(categoryItems);
-
-        category.setMenuItems(categoryItems);
-        categoryRepository.save(category);
-        menuItemRepository.delete(menuItem);
     }
 
     public void removeAndAdjust(Variant variant) throws LocalizedException {
