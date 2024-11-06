@@ -22,6 +22,5 @@ public record VariantDTO(Long id,
                          boolean available,
                          boolean defaultVariant,
 
-                         @NotNull
                          Integer displayOrder) {
 }

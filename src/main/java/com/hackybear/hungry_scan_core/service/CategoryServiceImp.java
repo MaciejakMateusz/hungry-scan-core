@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -103,8 +104,8 @@ public class CategoryServiceImp implements CategoryService {
         Long activeMenuId = userService.getActiveMenuId();
         Category category = categoryMapper.toCategory(categoryFormDTO);
         category.setMenuId(activeMenuId);
-        Integer maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(activeMenuId);
-        category.setDisplayOrder(maxDisplayOrder + 1);
+        Optional<Integer> maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(activeMenuId);
+        category.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
         categoryRepository.save(category);
     }
 

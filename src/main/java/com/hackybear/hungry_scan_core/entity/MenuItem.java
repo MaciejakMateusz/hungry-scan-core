@@ -43,6 +43,7 @@ public class MenuItem implements Comparable<MenuItem> {
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank
     @LimitTranslationsLength
+    @NotNull
     private Translatable name;
 
     @OneToOne(cascade = CascadeType.ALL)

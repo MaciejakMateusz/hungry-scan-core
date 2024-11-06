@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.validation.ConstraintViolationException;
@@ -15,6 +16,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -40,6 +42,9 @@ public class MenuItemServiceImpTest {
 
     @Autowired
     private MenuItemMapper menuItemMapper;
+
+    @Autowired
+    private MenuItemRepository menuItemRepository;
 
     @Test
     @Order(1)
@@ -73,7 +78,7 @@ public class MenuItemServiceImpTest {
                 "/public/assets/burger.png");
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(newMenuItem);
         menuItemService.save(menuItemFormDTO);
-        MenuItemFormDTO menuItem = menuItemService.findById(35L);
+        MenuItemFormDTO menuItem = menuItemService.findById(34L);
         assertEquals("Z mięsem wegańskim", menuItem.description().defaultTranslation());
         assertEquals("/public/assets/burger.png", menuItem.imageName());
     }
@@ -82,26 +87,34 @@ public class MenuItemServiceImpTest {
     @Transactional
     @Rollback
     @WithMockUser(username = "admin@example.com")
-    public void shouldNotInsertWithIncorrectName() {
-        MenuItem menuItem = createMenuItem(
-                "Cheeseburger",
+    public void shouldNotInsertWithBlankName() {
+        MenuItem menuItemBlank = createMenuItem(
+                "",
                 "Z mięsem i serem wegańskim.",
                 "/public/assets/cheeseburger.png");
-        menuItem.setName(getDefaultTranslation(""));
 
-        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItemBlank);
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItemFormDTO));
-
-        menuItem.setName(null);
-        MenuItemFormDTO menuItemFormDTO2 = menuItemMapper.toFormDTO(menuItem);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItemFormDTO2));
     }
 
     @Test
     @Transactional
     @Rollback
     @WithMockUser(username = "admin@example.com")
-    public void shouldNotInsertWithIncorrectPrice() {
+    public void shouldNotInsertWithNullName() {
+        MenuItem menuItemNull = createMenuItem(
+                null,
+                "Z mięsem i serem wegańskim.",
+                "/public/assets/cheeseburger.png");
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItemNull);
+        assertThrows(DataIntegrityViolationException.class, () -> menuItemService.save(menuItemFormDTO));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    @WithMockUser(username = "admin@example.com")
+    public void shouldNotInsertWithZeroPrice() {
         MenuItem menuItem = createMenuItem(
                 "Cheeseburger",
                 "Z mięsem i serem wegańskim.",
@@ -110,25 +123,36 @@ public class MenuItemServiceImpTest {
 
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
         assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItemFormDTO));
+    }
 
+    @Test
+    @Transactional
+    @Rollback
+    @WithMockUser(username = "admin@example.com")
+    public void shouldNotInsertWithNullPrice() {
+        MenuItem menuItem = createMenuItem(
+                "Cheeseburger",
+                "Z mięsem i serem wegańskim.",
+                "/public/assets/cheeseburger.png");
         menuItem.setPrice(null);
-        MenuItemFormDTO menuItemFormDTO2 = menuItemMapper.toFormDTO(menuItem);
-        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItemFormDTO2));
+
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItemFormDTO));
     }
 
     @Test
     @Transactional
     @Rollback
     public void shouldUpdate() throws Exception {
-        MenuItemFormDTO menuItemFormDTO = menuItemService.findById(23L);
-        assertEquals("Pizza Capricciosa", menuItemFormDTO.name().defaultTranslation());
+        MenuItem existingMenuItem = menuItemRepository.findById(23L).orElseThrow();
+        
+        assertEquals("Pizza Capricciosa", existingMenuItem.getName().getDefaultTranslation());
 
-        MenuItem existingMenuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
         existingMenuItem.setName(getDefaultTranslation("Burger wege"));
         existingMenuItem.setPrice(Money.of(44.12));
         existingMenuItem.setImageName("/public/assets/wege-burger.png");
-        menuItemFormDTO = menuItemMapper.toFormDTO(existingMenuItem);
-        menuItemService.save(menuItemFormDTO);
+        MenuItemFormDTO existingMenuItemDTO = menuItemMapper.toFormDTO(existingMenuItem);
+        menuItemService.update(existingMenuItemDTO);
 
         MenuItemFormDTO updatedMenuItem = menuItemService.findById(23L);
         assertEquals("Burger wege", updatedMenuItem.name().defaultTranslation());
@@ -164,4 +188,5 @@ public class MenuItemServiceImpTest {
         translatable.setDefaultTranslation(translation);
         return translatable;
     }
+
 }

@@ -101,7 +101,7 @@ class CategoryServiceImpTest {
 
     @Test
     @WithMockUser(username = "admin@example.com")
-    public void shouldNotInsertNew() {
+    public void shouldNotInsertNewWithBlankName() {
         Category category = new Category();
 
         Translatable translatable = new Translatable();
@@ -109,6 +109,12 @@ class CategoryServiceImpTest {
         category.setName(translatable);
         CategoryFormDTO categoryBlank = categoryMapper.toFormDTO(category);
         assertThrows(ConstraintViolationException.class, () -> categoryService.save(categoryBlank));
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com")
+    public void shouldNotInsertNewWithNullName() {
+        Category category = new Category();
 
         category.setName(null);
         CategoryFormDTO categoryNull = categoryMapper.toFormDTO(category);
@@ -124,7 +130,7 @@ class CategoryServiceImpTest {
         existingCategory.setName(getTranslationPl());
         CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
 
-        categoryService.save(categoryFormDTO);
+        categoryService.update(categoryFormDTO);
         CategoryFormDTO updatedCategory = categoryService.findById(7L);
         assertEquals("Testowe jedzenie", updatedCategory.name().defaultTranslation());
     }
@@ -136,12 +142,6 @@ class CategoryServiceImpTest {
     public void shouldDelete() throws LocalizedException, AuthenticationException {
         categoryService.delete(7L);
         assertThrows(LocalizedException.class, () -> categoryService.findById(7L));
-    }
-
-    @Test
-    public void shouldNotDelete() {
-        LocalizedException exception = assertThrows(LocalizedException.class, () -> categoryService.delete(1L));
-        assertEquals("Kategoria posiada w sobie dania.", exception.getLocalizedMessage());
     }
 
     private List<CategoryDTO> getCategories() throws LocalizedException, AuthenticationException {

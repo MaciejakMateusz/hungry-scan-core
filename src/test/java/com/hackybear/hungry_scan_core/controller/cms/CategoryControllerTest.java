@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -209,8 +210,8 @@ class CategoryControllerTest {
     @Rollback
     void shouldAddNewCategory() throws Exception {
         CategoryFormDTO category = createCategoryFormDTO("Food");
-        Integer maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(1L);
-        assertEquals(9, maxDisplayOrder);
+        Optional<Integer> maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(1L);
+        assertEquals(9, maxDisplayOrder.orElse(0));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
 

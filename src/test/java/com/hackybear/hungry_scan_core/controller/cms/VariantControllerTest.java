@@ -68,9 +68,7 @@ class VariantControllerTest {
     @Test
     @WithMockUser(roles = {"CUSTOMER_READ_ONLY"})
     void shouldFindAllByMenuItem() throws Exception {
-        List<VariantDTO> variants =
-                apiRequestUtils.postAndGetList(
-                        "/api/cms/variants/item", 24, VariantDTO.class);
+        List<VariantDTO> variants = getAllByMenuItemId(24L);
 
         assertEquals(3, variants.size());
         assertEquals("Mała", variants.get(0).name().defaultTranslation());
@@ -82,7 +80,6 @@ class VariantControllerTest {
     @Rollback
     void shouldPersist() throws Exception {
         Variant newVariant = createVariant(2L, "Wariat", Money.of(12.50));
-        newVariant.setDisplayOrder(1);
         VariantDTO variantDTO = variantMapper.toDTO(newVariant);
 
         apiRequestUtils.postAndExpect200("/api/cms/variants/add", variantDTO);
@@ -104,7 +101,6 @@ class VariantControllerTest {
     void shouldPersistWithZeroPrice() throws Exception {
         Variant newVariant = createVariant(7L, "Wariat", Money.of(0.00));
         newVariant.setDefaultVariant(true);
-        newVariant.setDisplayOrder(1);
         VariantDTO variantDTO = variantMapper.toDTO(newVariant);
 
         apiRequestUtils.postAndExpect200("/api/cms/variants/add", variantDTO);
@@ -125,16 +121,13 @@ class VariantControllerTest {
     @Rollback
     void shouldPersistMultipleForOneItem() throws Exception {
         Variant newVariant1 = createVariant(9L, "Wariat1", Money.of(0.00));
-        newVariant1.setDisplayOrder(1);
         VariantDTO variantDTO1 = variantMapper.toDTO(newVariant1);
 
         Variant newVariant2 = createVariant(9L, "Wariat2", Money.of(6.00));
-        newVariant2.setDisplayOrder(2);
         newVariant2.setDefaultVariant(false);
         VariantDTO variantDTO2 = variantMapper.toDTO(newVariant2);
 
         Variant newVariant3 = createVariant(9L, "Wariat3", Money.of(9.00));
-        newVariant3.setDisplayOrder(7);
         newVariant3.setDefaultVariant(true);
         VariantDTO variantDTO3 = variantMapper.toDTO(newVariant3);
 
@@ -209,7 +202,6 @@ class VariantControllerTest {
     @WithMockUser(roles = {"MANAGER"})
     void shouldNotPersistWithInvalidName() throws Exception {
         Variant newVariant = createVariant(4L, "", Money.of(12.50));
-        newVariant.setDisplayOrder(1);
         VariantDTO variantDTO = variantMapper.toDTO(newVariant);
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/variants/add", variantDTO);
@@ -227,7 +219,6 @@ class VariantControllerTest {
     @WithMockUser(roles = {"MANAGER"})
     void shouldNotPersistWithInvalidPrice() throws Exception {
         Variant newVariant = createVariant(12L, "Wariat", Money.of(-44.00));
-        newVariant.setDisplayOrder(1);
         VariantDTO variantDTO = variantMapper.toDTO(newVariant);
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/variants/add", variantDTO);
@@ -250,6 +241,38 @@ class VariantControllerTest {
         Variant variant = createVariant(12L, "Not hehe", Money.of(5.50));
         VariantDTO variantDTO = variantMapper.toDTO(variant);
         apiRequestUtils.postAndExpectForbidden("/api/cms/variants/add", variantDTO);
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER"}, username = "netka@test.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateDisplayOrders() throws Exception {
+        List<VariantDTO> initialVariants = getAllByMenuItemId(21L);
+        List<Variant> variants = initialVariants.stream().map(variantMapper::toVariant).toList();
+
+        assertEquals(1, variants.get(0).getDisplayOrder());
+        assertEquals("Mała", variants.get(0).getName().getDefaultTranslation());
+
+        assertEquals(2, variants.get(1).getDisplayOrder());
+        assertEquals("Średnia", variants.get(1).getName().getDefaultTranslation());
+
+        assertEquals(3, variants.get(2).getDisplayOrder());
+        assertEquals("Duża", variants.get(2).getName().getDefaultTranslation());
+
+        variants.get(0).setDisplayOrder(3);
+        variants.get(2).setDisplayOrder(1);
+
+        List<VariantDTO> variantDTOs = variants.stream().map(variantMapper::toDTO).toList();
+        List<VariantDTO> updatedVariantDTOs =
+                apiRequestUtils.patchAndGetList(
+                        "/api/cms/variants/display-orders", variantDTOs, VariantDTO.class);
+
+        assertEquals("Duża", updatedVariantDTOs.get(0).name().defaultTranslation());
+        assertEquals(1, updatedVariantDTOs.get(0).displayOrder());
+
+        assertEquals("Mała", updatedVariantDTOs.get(2).name().defaultTranslation());
+        assertEquals(3, updatedVariantDTOs.get(2).displayOrder());
     }
 
     @Test
@@ -287,6 +310,27 @@ class VariantControllerTest {
         assertEquals("Duża", variants.get(1).name().defaultTranslation());
     }
 
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldRemoveFirst() throws Exception {
+        VariantDTO variant = apiRequestUtils.postObjectExpect200(
+                "/api/cms/variants/show", 3, VariantDTO.class);
+        assertEquals("Mała", variant.name().defaultTranslation());
+
+        List<VariantDTO> variants =
+                apiRequestUtils.deleteAndGetList("/api/cms/variants/delete", 3, VariantDTO.class);
+
+        assertEquals(2, variants.size());
+
+        assertEquals("Średnia", variants.get(0).name().defaultTranslation());
+        assertEquals(1, variants.get(0).displayOrder());
+
+        assertEquals("Duża", variants.get(1).name().defaultTranslation());
+        assertEquals(2, variants.get(1).displayOrder());
+    }
+
     private Variant createVariant(Long menuItemId,
                                   String name,
                                   BigDecimal price) {
@@ -308,6 +352,11 @@ class VariantControllerTest {
         VariantDTO existingVariant = apiRequestUtils.postObjectExpect200(
                 "/api/cms/variants/show", id, VariantDTO.class);
         return variantMapper.toVariant(existingVariant);
+    }
+
+    private List<VariantDTO> getAllByMenuItemId(Long menuItemId) throws Exception {
+        return apiRequestUtils.postAndGetList(
+                "/api/cms/variants/item", menuItemId, VariantDTO.class);
     }
 
 }

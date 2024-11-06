@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
@@ -22,5 +23,5 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     void updateDisplayOrders(@Param("menuItemId") Long menuItemId, @Param("displayOrder") Integer displayOrder);
 
     @Query("SELECT MAX(mi.displayOrder) FROM MenuItem mi WHERE mi.categoryId = :categoryId")
-    Integer findMaxDisplayOrder(@Param("categoryId") Long categoryId);
+    Optional<Integer> findMaxDisplayOrder(@Param("categoryId") Long categoryId);
 }

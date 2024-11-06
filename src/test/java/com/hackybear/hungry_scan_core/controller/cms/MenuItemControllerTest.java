@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.dto.CategoryDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,8 +93,8 @@ class MenuItemControllerTest {
     void shouldAddNewMenuItem() throws Exception {
         MenuItem menuItem = createMenuItem();
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
-        Integer maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(2L);
-        assertEquals(5, maxDisplayOrder);
+        Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(2L);
+        assertEquals(5, maxDisplayOrder.orElse(0));
 
         apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItemFormDTO);
 
@@ -151,27 +153,107 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldSwitchCategory() throws Exception {
-        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
-        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
-        persistedMenuItem.setCategoryId(1L);
-        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
+        //GIVEN
+        List<CategoryDTO> categories =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories", CategoryDTO.class);
 
+        CategoryDTO oldCategory = categories.get(4);
+        assertEquals("Pizza", oldCategory.name().defaultTranslation());
+        assertEquals(5, oldCategory.menuItems().size());
+
+        CategoryDTO newCategory = categories.get(0);
+        assertEquals("Przystawki", newCategory.name().defaultTranslation());
+        assertEquals(5, newCategory.menuItems().size());
+
+        MenuItemFormDTO existingMenuItemDTO = fetchMenuItemFormDTO(23L);
+        assertEquals(existingMenuItemDTO.categoryId(), oldCategory.id());
+        MenuItem existingMenuItem = menuItemMapper.toMenuItem(existingMenuItemDTO);
+        existingMenuItem.setCategoryId(newCategory.id());
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(existingMenuItem);
+
+        //WHEN
         apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
 
+        //THEN
         MenuItemFormDTO updatedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItemFormDTO.class);
 
-        Category category = categoryRepository.findById(1L).orElseThrow();
+        List<CategoryDTO> updatedCategories =
+                apiRequestUtils.fetchAsList(
+                        "/api/cms/categories", CategoryDTO.class);
+        List<MenuItemSimpleDTO> updatedNewItems = updatedCategories.get(0).menuItems();
+        assertEquals(6, updatedNewItems.size());
+        assertEquals(1, updatedNewItems.get(0).displayOrder());
+        assertEquals(2, updatedNewItems.get(1).displayOrder());
+        assertEquals(3, updatedNewItems.get(2).displayOrder());
+        assertEquals(4, updatedNewItems.get(3).displayOrder());
+        assertEquals(5, updatedNewItems.get(4).displayOrder());
+        assertEquals(6, updatedNewItems.get(5).displayOrder());
         assertEquals(1L, updatedMenuItem.categoryId());
-        boolean isUpdatedMenuItemPresent = category
-                .getMenuItems()
+        boolean isUpdatedMenuItemPresent = updatedNewItems
                 .stream()
-                .anyMatch(menuItem -> Objects.equals(menuItem.getId(), updatedMenuItem.id()));
+                .anyMatch(menuItem -> Objects.equals(menuItem.id(), updatedMenuItem.id()));
         assertTrue(isUpdatedMenuItemPresent);
+
+        List<MenuItemSimpleDTO> updatedOldItems = updatedCategories.get(4).menuItems();
+        assertEquals(4, updatedOldItems.size());
+        assertEquals(1, updatedNewItems.get(0).displayOrder());
+        assertEquals(2, updatedNewItems.get(1).displayOrder());
+        assertEquals(3, updatedNewItems.get(2).displayOrder());
+        assertEquals(4, updatedNewItems.get(3).displayOrder());
+        isUpdatedMenuItemPresent = updatedOldItems
+                .stream()
+                .anyMatch(menuItem -> Objects.equals(menuItem.id(), updatedMenuItem.id()));
+        assertFalse(isUpdatedMenuItemPresent);
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER"}, username = "netka@test.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateDisplayOrders() throws Exception {
+        Category category = categoryRepository.findById(1L).orElseThrow();
+        List<MenuItem> menuItems = category.getMenuItems();
+
+        assertEquals(1, menuItems.get(0).getDisplayOrder());
+        assertEquals("Krewetki marynowane w cytrynie", menuItems.get(0).getName().getDefaultTranslation());
+
+        assertEquals(2, menuItems.get(1).getDisplayOrder());
+
+        assertEquals(3, menuItems.get(2).getDisplayOrder());
+        assertEquals("Krewetki w tempurze", menuItems.get(2).getName().getDefaultTranslation());
+
+        assertEquals(4, menuItems.get(3).getDisplayOrder());
+        assertEquals(5, menuItems.get(4).getDisplayOrder());
+        assertEquals("Nachos z sosem serowym", menuItems.get(4).getName().getDefaultTranslation());
+
+        menuItems.get(0).setDisplayOrder(5);
+        menuItems.get(4).setDisplayOrder(1);
+
+        menuItems.get(3).setDisplayOrder(3);
+        menuItems.get(2).setDisplayOrder(4);
+
+        List<MenuItemSimpleDTO> menuItemDTOs = menuItems.stream().map(menuItemMapper::toDTO).toList();
+        List<MenuItemSimpleDTO> updatedMenuItemDTOs =
+                apiRequestUtils.patchAndGetList(
+                        "/api/cms/items/display-orders", menuItemDTOs, MenuItemSimpleDTO.class);
+
+        assertEquals("Nachos z sosem serowym", updatedMenuItemDTOs.get(0).name().defaultTranslation());
+        assertEquals(1, updatedMenuItemDTOs.get(0).displayOrder());
+
+        assertEquals("Krewetki marynowane w cytrynie", updatedMenuItemDTOs.get(4).name().defaultTranslation());
+        assertEquals(5, updatedMenuItemDTOs.get(4).displayOrder());
+
+        assertEquals("Krewetki w tempurze", updatedMenuItemDTOs.get(3).name().defaultTranslation());
+        assertEquals(4, updatedMenuItemDTOs.get(3).displayOrder());
+
+        assertEquals("Roladki z bakłażana", updatedMenuItemDTOs.get(2).name().defaultTranslation());
+        assertEquals(3, updatedMenuItemDTOs.get(2).displayOrder());
     }
 
     @Test

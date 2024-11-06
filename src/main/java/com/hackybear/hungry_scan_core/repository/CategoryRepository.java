@@ -31,7 +31,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Integer> findAllDisplayOrdersByMenuId(@Param("menuId") Long menuId);
 
     @Query("SELECT MAX(c.displayOrder) FROM Category c WHERE c.menuId = :menuId")
-    Integer findMaxDisplayOrderByMenuId(@Param("menuId") Long menuId);
+    Optional<Integer> findMaxDisplayOrderByMenuId(@Param("menuId") Long menuId);
 
     Long countByMenuId(Long menuId);
 

@@ -51,9 +51,23 @@ public class VariantController {
     }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PatchMapping("/display-orders")
+    public ResponseEntity<?> updateDisplayOrders(@RequestBody List<VariantDTO> variant) {
+        try {
+            return ResponseEntity.ok(variantService.updateDisplayOrders(variant));
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody Long id) {
-        return responseHelper.getResponseEntity(id, variantService::delete);
+        try {
+            return ResponseEntity.ok(variantService.delete(id));
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

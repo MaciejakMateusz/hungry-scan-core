@@ -3,10 +3,12 @@ package com.hackybear.hungry_scan_core.service;
 import com.hackybear.hungry_scan_core.dto.VariantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.TranslatableMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.VariantMapper;
+import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.VariantService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,19 +31,22 @@ public class VariantServiceImp implements VariantService {
     private final VariantMapper variantMapper;
     private final TranslatableMapper translatableMapper;
     private final EntityManager entityManager;
+    private final MenuItemRepository menuItemRepository;
 
     public VariantServiceImp(VariantRepository variantRepository,
                              ExceptionHelper exceptionHelper,
                              SortingHelper sortingHelper,
                              VariantMapper variantMapper,
                              TranslatableMapper translatableMapper,
-                             EntityManager entityManager) {
+                             EntityManager entityManager,
+                             MenuItemRepository menuItemRepository) {
         this.variantRepository = variantRepository;
         this.exceptionHelper = exceptionHelper;
         this.sortingHelper = sortingHelper;
         this.variantMapper = variantMapper;
         this.translatableMapper = translatableMapper;
         this.entityManager = entityManager;
+        this.menuItemRepository = menuItemRepository;
     }
 
     @Override
@@ -50,7 +56,9 @@ public class VariantServiceImp implements VariantService {
         if (!isFirstVariant(variant.getMenuItemId())) {
             switchDefaultVariant(variant);
         }
-        sortingHelper.sortAndSave(variant, this::getById);
+        Optional<Integer> maxDisplayOrder = variantRepository.findMaxDisplayOrderByMenuItemId(variant.getMenuItemId());
+        variant.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
+        variantRepository.save(variant);
     }
 
     @Override
@@ -59,12 +67,23 @@ public class VariantServiceImp implements VariantService {
         Variant existingVariant = getById(variantDTO.id());
         updateVariant(variantDTO, existingVariant);
         switchDefaultVariant(existingVariant);
-        sortingHelper.sortAndSave(existingVariant, this::getById);
+        variantRepository.save(existingVariant);
+    }
+
+    @Override
+    public List<VariantDTO> updateDisplayOrders(List<VariantDTO> variantDTOs) {
+        List<Variant> variants = variantDTOs.stream().map(variantMapper::toVariant).toList();
+        for (Variant variant : variants) {
+            variantRepository.updateDisplayOrders(variant.getId(), variant.getDisplayOrder());
+        }
+        entityManager.clear();
+        Long variantId = variants.get(0).getMenuItemId();
+        return getVariantByMenuItemId(variantId).stream().map(variantMapper::toDTO).toList();
     }
 
     @Override
     public List<VariantDTO> findAllByMenuItemId(Long menuItemId) {
-        List<Variant> variants = getByMenuItemId(menuItemId);
+        List<Variant> variants = getVariantByMenuItemId(menuItemId);
         return variants.stream().map(variantMapper::toDTO).toList();
     }
 
@@ -75,10 +94,14 @@ public class VariantServiceImp implements VariantService {
     }
 
     @Override
-    public void delete(Long id) throws LocalizedException {
+    public List<VariantDTO> delete(Long id) throws LocalizedException {
         Variant existingVariant = getById(id);
+        Long menuItemId = existingVariant.getMenuItemId();
+        removeVariant(existingVariant);
         variantRepository.delete(existingVariant);
-        sortingHelper.removeAndAdjust(existingVariant);
+        List<Variant> variants = getVariantByMenuItemId(menuItemId);
+        sortingHelper.reassignDisplayOrders(variants, variantRepository::saveAllAndFlush);
+        return findAllByMenuItemId(menuItemId);
     }
 
     private void updateVariant(VariantDTO variantDTO, Variant existingVariant) {
@@ -98,12 +121,18 @@ public class VariantServiceImp implements VariantService {
     }
 
     private boolean isFirstVariant(Long menuItemId) {
-        List<Variant> variants = getByMenuItemId(menuItemId);
+        List<Variant> variants = getVariantByMenuItemId(menuItemId);
         return variants.isEmpty();
     }
 
-    private List<Variant> getByMenuItemId(Long id) {
-        return variantRepository.findAllByMenuItemIdOrderByDisplayOrder(id);
+    private List<Variant> getVariantByMenuItemId(Long menuItemId) {
+        return variantRepository.findAllByMenuItemIdOrderByDisplayOrder(menuItemId);
+    }
+
+    private MenuItem findMenuItemById(Long menuItemId) throws LocalizedException {
+        return menuItemRepository.findById(menuItemId)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuItemService.menuItemNotFound", menuItemId));
     }
 
     private void switchDefaultVariant(Variant variant) {
@@ -111,7 +140,7 @@ public class VariantServiceImp implements VariantService {
             return;
         }
         boolean isNewVariant = Objects.isNull(variant.getId());
-        List<Variant> variants = getByMenuItemId(variant.getMenuItemId());
+        List<Variant> variants = getVariantByMenuItemId(variant.getMenuItemId());
 
         if (isNewVariant) {
             for (Variant v : variants) {
@@ -127,5 +156,12 @@ public class VariantServiceImp implements VariantService {
             }
             variantRepository.saveAll(variants);
         }
+    }
+
+    private void removeVariant(Variant variant) throws LocalizedException {
+        MenuItem menuItem = findMenuItemById(variant.getMenuItemId());
+        menuItem.removeVariant(variant);
+        menuItemRepository.save(menuItem);
+        variantRepository.deleteById(variant.getId());
     }
 }

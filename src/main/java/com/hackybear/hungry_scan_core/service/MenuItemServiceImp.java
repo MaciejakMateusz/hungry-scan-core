@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -66,8 +67,8 @@ public class MenuItemServiceImp implements MenuItemService {
     @Transactional
     public void save(MenuItemFormDTO menuItemFormDTO) throws Exception {
         MenuItem menuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
-        Integer maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategoryId());
-        menuItem.setDisplayOrder(maxDisplayOrder + 1);
+        Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategoryId());
+        menuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
         menuItemRepository.save(menuItem);
     }
 
@@ -75,9 +76,9 @@ public class MenuItemServiceImp implements MenuItemService {
     @Transactional
     public void update(MenuItemFormDTO menuItemFormDTO) throws Exception {
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
-        Category category = findByMenuItemId(existingMenuItem.getId());
+        Category oldCategory = findCategoryByMenuItemId(existingMenuItem.getId());
         updateMenuItem(existingMenuItem, menuItemFormDTO);
-        switchCategory(existingMenuItem, category);
+        switchCategory(existingMenuItem, oldCategory, menuItemFormDTO.categoryId());
         menuItemRepository.save(existingMenuItem);
     }
 
@@ -118,32 +119,36 @@ public class MenuItemServiceImp implements MenuItemService {
                         "error.menuItemService.menuItemNotFound", id));
     }
 
-    private Category findByMenuItemId(Long id) throws LocalizedException {
-        return categoryRepository.findByMenuItemId(id)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.categoryService.categoryNotFoundByMenuItem", id));
-    }
-
     private Category findCategoryById(Long id) throws LocalizedException {
         return categoryRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.categoryService.categoryNotFound", id));
     }
 
-    private void switchCategory(MenuItem menuItem, Category category) throws LocalizedException {
-        if (Objects.isNull(menuItem.getId())) {
-            return;
-        }
-        Long categoryId = menuItem.getCategoryId();
-        if (category.getId().equals(categoryId)) {
-            return;
-        }
-        category.removeMenuItem(menuItem);
-        sortingHelper.updateDisplayOrders(menuItem.getDisplayOrder(), category.getMenuItems(), menuItemRepository::saveAll);
+    private Category findCategoryByMenuItemId(Long id) throws LocalizedException {
+        return categoryRepository.findByMenuItemId(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.categoryService.categoryNotFoundByMenuItem", id));
+    }
 
-        Category newCategory = findCategoryById(categoryId);
-        newCategory.addMenuItem(menuItem);
+    private void switchCategory(MenuItem existingMenuItem, Category oldCategory, Long newCategoryId) throws LocalizedException {
+        if (Objects.isNull(existingMenuItem.getId())) {
+            return;
+        }
+        if (oldCategory.getId().equals(newCategoryId)) {
+            return;
+        }
+        Category newCategory = findCategoryById(newCategoryId);
+        existingMenuItem = entityManager.merge(existingMenuItem);
+        Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(newCategoryId);
+        existingMenuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
+        newCategory.addMenuItem(existingMenuItem);
         categoryRepository.save(newCategory);
+
+        List<MenuItem> oldCategoryItems = oldCategory.getMenuItems();
+        oldCategoryItems.remove(existingMenuItem);
+        sortingHelper.reassignDisplayOrders(oldCategoryItems, menuItemRepository::saveAll);
+        categoryRepository.save(oldCategory);
     }
 
     private void updateMenuItem(MenuItem existingMenuItem, MenuItemFormDTO menuItemFormDTO) {
