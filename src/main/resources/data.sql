@@ -1,5 +1,12 @@
-INSERT IGNORE INTO restaurants (id, address, name)
-VALUES (1, 'Katowice', 'Rarytas');
+INSERT IGNORE INTO restaurants (id, address, name, token)
+VALUES (1, 'Jastrzębie-Zdrój', 'Rarytas', '3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO restaurants (id, address, name, token)
+VALUES (2, 'Katowice', 'Tajska', null);
+
+INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
+VALUES (1, true, 'Całodniowe', 1);
+INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
+VALUES (2, true, 'Menu', 2);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
 (1, 'Kelner', 'Waiter');
@@ -302,9 +309,6 @@ INSERT IGNORE INTO translatable(id, default_translation)
 VALUES (114, 'Coca-cola');
 INSERT IGNORE INTO translatable(id, default_translation)
 VALUES (115, '250ml');
-
-INSERT IGNORE INTO menu (id, is_all_day, name, restaurant_id)
-VALUES (1, true, 'Całodniowe', 1);
 
 INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
                                display_order)

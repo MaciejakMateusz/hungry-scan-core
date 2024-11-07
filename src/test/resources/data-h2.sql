@@ -1,11 +1,11 @@
-INSERT INTO restaurants (address, name)
-VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas');
-INSERT INTO restaurants (address, name)
-VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro');
+INSERT INTO restaurants (address, name, token)
+VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '3d90381d-80d2-48f8-80b3-d237d5f0a8ed');
+INSERT INTO restaurants (address, name, token)
+VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', null);
 
-INSERT INTO menu (is_all_day, name, restaurant_id)
+INSERT INTO menus (is_all_day, name, restaurant_id)
 VALUES (true, 'Całodniowe', 1);
-INSERT INTO menu (is_all_day, name, restaurant_id)
+INSERT INTO menus (is_all_day, name, restaurant_id)
 VALUES (true, 'Całodniowe', 2);
 
 /* CATEGORIES TRANSLATIONS */

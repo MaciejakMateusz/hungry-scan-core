@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode()
-@Table(name = "menu")
+@Table(name = "menus")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
 public class Menu {
