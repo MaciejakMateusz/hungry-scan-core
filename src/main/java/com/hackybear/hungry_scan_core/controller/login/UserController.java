@@ -2,17 +2,14 @@ package com.hackybear.hungry_scan_core.controller.login;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
-import com.hackybear.hungry_scan_core.dto.JwtResponseDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
-import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.JwtToken;
-import com.hackybear.hungry_scan_core.entity.RestaurantTable;
+import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.User;
-import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.JwtService;
-import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.RoleService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,16 +26,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.file.AccessDeniedException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -46,31 +36,29 @@ import java.util.UUID;
 public class UserController {
 
     private final AuthenticationManager authenticationManager;
-    private final RestaurantTableService restaurantTableService;
+    private final RestaurantService restaurantService;
     private final UserService userService;
-    private final UserMapper userMapper;
     private final RoleService roleService;
     private final JwtService jwtService;
-    private final ExceptionHelper exceptionHelper;
     private final ResponseHelper responseHelper;
 
-    @Value("${customer.app.port}")
-    private String customerAppPort;
+    @Value("${CUSTOMER_APP_URL}")
+    private String customerAppUrl;
+
+    @Value("${IS_PROD}")
+    private boolean isProduction;
 
     public UserController(AuthenticationManager authenticationManager,
-                          RestaurantTableService restaurantTableService,
-                          UserService userService, UserMapper userMapper,
+                          RestaurantService restaurantService,
+                          UserService userService,
                           RoleService roleService,
                           JwtService jwtService,
-                          ExceptionHelper exceptionHelper,
                           ResponseHelper responseHelper) {
         this.authenticationManager = authenticationManager;
-        this.restaurantTableService = restaurantTableService;
+        this.restaurantService = restaurantService;
         this.userService = userService;
-        this.userMapper = userMapper;
         this.roleService = roleService;
         this.jwtService = jwtService;
-        this.exceptionHelper = exceptionHelper;
         this.responseHelper = responseHelper;
     }
 
@@ -91,12 +79,29 @@ public class UserController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
         if (authentication.isAuthenticated()) {
-            String jwtCookie = prepareJwtCookie(authRequestDTO);
+            String jwt = jwtService.generateToken(authRequestDTO.getUsername());
+            String jwtCookie = prepareJwtCookie(jwt, 28800, "Strict");
             response.addHeader("Set-Cookie", jwtCookie);
             return ResponseEntity.ok().body(Map.of("message", "Login successful"));
         } else {
             throw new UsernameNotFoundException("Not authorized - invalid user request");
         }
+    }
+
+    @GetMapping("/scan/{restaurantToken}")
+    public ResponseEntity<?> scanQr(HttpServletResponse response, @PathVariable String restaurantToken) throws IOException {
+        String username = UUID.randomUUID().toString().substring(1, 13) + "@temp.it";
+        String jwt = jwtService.generateToken(username);
+        try {
+            persistUser(new JwtToken(jwt), username, restaurantToken);
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+
+        String cookie = prepareJwtCookie(jwt, 10800, "none");
+        response.addHeader("Set-Cookie", cookie);
+        response.sendRedirect(customerAppUrl);
+        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).build();
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -119,51 +124,14 @@ public class UserController {
         return responseHelper.getResponseEntity(menuId, userService::switchMenu);
     }
 
-    @Deprecated //TODO metoda do wywalenia po zmianach w założeniach skanowania kodów
-    @GetMapping("/scan/{token}")
-    public JwtResponseDTO scanTableQr(@PathVariable("token") String token) throws AccessDeniedException, LocalizedException {
-        RestaurantTable table = getRestaurantTable(token);
-        if (table.isActive()) {
-            String randomUUID = UUID.randomUUID().toString();
-            String accessToken = jwtService.generateToken(randomUUID.substring(1, 13));
-            persistTableAndUser(new JwtToken(accessToken), randomUUID, table);
-            return JwtResponseDTO
-                    .builder()
-                    .accessToken(accessToken)
-                    .build();
-        } else {
-            throw new LocalizedException(exceptionHelper.getLocalizedMessage(
-                    "error.restaurantTableService.tableNotActive",
-                    table.getId()));
-        }
-    }
-
-    @GetMapping("/scan")
-    public ResponseEntity<Void> scanQr(HttpServletResponse response) throws IOException {
-        String randomUUID = UUID.randomUUID().toString();
-        String accessToken = jwtService.generateToken(randomUUID.substring(1, 13));
-        persistUser(new JwtToken(accessToken), randomUUID);
-
-        String redirectUrl = UriComponentsBuilder.fromUriString(getCustomerAppUrl())
-                .queryParam("token", accessToken)
-                .build()
-                .toUriString();
-
-        response.sendRedirect(redirectUrl);
-        return ResponseEntity.status(HttpServletResponse.SC_FOUND).build();
-    }
-
-    private String prepareJwtCookie(AuthRequestDTO authRequestDTO) {
-        String jwt = jwtService.generateToken(authRequestDTO.getUsername());
-
+    private String prepareJwtCookie(String jwt, long maxAge, String sameSite) {
         ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
-                .maxAge(3600)
-                .sameSite("Strict")
+                .secure(isProduction)
+                .maxAge(maxAge)
+                .sameSite(sameSite)
                 .build();
-
         return cookie.toString();
     }
 
@@ -171,65 +139,35 @@ public class UserController {
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
+                .secure(isProduction)
                 .maxAge(0)
                 .sameSite("Strict")
                 .build();
         return cookie.toString();
     }
 
-    private void persistTableAndUser(JwtToken jwtToken, String uuid, RestaurantTable restaurantTable) throws LocalizedException {
-        String username = uuid.substring(1, 13) + "@temp.it";
-        boolean isFirstCustomer = restaurantTable.getUsers().isEmpty();
-        userService.save(createTempCustomer(jwtToken, username, isFirstCustomer));
-        User customer = userService.findByUsername(username);
-        restaurantTable.addCustomer(customer);
-        restaurantTableService.save(restaurantTable);
+    private void persistUser(JwtToken jwtToken, String username, String restaurantToken) throws LocalizedException {
+        User user = createTempCustomer(jwtToken, username, restaurantToken);
+        userService.saveTempUser(user);
     }
 
-    private void persistUser(JwtToken jwtToken, String uuid) {
-        String username = uuid.substring(1, 13) + "@temp.it";
-        userService.save(createTempCustomer(jwtToken, username, false));
-    }
-
-    private RestaurantTable getRestaurantTable(String token) throws AccessDeniedException {
-        RestaurantTable restaurantTable;
-        try {
-            restaurantTable = restaurantTableService.findByToken(token);
-        } catch (LocalizedException e) {
-            throw new AccessDeniedException(e.getLocalizedMessage());
-        }
-        return restaurantTable;
-    }
-
-    private RegistrationDTO createTempCustomer(JwtToken jwtToken, String username, boolean isFirstCustomer) {
-        User customer = new User();
-        customer.setUsername(username);
-        customer.setEmail(username);
-        customer.setName(username.substring(4));
-        customer.setSurname(username.substring(4));
-        customer.setPassword(UUID.randomUUID().toString());
-        Role role = roleService.findByName(isFirstCustomer ? "ROLE_CUSTOMER" : "ROLE_CUSTOMER_READONLY");
-        customer.setRoles(new HashSet<>(Collections.singletonList(role)));
-        customer.setJwtToken(jwtToken);
-        return userMapper.toDTO(customer);
-    }
-
-    private String getCustomerAppUrl() {
-        return "http://" +
-                getServerIPAddress() +
-                ":" +
-                customerAppPort +
-                "/menu";
-    }
-
-    private String getServerIPAddress() {
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            System.out.println("Failed to determine server IP address: " + e.getMessage());
-            return null;
-        }
+    private User createTempCustomer(JwtToken jwtToken,
+                                    String username,
+                                    String restaurantToken) throws LocalizedException {
+        User temp = new User();
+        Restaurant restaurant = restaurantService.findByToken(restaurantToken);
+        temp.setRestaurants(Set.of(restaurant));
+        temp.setActiveRestaurantId(restaurant.getId());
+        temp.setOrganizationId(0L);
+        temp.setUsername(username);
+        temp.setEmail(username);
+        temp.setName(username.substring(4));
+        temp.setSurname(username.substring(4));
+        temp.setPassword(UUID.randomUUID().toString());
+        Role role = roleService.findByName("ROLE_CUSTOMER_READONLY");
+        temp.setRoles(new HashSet<>(Collections.singletonList(role)));
+        temp.setJwtToken(jwtToken);
+        return temp;
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

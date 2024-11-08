@@ -152,11 +152,10 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Fetches a Page<T> collection from the specified endpoint.
+     * Executes POST HTTP and parses response to Page<T> collection.
      *
-     * @param endpointUrl The URL of the endpoint to fetch from.
-     * @param itemType    The type of objects to fetch.
-     * @param <T>         The type of objects to fetch.
+     * @param endpointUrl The URL of the endpoint to execute the request.
+     * @param itemType    The type of objects to pass and fetch.
      * @return A Page of objects fetched from the endpoint.
      * @throws Exception If an error occurs during the request.
      */
@@ -179,11 +178,11 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Executes GET HTTP request.
      * Fetches an object from the specified endpoint URL and converts it into the provided item type.
      *
-     * @param endpointUrl The URL endpoint from which to fetch the object.
+     * @param endpointUrl The URL endpoint to execute the request to.
      * @param itemType    The class type of the object to be fetched.
-     * @param <T>         The generic type of the object to be fetched.
      * @return The fetched object of type T.
      * @throws Exception If an error occurs during the fetching or parsing of the object.
      */
@@ -197,10 +196,27 @@ public class ApiRequestUtils {
         MockHttpServletResponse response = result.getResponse();
         String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
-        return prepObjMapper().readValue(jsonResponse, itemType);
+        return objectMapper.readValue(jsonResponse, itemType);
     }
 
     /**
+     * Executes GET HTTP request and returns response.
+     *
+     * @param endpointUrl The URL endpoint to execute the request to.
+     * @return MockHttpServletResponse.
+     * @throws Exception If an error occurs during the request.
+     */
+    public MockHttpServletResponse getResponse(String endpointUrl) throws Exception {
+        MvcResult result = mockMvc.perform(get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn();
+
+        return result.getResponse();
+    }
+
+    /**
+     * Executes POST HTTP request.
      * Fetches an object from the specified endpoint URL and converts it into the provided item type.
      *
      * @param endpointUrl The URL endpoint from which to fetch the object.
@@ -223,10 +239,11 @@ public class ApiRequestUtils {
         MockHttpServletResponse response = result.getResponse();
         String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
-        return prepObjMapper().readValue(jsonResponse, itemType);
+        return objectMapper.readValue(jsonResponse, itemType);
     }
 
     /**
+     * Executes POST HTTP request.
      * Fetches a Resource from the specified endpoint URL based on posted object.
      *
      * @param endpointUrl The URL endpoint from which to fetch the Resource.
@@ -257,6 +274,7 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Executes GET HTTP request.
      * Fetches a Resource from the specified endpoint URL.
      *
      * @param endpointUrl The URL endpoint from which to fetch the Resource.
@@ -278,7 +296,7 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a simple POST HTTP request without body to specified endpoint.
+     * Executes POST HTTP request without body to specified endpoint.
      *
      * @param endpointUrl The URL endpoint to request action.
      */
@@ -292,7 +310,8 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Fetches from the specified endpoint URL and expects an unauthorized response according to the provided matcher.
+     * Executes GET HTTP request.
+     * Expects an unauthorized response according to the provided matcher.
      *
      * @param endpointUrl The URL endpoint from which to fetch.
      * @throws Exception If an error occurs during the fetching or matching of the response.
@@ -306,7 +325,8 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Fetches from the specified endpoint URL and expects an unauthorized response according to the provided matcher.
+     * Executes GET HTTP request.
+     * Expects an unauthorized response according to the provided matcher.
      *
      * @param endpointUrl The URL endpoint from which to fetch.
      * @throws Exception If an error occurs during the fetching or matching of the response.
@@ -320,7 +340,8 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Posts an object to the specified endpoint URL and expects a response according to the provided matcher.
+     * Executes POST HTTP request.
+     * Expects a response according to the provided matcher.
      *
      * @param endpointUrl The URL endpoint to which the object is to be posted.
      * @param object      The object to be posted.
@@ -340,7 +361,7 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a POST request to the specified endpoint URL with the provided object as the request body.
+     * Sends a POST HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      * Retrieves and returns the response body as a Map of String keys to Object values.
      *
@@ -375,7 +396,29 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
+     * Sends a GET HTTP request to the specified endpoint URL.
+     * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
+     *
+     * @param endpointUrl The URL endpoint to send the GET request to.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @return A Map representing the response body, with String keys and Object values.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public Map<String, Object> getAndReturnResponseBody(String endpointUrl, ResultMatcher matcher) throws Exception {
+        ResultActions resultActions = mockMvc.perform(get(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(matcher)
+                .andDo(print());
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+        };
+        return objectMapper.readValue(responseBody, typeReference);
+    }
+
+    /**
+     * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      * Retrieves and returns the response body as a Map of String keys to Object values.
      *
@@ -404,7 +447,7 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
+     * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      * Retrieves and returns the response body as a Map of String keys to Object values.
      *
@@ -430,11 +473,11 @@ public class ApiRequestUtils {
         String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
         };
-        return prepObjMapper().readValue(responseBody, typeReference);
+        return objectMapper.readValue(responseBody, typeReference);
     }
 
     /**
-     * Sends a DELETE request to the specified endpoint URL with the provided object as the request body.
+     * Sends a DELETE HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      * Retrieves and returns the response body as a Map of String keys to Object values.
      *
@@ -468,7 +511,7 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
+     * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      *
      * @param endpointUrl The URL endpoint to send the PATCH request to.
@@ -489,7 +532,7 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a PATCH request to the specified endpoint URL with the provided object as the request body.
+     * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      *
      * @param url     The URL endpoint to send the PATCH request to.
@@ -511,7 +554,7 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Sends a DELETE request to the specified endpoint URL with the provided object as the request body.
+     * Sends a DELETE HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      *
      * @param endpointUrl The URL endpoint to send the DELETE request to.
@@ -541,7 +584,7 @@ public class ApiRequestUtils {
      *
      * @return A prepared ObjectMapper.
      */
-    public ObjectMapper prepObjMapper() {
+    private ObjectMapper prepObjMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new PageModule());
@@ -576,11 +619,11 @@ public class ApiRequestUtils {
      * @return An instance of the class type after deserialization.
      */
     public <T> T deserializeObject(Object object, Class<T> classType) {
-        return prepObjMapper().convertValue(object, classType);
+        return objectMapper.convertValue(object, classType);
     }
 
     /**
-     * Performs a POST request to the specified URL with the provided object and expects error responses.
+     * Performs a POST HTTP request to the specified URL with the provided object and expects error responses.
      *
      * @param url The URL to which the POST request will be sent.
      * @param t   The object to be sent as part of the request.
@@ -593,7 +636,18 @@ public class ApiRequestUtils {
     }
 
     /**
-     * Performs a PATCH request to the specified URL with the provided object and expects error responses.
+     * Performs a GET HTTP request to the specified URL expects error responses.
+     *
+     * @param url The URL to which the POST request will be sent.
+     * @return A map containing error responses received from the server.
+     * @throws Exception If an error occurs during the request.
+     */
+    public Map<?, ?> getAndExpectErrors(String url) throws Exception {
+        return getAndReturnResponseBody(url, status().isBadRequest());
+    }
+
+    /**
+     * Performs a PATCH HTTP request to the specified URL with the provided object and expects error responses.
      *
      * @param url The URL to which the POST request will be sent.
      * @param t   The object to be sent as part of the request.

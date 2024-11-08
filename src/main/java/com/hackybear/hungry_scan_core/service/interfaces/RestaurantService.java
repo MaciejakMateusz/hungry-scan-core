@@ -13,4 +13,6 @@ public interface RestaurantService {
     void save(Restaurant restaurant);
 
     void delete(Long id) throws LocalizedException;
+
+    Restaurant findByToken(String token) throws LocalizedException;
 }
