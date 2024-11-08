@@ -58,12 +58,9 @@ public class SecurityConfig {
             CorsConfiguration corsConfiguration = new CorsConfiguration();
             corsConfiguration.setAllowedMethods(List.of("*"));
             corsConfiguration.setAllowedHeaders(List.of("*"));
-            corsConfiguration.addAllowedOrigin("http://localhost:8080"); //jenkins
-            corsConfiguration.addAllowedOrigin("http://localhost:3000"); //restaurant
-            corsConfiguration.addAllowedOrigin("http://localhost:3001"); //customer
-            corsConfiguration.addAllowedOrigin(env.getProperty("CUSTOMER_APP_DOMAIN") + ":3001"); //customer
-            corsConfiguration.addAllowedOrigin("http://localhost:3002"); //cms
-            corsConfiguration.addAllowedOrigin("http://localhost:3003"); //admin
+            corsConfiguration.addAllowedOrigin(env.getProperty("JENKINS_URL"));
+            corsConfiguration.addAllowedOrigin(env.getProperty("CUSTOMER_APP_URL"));
+            corsConfiguration.addAllowedOrigin(env.getProperty("CMS_APP_URL"));
             corsConfiguration.setAllowedOriginPatterns(List.of("*"));
             corsConfiguration.setAllowCredentials(true);
             corsConfiguration.setAllowPrivateNetwork(true);

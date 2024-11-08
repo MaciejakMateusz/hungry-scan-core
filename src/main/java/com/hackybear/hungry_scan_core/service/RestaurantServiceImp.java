@@ -42,4 +42,11 @@ public class RestaurantServiceImp implements RestaurantService {
         Restaurant existingRestaurant = findById(id);
         restaurantRepository.delete(existingRestaurant);
     }
+
+    @Override
+    public Restaurant findByToken(String token) throws LocalizedException {
+        return restaurantRepository.findByToken(token).orElseThrow(
+                exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotFoundByToken"));
+    }
 }

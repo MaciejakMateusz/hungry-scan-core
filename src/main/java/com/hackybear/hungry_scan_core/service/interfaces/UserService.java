@@ -14,6 +14,8 @@ public interface UserService {
 
     void save(RegistrationDTO registrationDTO);
 
+    void saveTempUser(User tempUser);
+
     void addToOrganization(RegistrationDTO registrationDTO) throws LocalizedException;
 
     void update(RegistrationDTO registrationDTO) throws LocalizedException;

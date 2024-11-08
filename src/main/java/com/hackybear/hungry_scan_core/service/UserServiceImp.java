@@ -57,6 +57,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public void saveTempUser(User tempUser) {
+        userRepository.save(tempUser);
+    }
+
+    @Override
     public void addToOrganization(RegistrationDTO registrationDTO) throws LocalizedException {
         User currentUser = getCurrentUser();
         User user = userMapper.toUser(registrationDTO);

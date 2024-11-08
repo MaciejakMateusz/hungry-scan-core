@@ -3,10 +3,12 @@ package com.hackybear.hungry_scan_core.controller.login;
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
+import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiJwtRequestUtils;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -21,7 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -84,7 +87,7 @@ class UserControllerTest {
     @Rollback
     void shouldAuthenticateAndLoginUser() throws Exception {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("matimemek@test.com", "Lubieplacki123!");
-        Map<String, Object> response =
+        Map<?, ?> response =
                 apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
         assertEquals("Login successful", response.get("message"));
     }
@@ -130,6 +133,56 @@ class UserControllerTest {
     @Test
     void shouldNotAllowUnauthorizedToSwitchMenu() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/user/menu", 2);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void shouldScan() throws Exception {
+        String existingRestaurantToken = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed";
+        MockHttpServletResponse response =
+                apiRequestUtils.getResponse("/api/user/scan/" + existingRestaurantToken);
+        assertEquals(302, response.getStatus());
+
+        Optional<Cookie> jwtCookie = Arrays.stream(response.getCookies()).findFirst();
+        assert jwtCookie.isPresent();
+        assertEquals("jwt", jwtCookie.get().getName());
+
+        List<String> headers = response.getHeaders("Location");
+        assertEquals(1, headers.size());
+        assertEquals("http://localhost:3001", headers.get(0));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void shouldScanAndExpect400() throws Exception {
+        String nonExistingRestaurantToken = "3d12381d-21d2-55f8-80b3-d666d5f0a8ed";
+        Map<?, ?> errors = apiRequestUtils.getAndExpectErrors("/api/user/scan/" + nonExistingRestaurantToken);
+        assertEquals(1, errors.size());
+        assertEquals("Restauracja z podanym tokenem nie istnieje.", errors.get("exceptionMsg"));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void shouldScanAndExpectNewCustomerDetails() throws Exception {
+        List<User> currentRestaurantUsers = userRepository.findAllByActiveRestaurantId(1L);
+        assertEquals(5, currentRestaurantUsers.size());
+        String existingRestaurantToken = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed";
+
+        apiRequestUtils.getResponse("/api/user/scan/" + existingRestaurantToken);
+
+        List<User> updatedRestaurantUsers = userRepository.findAllByActiveRestaurantId(1L);
+        assertEquals(6, updatedRestaurantUsers.size());
+        User newTempUser = updatedRestaurantUsers.get(updatedRestaurantUsers.size() - 1);
+        assertEquals(1L, newTempUser.getActiveRestaurantId());
+        assertEquals(0L, newTempUser.getOrganizationId());
+        assertNotNull(newTempUser.getJwtToken());
+
+        Set<Role> roles = newTempUser.getRoles();
+        assertEquals(1, roles.size());
+        assertEquals("ROLE_CUSTOMER_READONLY", roles.iterator().next().getName());
     }
 
     private User getDetachedUser(String username) {
