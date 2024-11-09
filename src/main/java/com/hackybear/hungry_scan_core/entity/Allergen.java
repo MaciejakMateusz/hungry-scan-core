@@ -10,6 +10,9 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Slf4j
 @Getter
 @Setter
@@ -17,11 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode
 @Table(name = "allergens")
 @Entity
-public class Allergen {
+public class Allergen implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(name = "restaurant_id", nullable = false)
     @NotNull
