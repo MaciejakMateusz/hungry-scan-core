@@ -10,6 +10,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,11 +20,14 @@ import java.time.LocalDateTime;
 @Table(name = "translatable")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class Translatable {
+public class Translatable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(nullable = false)
     private String defaultTranslation;
