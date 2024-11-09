@@ -4,6 +4,8 @@ import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlankDTO;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLengthDTO;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -19,7 +21,10 @@ public record IngredientDTO(long id,
                             LocalDateTime created,
                             LocalDateTime updated,
                             String modifiedBy,
-                            String createdBy) implements Comparable<IngredientDTO> {
+                            String createdBy) implements Comparable<IngredientDTO>, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Override
     public int compareTo(IngredientDTO other) {
