@@ -18,6 +18,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -29,11 +31,14 @@ import java.time.LocalDateTime;
 @Table(name = "variants")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class Variant implements Comparable<Variant> {
+public class Variant implements Comparable<Variant>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
