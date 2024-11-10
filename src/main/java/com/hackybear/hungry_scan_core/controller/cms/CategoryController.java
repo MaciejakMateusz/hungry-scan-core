@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.CategoryFormDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -23,10 +24,12 @@ import java.util.Map;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final UserService userService;
     private final ResponseHelper responseHelper;
 
-    public CategoryController(CategoryService categoryService, ResponseHelper responseHelper) {
+    public CategoryController(CategoryService categoryService, UserService userService, ResponseHelper responseHelper) {
         this.categoryService = categoryService;
+        this.userService = userService;
         this.responseHelper = responseHelper;
     }
 
@@ -34,7 +37,8 @@ public class CategoryController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAll() {
         try {
-            return ResponseEntity.ok(categoryService.findAll());
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(categoryService.findAll(activeMenuId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
         }
@@ -44,7 +48,8 @@ public class CategoryController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> getDisplayOrders() {
         try {
-            return ResponseEntity.ok(categoryService.findAllDisplayOrders());
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(categoryService.findAllDisplayOrders(activeMenuId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
         }
@@ -54,7 +59,8 @@ public class CategoryController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> updateDisplayOrders(@RequestBody List<CategoryFormDTO> categories) {
         try {
-            return ResponseEntity.ok().body(categoryService.updateDisplayOrders(categories));
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok().body(categoryService.updateDisplayOrders(categories, activeMenuId));
         } catch (LocalizedException e) {
             return responseHelper.createErrorResponse(e);
         }
@@ -64,7 +70,8 @@ public class CategoryController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> count() {
         try {
-            return ResponseEntity.ok(categoryService.countAll());
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(categoryService.countAll(activeMenuId));
         } catch (LocalizedException e) {
             return responseHelper.createErrorResponse(e);
         }
@@ -74,7 +81,8 @@ public class CategoryController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAvailableAndVisible() {
         try {
-            return ResponseEntity.ok(categoryService.findAllAvailableAndVisible());
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(categoryService.findAllAvailableAndVisible(activeMenuId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
         }
@@ -89,20 +97,21 @@ public class CategoryController {
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody CategoryFormDTO category, BindingResult br) {
-        return responseHelper.buildResponse(category, br, categoryService::save);
+        return responseHelper.buildResponse(category, br, userService::getActiveMenuId, categoryService::save);
     }
 
     @PatchMapping("/update")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> update(@Valid @RequestBody CategoryFormDTO category, BindingResult br) {
-        return responseHelper.buildResponse(category, br, categoryService::update);
+        return responseHelper.buildResponse(category, br, userService::getActiveMenuId, categoryService::update);
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> delete(@RequestBody Long id) {
         try {
-            return ResponseEntity.ok(categoryService.delete(id));
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(categoryService.delete(id, activeMenuId));
         } catch (LocalizedException | AuthenticationException e) {
             return responseHelper.createErrorResponse(e);
         }

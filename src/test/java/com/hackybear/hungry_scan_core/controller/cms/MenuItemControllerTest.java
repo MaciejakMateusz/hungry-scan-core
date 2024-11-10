@@ -87,7 +87,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldAddNewMenuItem() throws Exception {
@@ -132,7 +132,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldUpdateExistingMenuItem() throws Exception {

@@ -8,6 +8,7 @@ import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -48,6 +49,9 @@ class CategoryServiceImpTest {
     @Autowired
     private CategoryMapper categoryMapper;
 
+    @Autowired
+    private UserService userService;
+
     @Order(1)
     @Sql("/data-h2.sql")
     @Test
@@ -59,7 +63,8 @@ class CategoryServiceImpTest {
     @WithMockUser(username = "admin@example.com")
     @Transactional
     void shouldFindAll() throws LocalizedException, AuthenticationException {
-        List<CategoryDTO> categories = categoryService.findAll();
+        Long activeMenuId = userService.getActiveMenuId();
+        List<CategoryDTO> categories = categoryService.findAll(activeMenuId);
         assertEquals(9, categories.size());
     }
 
@@ -93,7 +98,8 @@ class CategoryServiceImpTest {
         Category newCategory = createCategory();
         CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(newCategory);
 
-        categoryService.save(categoryFormDTO);
+        Long activeMenuId = userService.getActiveMenuId();
+        categoryService.save(categoryFormDTO, activeMenuId);
 
         CategoryFormDTO persistedCategory = categoryService.findById(10L);
         assertEquals("Tajskie", persistedCategory.name().defaultTranslation());
@@ -101,24 +107,26 @@ class CategoryServiceImpTest {
 
     @Test
     @WithMockUser(username = "admin@example.com")
-    public void shouldNotInsertNewWithBlankName() {
+    public void shouldNotInsertNewWithBlankName() throws LocalizedException {
         Category category = new Category();
 
         Translatable translatable = new Translatable();
         translatable.setDefaultTranslation("");
         category.setName(translatable);
         CategoryFormDTO categoryBlank = categoryMapper.toFormDTO(category);
-        assertThrows(ConstraintViolationException.class, () -> categoryService.save(categoryBlank));
+        Long activeMenuId = userService.getActiveMenuId();
+        assertThrows(ConstraintViolationException.class, () -> categoryService.save(categoryBlank, activeMenuId));
     }
 
     @Test
     @WithMockUser(username = "admin@example.com")
-    public void shouldNotInsertNewWithNullName() {
+    public void shouldNotInsertNewWithNullName() throws LocalizedException {
         Category category = new Category();
 
         category.setName(null);
         CategoryFormDTO categoryNull = categoryMapper.toFormDTO(category);
-        assertThrows(ConstraintViolationException.class, () -> categoryService.save(categoryNull));
+        Long activeMenuId = userService.getActiveMenuId();
+        assertThrows(ConstraintViolationException.class, () -> categoryService.save(categoryNull, activeMenuId));
     }
 
     @Test
@@ -130,7 +138,8 @@ class CategoryServiceImpTest {
         existingCategory.setName(getTranslationPl());
         CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
 
-        categoryService.update(categoryFormDTO);
+        Long activeMenuId = userService.getActiveMenuId();
+        categoryService.update(categoryFormDTO, activeMenuId);
         CategoryFormDTO updatedCategory = categoryService.findById(7L);
         assertEquals("Testowe jedzenie", updatedCategory.name().defaultTranslation());
     }
@@ -140,12 +149,14 @@ class CategoryServiceImpTest {
     @Rollback
     @WithMockUser(username = "admin@example.com")
     public void shouldDelete() throws LocalizedException, AuthenticationException {
-        categoryService.delete(7L);
+        Long activeMenuId = userService.getActiveMenuId();
+        categoryService.delete(7L, activeMenuId);
         assertThrows(LocalizedException.class, () -> categoryService.findById(7L));
     }
 
     private List<CategoryDTO> getCategories() throws LocalizedException, AuthenticationException {
-        return categoryService.findAll();
+        Long activeMenuId = userService.getActiveMenuId();
+        return categoryService.findAll(activeMenuId);
     }
 
     private Category createCategory() {

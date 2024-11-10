@@ -13,17 +13,19 @@ import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
-import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Service
 @Slf4j
@@ -32,7 +34,6 @@ public class CategoryServiceImp implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final TranslatableMapper translatableMapper;
-    private final UserService userService;
     private final ExceptionHelper exceptionHelper;
     private final SortingHelper sortingHelper;
     private final EntityManager entityManager;
@@ -42,14 +43,14 @@ public class CategoryServiceImp implements CategoryService {
     public CategoryServiceImp(CategoryRepository categoryRepository,
                               CategoryMapper categoryMapper,
                               TranslatableMapper translatableMapper,
-                              UserService userService,
                               ExceptionHelper exceptionHelper,
                               SortingHelper sortingHelper,
-                              EntityManager entityManager, MenuItemRepository menuItemRepository, VariantRepository variantRepository) {
+                              EntityManager entityManager,
+                              MenuItemRepository menuItemRepository,
+                              VariantRepository variantRepository) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
         this.translatableMapper = translatableMapper;
-        this.userService = userService;
         this.exceptionHelper = exceptionHelper;
         this.sortingHelper = sortingHelper;
         this.entityManager = entityManager;
@@ -58,47 +59,48 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    @Cacheable("allCategories")
-    public List<CategoryDTO> findAll() throws LocalizedException {
-        return getAllCategories();
+    @Cacheable(value = CATEGORIES_ALL, key = "#activeMenuId")
+    public List<CategoryDTO> findAll(Long activeMenuId) throws LocalizedException {
+        return getAllCategories(activeMenuId);
     }
 
     @Override
-    @Cacheable("allDisplayOrders")
-    public List<Integer> findAllDisplayOrders() throws LocalizedException {
-        Long activeMenuId = userService.getActiveMenuId();
+    @Cacheable(value = CATEGORIES_DISPLAY_ORDERS, key = "#activeMenuId")
+    public List<Integer> findAllDisplayOrders(Long activeMenuId) {
         return categoryRepository.findAllDisplayOrdersByMenuId(activeMenuId);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = "allCategories", allEntries = true)
-    public List<CategoryDTO> updateDisplayOrders(List<CategoryFormDTO> categoryDTOs) throws LocalizedException {
+    @CacheEvict(value = {
+            CATEGORIES_ALL,
+            CATEGORIES_DISPLAY_ORDERS},
+            allEntries = true,
+            key = "#activeMenuId")
+    public List<CategoryDTO> updateDisplayOrders(List<CategoryFormDTO> categoryDTOs, Long activeMenuId) throws LocalizedException {
         List<Category> categories = categoryDTOs.stream().map(categoryMapper::toCategory).toList();
         for (Category category : categories) {
             categoryRepository.updateDisplayOrders(category.getId(), category.getDisplayOrder());
         }
         entityManager.clear();
-        return getAllCategories();
+        return getAllCategories(activeMenuId);
     }
 
     @Override
-    @Cacheable("categoryCount")
-    public Long countAll() throws LocalizedException {
-        Long activeMenuId = userService.getActiveMenuId();
+    @Cacheable(value = CATEGORIES_COUNT, key = "#activeMenuId")
+    public Long countAll(Long activeMenuId) throws LocalizedException {
         return categoryRepository.countByMenuId(activeMenuId);
     }
 
     @Override
-    @Cacheable("availableAndVisibleCategories")
-    public List<CategoryCustomerDTO> findAllAvailableAndVisible() throws LocalizedException {
-        Long activeMenuId = userService.getActiveMenuId();
+    @Cacheable(value = CATEGORIES_AVAILABLE, key = "#activeMenuId")
+    public List<CategoryCustomerDTO> findAllAvailableAndVisible(Long activeMenuId) {
         List<Category> categories = categoryRepository.findAllAvailableByMenuId(activeMenuId);
         return filterUnavailableMenuItems(categories);
     }
 
     @Override
-    @Cacheable(value = "categoryById", key = "#id")
+    @Cacheable(value = CATEGORY_ID, key = "#id")
     public CategoryFormDTO findById(Long id) throws LocalizedException {
         Category category = getCategory(id);
         return categoryMapper.toFormDTO(category);
@@ -106,9 +108,14 @@ public class CategoryServiceImp implements CategoryService {
 
     @Transactional
     @Override
-    @CacheEvict(value = {"allCategories", "allDisplayOrders", "categoryCount", "availableAndVisibleCategories"}, allEntries = true)
-    public void save(CategoryFormDTO categoryFormDTO) throws Exception {
-        Long activeMenuId = userService.getActiveMenuId();
+    @CacheEvict(value = {
+            CATEGORIES_ALL,
+            CATEGORIES_AVAILABLE,
+            CATEGORIES_DISPLAY_ORDERS,
+            CATEGORIES_COUNT},
+            allEntries = true,
+            key = "#activeMenuId")
+    public void save(CategoryFormDTO categoryFormDTO, Long activeMenuId) throws Exception {
         Category category = categoryMapper.toCategory(categoryFormDTO);
         category.setMenuId(activeMenuId);
         Optional<Integer> maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(activeMenuId);
@@ -118,8 +125,13 @@ public class CategoryServiceImp implements CategoryService {
 
     @Transactional
     @Override
-    @CacheEvict(value = {"allCategories", "allDisplayOrders", "categoryById", "availableAndVisibleCategories"}, allEntries = true)
-    public void update(CategoryFormDTO categoryFormDTO) throws Exception {
+    @Caching(evict = {
+            @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORIES_DISPLAY_ORDERS, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORY_ID, key = "#categoryFormDTO.id()")
+    })
+    public void update(CategoryFormDTO categoryFormDTO, Long activeMenuId) throws Exception {
         Category existingCategory = getCategory(categoryFormDTO.id());
         existingCategory.setName(translatableMapper.toTranslatable(categoryFormDTO.name()));
         existingCategory.setAvailable(categoryFormDTO.available());
@@ -128,8 +140,14 @@ public class CategoryServiceImp implements CategoryService {
 
     @Transactional
     @Override
-    @CacheEvict(value = {"allCategories", "allDisplayOrders", "categoryCount", "availableAndVisibleCategories"}, allEntries = true)
-    public List<CategoryDTO> delete(Long id) throws LocalizedException {
+    @Caching(evict = {
+            @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORIES_DISPLAY_ORDERS, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORIES_COUNT, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORY_ID, key = "#id")
+    })
+    public List<CategoryDTO> delete(Long id, Long activeMenuId) throws LocalizedException {
         Category existingCategory = getCategory(id);
         if (!existingCategory.getMenuItems().isEmpty()) {
             cascadeRemoveMenuItems(existingCategory);
@@ -137,7 +155,7 @@ public class CategoryServiceImp implements CategoryService {
         categoryRepository.deleteById(id);
         List<Category> categories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(existingCategory.getMenuId());
         sortingHelper.reassignDisplayOrders(categories, categoryRepository::saveAllAndFlush);
-        return getAllCategories();
+        return getAllCategories(activeMenuId);
     }
 
     private Category getCategory(Long id) throws LocalizedException {
@@ -165,8 +183,7 @@ public class CategoryServiceImp implements CategoryService {
         menuItemRepository.deleteAll(menuItems);
     }
 
-    private List<CategoryDTO> getAllCategories() throws LocalizedException {
-        Long activeMenuId = userService.getActiveMenuId();
+    private List<CategoryDTO> getAllCategories(Long activeMenuId) {
         List<Category> categories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(activeMenuId);
         return categories.stream().sorted().map(this::mapToCategoryDTO).toList();
     }
