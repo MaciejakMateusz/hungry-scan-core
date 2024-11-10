@@ -10,11 +10,11 @@ public interface MenuItemService {
 
     MenuItemFormDTO findById(Long id) throws LocalizedException;
 
-    void save(MenuItemFormDTO menuItem) throws Exception;
+    void save(MenuItemFormDTO menuItem, Long activeMenuId) throws Exception;
 
-    void update(MenuItemFormDTO menuItem) throws Exception;
+    void update(MenuItemFormDTO menuItem, Long activeMenuId) throws Exception;
 
-    List<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItems);
+    List<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItems, Long activeMenuId);
 
     List<MenuItemSimpleDTO> filterByName(String name);
 
