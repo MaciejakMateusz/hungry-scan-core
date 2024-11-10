@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.hackybear.hungry_scan_core.utility.Constants.ROLES_EXCEPT_CUSTOMER;
+import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
 
 @RestController
 @RequestMapping("/api/auth")

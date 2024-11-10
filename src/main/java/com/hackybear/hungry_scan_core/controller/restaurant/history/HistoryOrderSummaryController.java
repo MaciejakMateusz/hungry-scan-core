@@ -3,7 +3,7 @@ package com.hackybear.hungry_scan_core.controller.restaurant.history;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.history.HistoryOrderSummary;
 import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryOrderSummaryService;
-import com.hackybear.hungry_scan_core.utility.Constants;
+import com.hackybear.hungry_scan_core.utility.Fields;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,13 +27,13 @@ public class HistoryOrderSummaryController {
         this.responseHelper = responseHelper;
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
     @GetMapping("/count")
     public ResponseEntity<Long> countAll() {
         return ResponseEntity.ok(historyOrderSummaryService.countAll());
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
     @PostMapping("/date")
     public ResponseEntity<Page<HistoryOrderSummary>> getByDateBetween(@RequestBody Map<String, Object> requestBody) {
         return responseHelper.getEntitiesByDateRange(requestBody, historyOrderSummaryService::findByDateBetween);

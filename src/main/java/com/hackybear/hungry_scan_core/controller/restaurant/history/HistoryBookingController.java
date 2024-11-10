@@ -3,7 +3,7 @@ package com.hackybear.hungry_scan_core.controller.restaurant.history;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.history.HistoryBooking;
 import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryBookingService;
-import com.hackybear.hungry_scan_core.utility.Constants;
+import com.hackybear.hungry_scan_core.utility.Fields;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/restaurant/history-bookings")
-@PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+@PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
 public class HistoryBookingController {
 
     private final HistoryBookingService historyBookingService;

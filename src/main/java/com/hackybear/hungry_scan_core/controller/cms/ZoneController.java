@@ -3,7 +3,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.Zone;
 import com.hackybear.hungry_scan_core.service.interfaces.ZoneService;
-import com.hackybear.hungry_scan_core.utility.Constants;
+import com.hackybear.hungry_scan_core.utility.Fields;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,7 @@ public class ZoneController {
     }
 
     @GetMapping
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<List<Zone>> list() {
         return ResponseEntity.ok(zoneService.findAll());
     }
