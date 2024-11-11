@@ -68,10 +68,10 @@ public class MenuItemController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> delete(@RequestBody Long id) {
+    public ResponseEntity<?> delete(@RequestBody MenuItemSimpleDTO menuItemDTO) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
-            return ResponseEntity.ok(menuItemService.delete(id, activeMenuId));
+            return ResponseEntity.ok(menuItemService.delete(menuItemDTO, activeMenuId));
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
