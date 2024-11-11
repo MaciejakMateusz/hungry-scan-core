@@ -22,4 +22,7 @@ public class Fields {
     public static final String CATEGORIES_COUNT = "categories.count";
     public static final String CATEGORY_ID = "category.id";
 
+    public static final String VARIANT_ID = "variant.id";
+    public static final String VARIANTS_ALL = "variants.all";
+
 }
