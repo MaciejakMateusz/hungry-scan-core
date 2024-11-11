@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.cache;
 
 import com.hackybear.hungry_scan_core.dto.CategoryDTO;
+import com.hackybear.hungry_scan_core.dto.CategoryFormDTO;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class RedisCacheSpeedTest {
+public class CacheSpeedTest {
 
     @Autowired
     ApiRequestUtils apiRequestUtils;
@@ -42,7 +43,7 @@ public class RedisCacheSpeedTest {
     @Test
     @WithMockUser(roles = {"WAITER"}, username = "matimemek@test.com")
     @Order(2)
-    void getAllCategoriesCacheTest() throws Exception {
+    void getAllCategoriesTest() throws Exception {
         long firstRequestBegin = System.currentTimeMillis();
         List<CategoryDTO> firstCategoriesCall =
                 apiRequestUtils.fetchAsList(
@@ -61,5 +62,27 @@ public class RedisCacheSpeedTest {
 
         assertTrue(firstRequestResult > secondRequestResult, "Cache did not improve execution time");
     }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    @Order(3)
+    void showCategoryByIdTest() throws Exception {
+        long firstRequestBegin = System.currentTimeMillis();
+        CategoryFormDTO firstCategoryCall = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 4, CategoryFormDTO.class);
+        long firstRequestEnd = System.currentTimeMillis();
+        assertEquals("Zupy", firstCategoryCall.name().defaultTranslation());
+        long firstRequestResult = firstRequestEnd - firstRequestBegin;
+
+        long secondRequestBegin = System.currentTimeMillis();
+        CategoryFormDTO secondCategoryCall = apiRequestUtils.postObjectExpect200(
+                "/api/cms/categories/show", 4, CategoryFormDTO.class);
+        long secondRequestEnd = System.currentTimeMillis();
+        assertEquals("Zupy", secondCategoryCall.name().defaultTranslation());
+        long secondRequestResult = secondRequestEnd - secondRequestBegin;
+
+        assertTrue(firstRequestResult > secondRequestResult, "Cache did not improve execution time");
+    }
+
 
 }
