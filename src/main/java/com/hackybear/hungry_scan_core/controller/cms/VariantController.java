@@ -62,9 +62,9 @@ public class VariantController {
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(@RequestBody Long id) {
+    public ResponseEntity<?> delete(@RequestBody VariantDTO variantDTO) {
         try {
-            return ResponseEntity.ok(variantService.delete(id));
+            return ResponseEntity.ok(variantService.delete(variantDTO));
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }

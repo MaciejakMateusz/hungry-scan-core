@@ -14,12 +14,18 @@ import com.hackybear.hungry_scan_core.service.interfaces.VariantService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.hackybear.hungry_scan_core.utility.Fields.VARIANTS_ALL;
+import static com.hackybear.hungry_scan_core.utility.Fields.VARIANT_ID;
 
 @Slf4j
 @Service
@@ -63,6 +69,10 @@ public class VariantServiceImp implements VariantService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = VARIANT_ID, key = "#variantDTO.id()"),
+            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItemId()")
+    })
     public void update(VariantDTO variantDTO) throws Exception {
         Variant existingVariant = getById(variantDTO.id());
         updateVariant(variantDTO, existingVariant);
@@ -71,6 +81,9 @@ public class VariantServiceImp implements VariantService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTOs.get(0).menuItemId()")
+    })
     public List<VariantDTO> updateDisplayOrders(List<VariantDTO> variantDTOs) {
         List<Variant> variants = variantDTOs.stream().map(variantMapper::toVariant).toList();
         for (Variant variant : variants) {
@@ -82,26 +95,31 @@ public class VariantServiceImp implements VariantService {
     }
 
     @Override
+    @Cacheable(value = VARIANTS_ALL, key = "#menuItemId")
     public List<VariantDTO> findAllByMenuItemId(Long menuItemId) {
-        List<Variant> variants = getVariantByMenuItemId(menuItemId);
-        return variants.stream().map(variantMapper::toDTO).toList();
+        return getAllByMenuItemId(menuItemId);
     }
 
     @Override
+    @Cacheable(value = VARIANT_ID, key = "#id")
     public VariantDTO findById(Long id) throws LocalizedException {
         Variant variant = getById(id);
         return variantMapper.toDTO(variant);
     }
 
     @Override
-    public List<VariantDTO> delete(Long id) throws LocalizedException {
-        Variant existingVariant = getById(id);
+    @Caching(evict = {
+            @CacheEvict(value = VARIANT_ID, key = "#variantDTO.id()"),
+            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItemId()")
+    })
+    public List<VariantDTO> delete(VariantDTO variantDTO) throws LocalizedException {
+        Variant existingVariant = getById(variantDTO.id());
         Long menuItemId = existingVariant.getMenuItemId();
         removeVariant(existingVariant);
         variantRepository.delete(existingVariant);
         List<Variant> variants = getVariantByMenuItemId(menuItemId);
         sortingHelper.reassignDisplayOrders(variants, variantRepository::saveAllAndFlush);
-        return findAllByMenuItemId(menuItemId);
+        return getAllByMenuItemId(menuItemId);
     }
 
     private void updateVariant(VariantDTO variantDTO, Variant existingVariant) {
@@ -163,5 +181,10 @@ public class VariantServiceImp implements VariantService {
         menuItem.removeVariant(variant);
         menuItemRepository.save(menuItem);
         variantRepository.deleteById(variant.getId());
+    }
+
+    private List<VariantDTO> getAllByMenuItemId(Long menuItemId) {
+        List<Variant> variants = getVariantByMenuItemId(menuItemId);
+        return variants.stream().map(variantMapper::toDTO).toList();
     }
 }

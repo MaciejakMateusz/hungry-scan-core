@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest
+@SpringBootTest(properties = {"spring.profiles.active=test"})
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -183,7 +183,7 @@ class VariantControllerTest {
         existingVariant.setDefaultVariant(false);
         VariantDTO variantDTO = variantMapper.toDTO(existingVariant);
 
-        apiRequestUtils.postAndExpect200("/api/cms/variants/add", variantDTO);
+        apiRequestUtils.patchAndExpect200("/api/cms/variants/update", variantDTO);
 
         List<VariantDTO> variants =
                 apiRequestUtils.postAndGetList(
@@ -284,7 +284,7 @@ class VariantControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/variants/show", 4, VariantDTO.class);
         assertEquals("Średnia", variant.name().defaultTranslation());
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/variants/delete", 4);
+        apiRequestUtils.deleteAndExpect200("/api/cms/variants/delete", variant);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -301,7 +301,7 @@ class VariantControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/variants/show", 4, VariantDTO.class);
         assertEquals("Średnia", variant.name().defaultTranslation());
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/variants/delete", 4);
+        apiRequestUtils.deleteAndExpect200("/api/cms/variants/delete", variant);
 
         List<VariantDTO> variants =
                 apiRequestUtils.postAndGetList(
@@ -320,7 +320,7 @@ class VariantControllerTest {
         assertEquals("Mała", variant.name().defaultTranslation());
 
         List<VariantDTO> variants =
-                apiRequestUtils.deleteAndGetList("/api/cms/variants/delete", 3, VariantDTO.class);
+                apiRequestUtils.deleteAndGetList("/api/cms/variants/delete", variant, VariantDTO.class);
 
         assertEquals(2, variants.size());
 
