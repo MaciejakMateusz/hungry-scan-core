@@ -75,7 +75,6 @@ public class CategoryServiceImp implements CategoryService {
     @CacheEvict(value = {
             CATEGORIES_ALL,
             CATEGORIES_DISPLAY_ORDERS},
-            allEntries = true,
             key = "#activeMenuId")
     public List<CategoryDTO> updateDisplayOrders(List<CategoryFormDTO> categoryDTOs, Long activeMenuId) throws LocalizedException {
         List<Category> categories = categoryDTOs.stream().map(categoryMapper::toCategory).toList();
@@ -113,7 +112,6 @@ public class CategoryServiceImp implements CategoryService {
             CATEGORIES_AVAILABLE,
             CATEGORIES_DISPLAY_ORDERS,
             CATEGORIES_COUNT},
-            allEntries = true,
             key = "#activeMenuId")
     public void save(CategoryFormDTO categoryFormDTO, Long activeMenuId) throws Exception {
         Category category = categoryMapper.toCategory(categoryFormDTO);

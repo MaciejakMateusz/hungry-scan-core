@@ -70,7 +70,8 @@ public class MenuItemController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> delete(@RequestBody Long id) {
         try {
-            return ResponseEntity.ok(menuItemService.delete(id));
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(menuItemService.delete(id, activeMenuId));
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }

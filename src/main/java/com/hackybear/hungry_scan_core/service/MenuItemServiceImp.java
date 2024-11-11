@@ -122,8 +122,8 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CATEGORIES_ALL, CATEGORIES_AVAILABLE, CATEGORY_ID}, allEntries = true)
-    public List<MenuItemSimpleDTO> delete(Long id) throws LocalizedException {
+    @CacheEvict(value = {CATEGORIES_ALL, CATEGORIES_AVAILABLE, CATEGORY_ID}, key = "#menuItemId")
+    public List<MenuItemSimpleDTO> delete(Long id, Long menuItemId) throws LocalizedException {
         MenuItem existingMenuItem = getMenuItem(id);
         removeVariants(existingMenuItem);
         Category category = findCategoryById(existingMenuItem.getCategoryId());

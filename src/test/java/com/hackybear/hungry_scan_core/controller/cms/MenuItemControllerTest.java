@@ -257,7 +257,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldDeleteMenuItem() throws Exception {
@@ -276,7 +276,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldUpdateDisplayOrdersAfterRemoval() throws Exception {

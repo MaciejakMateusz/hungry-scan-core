@@ -174,10 +174,12 @@ public class MenuItemServiceImpTest {
     @Test
     @Transactional
     @Rollback
+    @WithMockUser(username = "admin@example.com")
     public void shouldDelete() throws LocalizedException {
         MenuItemFormDTO menuItem = menuItemService.findById(23L);
         assertEquals("Pizza Capricciosa", menuItem.name().defaultTranslation());
-        menuItemService.delete(23L);
+        Long activeMenuId = userService.getActiveMenuId();
+        menuItemService.delete(23L, activeMenuId);
         assertThrows(LocalizedException.class, () -> menuItemService.findById(23L));
     }
 
