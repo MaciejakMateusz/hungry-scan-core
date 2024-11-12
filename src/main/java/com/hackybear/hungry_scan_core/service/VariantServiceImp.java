@@ -57,6 +57,7 @@ public class VariantServiceImp implements VariantService {
 
     @Override
     @Transactional
+    @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItemId()")
     public void save(VariantDTO variantDTO) throws Exception {
         Variant variant = variantMapper.toVariant(variantDTO);
         if (!isFirstVariant(variant.getMenuItemId())) {
@@ -82,7 +83,7 @@ public class VariantServiceImp implements VariantService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTOs.get(0).menuItemId()")
+            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTOs.get(0) != null ? #variantDTOs.get(0).menuItemId() : null")
     })
     public List<VariantDTO> updateDisplayOrders(List<VariantDTO> variantDTOs) {
         List<Variant> variants = variantDTOs.stream().map(variantMapper::toVariant).toList();
@@ -90,8 +91,8 @@ public class VariantServiceImp implements VariantService {
             variantRepository.updateDisplayOrders(variant.getId(), variant.getDisplayOrder());
         }
         entityManager.clear();
-        Long variantId = variants.get(0).getMenuItemId();
-        return getVariantByMenuItemId(variantId).stream().map(variantMapper::toDTO).toList();
+        Long menuItemId = Optional.ofNullable(variants.get(0)).map(Variant::getMenuItemId).orElse(null);
+        return getVariantByMenuItemId(menuItemId).stream().map(variantMapper::toDTO).toList();
     }
 
     @Override
