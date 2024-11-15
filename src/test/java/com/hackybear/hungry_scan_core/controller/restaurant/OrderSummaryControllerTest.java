@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@SpringBootTest
+@SpringBootTest(properties = {"spring.profiles.active=test"})
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -108,7 +108,6 @@ public class OrderSummaryControllerTest {
         assertEquals(PaymentMethod.CARD, summary.getPaymentMethod());
     }
 
-    @Transactional
     void prepareSummaries() throws Exception {
         log.info("Preparing summaries for tests...");
         Order table9Order = orderFactory.createOrder(9L, false,

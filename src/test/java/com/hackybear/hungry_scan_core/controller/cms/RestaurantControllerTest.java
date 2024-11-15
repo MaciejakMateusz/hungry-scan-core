@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.Restaurant;
-import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -36,8 +35,6 @@ public class RestaurantControllerTest {
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
-    @Autowired
-    private RestaurantRepository restaurantRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest
+@SpringBootTest(properties = {"spring.profiles.active=test"})
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -63,7 +63,7 @@ class OrderControllerTest {
 
     @Test
     @org.junit.jupiter.api.Order(2)
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     @Transactional
     void orderInitializationCheck() throws LocalizedException {
         prepareOrders();
@@ -74,7 +74,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     @Transactional
     @Rollback
     void shouldSaveDineInOrder() throws Exception {
@@ -88,7 +88,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     @Transactional
     @Rollback
     void shouldSaveMultipleOrders() throws Exception {
@@ -103,7 +103,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     @Transactional
     @Rollback
     void shouldSaveForSeparateTables() throws Exception {
@@ -119,7 +119,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     @Transactional
     void shouldNotSaveWithNullTable() throws Exception {
         prepareOrders();
@@ -129,7 +129,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     @Transactional
     void shouldNotSaveWithInactiveTable() throws Exception {
         prepareOrders();
@@ -139,7 +139,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     @Transactional
     void shouldNotSaveWithEmptyOrderedItems() throws Exception {
         prepareOrders();
@@ -150,7 +150,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER_READONLY"})
+    @WithMockUser(roles = {"CUSTOMER_READONLY"}, username = "2c73bfc-16fc@temp.it")
     @Transactional
     void shouldNotAllowUnauthorizedAccessToSaveOrder() throws Exception {
         prepareOrders();
@@ -159,7 +159,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     @Transactional
     @Rollback
     void shouldGetByTable() throws Exception {
@@ -172,14 +172,14 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     void shouldNotGetByTableWhenTableHasNoOrders() throws Exception {
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/show/table", 15);
         assertEquals("Podsumowanie z podanym ID stolika = 15 nie istnieje.", errors.get("exceptionMsg"));
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER"})
+    @WithMockUser(roles = {"CUSTOMER"}, username = "0c9e683-8543@temp.it")
     void shouldNotGetByTableWithNonExistingTable() throws Exception {
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/restaurant/orders/show/table", 400);
         assertEquals("Podsumowanie z podanym ID stolika = 400 nie istnieje.", errors.get("exceptionMsg"));
