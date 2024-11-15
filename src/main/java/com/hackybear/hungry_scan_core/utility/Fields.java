@@ -25,4 +25,7 @@ public class Fields {
     public static final String VARIANT_ID = "variant.id";
     public static final String VARIANTS_ALL = "variants.all";
 
+    public static final String RESTAURANT_ID = "restaurant.id";
+    public static final String RESTAURANT_TOKEN = "restaurant.token";
+    public static final String RESTAURANTS_ALL = "restaurant.id";
 }

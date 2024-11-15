@@ -18,6 +18,7 @@ import org.springframework.validation.FieldError;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 
 /**
@@ -85,6 +86,7 @@ public class ResponseHelper {
      * Creates ResponseEntity based on provided parameters.
      *
      * @param t        Object to accept by the consumer.
+     * @param br       BindingResult to check fields validation.
      * @param supplier Supplier to provide needed parameter.
      * @param consumer Behaviour to pass from a given service. For example bookingService::delete
      * @return ResponseEntity with appropriate response code and body containing parameters map.
@@ -100,6 +102,42 @@ public class ResponseHelper {
             R r = supplier.get();
             consumer.accept(t, r);
             return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param t        Object to accept by the consumer.
+     * @param supplier Supplier to provide needed parameter.
+     * @param consumer Behaviour to pass from a given service. For example bookingService::delete
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <T, R> ResponseEntity<?> buildResponse(T t,
+                                                  ThrowingSupplier<R> supplier,
+                                                  ThrowingBiConsumer<T, R> consumer) {
+        try {
+            R r = supplier.get();
+            consumer.accept(t, r);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param supplier Supplier to provide needed parameter.
+     * @param function Behaviour to pass from a given service. For example bookingService::findAll
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <T> ResponseEntity<?> buildResponse(ThrowingSupplier<T> supplier, Function<T, ?> function) {
+        try {
+            T t = supplier.get();
+            return ResponseEntity.ok(function.apply(t));
         } catch (Exception e) {
             return createErrorResponse(e);
         }
