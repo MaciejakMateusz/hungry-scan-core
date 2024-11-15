@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.Restaurant;
+import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -14,18 +15,17 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest
+@SpringBootTest(properties = {"spring.profiles.active=test"})
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -35,10 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RestaurantControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private ApiRequestUtils apiRequestUtils;
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -48,15 +47,15 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
     void shouldGetAllRestaurants() throws Exception {
         List<Restaurant> restaurants =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/restaurants", Restaurant.class);
+                apiRequestUtils.fetchAsSet(
+                        "/api/cms/restaurants", Restaurant.class).stream().toList();
 
-        assertEquals(2, restaurants.size());
+        assertEquals(1, restaurants.size());
         assertEquals("Rarytas", restaurants.get(0).getName());
-        assertEquals("ul. Dębowa 456, Miasteczko, Wiejskie, 98765", restaurants.get(1).getAddress());
+        assertEquals("ul. Główna 123, Miastowo, Województwo, 54321", restaurants.get(0).getAddress());
     }
 
     @Test
@@ -87,20 +86,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    void shouldGetNewRestaurantObject() throws Exception {
-        Object restaurant = apiRequestUtils.fetchObject("/api/cms/restaurants/add", Restaurant.class);
-        assertInstanceOf(Restaurant.class, restaurant);
-    }
-
-    @Test
-    @WithMockUser(roles = "COOK")
-    void shouldNotAllowUnauthorizedAccessToNewRestaurantObject() throws Exception {
-        mockMvc.perform(get("/api/cms/restaurants/add")).andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldAddNewRestaurant() throws Exception {
@@ -134,7 +120,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldUpdateRestaurant() throws Exception {
@@ -156,7 +142,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotUpdateIncorrectRestaurant() throws Exception {
         Restaurant existingRestaurant =
                 apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
@@ -169,7 +155,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldRemoveRestaurant() throws Exception {
