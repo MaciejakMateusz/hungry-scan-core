@@ -1,7 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.Restaurant;
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
@@ -47,8 +47,15 @@ public class RestaurantController {
 
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> add(@Valid @RequestBody Restaurant restaurant,
+    public ResponseEntity<?> add(@Valid @RequestBody RestaurantDTO restaurant,
                                  BindingResult br) {
+        return responseHelper.buildResponse(restaurant, br, userService::getCurrentUser, restaurantService::save);
+    }
+
+    @PatchMapping("/update")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> update(@Valid @RequestBody RestaurantDTO restaurant,
+                                    BindingResult br) {
         return responseHelper.buildResponse(restaurant, br, userService::getCurrentUser, restaurantService::save);
     }
 

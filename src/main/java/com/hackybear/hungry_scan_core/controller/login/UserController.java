@@ -3,6 +3,8 @@ package com.hackybear.hungry_scan_core.controller.login;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.JwtToken;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Role;
@@ -37,6 +39,7 @@ public class UserController {
 
     private final AuthenticationManager authenticationManager;
     private final RestaurantService restaurantService;
+    private final RestaurantMapper restaurantMapper;
     private final UserService userService;
     private final RoleService roleService;
     private final JwtService jwtService;
@@ -49,13 +52,14 @@ public class UserController {
     private boolean isProduction;
 
     public UserController(AuthenticationManager authenticationManager,
-                          RestaurantService restaurantService,
+                          RestaurantService restaurantService, RestaurantMapper restaurantMapper,
                           UserService userService,
                           RoleService roleService,
                           JwtService jwtService,
                           ResponseHelper responseHelper) {
         this.authenticationManager = authenticationManager;
         this.restaurantService = restaurantService;
+        this.restaurantMapper = restaurantMapper;
         this.userService = userService;
         this.roleService = roleService;
         this.jwtService = jwtService;
@@ -155,7 +159,8 @@ public class UserController {
                                     String username,
                                     String restaurantToken) throws LocalizedException {
         User temp = new User();
-        Restaurant restaurant = restaurantService.findByToken(restaurantToken);
+        RestaurantDTO restaurantDTO = restaurantService.findByToken(restaurantToken);
+        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         temp.setRestaurants(Set.of(restaurant));
         temp.setActiveRestaurantId(restaurant.getId());
         temp.setOrganizationId(0L);

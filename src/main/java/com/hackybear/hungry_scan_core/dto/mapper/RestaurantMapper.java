@@ -9,6 +9,6 @@ public interface RestaurantMapper {
 
     RestaurantDTO toDTO(Restaurant restaurant);
 
-    Restaurant toStatistics(RestaurantDTO restaurantDTO);
+    Restaurant toRestaurant(RestaurantDTO restaurantDTO);
 
 }
