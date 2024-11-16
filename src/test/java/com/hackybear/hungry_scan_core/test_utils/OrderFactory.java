@@ -1,5 +1,7 @@
 package com.hackybear.hungry_scan_core.test_utils;
 
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Order;
 import com.hackybear.hungry_scan_core.entity.OrderedItem;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
@@ -16,17 +18,23 @@ import java.util.List;
 
 @Component
 public class OrderFactory {
+
     private final RestaurantService restaurantService;
+    private final RestaurantMapper restaurantMapper;
     private final RestaurantTableService restaurantTableService;
 
-    public OrderFactory(RestaurantService restaurantService, RestaurantTableService restaurantTableService) {
+    public OrderFactory(RestaurantService restaurantService,
+                        RestaurantMapper restaurantMapper,
+                        RestaurantTableService restaurantTableService) {
         this.restaurantService = restaurantService;
+        this.restaurantMapper = restaurantMapper;
         this.restaurantTableService = restaurantTableService;
     }
 
     public Order createOrder(Long tableId, boolean isForTakeAway, OrderedItem... chosenItems) throws LocalizedException {
         Order order = new Order();
-        Restaurant restaurant = restaurantService.findById(1L);
+        RestaurantDTO restaurantDTO = restaurantService.findById(1L);
+        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         order.setRestaurant(restaurant);
         RestaurantTable restaurantTable = restaurantTableService.findById(tableId);
         order.setRestaurantTable(restaurantTable);

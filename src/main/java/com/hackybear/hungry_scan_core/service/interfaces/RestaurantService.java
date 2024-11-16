@@ -1,18 +1,22 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
-import com.hackybear.hungry_scan_core.entity.Restaurant;
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 
-import java.util.List;
+import java.util.Set;
 
 public interface RestaurantService {
-    List<Restaurant> findAll();
 
-    Restaurant findById(Long id) throws LocalizedException;
+    Set<RestaurantDTO> findAll(User currentUser);
 
-    void save(Restaurant restaurant);
+    RestaurantDTO findById(Long id) throws LocalizedException;
 
-    void delete(Long id) throws LocalizedException;
+    void save(RestaurantDTO restaurantDTO, User currentUser);
 
-    Restaurant findByToken(String token) throws LocalizedException;
+    void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException;
+
+    void delete(Long id, User currentUser) throws LocalizedException;
+
+    RestaurantDTO findByToken(String token) throws LocalizedException;
 }

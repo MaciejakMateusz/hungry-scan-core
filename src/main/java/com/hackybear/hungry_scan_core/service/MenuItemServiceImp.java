@@ -15,6 +15,8 @@ import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Slf4j
 @Service
@@ -65,7 +69,12 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Override
     @Transactional
-    public void save(MenuItemFormDTO menuItemFormDTO) throws Exception {
+    @Caching(evict = {
+            @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
+    })
+    public void save(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
         MenuItem menuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
         Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategoryId());
         menuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
@@ -74,7 +83,12 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Override
     @Transactional
-    public void update(MenuItemFormDTO menuItemFormDTO) throws Exception {
+    @Caching(evict = {
+            @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
+    })
+    public void update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
         Category oldCategory = findCategoryByMenuItemId(existingMenuItem.getId());
         updateMenuItem(existingMenuItem, menuItemFormDTO);
@@ -84,7 +98,12 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Override
     @Transactional
-    public List<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItemsDTOs) {
+    @Caching(evict = {
+            @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemsDTOs.get(0).categoryId()")
+    })
+    public List<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItemsDTOs, Long activeMenuId) {
         List<MenuItem> menuItems = menuItemsDTOs.stream().map(menuItemMapper::toMenuItem).toList();
         for (MenuItem menuItem : menuItems) {
             menuItemRepository.updateDisplayOrders(menuItem.getId(), menuItem.getDisplayOrder());
@@ -103,8 +122,13 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Override
     @Transactional
-    public List<MenuItemSimpleDTO> delete(Long id) throws LocalizedException {
-        MenuItem existingMenuItem = getMenuItem(id);
+    @Caching(evict = {
+            @CacheEvict(value = CATEGORIES_ALL, key = "#menuItemId"),
+            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#menuItemId"),
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemDTO.categoryId()")
+    })
+    public List<MenuItemSimpleDTO> delete(MenuItemSimpleDTO menuItemDTO, Long menuItemId) throws LocalizedException {
+        MenuItem existingMenuItem = getMenuItem(menuItemDTO.id());
         removeVariants(existingMenuItem);
         Category category = findCategoryById(existingMenuItem.getCategoryId());
         removeMenuItem(category, existingMenuItem);
@@ -131,7 +155,9 @@ public class MenuItemServiceImp implements MenuItemService {
                         "error.categoryService.categoryNotFoundByMenuItem", id));
     }
 
-    private void switchCategory(MenuItem existingMenuItem, Category oldCategory, Long newCategoryId) throws LocalizedException {
+    private void switchCategory(MenuItem existingMenuItem,
+                                Category oldCategory,
+                                Long newCategoryId) throws LocalizedException {
         if (Objects.isNull(existingMenuItem.getId())) {
             return;
         }

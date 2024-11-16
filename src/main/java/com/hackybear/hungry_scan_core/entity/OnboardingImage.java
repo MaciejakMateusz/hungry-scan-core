@@ -14,6 +14,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -24,11 +26,14 @@ import java.time.LocalDateTime;
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Table(name = "onboarding_images")
 @Entity
-public class OnboardingImage {
+public class OnboardingImage implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(name = "restaurant_id", nullable = false)
     @NotNull

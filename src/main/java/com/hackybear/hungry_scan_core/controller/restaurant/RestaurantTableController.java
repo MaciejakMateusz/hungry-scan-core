@@ -6,7 +6,7 @@ import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import com.hackybear.hungry_scan_core.enums.PaymentMethod;
 import com.hackybear.hungry_scan_core.service.interfaces.BillSplitterService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
-import com.hackybear.hungry_scan_core.utility.Constants;
+import com.hackybear.hungry_scan_core.utility.Fields;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,13 +34,13 @@ public class RestaurantTableController {
         this.responseHelper = responseHelper;
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
     @GetMapping
     public ResponseEntity<List<RestaurantTable>> getAll() {
         return ResponseEntity.ok(restaurantTableService.findAll());
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::findById);
@@ -64,32 +64,32 @@ public class RestaurantTableController {
         return responseHelper.buildResponse(id, restaurantTableService::delete);
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
     @PatchMapping("/toggle")
     public ResponseEntity<Map<String, Object>> toggleActivation(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::toggleActivation);
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PatchMapping("/request-bill")
     public ResponseEntity<Map<String, Object>> requestBill(@RequestParam("id") Long id,
                                                            @RequestParam("value") PaymentMethod paymentMethod) {
         return responseHelper.buildResponse(id, paymentMethod, restaurantTableService::requestBill);
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PatchMapping("/split-bill")
     public ResponseEntity<?> splitBill(@RequestBody @Valid BillSplitter billSplitter, BindingResult br) {
         return responseHelper.buildResponse(billSplitter, br, billSplitterService::splitBill);
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PatchMapping("/call-waiter")
     public ResponseEntity<Map<String, Object>> callWaiter(@RequestBody Long id) {
         return responseHelper.buildResponse(id, restaurantTableService::callWaiter);
     }
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
     @PatchMapping("/resolve-call")
     public ResponseEntity<Map<String, Object>> resolveWaiterCall(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, restaurantTableService::resolveWaiterCall);

@@ -17,5 +17,5 @@ public interface VariantService {
 
     List<VariantDTO> updateDisplayOrders(List<VariantDTO> variantDTOs);
 
-    List<VariantDTO> delete(Long id) throws LocalizedException;
+    List<VariantDTO> delete(VariantDTO variantDTO) throws LocalizedException;
 }

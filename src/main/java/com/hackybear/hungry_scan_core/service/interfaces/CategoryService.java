@@ -10,21 +10,21 @@ import java.util.List;
 
 public interface CategoryService {
 
-    List<CategoryDTO> findAll() throws LocalizedException, AuthenticationException;
+    List<CategoryDTO> findAll(Long activeMenuId) throws LocalizedException, AuthenticationException;
 
-    List<Integer> findAllDisplayOrders() throws LocalizedException;
+    List<Integer> findAllDisplayOrders(Long activeMenuId) throws LocalizedException;
 
-    List<CategoryDTO> updateDisplayOrders(List<CategoryFormDTO> categories) throws LocalizedException;
+    List<CategoryDTO> updateDisplayOrders(List<CategoryFormDTO> categories, Long activeMenuId) throws LocalizedException;
 
-    Long countAll() throws LocalizedException;
+    Long countAll(Long activeMenuId) throws LocalizedException;
 
-    List<CategoryCustomerDTO> findAllAvailableAndVisible() throws LocalizedException;
+    List<CategoryCustomerDTO> findAllAvailableAndVisible(Long activeMenuId) throws LocalizedException;
 
     CategoryFormDTO findById(Long id) throws LocalizedException;
 
-    void save(CategoryFormDTO category) throws Exception;
+    void save(CategoryFormDTO category, Long activeMenuId) throws Exception;
 
-    void update(CategoryFormDTO categoryFormDTO) throws Exception;
+    void update(CategoryFormDTO categoryFormDTO, Long activeMenuId) throws Exception;
 
-    List<CategoryDTO> delete(Long id) throws LocalizedException, AuthenticationException;
+    List<CategoryDTO> delete(Long id, Long activeMenuId) throws LocalizedException, AuthenticationException;
 }

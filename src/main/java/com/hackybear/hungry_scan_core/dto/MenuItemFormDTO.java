@@ -5,6 +5,8 @@ import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLengthDTO;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -34,5 +36,9 @@ public record MenuItemFormDTO(Long id,
                               boolean available,
                               boolean visible,
                               boolean isNew,
-                              boolean isBestseller) {
+                              boolean isBestseller) implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
 }

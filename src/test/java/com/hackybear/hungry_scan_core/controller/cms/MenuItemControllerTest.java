@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest
+@SpringBootTest(properties = {"spring.profiles.active=test"})
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -55,6 +55,7 @@ class MenuItemControllerTest {
 
     @Autowired
     private MenuItemMapper menuItemMapper;
+
     @Autowired
     private MenuItemRepository menuItemRepository;
 
@@ -87,7 +88,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldAddNewMenuItem() throws Exception {
@@ -132,7 +133,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldUpdateExistingMenuItem() throws Exception {
@@ -257,7 +258,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldDeleteMenuItem() throws Exception {
@@ -266,7 +267,7 @@ class MenuItemControllerTest {
 
         List<MenuItemSimpleDTO> menuItems =
                 apiRequestUtils.deleteAndGetList(
-                        "/api/cms/items/delete", 25, MenuItemSimpleDTO.class);
+                        "/api/cms/items/delete", getMenuItemSimpleDTO(25L), MenuItemSimpleDTO.class);
         assertEquals(4, menuItems.size());
 
         Map<String, Object> responseBody =
@@ -276,7 +277,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldUpdateDisplayOrdersAfterRemoval() throws Exception {
@@ -285,7 +286,7 @@ class MenuItemControllerTest {
 
         List<MenuItemSimpleDTO> menuItems =
                 apiRequestUtils.deleteAndGetList(
-                        "/api/cms/items/delete", 2, MenuItemSimpleDTO.class);
+                        "/api/cms/items/delete", getMenuItemSimpleDTO(2L), MenuItemSimpleDTO.class);
 
         assertEquals(4, menuItems.size());
         MenuItemSimpleDTO secondMenuItem = menuItems.get(1);
@@ -302,8 +303,8 @@ class MenuItemControllerTest {
         MenuItemFormDTO menuItem = fetchMenuItemFormDTO(1L);
         assertEquals("Krewetki marynowane w cytrynie", menuItem.name().defaultTranslation());
 
-        List<MenuItemSimpleDTO> menuItems =
-                apiRequestUtils.deleteAndGetList("/api/cms/items/delete", 1, MenuItemSimpleDTO.class);
+        List<MenuItemSimpleDTO> menuItems = apiRequestUtils.deleteAndGetList("/api/cms/items/delete",
+                getMenuItemSimpleDTO(1L), MenuItemSimpleDTO.class);
 
         assertEquals(4, menuItems.size());
 
@@ -324,8 +325,11 @@ class MenuItemControllerTest {
 
     @Test
     @WithMockUser(roles = "COOK")
+    @Transactional
+    @Rollback
     void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {
-        apiRequestUtils.deleteAndExpect("/api/cms/items/delete", 15, status().isForbidden());
+        apiRequestUtils.deleteAndExpect("/api/cms/items/delete",
+                getMenuItemSimpleDTO(15L), status().isForbidden());
     }
 
     private MenuItemFormDTO fetchMenuItemFormDTO(Long id) throws Exception {
@@ -345,6 +349,11 @@ class MenuItemControllerTest {
         Translatable translatable = new Translatable();
         translatable.setDefaultTranslation(translation);
         return translatable;
+    }
+
+    private MenuItemSimpleDTO getMenuItemSimpleDTO(Long id) {
+        MenuItem menuItem = menuItemRepository.findById(id).orElseThrow();
+        return menuItemMapper.toDTO(menuItem);
     }
 
 }

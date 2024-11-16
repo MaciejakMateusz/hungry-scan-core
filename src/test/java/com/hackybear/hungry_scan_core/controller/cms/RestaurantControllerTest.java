@@ -1,5 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -9,23 +11,25 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static com.hackybear.hungry_scan_core.utility.Fields.RESTAURANTS_ALL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest
+@SpringBootTest(properties = {"spring.profiles.active=test"})
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -35,10 +39,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RestaurantControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private ApiRequestUtils apiRequestUtils;
 
     @Autowired
-    private ApiRequestUtils apiRequestUtils;
+    private RestaurantMapper restaurantMapper;
+
+    @Autowired
+    private CacheManager cacheManager;
+
+    @BeforeEach
+    void clearCache() {
+        Objects.requireNonNull(cacheManager.getCache(RESTAURANTS_ALL)).clear();
+    }
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -48,15 +60,17 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    @Transactional
+    @Rollback
     void shouldGetAllRestaurants() throws Exception {
-        List<Restaurant> restaurants =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/restaurants", Restaurant.class);
+        List<RestaurantDTO> restaurants =
+                apiRequestUtils.fetchAsSet(
+                        "/api/cms/restaurants", RestaurantDTO.class).stream().toList();
 
-        assertEquals(2, restaurants.size());
-        assertEquals("Rarytas", restaurants.get(0).getName());
-        assertEquals("ul. Dębowa 456, Miasteczko, Wiejskie, 98765", restaurants.get(1).getAddress());
+        assertEquals(1, restaurants.size());
+        assertEquals("Rarytas", restaurants.get(0).name());
+        assertEquals("ul. Główna 123, Miastowo, Województwo, 54321", restaurants.get(0).address());
     }
 
     @Test
@@ -67,9 +81,9 @@ public class RestaurantControllerTest {
     @Test
     @WithMockUser(roles = {"COOK"})
     void shouldShowRestaurantById() throws Exception {
-        Restaurant restaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 1, Restaurant.class);
-        assertEquals("Rarytas", restaurant.getName());
+        RestaurantDTO restaurant =
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 1, RestaurantDTO.class);
+        assertEquals("Rarytas", restaurant.name());
     }
 
     @Test
@@ -87,38 +101,25 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
-    void shouldGetNewRestaurantObject() throws Exception {
-        Object restaurant = apiRequestUtils.fetchObject("/api/cms/restaurants/add", Restaurant.class);
-        assertInstanceOf(Restaurant.class, restaurant);
-    }
-
-    @Test
-    @WithMockUser(roles = "COOK")
-    void shouldNotAllowUnauthorizedAccessToNewRestaurantObject() throws Exception {
-        mockMvc.perform(get("/api/cms/restaurants/add")).andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldAddNewRestaurant() throws Exception {
-        Restaurant restaurant = createRestaurant();
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
 
-        apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", restaurant);
+        apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", restaurantDTO);
 
-        Restaurant persistedRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, Restaurant.class);
-        assertEquals("Real Greek Carbonara", persistedRestaurant.getName());
-        assertEquals("Korfantego 123", persistedRestaurant.getAddress());
+        RestaurantDTO persistedRestaurant =
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, RestaurantDTO.class);
+        assertEquals("Real Greek Carbonara", persistedRestaurant.name());
+        assertEquals("Korfantego 123", persistedRestaurant.address());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
-        Restaurant restaurant = createRestaurant();
-        apiRequestUtils.postAndExpect("/api/cms/restaurants/add", restaurant, status().isForbidden());
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
+        apiRequestUtils.postAndExpect("/api/cms/restaurants/add", restaurantDTO, status().isForbidden());
     }
 
     @Test
@@ -126,55 +127,61 @@ public class RestaurantControllerTest {
     void shouldNotAddWithIncorrectName() throws Exception {
         Restaurant restaurant = createRestaurant();
         restaurant.setName("");
+        RestaurantDTO restaurantDTO = restaurantMapper.toDTO(restaurant);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/add", restaurant);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/add", restaurantDTO);
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldUpdateRestaurant() throws Exception {
-        Restaurant existingRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
-        existingRestaurant.setName("Salty Foots");
+        RestaurantDTO existingRestaurantDTO =
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, RestaurantDTO.class);
+        Restaurant restaurant = restaurantMapper.toRestaurant(existingRestaurantDTO);
+        restaurant.setName("Salty Foots");
+        existingRestaurantDTO = restaurantMapper.toDTO(restaurant);
 
-        apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", existingRestaurant);
+        apiRequestUtils.patchAndExpect200("/api/cms/restaurants/update", existingRestaurantDTO);
 
-        Restaurant updatedRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
-        assertEquals("Salty Foots", updatedRestaurant.getName());
+        RestaurantDTO updatedRestaurant =
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, RestaurantDTO.class);
+        assertEquals("Salty Foots", updatedRestaurant.name());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowUnauthorizedAccessToUpdateRestaurant() throws Exception {
-        apiRequestUtils.postAndExpect("/api/cms/restaurants/add", new Restaurant(), status().isForbidden());
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
+        apiRequestUtils.patchAndExpectForbidden("/api/cms/restaurants/update", restaurantDTO);
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldNotUpdateIncorrectRestaurant() throws Exception {
-        Restaurant existingRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
-        existingRestaurant.setName("");
+        RestaurantDTO existingRestaurantDTO =
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, RestaurantDTO.class);
+        Restaurant restaurant = restaurantMapper.toRestaurant(existingRestaurantDTO);
+        restaurant.setName("");
+        existingRestaurantDTO = restaurantMapper.toDTO(restaurant);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/add", existingRestaurant);
+        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/cms/restaurants/update", existingRestaurantDTO);
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldRemoveRestaurant() throws Exception {
-        Restaurant restaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, Restaurant.class);
+        RestaurantDTO restaurant =
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, RestaurantDTO.class);
         assertNotNull(restaurant);
 
         apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete", 2);
@@ -198,4 +205,12 @@ public class RestaurantControllerTest {
         restaurant.setAddress("Korfantego 123");
         return restaurant;
     }
+
+    private RestaurantDTO createRestaurantDTO() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName("Real Greek Carbonara");
+        restaurant.setAddress("Korfantego 123");
+        return restaurantMapper.toDTO(restaurant);
+    }
+
 }

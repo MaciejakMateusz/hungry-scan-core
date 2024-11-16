@@ -12,6 +12,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,15 +22,18 @@ import java.util.Set;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"menus", "allergens", "ingredients", "labels", "onboardingImages"})
+@EqualsAndHashCode
 @Table(name = "restaurants")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class Restaurant {
+public class Restaurant implements Comparable<Restaurant>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(updatable = false, unique = true, length = 36)
     @Length(max = 36)
@@ -87,4 +92,8 @@ public class Restaurant {
         return name + ", " + address;
     }
 
+    @Override
+    public int compareTo(Restaurant other) {
+        return this.name.compareTo(other.name);
+    }
 }

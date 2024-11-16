@@ -1,6 +1,8 @@
 package com.hackybear.hungry_scan_core.dto;
 
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,7 +14,10 @@ public record CategoryDTO(long id,
                           LocalDateTime created,
                           LocalDateTime updated,
                           String modifiedBy,
-                          String createdBy) implements Comparable<CategoryDTO> {
+                          String createdBy) implements Comparable<CategoryDTO>, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public CategoryDTO(long id,
                        TranslatableDTO name,

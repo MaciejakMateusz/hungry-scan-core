@@ -3,7 +3,7 @@ package com.hackybear.hungry_scan_core.controller.restaurant;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.OrderSummary;
 import com.hackybear.hungry_scan_core.service.interfaces.OrderSummaryService;
-import com.hackybear.hungry_scan_core.utility.Constants;
+import com.hackybear.hungry_scan_core.utility.Fields;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class OrderSummaryController {
     }
 
 
-    @PreAuthorize(Constants.ROLES_EXCEPT_READONLY_CUSTOMER)
+    @PreAuthorize(Fields.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/pay")
     public ResponseEntity<?> requestPayment(@RequestBody OrderSummary orderSummary) {
         return responseHelper.getObjectAndBuildResponse(orderSummary, orderSummaryService::pay);

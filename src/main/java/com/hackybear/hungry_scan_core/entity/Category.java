@@ -13,6 +13,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +26,14 @@ import java.util.Objects;
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Table(name = "categories")
 @Entity
-public class Category implements Comparable<Category> {
+public class Category implements Comparable<Category>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @NotNull
     private Long menuId;

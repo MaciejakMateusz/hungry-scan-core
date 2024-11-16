@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,11 +21,13 @@ import java.util.Map;
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
+    private final UserService userService;
     private final ResponseHelper responseHelper;
 
-    public MenuItemController(MenuItemService menuItemService,
+    public MenuItemController(MenuItemService menuItemService, UserService userService,
                               ResponseHelper responseHelper) {
         this.menuItemService = menuItemService;
+        this.userService = userService;
         this.responseHelper = responseHelper;
     }
 
@@ -36,23 +39,22 @@ public class MenuItemController {
 
     @PostMapping(value = "/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> add(@RequestBody @Valid MenuItemFormDTO menuItem,
-                                 BindingResult br) {
-        return responseHelper.buildResponse(menuItem, br, menuItemService::save);
+    public ResponseEntity<?> add(@RequestBody @Valid MenuItemFormDTO menuItem, BindingResult br) {
+        return responseHelper.buildResponse(menuItem, br, userService::getActiveMenuId, menuItemService::save);
     }
 
     @PatchMapping(value = "/update")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> update(@RequestBody @Valid MenuItemFormDTO menuItem,
-                                    BindingResult br) {
-        return responseHelper.buildResponse(menuItem, br, menuItemService::update);
+    public ResponseEntity<?> update(@RequestBody @Valid MenuItemFormDTO menuItem, BindingResult br) {
+        return responseHelper.buildResponse(menuItem, br, userService::getActiveMenuId, menuItemService::update);
     }
 
     @PatchMapping(value = "/display-orders")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> updateDisplayOrders(@RequestBody List<MenuItemSimpleDTO> menuItems) {
         try {
-            return ResponseEntity.ok(menuItemService.updateDisplayOrders(menuItems));
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(menuItemService.updateDisplayOrders(menuItems, activeMenuId));
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
@@ -66,9 +68,10 @@ public class MenuItemController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> delete(@RequestBody Long id) {
+    public ResponseEntity<?> delete(@RequestBody MenuItemSimpleDTO menuItemDTO) {
         try {
-            return ResponseEntity.ok(menuItemService.delete(id));
+            Long activeMenuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(menuItemService.delete(menuItemDTO, activeMenuId));
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }

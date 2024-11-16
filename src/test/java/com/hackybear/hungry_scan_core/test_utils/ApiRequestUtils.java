@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -65,6 +66,28 @@ public class ApiRequestUtils {
 
         return objectMapper.readValue(jsonResponse,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, itemType));
+    }
+
+    /**
+     * Executes GET HTTP request and fetches a List collection of objects from the specified endpoint.
+     *
+     * @param endpointUrl The URL of the endpoint to fetch from.
+     * @param itemType    The type of objects to fetch.
+     * @return A Set of objects fetched from the endpoint.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> Set<T> fetchAsSet(String endpointUrl, Class<T> itemType) throws Exception {
+        MvcResult result = mockMvc.perform(get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        return objectMapper.readValue(jsonResponse,
+                objectMapper.getTypeFactory().constructCollectionType(Set.class, itemType));
     }
 
     /**

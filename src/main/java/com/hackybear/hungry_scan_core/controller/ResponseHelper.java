@@ -6,24 +6,24 @@ import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingBiConsumer;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingConsumer;
 import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingFunction;
 import com.hackybear.hungry_scan_core.utility.interfaces.TriFunction;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 
 /**
  * This component provides support methods for building response entities.
  */
-@Slf4j
 @Component
 public class ResponseHelper {
 
@@ -80,6 +80,67 @@ public class ResponseHelper {
             return createErrorResponse(e);
         }
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param t        Object to accept by the consumer.
+     * @param br       BindingResult to check fields validation.
+     * @param supplier Supplier to provide needed parameter.
+     * @param consumer Behaviour to pass from a given service. For example bookingService::delete
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <T, R> ResponseEntity<?> buildResponse(T t,
+                                                  BindingResult br,
+                                                  ThrowingSupplier<R> supplier,
+                                                  ThrowingBiConsumer<T, R> consumer) {
+        try {
+            if (br.hasErrors()) {
+                return createErrorResponse(br);
+            }
+            R r = supplier.get();
+            consumer.accept(t, r);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param t        Object to accept by the consumer.
+     * @param supplier Supplier to provide needed parameter.
+     * @param consumer Behaviour to pass from a given service. For example bookingService::delete
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <T, R> ResponseEntity<?> buildResponse(T t,
+                                                  ThrowingSupplier<R> supplier,
+                                                  ThrowingBiConsumer<T, R> consumer) {
+        try {
+            R r = supplier.get();
+            consumer.accept(t, r);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param supplier Supplier to provide needed parameter.
+     * @param function Behaviour to pass from a given service. For example bookingService::findAll
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <T> ResponseEntity<?> buildResponse(ThrowingSupplier<T> supplier, Function<T, ?> function) {
+        try {
+            T t = supplier.get();
+            return ResponseEntity.ok(function.apply(t));
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
     }
 
     /**
@@ -170,7 +231,6 @@ public class ResponseHelper {
     }
 
     public ResponseEntity<Map<String, Object>> createErrorResponse(Exception e) {
-        log.error(e.getMessage());
         Map<String, Object> params = Map.of("exceptionMsg", e.getMessage());
         return ResponseEntity.badRequest().body(params);
     }

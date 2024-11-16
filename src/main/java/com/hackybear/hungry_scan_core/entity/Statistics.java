@@ -8,9 +8,9 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Getter
@@ -19,11 +19,14 @@ import java.util.List;
 @EqualsAndHashCode
 @Table(name = "statistics")
 @Entity
-public class Statistics {
+public class Statistics implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(name = "restaurant_id", nullable = false)
     @NotNull
@@ -34,8 +37,5 @@ public class Statistics {
     private LocalTime avgStayTime;
 
     private LocalTime avgWaitTime;
-
-    @Transient
-    private List<MenuItem> menuItems = new ArrayList<>();
 
 }

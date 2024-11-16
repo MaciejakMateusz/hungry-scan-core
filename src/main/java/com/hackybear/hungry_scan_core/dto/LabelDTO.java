@@ -4,6 +4,9 @@ import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlankDTO;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLengthDTO;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 public record LabelDTO(
         long id,
 
@@ -12,6 +15,9 @@ public record LabelDTO(
         @NotNull
         TranslatableDTO name,
 
-        String iconName
-) {
+        String iconName) implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
 }

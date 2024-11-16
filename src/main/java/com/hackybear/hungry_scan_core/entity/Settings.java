@@ -6,17 +6,22 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalTime;
 
 @Getter
 @Setter
 @Table(name = "settings")
 @Entity
-public class Settings {
+public class Settings implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(name = "restaurant_id", nullable = false)
     private Long restaurantId;
