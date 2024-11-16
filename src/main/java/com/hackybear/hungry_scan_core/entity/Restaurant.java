@@ -22,7 +22,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"menus", "allergens", "ingredients", "labels", "onboardingImages"})
+@EqualsAndHashCode
 @Table(name = "restaurants")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
@@ -93,7 +93,7 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
     }
 
     @Override
-    public int compareTo(Restaurant o) {
-        return this.name.compareTo(o.name);
+    public int compareTo(Restaurant other) {
+        return this.name.compareTo(other.name);
     }
 }

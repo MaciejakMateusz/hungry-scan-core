@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Getter
@@ -39,8 +37,5 @@ public class Statistics implements Serializable {
     private LocalTime avgStayTime;
 
     private LocalTime avgWaitTime;
-
-    @Transient
-    private List<MenuItem> menuItems = new ArrayList<>();
 
 }
