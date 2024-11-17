@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.cache;
+package com.hackybear.hungry_scan_core.integration.cache;
 
 import com.hackybear.hungry_scan_core.dto.CategoryDTO;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;

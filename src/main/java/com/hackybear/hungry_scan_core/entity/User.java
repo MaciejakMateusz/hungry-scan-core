@@ -66,13 +66,15 @@ public class User implements Serializable {
     @Transient
     private String repeatedPassword;
 
-    @Column(length = 36)
+    @Column(length = 36, unique = true)
     private String emailToken;
+
+    private LocalDateTime emailTokenExpiry;
 
     @OneToOne(cascade = CascadeType.ALL)
     private JwtToken jwtToken;
 
-    private int enabled = 1;
+    private int enabled = 0;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),

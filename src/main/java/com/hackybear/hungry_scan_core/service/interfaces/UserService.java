@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
+import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
@@ -15,6 +16,12 @@ public interface UserService {
     void save(RegistrationDTO registrationDTO);
 
     void saveTempUser(User tempUser);
+
+    void activateAccount(String emailToken) throws LocalizedException;
+
+    void sendPasswordRecovery(String email) throws LocalizedException;
+
+    void recoverPassword(RecoveryDTO recovery) throws LocalizedException;
 
     void addToOrganization(RegistrationDTO registrationDTO) throws LocalizedException;
 
@@ -41,4 +48,6 @@ public interface UserService {
     Long getActiveRestaurantId() throws LocalizedException;
 
     Long getActiveMenuId() throws LocalizedException;
+
+    int isEnabled(String username) throws LocalizedException;
 }
