@@ -1,7 +1,9 @@
 package com.hackybear.hungry_scan_core.controller.login;
 
+import com.hackybear.hungry_scan_core.annotation.WithRateLimitProtection;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
+import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
@@ -25,7 +27,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,7 +68,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> add(@Valid @RequestBody RegistrationDTO registrationDTO, BindingResult br) {
+    @WithRateLimitProtection
+    public ResponseEntity<?> register(@Valid @RequestBody RegistrationDTO registrationDTO, BindingResult br) {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
@@ -78,18 +80,41 @@ public class UserController {
         return responseHelper.getResponseEntity(registrationDTO, userService::save);
     }
 
+    @GetMapping("/register/{emailToken}")
+    @WithRateLimitProtection
+    public ResponseEntity<?> activate(@PathVariable String emailToken) {
+        return responseHelper.getResponseEntity(emailToken, userService::activateAccount);
+    }
+
+    @PostMapping("/recover")
+    @WithRateLimitProtection
+    public ResponseEntity<?> passwordRecovery(@RequestBody String email) {
+        return responseHelper.getResponseEntity(email, userService::sendPasswordRecovery);
+    }
+
+    @PostMapping("/confirm-recovery")
+    @WithRateLimitProtection
+    public ResponseEntity<?> passwordRecovery(@RequestBody @Valid RecoveryDTO recovery, BindingResult br) {
+        return responseHelper.buildResponse(recovery, br, userService::recoverPassword);
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response) {
+    @WithRateLimitProtection
+    public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response) throws LocalizedException {
+        if (userService.isEnabled(authRequestDTO.getUsername()) == 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "notActivated"));
+        }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
-        if (authentication.isAuthenticated()) {
-            String jwt = jwtService.generateToken(authRequestDTO.getUsername());
-            String jwtCookie = prepareJwtCookie(jwt, 28800, "Strict");
-            response.addHeader("Set-Cookie", jwtCookie);
-            return ResponseEntity.ok().body(Map.of("message", "Login successful"));
-        } else {
-            throw new UsernameNotFoundException("Not authorized - invalid user request");
+        if (!authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "unauthorized"));
         }
+        String jwt = jwtService.generateToken(authRequestDTO.getUsername());
+        String jwtCookie = prepareJwtCookie(jwt, 28800, "Strict");
+        response.addHeader("Set-Cookie", jwtCookie);
+        return ResponseEntity.ok().body(Map.of("message", "authorized"));
     }
 
     @GetMapping("/scan/{restaurantToken}")

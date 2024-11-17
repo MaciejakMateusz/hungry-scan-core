@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.service;
 
+import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.Role;
@@ -8,16 +9,15 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.RoleRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
+import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -27,12 +27,14 @@ public class UserServiceImp implements UserService {
     private final UserMapper userMapper;
     private final ExceptionHelper exceptionHelper;
     private final RoleRepository roleRepository;
+    private final EmailService emailService;
 
-    public UserServiceImp(UserRepository userRepository, UserMapper userMapper, ExceptionHelper exceptionHelper, RoleRepository roleRepository) {
+    public UserServiceImp(UserRepository userRepository, UserMapper userMapper, ExceptionHelper exceptionHelper, RoleRepository roleRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.exceptionHelper = exceptionHelper;
         this.roleRepository = roleRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -50,15 +52,60 @@ public class UserServiceImp implements UserService {
     public void save(RegistrationDTO registrationDTO) {
         User user = userMapper.toUser(registrationDTO);
         setUserRoleAsAdmin(user);
-        Long maxOrganizationId = userRepository.findMaxOrganizationId();
-        user.setOrganizationId(Objects.nonNull(maxOrganizationId) ? maxOrganizationId + 1 : 1);
+        Optional<Long> maxOrganizationId = userRepository.findMaxOrganizationId();
+        user.setOrganizationId(maxOrganizationId.orElse(0L) + 1);
         user.setEmail(user.getUsername());
+        String emailToken = UUID.randomUUID().toString();
+        user.setEmailToken(emailToken);
         userRepository.save(user);
+        emailService.activateAccount(user.getEmail(), emailToken);
     }
 
     @Override
     public void saveTempUser(User tempUser) {
+        tempUser.setEnabled(1);
         userRepository.save(tempUser);
+    }
+
+    @Override
+    public void activateAccount(String emailToken) throws LocalizedException {
+        User user = userRepository.findByEmailToken(emailToken)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.userService.userNotFound"));
+        user.setEnabled(1);
+        user.setEmailToken(null);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void sendPasswordRecovery(String email) {
+        Optional<User> optionalUser = userRepository.findByUsername(email);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            String emailToken = UUID.randomUUID().toString();
+            user.setEmailToken(emailToken);
+            userRepository.save(user);
+            emailService.passwordRecovery(email, emailToken);
+        }
+    }
+
+    @Override
+    public void recoverPassword(RecoveryDTO recoveryDTO) throws LocalizedException {
+        if (!recoveryDTO.password().equals(recoveryDTO.repeatedPassword())) {
+            throw new LocalizedException("Passwords not match");
+        }
+        Optional<User> optionalUser = userRepository.findByEmailToken(recoveryDTO.emailToken());
+        if (optionalUser.isEmpty()) {
+            return;
+        }
+        User user = optionalUser.get();
+        if (user.getEmailTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new LocalizedException("Email token expired");
+        }
+        user.setPassword(recoveryDTO.password());
+        user.setEmailToken(null);
+        user.setEmailTokenExpiry(null);
+        userRepository.save(user);
     }
 
     @Override
@@ -67,6 +114,7 @@ public class UserServiceImp implements UserService {
         User user = userMapper.toUser(registrationDTO);
         user.setOrganizationId(currentUser.getOrganizationId());
         user.setEmail(user.getUsername());
+        user.setEnabled(1);
         userRepository.save(user);
     }
 
@@ -142,6 +190,11 @@ public class UserServiceImp implements UserService {
     @Override
     public Long getActiveMenuId() {
         return userRepository.getActiveMenuIdByUsername(getAuthentication().getName());
+    }
+
+    @Override
+    public int isEnabled(String username) {
+        return userRepository.isUserEnabledByUsername(username).orElse(0);
     }
 
     private Authentication getAuthentication() {

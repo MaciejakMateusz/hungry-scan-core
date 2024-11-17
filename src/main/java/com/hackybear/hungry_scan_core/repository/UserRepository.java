@@ -35,7 +35,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void deleteByUsername(String username);
 
     @Query("SELECT MAX(u.organizationId) FROM User u")
-    Long findMaxOrganizationId();
+    Optional<Long> findMaxOrganizationId();
 
     List<User> findAllByActiveRestaurantId(Long activeRestaurantId);
+
+    @Query("SELECT u.enabled FROM User u WHERE u.username = :username")
+    Optional<Integer> isUserEnabledByUsername(@Param("username") String username);
+
+    Optional<User> findByEmailToken(String emailToken);
 }

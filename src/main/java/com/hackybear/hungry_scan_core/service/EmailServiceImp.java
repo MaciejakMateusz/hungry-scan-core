@@ -1,9 +1,6 @@
 package com.hackybear.hungry_scan_core.service;
 
-import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
-import com.hackybear.hungry_scan_core.entity.User;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,15 +9,12 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 @Getter
 @Setter
 public class EmailServiceImp implements EmailService {
 
     private final JavaMailSender emailSender;
-    private final UserServiceImp userServiceImp;
     private final UserMapper userMapper;
 
     @Value("${mail.no-reply}")
@@ -32,11 +26,12 @@ public class EmailServiceImp implements EmailService {
     @Value("${APP_URL}")
     private String applicationUrl;
 
+    @Value("${CMS_APP_URL}")
+    private String cmsUrl;
+
     public EmailServiceImp(JavaMailSender emailSender,
-                           UserServiceImp userServiceImp,
                            UserMapper userMapper) {
         this.emailSender = emailSender;
-        this.userServiceImp = userServiceImp;
         this.userMapper = userMapper;
     }
 
@@ -51,36 +46,26 @@ public class EmailServiceImp implements EmailService {
     }
 
     @Override
-    public void passwordRecovery(String to) throws LocalizedException {
+    public void passwordRecovery(String to, String emailToken) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(noReplyMail);
         message.setTo(to);
         message.setSubject("HungryScan - Jednorazowy link do zmiany hasła");
 
-        User user = userServiceImp.findByUsername(to);
-        user.setEmailToken(UUID.randomUUID().toString());
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
-        userServiceImp.update(registrationDTO);
-
-        String link = applicationUrl + "/login/" + user.getEmailToken();
+        String link = cmsUrl + "/recover/" + emailToken;
         message.setText("Zmień hasło: " + link);
 
         emailSender.send(message);
     }
 
     @Override
-    public void activateAccount(String to) throws LocalizedException {
+    public void activateAccount(String to, String emailToken) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(noReplyMail);
         message.setTo(to);
         message.setSubject("HungryScan - Link aktywacyjny konta");
 
-        User user = userServiceImp.findByUsername(to);
-        user.setEmailToken(UUID.randomUUID().toString());
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
-        userServiceImp.update(registrationDTO);
-
-        String link = applicationUrl + "/register/" + user.getEmailToken();
+        String link = applicationUrl + "/api/user/register/" + emailToken;
         message.setText("Aktywuj konto: " + link);
 
         emailSender.send(message);
