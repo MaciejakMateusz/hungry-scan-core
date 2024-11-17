@@ -830,8 +830,8 @@ INSERT INTO users (organization_id, created, email, enabled, password, updated, 
                    name,
                    phone_number,
                    surname, active_menu_id, active_restaurant_id)
-VALUES (1, '2024-01-24 19:06:36.680304', 'netka@test.com', 1,
-        '$2a$10$ViUyMtRUmZgeZWRBME67g.Wp3K9p8UyJPfQd2GB9uXbQnBiDe4FJ.', null, 'netka@test.com', null, null, 'Neta',
+VALUES (1, '2024-01-24 19:06:36.680304', 'netka@test.com', 0,
+        '$2a$12$SnVI60OEgQMpEA./cc4Sl.G9whg6O2szOnM4BG3ZOYuNpRE3RenpG', null, 'netka@test.com', null, null, 'Neta',
         null,
         'Menagera', 1, 1);
 INSERT INTO users (organization_id, created, email, email_token, enabled, name, password, phone_number, surname,

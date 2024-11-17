@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
+import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import com.hackybear.hungry_scan_core.test_utils.ApiJwtRequestUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.Cookie;
@@ -16,6 +17,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
@@ -28,6 +30,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @SpringBootTest(properties = {"spring.profiles.active=test"})
@@ -51,6 +54,9 @@ class UserControllerTest {
     @Autowired
     private EntityManager entityManager;
 
+    @MockBean
+    private EmailService emailService;
+
     @Order(1)
     @Sql("/data-h2.sql")
     @Test
@@ -68,6 +74,7 @@ class UserControllerTest {
         assertNotNull(persistedUser);
         assertEquals("Juan", persistedUser.getName());
         assertEquals(3, persistedUser.getOrganizationId());
+        assertNotNull(persistedUser.getEmailToken());
     }
 
     @Test
@@ -89,13 +96,24 @@ class UserControllerTest {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("matimemek@test.com", "Lubieplacki123!");
         Map<?, ?> response =
                 apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
-        assertEquals("Login successful", response.get("message"));
+        assertEquals("authorized", response.get("message"));
     }
 
     @Test
     void shouldLoginAndReturnUnauthorized() throws Exception {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("iDoNotExist", "DoesNotMatter123!");
         apiRequestUtils.postAndExpectForbidden("/api/user/login", authRequestDTO);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void shouldNotLoginNotActive() throws Exception {
+        AuthRequestDTO authRequestDTO = new AuthRequestDTO("netka@test.com", "password");
+        Map<?, ?> response =
+                apiRequestUtils.postAndReturnResponseBody("/api/user/login", authRequestDTO, status().isForbidden());
+        assertEquals(response.size(), 1);
+        assertEquals(response.get("message"), "notActivated");
     }
 
     @Test

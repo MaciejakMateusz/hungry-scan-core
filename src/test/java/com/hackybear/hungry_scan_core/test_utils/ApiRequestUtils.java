@@ -405,7 +405,6 @@ public class ApiRequestUtils {
             jsonRequest = (String) object;
         }
 
-
         ResultActions resultActions = mockMvc.perform(post(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
