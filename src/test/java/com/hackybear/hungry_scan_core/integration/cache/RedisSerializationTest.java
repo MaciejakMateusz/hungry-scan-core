@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.cache;
+package com.hackybear.hungry_scan_core.integration.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
