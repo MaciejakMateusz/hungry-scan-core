@@ -14,6 +14,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -84,6 +85,7 @@ public class UserServiceImp implements UserService {
             User user = optionalUser.get();
             String emailToken = UUID.randomUUID().toString();
             user.setEmailToken(emailToken);
+            user.setEmailTokenExpiry(LocalDateTime.now().plusMinutes(15));
             userRepository.save(user);
             emailService.passwordRecovery(email, emailToken);
         }
@@ -102,7 +104,7 @@ public class UserServiceImp implements UserService {
         if (user.getEmailTokenExpiry().isBefore(LocalDateTime.now())) {
             throw new LocalizedException("Email token expired");
         }
-        user.setPassword(recoveryDTO.password());
+        user.setPassword(BCrypt.hashpw(recoveryDTO.password(), BCrypt.gensalt()));
         user.setEmailToken(null);
         user.setEmailTokenExpiry(null);
         userRepository.save(user);

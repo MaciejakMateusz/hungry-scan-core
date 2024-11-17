@@ -113,9 +113,4 @@ public class User implements Serializable {
         this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());
     }
 
-    @PreUpdate
-    private void preUpdate() {
-        this.emailTokenExpiry = LocalDateTime.now().plusMinutes(15);
-    }
-
 }
