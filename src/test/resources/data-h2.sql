@@ -2,6 +2,20 @@ INSERT INTO restaurants (address, name, token)
 VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '3d90381d-80d2-48f8-80b3-d237d5f0a8ed');
 INSERT INTO restaurants (address, name, token)
 VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', null);
+INSERT INTO restaurants (address, name, token)
+VALUES ('Test address, 111', 'Test 1', null);
+INSERT INTO restaurants (address, name, token)
+VALUES ('Test address, 222', 'Test 2', null);
+INSERT INTO restaurants (address, name, token)
+VALUES ('Test address, 333', 'Test 3', null);
+INSERT INTO restaurants (address, name, token)
+VALUES ('Test address, 444', 'Test 4', null);
+INSERT INTO restaurants (address, name, token)
+VALUES ('Test address, 555', 'Test 5', null);
+INSERT INTO restaurants (address, name, token)
+VALUES ('Test address, 666', 'Test 6', null);
+INSERT INTO restaurants (address, name, token)
+VALUES ('Test address, 777', 'Test 7', null);
 
 INSERT INTO menus (is_all_day, name, restaurant_id)
 VALUES (true, 'Całodniowe', 1);
@@ -901,11 +915,17 @@ VALUES (2, 1);
 INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (3, 1);
 INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (3, 4);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (3, 5);
+INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (4, 1);
 INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (5, 1);
 INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (6, 2);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (6, 3);
 INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (7, 2);
 INSERT INTO users_restaurants (user_id, restaurant_id)
