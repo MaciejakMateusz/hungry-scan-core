@@ -9,12 +9,18 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import static com.hackybear.hungry_scan_core.utility.Fields.MENUS_ALL;
+import static com.hackybear.hungry_scan_core.utility.Fields.MENU_ID;
 
 @Service
 @Slf4j
@@ -34,6 +40,7 @@ public class MenuServiceImp implements MenuService {
     }
 
     @Override
+    @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
     public Set<MenuSimpleDTO> findAll(Long activeRestaurantId) throws LocalizedException {
         Set<Menu> menus = menuRepository.findAllByRestaurantId(activeRestaurantId);
         return menus.stream()
@@ -42,6 +49,7 @@ public class MenuServiceImp implements MenuService {
     }
 
     @Override
+    @Cacheable(value = MENU_ID, key = "#id")
     public MenuSimpleDTO findById(Long id) throws LocalizedException {
         Menu menu = getById(id);
         return menuMapper.toDTO(menu);
@@ -49,6 +57,7 @@ public class MenuServiceImp implements MenuService {
 
     @Transactional
     @Override
+    @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId")
     public void save(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = menuMapper.toMenu(menuDTO);
         menu.setRestaurantId(activeRestaurantId);
@@ -57,6 +66,10 @@ public class MenuServiceImp implements MenuService {
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
+            @CacheEvict(value = MENU_ID, key = "#menuDTO.id()")
+    })
     public void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = getById(menuDTO.id());
         menu.setName(menuDTO.name());
@@ -67,6 +80,10 @@ public class MenuServiceImp implements MenuService {
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
+            @CacheEvict(value = MENU_ID, key = "#id")
+    })
     public void delete(Long id, Long activeRestaurantId) throws LocalizedException {
         Menu existingMenu = getById(id);
         if (!existingMenu.getCategories().isEmpty()) {

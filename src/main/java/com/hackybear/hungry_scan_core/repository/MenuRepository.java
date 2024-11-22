@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
-    Set<Menu> findAllByRestaurantId(Long restaurantId);
 
-    Long countAllByRestaurantId(Long restaurantId);
+    Set<Menu> findAllByRestaurantId(Long restaurantId);
 }
