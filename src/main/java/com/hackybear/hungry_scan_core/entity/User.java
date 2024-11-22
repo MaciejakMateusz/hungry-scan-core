@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Slf4j
 @Getter
@@ -84,7 +85,7 @@ public class User implements Serializable {
     @ManyToMany
     @JoinTable(name = "users_restaurants", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "restaurant_id"))
-    private Set<Restaurant> restaurants = new HashSet<>();
+    private Set<Restaurant> restaurants = new TreeSet<>();
 
     @Column(name = "active_restaurant_id")
     private Long activeRestaurantId;

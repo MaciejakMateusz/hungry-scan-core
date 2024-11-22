@@ -92,9 +92,10 @@ public class RestaurantDataSeparationTest {
                         "/api/cms/restaurants", RestaurantDTO.class).stream().toList();
 
         assertEquals(3, restaurants.size());
-        assertEquals("Test 2", restaurants.getFirst().name());
-        assertEquals("Test 3", restaurants.get(1).name());
-        assertEquals("Rarytas", restaurants.get(2).name());
+        assertEquals("Rarytas", restaurants.getFirst().name());
+        assertEquals("Test 2", restaurants.get(1).name());
+        assertEquals("Test 3", restaurants.get(2).name());
+
     }
 
 }

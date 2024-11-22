@@ -94,6 +94,6 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
 
     @Override
     public int compareTo(Restaurant other) {
-        return this.name.compareTo(other.name);
+        return this.getName().compareTo(other.getName());
     }
 }

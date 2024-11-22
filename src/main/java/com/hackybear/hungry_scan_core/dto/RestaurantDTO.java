@@ -15,9 +15,13 @@ public record RestaurantDTO(
         @NotBlank
         String name,
 
-        String address) implements Serializable {
+        String address) implements Serializable, Comparable<RestaurantDTO> {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public int compareTo(RestaurantDTO other) {
+        return this.name.compareTo(other.name);
+    }
 }

@@ -69,8 +69,8 @@ public class RestaurantControllerTest {
                         "/api/cms/restaurants", RestaurantDTO.class).stream().toList();
 
         assertEquals(1, restaurants.size());
-        assertEquals("Rarytas", restaurants.get(0).name());
-        assertEquals("ul. Główna 123, Miastowo, Województwo, 54321", restaurants.get(0).address());
+        assertEquals("Rarytas", restaurants.getFirst().name());
+        assertEquals("ul. Główna 123, Miastowo, Województwo, 54321", restaurants.getFirst().address());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class RestaurantControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", restaurantDTO);
 
         RestaurantDTO persistedRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 3, RestaurantDTO.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 10, RestaurantDTO.class);
         assertEquals("Real Greek Carbonara", persistedRestaurant.name());
         assertEquals("Korfantego 123", persistedRestaurant.address());
     }
