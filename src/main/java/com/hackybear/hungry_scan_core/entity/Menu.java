@@ -24,7 +24,7 @@ import java.util.List;
 @Table(name = "menus")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class Menu implements Serializable {
+public class Menu implements Serializable, Comparable<Menu> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +47,8 @@ public class Menu implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Schedule schedule;
 
-    private boolean isAllDay;
+    @Column(name = "is_all_day")
+    private boolean allDay;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
@@ -61,4 +62,8 @@ public class Menu implements Serializable {
     @CreatedBy
     private String createdBy;
 
+    @Override
+    public int compareTo(Menu other) {
+        return this.getName().compareTo(other.getName());
+    }
 }

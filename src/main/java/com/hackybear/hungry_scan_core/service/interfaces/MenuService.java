@@ -1,20 +1,20 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
-import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 
 import javax.naming.AuthenticationException;
-import java.util.List;
+import java.util.Set;
 
 public interface MenuService {
 
-    List<Menu> findAll() throws LocalizedException, AuthenticationException;
+    Set<MenuSimpleDTO> findAll(Long activeRestaurantId) throws LocalizedException, AuthenticationException;
 
-    Long countAll() throws LocalizedException;
+    MenuSimpleDTO findById(Long id) throws LocalizedException;
 
-    Menu findById(Long id) throws LocalizedException;
+    void save(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception;
 
-    void save(Menu menu) throws Exception;
+    void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception;
 
-    void delete(Long id) throws LocalizedException, AuthenticationException;
+    void delete(Long id, Long activeRestaurantId) throws LocalizedException, AuthenticationException;
 }
