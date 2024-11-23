@@ -1,13 +1,17 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.ScheduleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.ScheduleMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
+import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,9 +19,8 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.time.DayOfWeek;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.MENUS_ALL;
@@ -31,13 +34,15 @@ public class MenuServiceImp implements MenuService {
     private final MenuRepository menuRepository;
     private final MenuMapper menuMapper;
     private final ScheduleMapper scheduleMapper;
+    private final SettingsRepository settingsRepository;
 
     public MenuServiceImp(ExceptionHelper exceptionHelper,
-                          MenuRepository menuRepository, MenuMapper menuMapper, ScheduleMapper scheduleMapper) {
+                          MenuRepository menuRepository, MenuMapper menuMapper, ScheduleMapper scheduleMapper, SettingsRepository settingsRepository) {
         this.exceptionHelper = exceptionHelper;
         this.menuRepository = menuRepository;
         this.menuMapper = menuMapper;
         this.scheduleMapper = scheduleMapper;
+        this.settingsRepository = settingsRepository;
     }
 
     @Override
@@ -75,9 +80,10 @@ public class MenuServiceImp implements MenuService {
     public void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = getById(menuDTO.id());
         validateOperation(menu.getRestaurantId(), activeRestaurantId);
+        validateSchedule(menuDTO, activeRestaurantId);
         menu.setName(menuDTO.name());
-        menu.setSchedule(scheduleMapper.toSchedule(menuDTO.schedule()));
         menu.setAllDay(menuDTO.allDay());
+        menu.setSchedule(scheduleMapper.toSchedule(menuDTO.schedule()));
         menuRepository.saveAndFlush(menu);
     }
 
@@ -109,6 +115,25 @@ public class MenuServiceImp implements MenuService {
         }
     }
 
-    //todo Scheduler validator
+    private void validateSchedule(MenuSimpleDTO menuDTO, Long restaurantId) throws LocalizedException {
+        if (menuDTO.allDay()) {
+            return;
+        }
+        ScheduleDTO scheduleDTO = menuDTO.schedule();
+        validateWithinOpeningHours(scheduleDTO, restaurantId);
+    }
 
+    private void validateWithinOpeningHours(ScheduleDTO scheduleDTO, Long activeRestaurantId) throws LocalizedException {
+        if (Objects.isNull(scheduleDTO)) {
+            return;
+        }
+        Map<DayOfWeek, TimeRange> plan = scheduleDTO.plan();
+        List<TimeRange> timeRanges = plan.values().stream().toList();
+        Settings settings = settingsRepository.findByRestaurantId(activeRestaurantId);
+        TimeRange openingRange = new TimeRange(settings.getOpeningTime(), settings.getClosingTime());
+        boolean isWithinOpeningHours = timeRanges.stream().allMatch(openingRange::includes);
+        if (!isWithinOpeningHours) {
+            exceptionHelper.throwLocalizedMessage("error.menuService.scheduleNotWithinOpeningHours");
+        }
+    }
 }

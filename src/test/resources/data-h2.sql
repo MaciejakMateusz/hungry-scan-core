@@ -811,9 +811,12 @@ VALUES (54, '2024-01-27', '19:00:00', 2, 'Earth', '16:00:00');
 INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id)
 VALUES (54, 5);
 
-INSERT INTO settings (id, booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
+INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
                       employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
-VALUES (1, 3, '07:00:00', '23:00:00', 1, 120, 3, 20, true, true, 1);
+VALUES (3, '07:00:00', '23:00:00', 1, 120, 3, 20, true, true, 1);
+INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
+                      employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
+VALUES (3, '12:00:00', '02:00:00', 1, 312, 3, 20, false, false, 2);
 
 INSERT INTO jwt_tokens (token, created)
 VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZjNhYmY4LTliNmEiLCJpYXQiOjE3MTM4MTAzNTUsImV4cCI6MTcxMzg4MjM1NX0.EhIv7CDkpXcfXFHeihyju6bdUS2Te41a-m3GaxRWKHM',

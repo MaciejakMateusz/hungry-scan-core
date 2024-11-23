@@ -22,11 +22,16 @@ public class TimeRange {
         this.endTime = endTime;
     }
 
+    public boolean includes(TimeRange other) {
+        return !this.startTime.isAfter(other.getStartTime()) &&
+                !this.endTime.isBefore(other.getEndTime());
+    }
+
     @Override
     public String toString() {
-        return "TimeRange{" +
-                "startTime=" + startTime +
-                ", endTime=" + endTime +
+        return "TimeRange {" +
+                "startTime = " + startTime +
+                "; endTime = " + endTime +
                 '}';
     }
 }

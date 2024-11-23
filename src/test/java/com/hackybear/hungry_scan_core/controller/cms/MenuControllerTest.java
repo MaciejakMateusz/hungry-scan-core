@@ -3,8 +3,10 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.Schedule;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -20,6 +22,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -162,15 +167,71 @@ class MenuControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateSchedule_edgeRestaurantOpeningHours() throws Exception {
+        shouldUpdateSchedule(LocalTime.of(7, 0), LocalTime.of(23, 0));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateSchedule_fullyWithinRestaurantOpeningHours() throws Exception {
+        shouldUpdateSchedule(LocalTime.of(9, 0), LocalTime.of(21, 0));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateSchedule_leftEdgeTime() throws Exception {
+        shouldUpdateSchedule(LocalTime.of(7, 0), LocalTime.of(20, 0));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateSchedule_rightEdgeTime() throws Exception {
+        shouldUpdateSchedule(LocalTime.of(9, 0), LocalTime.of(23, 0));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotUpdateSchedule_fullyOutsideRestaurantOpeningTime() throws Exception {
+        shouldNotUpdateSchedule(LocalTime.of(5, 0), LocalTime.of(6, 30));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotUpdateSchedule_leftOutsideRestaurantOpeningTime() throws Exception {
+        shouldNotUpdateSchedule(LocalTime.of(5, 0), LocalTime.of(22, 30));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotUpdateSchedule_rightOutsideRestaurantOpeningTime() throws Exception {
+        shouldNotUpdateSchedule(LocalTime.of(10, 30), LocalTime.of(23, 30));
+    }
+
+    @Test
     @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
     void shouldNotAllowAccessToUpdate() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/update", new Menu());
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     void shouldNotUpdateIncorrect() throws Exception {
-        Menu existingMenu = getMenu(1L);
+        Menu existingMenu = getMenu(2L);
         existingMenu.setName("");
         MenuSimpleDTO menuDTO = menuMapper.toDTO(existingMenu);
 
@@ -202,8 +263,81 @@ class MenuControllerTest {
         apiRequestUtils.deleteAndExpect("/api/cms/menus/delete", 5, status().isForbidden());
     }
 
+    private void shouldUpdateSchedule(LocalTime startTime, LocalTime endTime) throws Exception {
+        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
+                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
+        assertEquals("Całodniowe", existingMenu.name());
+        Menu menu = menuMapper.toMenu(existingMenu);
+        Schedule schedule = createSchedule(
+                menu,
+                startTime, endTime,
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY,
+                DayOfWeek.SATURDAY,
+                DayOfWeek.SUNDAY
+        );
+        menu.setSchedule(schedule);
+        menu.setAllDay(false);
+        existingMenu = menuMapper.toDTO(menu);
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/update", existingMenu);
+
+        Menu updatedMenu = getMenu(1L);
+        assertEquals("Całodniowe", updatedMenu.getName());
+        assertFalse(updatedMenu.isAllDay());
+        assertNotNull(updatedMenu.getUpdated());
+        assertEquals("admin@example.com", updatedMenu.getModifiedBy());
+
+        schedule = updatedMenu.getSchedule();
+        assertNotNull(schedule);
+        assertEquals(7, schedule.getPlan().size());
+        assertTrue(schedule.getPlan().containsKey(DayOfWeek.SATURDAY));
+        assertEquals(startTime, schedule.getPlan().get(DayOfWeek.SATURDAY).getStartTime());
+        assertEquals(endTime, schedule.getPlan().get(DayOfWeek.SATURDAY).getEndTime());
+    }
+
+
+    private void shouldNotUpdateSchedule(LocalTime startTime, LocalTime endTime) throws Exception {
+        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
+                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
+        Menu menu = menuMapper.toMenu(existingMenu);
+        Schedule schedule = createSchedule(
+                menu,
+                startTime, endTime,
+                DayOfWeek.MONDAY
+        );
+        menu.setSchedule(schedule);
+        menu.setAllDay(false);
+        existingMenu = menuMapper.toDTO(menu);
+
+        Map<?, ?> response =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/cms/menus/update", existingMenu, status().isBadRequest());
+        assertEquals(1, response.size());
+        assertEquals("Harmonogram nie mieści się w godzinach otwarcia restauracji.", response.get("exceptionMsg"));
+    }
+
     private MenuSimpleDTO createMenuDTO(String name) {
         return new MenuSimpleDTO(null, name, null, true);
+    }
+
+    private Schedule createSchedule(Menu menu, LocalTime startTime, LocalTime endTime, DayOfWeek... dayOfWeek) {
+        Map<DayOfWeek, TimeRange> plan = getPlan(startTime, endTime, dayOfWeek);
+        Schedule schedule = new Schedule();
+        schedule.setMenu(menu);
+        schedule.setPlan(plan);
+        return schedule;
+    }
+
+    private Map<DayOfWeek, TimeRange> getPlan(LocalTime startTime, LocalTime endTime, DayOfWeek... dayOfWeek) {
+        Map<DayOfWeek, TimeRange> plan = new HashMap<>();
+        TimeRange timeRange = new TimeRange(startTime, endTime);
+        List<DayOfWeek> daysOfWeek = List.of(dayOfWeek);
+        daysOfWeek.forEach(day -> plan.put(day, timeRange));
+        return plan;
     }
 
     private Menu getMenu(Long id) {
@@ -211,4 +345,5 @@ class MenuControllerTest {
         entityManager.detach(menu);
         return menu;
     }
+
 }
