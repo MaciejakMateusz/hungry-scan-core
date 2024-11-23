@@ -97,7 +97,7 @@ public class RestaurantControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/restaurants/show", 55, status().isBadRequest());
-        assertEquals("Restauracja z podanym ID = 55 nie istnieje.", responseBody.get("exceptionMsg"));
+        assertEquals("Restauracja z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -189,7 +189,7 @@ public class RestaurantControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/restaurants/show", 2, status().isBadRequest());
-        assertEquals("Restauracja z podanym ID = 2 nie istnieje.", responseBody.get("exceptionMsg"));
+        assertEquals("Restauracja z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test

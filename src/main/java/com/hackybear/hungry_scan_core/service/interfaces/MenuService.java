@@ -10,7 +10,7 @@ public interface MenuService {
 
     Set<MenuSimpleDTO> findAll(Long activeRestaurantId) throws LocalizedException, AuthenticationException;
 
-    MenuSimpleDTO findById(Long id) throws LocalizedException;
+    MenuSimpleDTO findById(Long id, Long activeRestaurantId) throws LocalizedException;
 
     void save(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception;
 

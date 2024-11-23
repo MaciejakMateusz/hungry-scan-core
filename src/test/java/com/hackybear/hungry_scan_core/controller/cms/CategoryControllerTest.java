@@ -191,7 +191,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
+    void shouldNotAllowUnauthorizedAccessToShow() throws Exception {
         apiRequestUtils.postAndExpectForbidden("/api/cms/categories/show", 4);
     }
 

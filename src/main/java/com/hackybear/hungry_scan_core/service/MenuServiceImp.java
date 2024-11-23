@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -50,8 +51,9 @@ public class MenuServiceImp implements MenuService {
 
     @Override
     @Cacheable(value = MENU_ID, key = "#id")
-    public MenuSimpleDTO findById(Long id) throws LocalizedException {
+    public MenuSimpleDTO findById(Long id, Long activeRestaurantId) throws LocalizedException {
         Menu menu = getById(id);
+        validateOperation(menu.getRestaurantId(), activeRestaurantId);
         return menuMapper.toDTO(menu);
     }
 
@@ -72,10 +74,11 @@ public class MenuServiceImp implements MenuService {
     })
     public void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = getById(menuDTO.id());
+        validateOperation(menu.getRestaurantId(), activeRestaurantId);
         menu.setName(menuDTO.name());
         menu.setSchedule(scheduleMapper.toSchedule(menuDTO.schedule()));
         menu.setAllDay(menuDTO.allDay());
-        menuRepository.save(menu);
+        menuRepository.saveAndFlush(menu);
     }
 
     @Transactional
@@ -86,6 +89,7 @@ public class MenuServiceImp implements MenuService {
     })
     public void delete(Long id, Long activeRestaurantId) throws LocalizedException {
         Menu existingMenu = getById(id);
+        validateOperation(existingMenu.getRestaurantId(), activeRestaurantId);
         if (!existingMenu.getCategories().isEmpty()) {
             exceptionHelper.throwLocalizedMessage("error.userService.menuNotEmpty");
             return;
@@ -96,7 +100,13 @@ public class MenuServiceImp implements MenuService {
     private Menu getById(Long id) throws LocalizedException {
         return menuRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.menuService.menuNotFound", id));
+                        "error.menuService.menuNotFound"));
+    }
+
+    private void validateOperation(Long restaurantId, Long activeRestaurantId) throws LocalizedException {
+        if (!Objects.equals(restaurantId, activeRestaurantId)) {
+            exceptionHelper.throwLocalizedMessage("error.general.unauthorizedOperation");
+        }
     }
 
     //todo Scheduler validator
