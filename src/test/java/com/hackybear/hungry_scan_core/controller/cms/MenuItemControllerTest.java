@@ -167,7 +167,7 @@ class MenuItemControllerTest {
         assertEquals("Pizza", oldCategory.name().defaultTranslation());
         assertEquals(5, oldCategory.menuItems().size());
 
-        CategoryDTO newCategory = categories.get(0);
+        CategoryDTO newCategory = categories.getFirst();
         assertEquals("Przystawki", newCategory.name().defaultTranslation());
         assertEquals(5, newCategory.menuItems().size());
 
@@ -187,9 +187,9 @@ class MenuItemControllerTest {
         List<CategoryDTO> updatedCategories =
                 apiRequestUtils.fetchAsList(
                         "/api/cms/categories", CategoryDTO.class);
-        List<MenuItemSimpleDTO> updatedNewItems = updatedCategories.get(0).menuItems();
+        List<MenuItemSimpleDTO> updatedNewItems = updatedCategories.getFirst().menuItems();
         assertEquals(6, updatedNewItems.size());
-        assertEquals(1, updatedNewItems.get(0).displayOrder());
+        assertEquals(1, updatedNewItems.getFirst().displayOrder());
         assertEquals(2, updatedNewItems.get(1).displayOrder());
         assertEquals(3, updatedNewItems.get(2).displayOrder());
         assertEquals(4, updatedNewItems.get(3).displayOrder());
@@ -203,7 +203,7 @@ class MenuItemControllerTest {
 
         List<MenuItemSimpleDTO> updatedOldItems = updatedCategories.get(4).menuItems();
         assertEquals(4, updatedOldItems.size());
-        assertEquals(1, updatedNewItems.get(0).displayOrder());
+        assertEquals(1, updatedNewItems.getFirst().displayOrder());
         assertEquals(2, updatedNewItems.get(1).displayOrder());
         assertEquals(3, updatedNewItems.get(2).displayOrder());
         assertEquals(4, updatedNewItems.get(3).displayOrder());
@@ -221,8 +221,8 @@ class MenuItemControllerTest {
         Category category = categoryRepository.findById(1L).orElseThrow();
         List<MenuItem> menuItems = category.getMenuItems();
 
-        assertEquals(1, menuItems.get(0).getDisplayOrder());
-        assertEquals("Krewetki marynowane w cytrynie", menuItems.get(0).getName().getDefaultTranslation());
+        assertEquals(1, menuItems.getFirst().getDisplayOrder());
+        assertEquals("Krewetki marynowane w cytrynie", menuItems.getFirst().getName().getDefaultTranslation());
 
         assertEquals(2, menuItems.get(1).getDisplayOrder());
 
@@ -233,7 +233,7 @@ class MenuItemControllerTest {
         assertEquals(5, menuItems.get(4).getDisplayOrder());
         assertEquals("Nachos z sosem serowym", menuItems.get(4).getName().getDefaultTranslation());
 
-        menuItems.get(0).setDisplayOrder(5);
+        menuItems.getFirst().setDisplayOrder(5);
         menuItems.get(4).setDisplayOrder(1);
 
         menuItems.get(3).setDisplayOrder(3);
@@ -244,8 +244,8 @@ class MenuItemControllerTest {
                 apiRequestUtils.patchAndGetList(
                         "/api/cms/items/display-orders", menuItemDTOs, MenuItemSimpleDTO.class);
 
-        assertEquals("Nachos z sosem serowym", updatedMenuItemDTOs.get(0).name().defaultTranslation());
-        assertEquals(1, updatedMenuItemDTOs.get(0).displayOrder());
+        assertEquals("Nachos z sosem serowym", updatedMenuItemDTOs.getFirst().name().defaultTranslation());
+        assertEquals(1, updatedMenuItemDTOs.getFirst().displayOrder());
 
         assertEquals("Krewetki marynowane w cytrynie", updatedMenuItemDTOs.get(4).name().defaultTranslation());
         assertEquals(5, updatedMenuItemDTOs.get(4).displayOrder());
@@ -310,8 +310,8 @@ class MenuItemControllerTest {
 
         assertEquals(
                 "Carpaccio z polędwicy wołowej",
-                menuItems.get(0).name().defaultTranslation());
-        assertEquals(1, menuItems.get(0).displayOrder());
+                menuItems.getFirst().name().defaultTranslation());
+        assertEquals(1, menuItems.getFirst().displayOrder());
 
         assertEquals(2, menuItems.get(1).displayOrder());
 

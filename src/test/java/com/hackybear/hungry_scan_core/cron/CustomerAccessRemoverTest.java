@@ -60,11 +60,11 @@ class CustomerAccessRemoverTest {
 
         List<User> clearedUsers = userService.findAllCustomers();
         assertEquals(1, clearedUsers.size());
-        assertEquals("0c9e683-8576@temp.it", clearedUsers.get(0).getUsername());
+        assertEquals("0c9e683-8576@temp.it", clearedUsers.getFirst().getUsername());
 
         List<JwtToken> clearedTokens = jwtTokenRepository.findAll();
         assertEquals(1, clearedTokens.size());
         assertEquals("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwYzllNjgzLTg1NzYiLCJpYXQiOjE3MTM4ODA5MjMsImV4cCI6MTcxMzk1MjkyM30.M28dOa0W5FApG8p2sgfUhLHylHO4hM5bAgOOgF2k5oU",
-                clearedTokens.get(0).getToken());
+                clearedTokens.getFirst().getToken());
     }
 }

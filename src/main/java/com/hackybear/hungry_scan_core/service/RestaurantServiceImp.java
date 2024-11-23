@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
@@ -35,9 +36,11 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @Override
     @Cacheable(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
-    public Set<RestaurantDTO> findAll(User currentUser) {
+    public TreeSet<RestaurantDTO> findAll(User currentUser) {
         Set<Restaurant> restaurants = currentUser.getRestaurants();
-        return restaurants.stream().map(restaurantMapper::toDTO).collect(Collectors.toSet());
+        return restaurants.stream()
+                .map(restaurantMapper::toDTO)
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Override

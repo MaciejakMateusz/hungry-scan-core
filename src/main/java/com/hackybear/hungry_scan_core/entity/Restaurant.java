@@ -15,10 +15,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Getter
 @Setter
@@ -48,7 +47,7 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")
-    private List<Menu> menus = new ArrayList<>();
+    private Set<Menu> menus = new TreeSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")
@@ -94,6 +93,6 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
 
     @Override
     public int compareTo(Restaurant other) {
-        return this.name.compareTo(other.name);
+        return this.getName().compareTo(other.getName());
     }
 }

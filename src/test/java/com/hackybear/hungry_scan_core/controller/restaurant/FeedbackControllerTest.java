@@ -62,7 +62,7 @@ public class FeedbackControllerTest {
                 apiRequestUtils.fetchAsPage("/api/restaurant/feedback", pageableParams, Feedback.class);
         List<Feedback> reviews = allReviews.getContent();
         assertEquals(3, reviews.size());
-        assertEquals("Schabowy was fire", reviews.get(0).getComment());
+        assertEquals("Schabowy was fire", reviews.getFirst().getComment());
         assertEquals("Pretty nice experience", reviews.get(1).getComment());
         assertEquals("Not hehe", reviews.get(2).getComment());
     }
@@ -81,7 +81,7 @@ public class FeedbackControllerTest {
                 apiRequestUtils.fetchAsPage("/api/restaurant/feedback", pageableParams, Feedback.class);
         List<Feedback> reviews = allReviews.getContent();
         assertEquals(4, reviews.size());
-        assertEquals("Schabowy was fire", reviews.get(0).getComment());
+        assertEquals("Schabowy was fire", reviews.getFirst().getComment());
         Feedback newFeedback = reviews.get(3);
         assertNull(newFeedback.getComment());
         assertEquals(2, newFeedback.getFood());

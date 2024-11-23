@@ -61,7 +61,7 @@ class IngredientControllerTest {
 
         List<IngredientDTO> ingredientList = ingredients.getContent();
         assertEquals(27, ingredientList.size());
-        assertEquals("Bazylia", ingredientList.get(0).name().defaultTranslation());
+        assertEquals("Bazylia", ingredientList.getFirst().name().defaultTranslation());
     }
 
     @Test

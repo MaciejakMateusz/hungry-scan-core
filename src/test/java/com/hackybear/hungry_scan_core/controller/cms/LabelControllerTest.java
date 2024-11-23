@@ -48,7 +48,7 @@ class LabelControllerTest {
                         "/api/cms/labels", LabelDTO.class);
 
         assertEquals(6, labels.size());
-        assertEquals("Bez glutenu", labels.get(0).name().defaultTranslation());
+        assertEquals("Bez glutenu", labels.getFirst().name().defaultTranslation());
     }
 
     @Test

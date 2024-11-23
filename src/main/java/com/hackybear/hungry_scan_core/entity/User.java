@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Slf4j
 @Getter
@@ -29,7 +30,7 @@ import java.util.Set;
 @EntityListeners({GeneralListener.class, AuditingEntityListener.class})
 @Table(name = "users")
 @Entity
-public class User implements Serializable {
+public class User implements Serializable, Comparable<User> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +49,7 @@ public class User implements Serializable {
     private String username;
 
     @NotBlank
-    private String name;
+    private String forename;
 
     @NotBlank
     private String surname;
@@ -84,7 +85,7 @@ public class User implements Serializable {
     @ManyToMany
     @JoinTable(name = "users_restaurants", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "restaurant_id"))
-    private Set<Restaurant> restaurants = new HashSet<>();
+    private Set<Restaurant> restaurants = new TreeSet<>();
 
     @Column(name = "active_restaurant_id")
     private Long activeRestaurantId;
@@ -111,6 +112,11 @@ public class User implements Serializable {
     @PrePersist
     private void prePersist() {
         this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());
+    }
+
+    @Override
+    public int compareTo(User other) {
+        return this.getSurname().compareTo(other.getSurname());
     }
 
 }

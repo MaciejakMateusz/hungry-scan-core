@@ -80,7 +80,7 @@ class BookingArchiverTest {
                         PageRequest.of(0, 20),
                         LocalDate.of(2024, 2, 23),
                         LocalDate.of(2024, 2, 28));
-        assertEquals("Pierwszy", archiveBookings.getContent().get(0).getSurname());
+        assertEquals("Pierwszy", archiveBookings.getContent().getFirst().getSurname());
         assertEquals("Drugi", archiveBookings.getContent().get(1).getSurname());
     }
 }

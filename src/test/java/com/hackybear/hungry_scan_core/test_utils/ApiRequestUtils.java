@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -87,7 +88,7 @@ public class ApiRequestUtils {
         String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
 
         return objectMapper.readValue(jsonResponse,
-                objectMapper.getTypeFactory().constructCollectionType(Set.class, itemType));
+                objectMapper.getTypeFactory().constructCollectionType(TreeSet.class, itemType));
     }
 
     /**
@@ -615,6 +616,7 @@ public class ApiRequestUtils {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new PageModule());
+        objectMapper.registerSubtypes(TreeSet.class);
         return objectMapper;
     }
 

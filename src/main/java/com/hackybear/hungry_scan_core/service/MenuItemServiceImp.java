@@ -109,7 +109,7 @@ public class MenuItemServiceImp implements MenuItemService {
             menuItemRepository.updateDisplayOrders(menuItem.getId(), menuItem.getDisplayOrder());
         }
         entityManager.clear();
-        Long categoryId = menuItems.get(0).getCategoryId();
+        Long categoryId = menuItems.getFirst().getCategoryId();
         return getSimpleDTOs(categoryId);
     }
 

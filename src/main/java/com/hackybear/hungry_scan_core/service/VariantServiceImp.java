@@ -91,7 +91,7 @@ public class VariantServiceImp implements VariantService {
             variantRepository.updateDisplayOrders(variant.getId(), variant.getDisplayOrder());
         }
         entityManager.clear();
-        Long menuItemId = Optional.ofNullable(variants.get(0)).map(Variant::getMenuItemId).orElse(null);
+        Long menuItemId = Optional.ofNullable(variants.getFirst()).map(Variant::getMenuItemId).orElse(0L);
         return getVariantByMenuItemId(menuItemId).stream().map(variantMapper::toDTO).toList();
     }
 

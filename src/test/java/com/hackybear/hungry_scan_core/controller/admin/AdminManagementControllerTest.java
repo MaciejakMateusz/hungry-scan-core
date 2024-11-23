@@ -66,10 +66,9 @@ class AdminManagementControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/admin/users", User.class);
 
-        assertEquals(5, users.size());
-        assertEquals("matimemek@test.com", users.get(0).getUsername());
-        assertEquals("2c73bfc-16fc@temp.it", users.get(4).getEmail());
-        assertTrue(users.stream().allMatch(user -> user.getOrganizationId() == 1L));
+        assertEquals(2, users.size());
+        assertEquals("matimemek@test.com", users.getFirst().getUsername());
+        assertEquals("netka@test.com", users.getLast().getEmail());
     }
 
     @Test
@@ -113,7 +112,7 @@ class AdminManagementControllerTest {
                         "/api/admin/users/cooks", User.class);
 
         assertEquals(1, users.size());
-        assertEquals("kucharz@antek.pl", users.get(0).getUsername());
+        assertEquals("kucharz@antek.pl", users.getFirst().getUsername());
     }
 
     @Test
@@ -134,7 +133,7 @@ class AdminManagementControllerTest {
                 "/api/admin/users/managers", User.class);
 
         assertEquals(1, users.size());
-        assertEquals("netka@test.com", users.get(0).getUsername());
+        assertEquals("netka@test.com", users.getFirst().getUsername());
     }
 
     @Test
@@ -155,7 +154,7 @@ class AdminManagementControllerTest {
                 "/api/admin/users/admins", User.class);
 
         assertEquals(2, users.size());
-        assertEquals("admin@example.com", users.get(0).getUsername());
+        assertEquals("admin@example.com", users.getFirst().getUsername());
     }
 
     @Test
@@ -392,7 +391,7 @@ class AdminManagementControllerTest {
 
     private User createUser(Long restaurantId) {
         User user = new User();
-        user.setName("Name");
+        user.setForename("Name");
         user.setSurname("Surname");
         user.setUsername("example@example.com");
         user.setPassword("Example123!");

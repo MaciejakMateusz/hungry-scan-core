@@ -138,7 +138,7 @@ class BookingControllerTest {
                 apiRequestUtils.fetchAsPage("/api/restaurant/bookings/date", requestParams, Booking.class);
 
         assertEquals(2, bookings.getTotalElements());
-        assertEquals("Pierwszy", bookings.getContent().get(0).getSurname());
+        assertEquals("Pierwszy", bookings.getContent().getFirst().getSurname());
         assertEquals("Drugi", bookings.getContent().get(1).getSurname());
     }
 
