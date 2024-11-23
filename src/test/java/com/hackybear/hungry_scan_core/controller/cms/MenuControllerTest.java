@@ -170,7 +170,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateSchedule_edgeRestaurantOpeningHours() throws Exception {
+    void shouldUpdateSchedule_whenTimeMatchesOpeningAndClosingHours() throws Exception {
         shouldUpdateSchedule(LocalTime.of(7, 0), LocalTime.of(23, 0));
     }
 
@@ -178,7 +178,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateSchedule_fullyWithinRestaurantOpeningHours() throws Exception {
+    void shouldUpdateSchedule_whenTimeIsFullyWithinOpeningHours() throws Exception {
         shouldUpdateSchedule(LocalTime.of(9, 0), LocalTime.of(21, 0));
     }
 
@@ -186,7 +186,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateSchedule_leftEdgeTime() throws Exception {
+    void shouldUpdateSchedule_whenStartTimeMatchesOpeningHour() throws Exception {
         shouldUpdateSchedule(LocalTime.of(7, 0), LocalTime.of(20, 0));
     }
 
@@ -194,7 +194,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateSchedule_rightEdgeTime() throws Exception {
+    void shouldUpdateSchedule_whenEndTimeMatchesClosingHour() throws Exception {
         shouldUpdateSchedule(LocalTime.of(9, 0), LocalTime.of(23, 0));
     }
 
@@ -202,7 +202,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotUpdateSchedule_fullyOutsideRestaurantOpeningTime() throws Exception {
+    void shouldNotUpdateSchedule_whenTimeIsCompletelyOutsideOpeningHours() throws Exception {
         shouldNotUpdateSchedule(LocalTime.of(5, 0), LocalTime.of(6, 30));
     }
 
@@ -210,7 +210,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotUpdateSchedule_leftOutsideRestaurantOpeningTime() throws Exception {
+    void shouldNotUpdateSchedule_whenTimeStartsBeforeOpeningHour() throws Exception {
         shouldNotUpdateSchedule(LocalTime.of(5, 0), LocalTime.of(22, 30));
     }
 
@@ -218,7 +218,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotUpdateSchedule_rightOutsideRestaurantOpeningTime() throws Exception {
+    void shouldNotUpdateSchedule_whenTimeEndsAfterClosingHour() throws Exception {
         shouldNotUpdateSchedule(LocalTime.of(10, 30), LocalTime.of(23, 30));
     }
 
