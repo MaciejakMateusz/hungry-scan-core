@@ -12,6 +12,8 @@ import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -19,6 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static com.hackybear.hungry_scan_core.utility.Fields.USER_MENU_ID;
+import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT_ID;
 
 @Service
 @Slf4j
@@ -30,7 +35,11 @@ public class UserServiceImp implements UserService {
     private final RoleRepository roleRepository;
     private final EmailService emailService;
 
-    public UserServiceImp(UserRepository userRepository, UserMapper userMapper, ExceptionHelper exceptionHelper, RoleRepository roleRepository, EmailService emailService) {
+    public UserServiceImp(UserRepository userRepository,
+                          UserMapper userMapper,
+                          ExceptionHelper exceptionHelper,
+                          RoleRepository roleRepository,
+                          EmailService emailService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.exceptionHelper = exceptionHelper;
@@ -44,9 +53,9 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public List<User> findAll() throws LocalizedException {
+    public TreeSet<User> findAll() throws LocalizedException {
         User currentUser = getCurrentUser();
-        return userRepository.findAllByOrganizationId(currentUser.getOrganizationId());
+        return userRepository.findAllByOrganizationId(currentUser.getOrganizationId(), currentUser.getId());
     }
 
     @Override
@@ -124,22 +133,26 @@ public class UserServiceImp implements UserService {
     public void update(RegistrationDTO registrationDTO) throws LocalizedException {
         User user = findByUsername(registrationDTO.username());
         user.setUsername(registrationDTO.username());
-        user.setName(registrationDTO.name());
+        user.setForename(registrationDTO.forename());
         user.setSurname(registrationDTO.surname());
         user.setEmail(registrationDTO.email());
         userRepository.save(user);
     }
 
     @Override
-    public void switchRestaurant(Long restaurantId) throws LocalizedException {
-        User user = getCurrentUser();
+    @Caching(evict = {
+            @CacheEvict(value = USER_RESTAURANT_ID, key = "#user.getUsername()")
+    })
+    public void switchRestaurant(Long restaurantId, User user) {
         user.setActiveRestaurantId(restaurantId);
         userRepository.save(user);
     }
 
     @Override
-    public void switchMenu(Long menuId) throws LocalizedException {
-        User user = getCurrentUser();
+    @Caching(evict = {
+            @CacheEvict(value = USER_MENU_ID, key = "#user.getUsername()")
+    })
+    public void switchMenu(Long menuId, User user) {
         user.setActiveMenuId(menuId);
         userRepository.save(user);
     }

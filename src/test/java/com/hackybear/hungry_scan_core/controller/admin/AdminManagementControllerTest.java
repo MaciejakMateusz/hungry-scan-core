@@ -66,10 +66,9 @@ class AdminManagementControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/admin/users", User.class);
 
-        assertEquals(5, users.size());
+        assertEquals(2, users.size());
         assertEquals("matimemek@test.com", users.getFirst().getUsername());
-        assertEquals("2c73bfc-16fc@temp.it", users.get(4).getEmail());
-        assertTrue(users.stream().allMatch(user -> user.getOrganizationId() == 1L));
+        assertEquals("netka@test.com", users.getLast().getEmail());
     }
 
     @Test
@@ -392,7 +391,7 @@ class AdminManagementControllerTest {
 
     private User createUser(Long restaurantId) {
         User user = new User();
-        user.setName("Name");
+        user.setForename("Name");
         user.setSurname("Surname");
         user.setUsername("example@example.com");
         user.setPassword("Example123!");

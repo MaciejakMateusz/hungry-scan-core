@@ -27,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -144,13 +145,15 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/restaurant")
     public ResponseEntity<?> switchRestaurant(@RequestBody Long restaurantId) {
-        return responseHelper.getResponseEntity(restaurantId, userService::switchRestaurant);
+        ThrowingSupplier<User> userSupplier = userService::getCurrentUser;
+        return responseHelper.buildResponse(restaurantId, userSupplier, userService::switchRestaurant);
     }
 
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/menu")
     public ResponseEntity<?> switchMenu(@RequestBody Long menuId) {
-        return responseHelper.getResponseEntity(menuId, userService::switchMenu);
+        ThrowingSupplier<User> userSupplier = userService::getCurrentUser;
+        return responseHelper.buildResponse(menuId, userSupplier, userService::switchMenu);
     }
 
     private String prepareJwtCookie(String jwt, long maxAge, String sameSite) {
@@ -191,7 +194,7 @@ public class UserController {
         temp.setOrganizationId(0L);
         temp.setUsername(username);
         temp.setEmail(username);
-        temp.setName(username.substring(4));
+        temp.setForename(username.substring(4));
         temp.setSurname(username.substring(4));
         temp.setPassword(UUID.randomUUID().toString());
         Role role = roleService.findByName("ROLE_CUSTOMER_READONLY");

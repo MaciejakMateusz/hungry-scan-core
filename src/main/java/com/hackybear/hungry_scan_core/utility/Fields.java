@@ -16,6 +16,16 @@ public class Fields {
             "hasAnyRole('" + WAITER + "', '" + COOK + "', '" + MANAGER + "', '" + ADMIN + "', '" + CUSTOMER + "')";
 
     //REDIS CACHE
+    public static final String USER_MENU_ID = "user.activeMenuId";
+    public static final String USER_RESTAURANT_ID = "user.activeRestaurantId";
+
+    public static final String RESTAURANT_ID = "restaurant.id";
+    public static final String RESTAURANT_TOKEN = "restaurant.token";
+    public static final String RESTAURANTS_ALL = "restaurant.id";
+
+    public static final String MENU_ID = "menu.id";
+    public static final String MENUS_ALL = "menus.all";
+
     public static final String CATEGORIES_ALL = "categories.all";
     public static final String CATEGORIES_AVAILABLE = "categories.available";
     public static final String CATEGORIES_DISPLAY_ORDERS = "categories.displayOrders";
@@ -24,11 +34,4 @@ public class Fields {
 
     public static final String VARIANT_ID = "variant.id";
     public static final String VARIANTS_ALL = "variants.all";
-
-    public static final String RESTAURANT_ID = "restaurant.id";
-    public static final String RESTAURANT_TOKEN = "restaurant.token";
-    public static final String RESTAURANTS_ALL = "restaurant.id";
-
-    public static final String MENU_ID = "menu.id";
-    public static final String MENUS_ALL = "menus.all";
 }

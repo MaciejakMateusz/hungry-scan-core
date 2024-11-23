@@ -72,7 +72,7 @@ class UserControllerTest {
         apiRequestUtils.postAndExpect200("/api/user/register", registrationDTO);
         User persistedUser = getDetachedUser("juan.bomboclat@test.com");
         assertNotNull(persistedUser);
-        assertEquals("Juan", persistedUser.getName());
+        assertEquals("Juan", persistedUser.getForename());
         assertEquals(3, persistedUser.getOrganizationId());
         assertNotNull(persistedUser.getEmailToken());
         assertEquals(0, persistedUser.getEnabled());
@@ -86,7 +86,7 @@ class UserControllerTest {
         Map<?, ?> response = apiRequestUtils.postAndExpectErrors("/api/user/register", registrationDTO);
         assertEquals(3, response.size());
         assertEquals(response.get("password"), "Hasło musi posiadać przynajmniej  jedną dużą literę, jedną małą literę, jedną cyfrę i jeden znak specjalny");
-        assertEquals(response.get("name"), "Pole nie może być puste");
+        assertEquals(response.get("forename"), "Pole nie może być puste");
         assertEquals(response.get("username"), "Niepoprawny format adresu email");
     }
 
@@ -212,7 +212,7 @@ class UserControllerTest {
 
     private RegistrationDTO createRegistrationDTO() {
         User user = new User();
-        user.setName("Juan");
+        user.setForename("Juan");
         user.setSurname("Bomboclat");
         user.setUsername("juan.bomboclat@test.com");
         user.setPassword("Password123!");
@@ -222,7 +222,7 @@ class UserControllerTest {
 
     private RegistrationDTO createIncorrectRegistrationDTO() {
         User user = new User();
-        user.setName("");
+        user.setForename("");
         user.setSurname("Bomboclat");
         user.setUsername("juan.bomboclat@testcom");
         user.setPassword("Password123");

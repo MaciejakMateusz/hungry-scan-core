@@ -4,8 +4,10 @@ import com.hackybear.hungry_scan_core.annotation.Email;
 import com.hackybear.hungry_scan_core.annotation.Password;
 import jakarta.validation.constraints.NotBlank;
 
+import java.io.Serializable;
+
 public record RegistrationDTO(@NotBlank
-                              String name,
+                              String forename,
 
                               @NotBlank
                               String surname,
@@ -20,5 +22,10 @@ public record RegistrationDTO(@NotBlank
                               @NotBlank
                               @Password
                               String password,
-                              String repeatedPassword) {
+                              String repeatedPassword) implements Serializable, Comparable<RegistrationDTO> {
+
+    @Override
+    public int compareTo(RegistrationDTO other) {
+        return this.surname.compareTo(other.surname);
+    }
 }

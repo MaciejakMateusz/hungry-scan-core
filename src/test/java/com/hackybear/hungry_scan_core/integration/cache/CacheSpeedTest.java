@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.CATEGORIES_ALL;
+import static com.hackybear.hungry_scan_core.utility.Fields.CATEGORY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,11 +40,6 @@ public class CacheSpeedTest {
     @Autowired
     private CacheManager cacheManager;
 
-    @BeforeEach
-    void clearCache() {
-        Objects.requireNonNull(cacheManager.getCache(CATEGORIES_ALL)).clear();
-    }
-
     @Order(1)
     @Sql("/data-h2.sql")
     @Test
@@ -55,6 +51,8 @@ public class CacheSpeedTest {
     @WithMockUser(roles = {"WAITER"}, username = "matimemek@test.com")
     @Order(2)
     void getAllCategoriesTest() throws Exception {
+        Objects.requireNonNull(cacheManager.getCache(CATEGORIES_ALL)).clear();
+
         long firstRequestBegin = System.currentTimeMillis();
         List<CategoryDTO> firstCategoriesCall =
                 apiRequestUtils.fetchAsList(
@@ -78,6 +76,8 @@ public class CacheSpeedTest {
     @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
     @Order(3)
     void showCategoryByIdTest() throws Exception {
+        Objects.requireNonNull(cacheManager.getCache(CATEGORY_ID)).clear();
+
         long firstRequestBegin = System.currentTimeMillis();
         CategoryFormDTO firstCategoryCall = apiRequestUtils.postObjectExpect200(
                 "/api/cms/categories/show", 4, CategoryFormDTO.class);

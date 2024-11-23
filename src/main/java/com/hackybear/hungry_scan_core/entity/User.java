@@ -30,7 +30,7 @@ import java.util.TreeSet;
 @EntityListeners({GeneralListener.class, AuditingEntityListener.class})
 @Table(name = "users")
 @Entity
-public class User implements Serializable {
+public class User implements Serializable, Comparable<User> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,7 +49,7 @@ public class User implements Serializable {
     private String username;
 
     @NotBlank
-    private String name;
+    private String forename;
 
     @NotBlank
     private String surname;
@@ -112,6 +112,11 @@ public class User implements Serializable {
     @PrePersist
     private void prePersist() {
         this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());
+    }
+
+    @Override
+    public int compareTo(User other) {
+        return this.getSurname().compareTo(other.getSurname());
     }
 
 }

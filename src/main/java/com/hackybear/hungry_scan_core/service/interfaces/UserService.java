@@ -6,12 +6,13 @@ import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService {
 
     User findByUsername(String email) throws LocalizedException;
 
-    List<User> findAll() throws LocalizedException;
+    Set<User> findAll() throws LocalizedException;
 
     void save(RegistrationDTO registrationDTO);
 
@@ -29,9 +30,9 @@ public interface UserService {
 
     void delete(String username) throws LocalizedException;
 
-    void switchRestaurant(Long restaurantId) throws LocalizedException;
+    void switchRestaurant(Long restaurantId, User user);
 
-    void switchMenu(Long menuId) throws LocalizedException;
+    void switchMenu(Long menuId, User user);
 
     boolean existsByUsername(String username);
 
