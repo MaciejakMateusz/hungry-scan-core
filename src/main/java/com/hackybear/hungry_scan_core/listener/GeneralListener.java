@@ -17,7 +17,7 @@ public class GeneralListener {
     public void prePersist(final Object entity) {
         try {
             if (Objects.isNull(getFieldValue(entity, "created"))) {
-                setFieldDate(entity, "setCreated");
+                setDateField(entity, "setCreated");
             } else {
                 log.error("Creation time already exists, cannot overwrite.");
             }
@@ -28,7 +28,7 @@ public class GeneralListener {
 
     @PreUpdate
     public void preUpdate(final Object entity) {
-        setFieldDate(entity, "setUpdated");
+        setDateField(entity, "setUpdated");
     }
 
     @PreRemove
@@ -41,13 +41,13 @@ public class GeneralListener {
         }
     }
 
-    private void setFieldDate(Object entity, String methodName) {
+    private void setDateField(Object entity, String methodName) {
         LocalDateTime now = LocalDateTime.now();
         try {
             Method method = entity.getClass().getMethod(methodName, LocalDateTime.class);
             method.invoke(entity, now);
         } catch (Exception e) {
-            log.error("Error setting 'created' date field", e);
+            log.error("Error setting date field", e);
         }
     }
 

@@ -2,7 +2,6 @@ package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
@@ -11,11 +10,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import javax.naming.AuthenticationException;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -35,7 +32,7 @@ public class MenuController {
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<?> getAll() {
         try {
             Long activeRestaurantId = userService.getActiveRestaurantId();
@@ -46,9 +43,10 @@ public class MenuController {
     }
 
     @PostMapping("/show")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
-        return responseHelper.getResponseEntity(id, menuService::findById);
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<?> show(@RequestBody Long id) {
+        ThrowingSupplier<Long> activeRestaurantIdProvider = userService::getActiveRestaurantId;
+        return responseHelper.buildResponse(id, activeRestaurantIdProvider, menuService::findById);
     }
 
     @PostMapping("/add")
@@ -66,13 +64,8 @@ public class MenuController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> delete(@RequestBody Long id) {
-        try {
-            Long activeRestaurantId = userService.getActiveRestaurantId();
-            menuService.delete(id, activeRestaurantId);
-            return ResponseEntity.ok().build();
-        } catch (LocalizedException | AuthenticationException e) {
-            return responseHelper.createErrorResponse(e);
-        }
+        ThrowingSupplier<Long> activeRestaurantIdProvider = userService::getActiveRestaurantId;
+        return responseHelper.buildResponse(id, activeRestaurantIdProvider, menuService::delete);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

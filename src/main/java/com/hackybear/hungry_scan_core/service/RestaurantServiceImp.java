@@ -92,13 +92,13 @@ public class RestaurantServiceImp implements RestaurantService {
     private RestaurantDTO getDTOById(Long id) throws LocalizedException {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.restaurantService.restaurantNotFound", id));
+                        "error.restaurantService.restaurantNotFound"));
         return restaurantMapper.toDTO(restaurant);
     }
 
     private Restaurant getById(Long id) throws LocalizedException {
         return restaurantRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.restaurantService.restaurantNotFound", id));
+                        "error.restaurantService.restaurantNotFound"));
     }
 }

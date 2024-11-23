@@ -55,7 +55,7 @@ public class UserServiceImp implements UserService {
     @Override
     public TreeSet<User> findAll() throws LocalizedException {
         User currentUser = getCurrentUser();
-        return userRepository.findAllByOrganizationId(currentUser.getOrganizationId(), currentUser.getId());
+        return new TreeSet<>(userRepository.findAllByOrganizationId(currentUser.getOrganizationId(), currentUser.getId()));
     }
 
     @Override
@@ -198,13 +198,17 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public Long getActiveRestaurantId() {
-        return userRepository.getActiveRestaurantIdByUsername(getAuthentication().getName());
+    public Long getActiveRestaurantId() throws LocalizedException {
+        return userRepository.getActiveRestaurantIdByUsername(getAuthentication().getName())
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotFound"));
     }
 
     @Override
-    public Long getActiveMenuId() {
-        return userRepository.getActiveMenuIdByUsername(getAuthentication().getName());
+    public Long getActiveMenuId() throws LocalizedException {
+        return userRepository.getActiveMenuIdByUsername(getAuthentication().getName())
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuService.menuNotFound"));
     }
 
     @Override

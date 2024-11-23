@@ -130,7 +130,7 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldUpdateExistingIngredient() throws Exception {

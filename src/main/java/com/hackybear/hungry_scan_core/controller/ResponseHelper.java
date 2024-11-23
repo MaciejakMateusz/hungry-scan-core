@@ -2,10 +2,7 @@ package com.hackybear.hungry_scan_core.controller;
 
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
-import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingBiConsumer;
-import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingConsumer;
-import com.hackybear.hungry_scan_core.utility.interfaces.ThrowingFunction;
-import com.hackybear.hungry_scan_core.utility.interfaces.TriFunction;
+import com.hackybear.hungry_scan_core.utility.interfaces.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -122,6 +119,25 @@ public class ResponseHelper {
             R r = supplier.get();
             consumer.accept(t, r);
             return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    /**
+     * Creates ResponseEntity based on provided parameters.
+     *
+     * @param t          Object to accept by the consumer.
+     * @param supplier   Supplier to provide needed parameter.
+     * @param biSupplier Behaviour to pass from a given service. For example bookingService::delete
+     * @return ResponseEntity with appropriate response code and body containing parameters map.
+     */
+    public <T, R, U> ResponseEntity<?> buildResponse(T t,
+                                                     ThrowingSupplier<R> supplier,
+                                                     ThrowingBiSupplier<T, R, U> biSupplier) {
+        try {
+            R r = supplier.get();
+            return createSuccessResponse(biSupplier.get(t, r));
         } catch (Exception e) {
             return createErrorResponse(e);
         }

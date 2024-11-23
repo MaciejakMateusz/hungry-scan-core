@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.TreeSet;
+import java.util.Set;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.USER_MENU_ID;
 import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT_ID;
@@ -22,8 +22,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             WHERE u.organizationId = :organizationId
             AND u.id != :currentUserId
             AND u.forename != 'temp'
+            ORDER BY u.forename ASC
             """)
-    TreeSet<User> findAllByOrganizationId(@Param("organizationId") Long organizationId, @Param("currentUserId") Long currentUserId);
+    Set<User> findAllByOrganizationId(@Param("organizationId") Long organizationId, @Param("currentUserId") Long currentUserId);
 
     User findUserByUsername(String username);
 
@@ -39,11 +40,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Cacheable(value = USER_MENU_ID, key = "#username")
     @Query("SELECT u.activeMenuId FROM User u WHERE u.username = :username")
-    Long getActiveMenuIdByUsername(@Param("username") String username);
+    Optional<Long> getActiveMenuIdByUsername(@Param("username") String username);
 
     @Cacheable(value = USER_RESTAURANT_ID, key = "#username")
     @Query("SELECT u.activeRestaurantId FROM User u WHERE u.username = :username")
-    Long getActiveRestaurantIdByUsername(@Param("username") String username);
+    Optional<Long> getActiveRestaurantIdByUsername(@Param("username") String username);
 
     void deleteByUsername(String username);
 
