@@ -10,13 +10,16 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
+import java.util.Objects;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.CATEGORIES_ALL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,6 +35,14 @@ public class CacheSpeedTest {
 
     @Autowired
     ApiRequestUtils apiRequestUtils;
+
+    @Autowired
+    private CacheManager cacheManager;
+
+    @BeforeEach
+    void clearCache() {
+        Objects.requireNonNull(cacheManager.getCache(CATEGORIES_ALL)).clear();
+    }
 
     @Order(1)
     @Sql("/data-h2.sql")

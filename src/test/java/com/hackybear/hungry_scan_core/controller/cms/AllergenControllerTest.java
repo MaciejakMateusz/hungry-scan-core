@@ -48,7 +48,7 @@ class AllergenControllerTest {
                         "/api/cms/allergens", AllergenDTO.class);
 
         assertEquals(14, allergens.size());
-        assertEquals("Gluten", allergens.get(0).name().defaultTranslation());
+        assertEquals("Gluten", allergens.getFirst().name().defaultTranslation());
     }
 
     @Test

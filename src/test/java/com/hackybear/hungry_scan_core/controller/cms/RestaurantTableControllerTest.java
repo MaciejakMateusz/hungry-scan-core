@@ -70,7 +70,7 @@ class RestaurantTableControllerTest {
                         "/api/cms/tables", RestaurantTable.class);
 
         assertEquals(19, restaurantTables.size());
-        assertEquals("19436a86-e200-400d-aa2e-da4686805d00", restaurantTables.get(0).getToken());
+        assertEquals("19436a86-e200-400d-aa2e-da4686805d00", restaurantTables.getFirst().getToken());
     }
 
     @Test

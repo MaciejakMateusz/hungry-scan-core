@@ -67,10 +67,10 @@ class CategoryControllerTest {
 
         List<MenuItemSimpleDTO> menuItems = categories.get(3).menuItems();
         assertEquals(9, categories.size());
-        assertEquals("Przystawki", categories.get(0).name().defaultTranslation());
+        assertEquals("Przystawki", categories.getFirst().name().defaultTranslation());
         assertEquals("Napoje", categories.get(7).name().defaultTranslation());
         assertEquals(5, menuItems.size());
-        assertEquals(4, menuItems.get(0).categoryId());
+        assertEquals(4, menuItems.getFirst().categoryId());
     }
 
     @Test
@@ -81,7 +81,7 @@ class CategoryControllerTest {
                         "/api/cms/categories/display-orders", Integer.class);
 
         assertEquals(9, displayOrders.size());
-        assertEquals(1, displayOrders.get(0));
+        assertEquals(1, displayOrders.getFirst());
         assertEquals(9, displayOrders.get(8));
     }
 
@@ -95,8 +95,8 @@ class CategoryControllerTest {
                         "/api/cms/categories", CategoryDTO.class);
         List<Category> categories = categoryDTOs.stream().map(categoryMapper::toCategory).toList();
 
-        assertEquals(1, categories.get(0).getDisplayOrder());
-        assertEquals("Przystawki", categories.get(0).getName().getDefaultTranslation());
+        assertEquals(1, categories.getFirst().getDisplayOrder());
+        assertEquals("Przystawki", categories.getFirst().getName().getDefaultTranslation());
 
         assertEquals(2, categories.get(1).getDisplayOrder());
 
@@ -116,7 +116,7 @@ class CategoryControllerTest {
         assertEquals(9, categories.get(8).getDisplayOrder());
         assertEquals("Pusta", categories.get(8).getName().getDefaultTranslation());
 
-        categories.get(0).setDisplayOrder(9);
+        categories.getFirst().setDisplayOrder(9);
         categories.get(8).setDisplayOrder(1);
 
         categories.get(5).setDisplayOrder(3);
@@ -127,8 +127,8 @@ class CategoryControllerTest {
                 apiRequestUtils.patchAndGetList(
                         "/api/cms/categories/display-orders", categoryFormDTOs, CategoryDTO.class);
 
-        assertEquals("Pusta", updatedCategoryDTOs.get(0).name().defaultTranslation());
-        assertEquals(1, updatedCategoryDTOs.get(0).displayOrder());
+        assertEquals("Pusta", updatedCategoryDTOs.getFirst().name().defaultTranslation());
+        assertEquals(1, updatedCategoryDTOs.getFirst().displayOrder());
 
         assertEquals("Przystawki", updatedCategoryDTOs.get(8).name().defaultTranslation());
         assertEquals(9, updatedCategoryDTOs.get(8).displayOrder());
@@ -162,7 +162,7 @@ class CategoryControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/categories/available", CategoryCustomerDTO.class);
         assertEquals(8, categories.size());
-        assertEquals(4, categories.get(0).menuItems().size());
+        assertEquals(4, categories.getFirst().menuItems().size());
     }
 
     @Test
@@ -218,7 +218,7 @@ class CategoryControllerTest {
         List<CategoryDTO> categories =
                 apiRequestUtils.fetchAsList(
                         "/api/cms/categories", CategoryDTO.class);
-        CategoryDTO persistedCategory = categories.get(categories.size() - 1);
+        CategoryDTO persistedCategory = categories.getLast();
         assertEquals("Food", persistedCategory.name().defaultTranslation());
         assertNull(persistedCategory.name().translationEn());
         assertEquals(10, persistedCategory.displayOrder());
@@ -346,7 +346,7 @@ class CategoryControllerTest {
 
         assertEquals(8, categories.size());
         assertEquals("Napoje", categories.get(7).name().defaultTranslation());
-        assertEquals(1, categories.get(0).displayOrder());
+        assertEquals(1, categories.getFirst().displayOrder());
         assertEquals(2, categories.get(1).displayOrder());
         assertEquals(3, categories.get(2).displayOrder());
         assertEquals(4, categories.get(3).displayOrder());
@@ -375,8 +375,8 @@ class CategoryControllerTest {
 
         assertEquals(8, categories.size());
 
-        assertEquals("Makarony", categories.get(0).name().defaultTranslation());
-        assertEquals(1, categories.get(0).displayOrder());
+        assertEquals("Makarony", categories.getFirst().name().defaultTranslation());
+        assertEquals(1, categories.getFirst().displayOrder());
 
         assertEquals(2, categories.get(1).displayOrder());
 

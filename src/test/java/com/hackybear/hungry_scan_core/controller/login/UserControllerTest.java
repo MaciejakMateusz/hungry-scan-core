@@ -169,7 +169,7 @@ class UserControllerTest {
 
         List<String> headers = response.getHeaders("Location");
         assertEquals(1, headers.size());
-        assertEquals("http://localhost:3001", headers.get(0));
+        assertEquals("http://localhost:3001", headers.getFirst());
     }
 
     @Test
@@ -194,7 +194,7 @@ class UserControllerTest {
 
         List<User> updatedRestaurantUsers = userRepository.findAllByActiveRestaurantId(1L);
         assertEquals(6, updatedRestaurantUsers.size());
-        User newTempUser = updatedRestaurantUsers.get(updatedRestaurantUsers.size() - 1);
+        User newTempUser = updatedRestaurantUsers.getLast();
         assertEquals(1L, newTempUser.getActiveRestaurantId());
         assertEquals(0L, newTempUser.getOrganizationId());
         assertNotNull(newTempUser.getJwtToken());

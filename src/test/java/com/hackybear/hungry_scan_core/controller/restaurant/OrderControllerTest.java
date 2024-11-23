@@ -83,7 +83,7 @@ class OrderControllerTest {
         OrderSummary summary =
                 apiRequestUtils.postAndFetchObject("/api/restaurant/orders/dine-in", table15Order, OrderSummary.class);
         assertEquals(1, summary.getOrders().size());
-        assertEquals(3, summary.getOrders().get(0).getOrderedItems().size());
+        assertEquals(3, summary.getOrders().getFirst().getOrderedItems().size());
         assertEquals(Money.of(135.00), summary.getTotalAmount());
     }
 

@@ -67,7 +67,7 @@ class AdminManagementControllerTest {
                         "/api/admin/users", User.class);
 
         assertEquals(5, users.size());
-        assertEquals("matimemek@test.com", users.get(0).getUsername());
+        assertEquals("matimemek@test.com", users.getFirst().getUsername());
         assertEquals("2c73bfc-16fc@temp.it", users.get(4).getEmail());
         assertTrue(users.stream().allMatch(user -> user.getOrganizationId() == 1L));
     }
@@ -113,7 +113,7 @@ class AdminManagementControllerTest {
                         "/api/admin/users/cooks", User.class);
 
         assertEquals(1, users.size());
-        assertEquals("kucharz@antek.pl", users.get(0).getUsername());
+        assertEquals("kucharz@antek.pl", users.getFirst().getUsername());
     }
 
     @Test
@@ -134,7 +134,7 @@ class AdminManagementControllerTest {
                 "/api/admin/users/managers", User.class);
 
         assertEquals(1, users.size());
-        assertEquals("netka@test.com", users.get(0).getUsername());
+        assertEquals("netka@test.com", users.getFirst().getUsername());
     }
 
     @Test
@@ -155,7 +155,7 @@ class AdminManagementControllerTest {
                 "/api/admin/users/admins", User.class);
 
         assertEquals(2, users.size());
-        assertEquals("admin@example.com", users.get(0).getUsername());
+        assertEquals("admin@example.com", users.getFirst().getUsername());
     }
 
     @Test

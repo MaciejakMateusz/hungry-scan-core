@@ -71,7 +71,7 @@ class VariantControllerTest {
         List<VariantDTO> variants = getAllByMenuItemId(24L);
 
         assertEquals(3, variants.size());
-        assertEquals("Mała", variants.get(0).name().defaultTranslation());
+        assertEquals("Mała", variants.getFirst().name().defaultTranslation());
     }
 
     @Test
@@ -89,7 +89,7 @@ class VariantControllerTest {
                         "/api/cms/variants/item", 2, VariantDTO.class);
 
         assertEquals(1, variants.size());
-        VariantDTO persistedVariant = variants.get(0);
+        VariantDTO persistedVariant = variants.getFirst();
         assertEquals("Wariat", persistedVariant.name().defaultTranslation());
         assertFalse(persistedVariant.defaultVariant());
     }
@@ -110,7 +110,7 @@ class VariantControllerTest {
                         "/api/cms/variants/item", 7, VariantDTO.class);
 
         assertEquals(1, variants.size());
-        VariantDTO persistedVariant = variants.get(0);
+        VariantDTO persistedVariant = variants.getFirst();
         assertEquals(Money.of(0.00), persistedVariant.price());
         assertTrue(persistedVariant.defaultVariant());
     }
@@ -139,7 +139,7 @@ class VariantControllerTest {
                 apiRequestUtils.postAndGetList(
                         "/api/cms/variants/item", 9, VariantDTO.class);
 
-        VariantDTO persistedVariant1 = variants.get(0);
+        VariantDTO persistedVariant1 = variants.getFirst();
         VariantDTO persistedVariant2 = variants.get(1);
         VariantDTO persistedVariant3 = variants.get(2);
         assertEquals(3, variants.size());
@@ -166,7 +166,7 @@ class VariantControllerTest {
                         "/api/cms/variants/item", 21, VariantDTO.class);
         assertEquals(3, variants.size());
 
-        VariantDTO variant1 = variants.get(0);
+        VariantDTO variant1 = variants.getFirst();
         VariantDTO variant2 = variants.get(1);
         VariantDTO variant3 = variants.get(2);
         assertFalse(variant1.defaultVariant());
@@ -190,7 +190,7 @@ class VariantControllerTest {
                         "/api/cms/variants/item", 21, VariantDTO.class);
         assertEquals(3, variants.size());
 
-        VariantDTO variant1 = variants.get(0);
+        VariantDTO variant1 = variants.getFirst();
         VariantDTO variant2 = variants.get(1);
         VariantDTO variant3 = variants.get(2);
         assertFalse(variant1.defaultVariant());
@@ -251,8 +251,8 @@ class VariantControllerTest {
         List<VariantDTO> initialVariants = getAllByMenuItemId(21L);
         List<Variant> variants = initialVariants.stream().map(variantMapper::toVariant).toList();
 
-        assertEquals(1, variants.get(0).getDisplayOrder());
-        assertEquals("Mała", variants.get(0).getName().getDefaultTranslation());
+        assertEquals(1, variants.getFirst().getDisplayOrder());
+        assertEquals("Mała", variants.getFirst().getName().getDefaultTranslation());
 
         assertEquals(2, variants.get(1).getDisplayOrder());
         assertEquals("Średnia", variants.get(1).getName().getDefaultTranslation());
@@ -260,7 +260,7 @@ class VariantControllerTest {
         assertEquals(3, variants.get(2).getDisplayOrder());
         assertEquals("Duża", variants.get(2).getName().getDefaultTranslation());
 
-        variants.get(0).setDisplayOrder(3);
+        variants.getFirst().setDisplayOrder(3);
         variants.get(2).setDisplayOrder(1);
 
         List<VariantDTO> variantDTOs = variants.stream().map(variantMapper::toDTO).toList();
@@ -268,8 +268,8 @@ class VariantControllerTest {
                 apiRequestUtils.patchAndGetList(
                         "/api/cms/variants/display-orders", variantDTOs, VariantDTO.class);
 
-        assertEquals("Duża", updatedVariantDTOs.get(0).name().defaultTranslation());
-        assertEquals(1, updatedVariantDTOs.get(0).displayOrder());
+        assertEquals("Duża", updatedVariantDTOs.getFirst().name().defaultTranslation());
+        assertEquals(1, updatedVariantDTOs.getFirst().displayOrder());
 
         assertEquals("Mała", updatedVariantDTOs.get(2).name().defaultTranslation());
         assertEquals(3, updatedVariantDTOs.get(2).displayOrder());
@@ -324,8 +324,8 @@ class VariantControllerTest {
 
         assertEquals(2, variants.size());
 
-        assertEquals("Średnia", variants.get(0).name().defaultTranslation());
-        assertEquals(1, variants.get(0).displayOrder());
+        assertEquals("Średnia", variants.getFirst().name().defaultTranslation());
+        assertEquals(1, variants.getFirst().displayOrder());
 
         assertEquals("Duża", variants.get(1).name().defaultTranslation());
         assertEquals(2, variants.get(1).displayOrder());
