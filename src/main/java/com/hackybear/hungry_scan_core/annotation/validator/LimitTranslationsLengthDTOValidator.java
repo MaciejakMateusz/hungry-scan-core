@@ -15,12 +15,18 @@ public class LimitTranslationsLengthDTOValidator implements ConstraintValidator<
             return true;
         }
 
-        if (Objects.isNull(value.defaultTranslation()) || Objects.isNull(value.translationEn())) {
-            return true;
-        }
-
         String defaultTranslation = value.defaultTranslation();
         String translationEn = value.translationEn();
-        return defaultTranslation.length() <= 255 && translationEn.length() <= 255;
+        if (Objects.nonNull(defaultTranslation) && Objects.isNull(translationEn)) {
+            return defaultTranslation.length() <= 255;
+        } else if (Objects.nonNull(value.defaultTranslation())) {
+            return defaultTranslation.length() <= 255 && translationEn.length() <= 255;
+        }
+
+        if (Objects.nonNull(value.translationEn())) {
+            return translationEn.length() <= 255;
+        } else {
+            return true;
+        }
     }
 }

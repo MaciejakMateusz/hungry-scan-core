@@ -4,18 +4,15 @@ import com.hackybear.hungry_scan_core.annotation.WithRateLimitProtection;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
 import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
+import com.hackybear.hungry_scan_core.dto.RecoveryInitDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
-import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
-import com.hackybear.hungry_scan_core.entity.JwtToken;
-import com.hackybear.hungry_scan_core.entity.Restaurant;
-import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.JwtService;
-import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
-import com.hackybear.hungry_scan_core.service.interfaces.RoleService;
+import com.hackybear.hungry_scan_core.service.interfaces.LoginService;
+import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,47 +21,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin("http://localhost:3002")
 public class UserController {
 
-    private final AuthenticationManager authenticationManager;
-    private final RestaurantService restaurantService;
-    private final RestaurantMapper restaurantMapper;
     private final UserService userService;
-    private final RoleService roleService;
-    private final JwtService jwtService;
+    private final LoginService loginService;
+    private final QRService qrService;
+    private final ExceptionHelper exceptionHelper;
     private final ResponseHelper responseHelper;
-
-    @Value("${CUSTOMER_APP_URL}")
-    private String customerAppUrl;
 
     @Value("${IS_PROD}")
     private boolean isProduction;
 
-    public UserController(AuthenticationManager authenticationManager,
-                          RestaurantService restaurantService, RestaurantMapper restaurantMapper,
-                          UserService userService,
-                          RoleService roleService,
-                          JwtService jwtService,
+    public UserController(UserService userService,
+                          LoginService loginService,
+                          QRService qrService, ExceptionHelper exceptionHelper,
                           ResponseHelper responseHelper) {
-        this.authenticationManager = authenticationManager;
-        this.restaurantService = restaurantService;
-        this.restaurantMapper = restaurantMapper;
         this.userService = userService;
-        this.roleService = roleService;
-        this.jwtService = jwtService;
+        this.loginService = loginService;
+        this.qrService = qrService;
+        this.exceptionHelper = exceptionHelper;
         this.responseHelper = responseHelper;
     }
 
@@ -78,60 +62,61 @@ public class UserController {
         if (!errorParams.isEmpty()) {
             return ResponseEntity.badRequest().body(errorParams);
         }
-        return responseHelper.getResponseEntity(registrationDTO, userService::save);
+        try {
+            userService.save(registrationDTO);
+        } catch (MessagingException e) {
+            errorParams.put("error", exceptionHelper.getLocalizedMsg("error.register.activationFailed"));
+            return ResponseEntity.badRequest().body(errorParams);
+        }
+        return ResponseEntity.ok(Map.of("redirectUrl", "/activation/?target=" + registrationDTO.username()));
+    }
+
+    @GetMapping("/resend-activation/{email}")
+    @WithRateLimitProtection
+    public ResponseEntity<?> resendActivation(@PathVariable String email) {
+        try {
+            userService.resendActivation(email);
+            return responseHelper.redirectTo("/activation/?resend=true");
+        } catch (LocalizedException | MessagingException e) {
+            return responseHelper.redirectTo("/activation-error");
+        }
     }
 
     @GetMapping("/register/{emailToken}")
     @WithRateLimitProtection
     public ResponseEntity<?> activate(@PathVariable String emailToken) {
-        return responseHelper.getResponseEntity(emailToken, userService::activateAccount);
+        try {
+            userService.activateAccount(emailToken);
+            return responseHelper.redirectTo("/account-activated");
+        } catch (LocalizedException e) {
+            return responseHelper.redirectTo("/activation-error");
+        }
     }
 
     @PostMapping("/recover")
     @WithRateLimitProtection
-    public ResponseEntity<?> passwordRecovery(@RequestBody String email) {
-        return responseHelper.getResponseEntity(email, userService::sendPasswordRecovery);
+    public ResponseEntity<?> passwordRecovery(@RequestBody @Valid RecoveryInitDTO recoveryInitDTO, BindingResult br) {
+        if (br.hasErrors()) {
+            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
+        }
+        return responseHelper.getResponseEntity(recoveryInitDTO.username(), userService::sendPasswordRecovery);
     }
 
     @PostMapping("/confirm-recovery")
     @WithRateLimitProtection
     public ResponseEntity<?> passwordRecovery(@RequestBody @Valid RecoveryDTO recovery, BindingResult br) {
-        return responseHelper.buildResponse(recovery, br, userService::recoverPassword);
+        return userService.recoverPassword(recovery, br);
     }
 
     @PostMapping("/login")
     @WithRateLimitProtection
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response) throws LocalizedException {
-        if (userService.isEnabled(authRequestDTO.getUsername()) == 0) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "notActivated"));
-        }
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
-        if (!authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "unauthorized"));
-        }
-        String jwt = jwtService.generateToken(authRequestDTO.getUsername());
-        String jwtCookie = prepareJwtCookie(jwt, 28800, "Strict");
-        response.addHeader("Set-Cookie", jwtCookie);
-        return ResponseEntity.ok().body(Map.of("message", "authorized"));
+        return loginService.handleLogin(authRequestDTO, response);
     }
 
     @GetMapping("/scan/{restaurantToken}")
     public ResponseEntity<?> scanQr(HttpServletResponse response, @PathVariable String restaurantToken) throws IOException {
-        String username = UUID.randomUUID().toString().substring(1, 13) + "@temp.it";
-        String jwt = jwtService.generateToken(username);
-        try {
-            persistUser(new JwtToken(jwt), username, restaurantToken);
-        } catch (Exception e) {
-            return responseHelper.createErrorResponse(e);
-        }
-
-        String cookie = prepareJwtCookie(jwt, 10800, "none");
-        response.addHeader("Set-Cookie", cookie);
-        response.sendRedirect(customerAppUrl);
-        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).build();
+        return qrService.scanQRCode(response, restaurantToken);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -139,7 +124,7 @@ public class UserController {
     public ResponseEntity<?> logout(HttpServletResponse response) {
         String invalidatedJwtCookie = invalidateJwtCookie();
         response.setHeader("Set-Cookie", invalidatedJwtCookie);
-        return ResponseEntity.ok().body(Map.of("message", "Logout successful"));
+        return ResponseEntity.ok().body(Map.of("redirectUrl", "/"));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -156,16 +141,6 @@ public class UserController {
         return responseHelper.buildResponse(menuId, userSupplier, userService::switchMenu);
     }
 
-    private String prepareJwtCookie(String jwt, long maxAge, String sameSite) {
-        ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
-                .path("/")
-                .httpOnly(true)
-                .secure(isProduction)
-                .maxAge(maxAge)
-                .sameSite(sameSite)
-                .build();
-        return cookie.toString();
-    }
 
     private String invalidateJwtCookie() {
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
@@ -176,31 +151,6 @@ public class UserController {
                 .sameSite("Strict")
                 .build();
         return cookie.toString();
-    }
-
-    private void persistUser(JwtToken jwtToken, String username, String restaurantToken) throws LocalizedException {
-        User user = createTempCustomer(jwtToken, username, restaurantToken);
-        userService.saveTempUser(user);
-    }
-
-    private User createTempCustomer(JwtToken jwtToken,
-                                    String username,
-                                    String restaurantToken) throws LocalizedException {
-        User temp = new User();
-        RestaurantDTO restaurantDTO = restaurantService.findByToken(restaurantToken);
-        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
-        temp.setRestaurants(Set.of(restaurant));
-        temp.setActiveRestaurantId(restaurant.getId());
-        temp.setOrganizationId(0L);
-        temp.setUsername(username);
-        temp.setEmail(username);
-        temp.setForename(username.substring(4));
-        temp.setSurname(username.substring(4));
-        temp.setPassword(UUID.randomUUID().toString());
-        Role role = roleService.findByName("ROLE_CUSTOMER_READONLY");
-        temp.setRoles(new HashSet<>(Collections.singletonList(role)));
-        temp.setJwtToken(jwtToken);
-        return temp;
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

@@ -1,6 +1,10 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
@@ -16,6 +20,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -89,40 +94,45 @@ class EmailServiceImpTest {
     }
 
     @Test
-    void testPasswordRecovery() {
-        String to = "user@example.com";
-        String emailToken = "testToken";
-
-        doNothing().when(emailSender).send(any(SimpleMailMessage.class));
-
-        emailService.passwordRecovery(to, emailToken);
-
-        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
-        verify(emailSender, times(1)).send(captor.capture());
-        SimpleMailMessage sentMessage = captor.getValue();
-
-        assertEquals("noreply@example.com", sentMessage.getFrom());
-        assertEquals(to, Objects.requireNonNull(sentMessage.getTo())[0]);
-        assertEquals("HungryScan - Jednorazowy link do zmiany hasła", sentMessage.getSubject());
-        assertEquals("Zmień hasło: https://cms.example.com/recover/testToken", sentMessage.getText());
+    void testPasswordRecovery() throws MessagingException {
+        validateMessageOutput((to, emailToken) -> {
+            try {
+                emailService.passwordRecovery(to, emailToken);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }, "HungryScan - Jednorazowy link do zmiany hasła");
     }
 
     @Test
-    void testActivateAccount() {
+    void testActivateAccount() throws MessagingException {
+        validateMessageOutput((to, emailToken) -> {
+            try {
+                emailService.activateAccount(to, emailToken);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }, "HungryScan - Link aktywacyjny konta");
+    }
+
+    private void validateMessageOutput(BiConsumer<String, String> consumer, String expectedSubject) throws MessagingException {
+        MimeMessage mockMimeMessage = new MimeMessage((Session) null);
+        when(emailSender.createMimeMessage()).thenReturn(mockMimeMessage);
+        doNothing().when(emailSender).send(any(MimeMessage.class));
+
         String to = "user@example.com";
         String emailToken = "testToken";
 
-        doNothing().when(emailSender).send(any(SimpleMailMessage.class));
+        doNothing().when(emailSender).send(any(MimeMessage.class));
 
-        emailService.activateAccount(to, emailToken);
+        consumer.accept(to, emailToken);
 
-        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
         verify(emailSender, times(1)).send(captor.capture());
-        SimpleMailMessage sentMessage = captor.getValue();
-
-        assertEquals("noreply@example.com", sentMessage.getFrom());
-        assertEquals(to, Objects.requireNonNull(sentMessage.getTo())[0]);
-        assertEquals("HungryScan - Link aktywacyjny konta", sentMessage.getSubject());
-        assertEquals("Aktywuj konto: https://example.com/api/user/register/testToken", sentMessage.getText());
+        MimeMessage sentMessage = captor.getValue();
+        String addressFrom = sentMessage.getFrom()[0].toString();
+        assertEquals("noreply@example.com", addressFrom);
+        assertEquals(to, sentMessage.getRecipients(Message.RecipientType.TO)[0].toString());
+        assertEquals(expectedSubject, sentMessage.getSubject());
     }
 }
