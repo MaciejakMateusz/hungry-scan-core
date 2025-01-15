@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.Email;
+import com.hackybear.hungry_scan_core.annotation.ForenameSurname;
 import com.hackybear.hungry_scan_core.annotation.Password;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
@@ -49,9 +50,11 @@ public class User implements Serializable, Comparable<User> {
     private String username;
 
     @NotBlank
+    @ForenameSurname
     private String forename;
 
     @NotBlank
+    @ForenameSurname
     private String surname;
 
     private String phoneNumber;

@@ -10,6 +10,7 @@ import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +127,7 @@ class CategoryServiceImpTest {
         category.setName(null);
         CategoryFormDTO categoryNull = categoryMapper.toFormDTO(category);
         Long activeMenuId = userService.getActiveMenuId();
-        assertThrows(ConstraintViolationException.class, () -> categoryService.save(categoryNull, activeMenuId));
+        assertThrows(ValidationException.class, () -> categoryService.save(categoryNull, activeMenuId));
     }
 
     @Test

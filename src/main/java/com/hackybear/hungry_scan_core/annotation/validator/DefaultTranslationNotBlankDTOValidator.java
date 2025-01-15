@@ -5,6 +5,8 @@ import com.hackybear.hungry_scan_core.dto.TranslatableDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.Objects;
+
 public class DefaultTranslationNotBlankDTOValidator implements ConstraintValidator<DefaultTranslationNotBlankDTO, TranslatableDTO> {
 
     @Override
@@ -13,7 +15,7 @@ public class DefaultTranslationNotBlankDTOValidator implements ConstraintValidat
 
     @Override
     public boolean isValid(TranslatableDTO value, ConstraintValidatorContext context) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return true;
         }
 

@@ -1,5 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.auth;
 
+import com.hackybear.hungry_scan_core.controller.ResponseHelper;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,15 @@ import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOME
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final UserService userService;
+    private final ResponseHelper responseHelper;
+
+    public AuthController(UserService userService,
+                          ResponseHelper responseHelper) {
+        this.userService = userService;
+        this.responseHelper = responseHelper;
+    }
+
     @GetMapping("/restaurant")
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public boolean restaurantAuth() {
@@ -23,14 +34,26 @@ public class AuthController {
 
     @GetMapping("/cms")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public boolean cmsAuth() {
-        return true;
+    public ResponseEntity<?> cmsAuth() {
+        return userService.hasCreatedRestaurant() ?
+                ResponseEntity.ok().build() :
+                responseHelper.redirectTo("/create-restaurant");
     }
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public boolean adminAuth() {
-        return true;
+    public ResponseEntity<?> adminAuth() {
+        return userService.hasCreatedRestaurant() ?
+                ResponseEntity.ok().build() :
+                responseHelper.redirectTo("/create-restaurant");
+    }
+
+    @GetMapping("/create-restaurant")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createRestaurantAuth() {
+        return userService.hasCreatedRestaurant() ?
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).build() :
+                ResponseEntity.ok().build();
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)

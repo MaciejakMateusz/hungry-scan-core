@@ -93,7 +93,7 @@ public class RegistrationFlowTest {
         User persistedUser = getDetachedUser();
         assertNotNull(persistedUser);
         assertEquals("Juan", persistedUser.getForename());
-        assertEquals(3, persistedUser.getOrganizationId());
+        assertEquals(4, persistedUser.getOrganizationId());
         assertNotNull(persistedUser.getEmailToken());
         assertEquals(0, persistedUser.getEnabled());
     }
@@ -112,7 +112,7 @@ public class RegistrationFlowTest {
         persistedUser = getDetachedUser();
         assertNotNull(persistedUser);
         assertEquals("Juan", persistedUser.getForename());
-        assertEquals(3, persistedUser.getOrganizationId());
+        assertEquals(4, persistedUser.getOrganizationId());
         assertEquals(1, persistedUser.getEnabled());
         assertNull(persistedUser.getEmailToken());
     }
@@ -121,15 +121,16 @@ public class RegistrationFlowTest {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("juan.bomboclat@test.com", "Password123!");
         Map<?, ?> response =
                 apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
-        assertEquals("authorized", response.get("message"));
+        assertEquals("/create-restaurant", response.get("redirectUrl"));
     }
 
     private void shouldNotRegisterSecondTime() throws Exception {
         RegistrationDTO registrationDTO = createRegistrationDTO();
         Map<?, ?> response =
                 apiRequestUtils.postAndExpectErrors("/api/user/register", registrationDTO);
-        assertEquals(1, response.size());
-        assertTrue((boolean) response.get("usernameExists"));
+        assertEquals(2, response.size());
+        assertEquals("Konto z podanym adresem email już istnieje", response.get("username"));
+        assertEquals("juan.bomboclat@test.com", response.get("givenUsername"));
     }
 
     private User getDetachedUser() {

@@ -18,28 +18,29 @@ import java.util.Map;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class EmailValidatorTest extends ValidatorTestBase {
+public class ForenameSurnameValidatorTest extends ValidatorTestBase {
 
     @Test
-    void givenValidEmail_whenValidate_thenNoViolations() {
-        List<String> emails = Arrays.asList("a@a.pl", "abc@abc.abc", "abcd.abcd@abcd.abc", "tEsT.123@test.com");
-        expectNoViolations(emails, this::getRegistrationDTO);
+    void givenValidForename_whenValidate_thenNoViolations() {
+        List<String> forenames =
+                Arrays.asList("Ernest", "Al", "mAtI", "MATI", "qweqweQQWEQWEQWEQWEQWEQWEQWEQWEQWEQEWQWEQWEQ");
+        expectNoViolations(forenames, this::getRegistrationDTO);
     }
 
     @Test
-    void givenInvalidEmail_whenValidate_thenExpectViolations() {
-        List<String> invalidEmails = Arrays.asList("aabc@abc.a", "abc!@abc.com", "abc@abc!.pl", "abc", "test.com", "test%wrong.com", "test@test", "test@test.");
+    void givenInvalidForename_whenValidate_thenExpectViolations() {
+        List<String> invalidForenames = Arrays.asList("a", "A", "A1", "A!", ",,", "12", "Al1", "Ernest!");
         Map<String, String> params = Map.of(
-                "messageTemplate", "{jakarta.validation.constraints.Email.message}",
-                "propertyPath", "username");
-        expectSpecificViolation(invalidEmails, this::getRegistrationDTO, params);
+                "messageTemplate", "{jakarta.validation.constraints.ForenameSurname.message}",
+                "propertyPath", "forename");
+        expectSpecificViolation(invalidForenames, this::getRegistrationDTO, params);
     }
 
-    private RegistrationDTO getRegistrationDTO(String email) {
+    private RegistrationDTO getRegistrationDTO(String forename) {
         return new RegistrationDTO(
+                forename,
                 "Test",
-                "Test",
-                email,
+                "test@test.com",
                 null,
                 "Password123!",
                 "Password123!");

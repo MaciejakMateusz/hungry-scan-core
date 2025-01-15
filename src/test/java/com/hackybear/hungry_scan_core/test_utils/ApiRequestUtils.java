@@ -364,6 +364,24 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Executes GET HTTP request.
+     * Expects an unauthorized response according to the provided matcher.
+     *
+     * @param endpointUrl The URL endpoint from which to fetch.
+     * @param matcher     The expected result matcher for the response.
+     * @return MockHttpServletResponse representing server response.
+     * @throws Exception If an error occurs during the fetching or matching of the response.
+     */
+    public MockHttpServletResponse fetchAndExpect(String endpointUrl, ResultMatcher matcher) throws Exception {
+        return mockMvc.perform(get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(matcher)
+                .andDo(print())
+                .andReturn()
+                .getResponse();
+    }
+
+    /**
      * Executes POST HTTP request.
      * Expects a response according to the provided matcher.
      *

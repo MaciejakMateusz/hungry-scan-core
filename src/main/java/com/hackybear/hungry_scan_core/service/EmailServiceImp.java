@@ -2,11 +2,14 @@ package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -46,28 +49,41 @@ public class EmailServiceImp implements EmailService {
     }
 
     @Override
-    public void passwordRecovery(String to, String emailToken) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(noReplyMail);
-        message.setTo(to);
-        message.setSubject("HungryScan - Jednorazowy link do zmiany hasła");
+    public void passwordRecovery(String to, String emailToken) throws MessagingException {
+        MimeMessage mimeMessage = emailSender.createMimeMessage();
 
-        String link = cmsUrl + "/recover/" + emailToken;
-        message.setText("Zmień hasło: " + link);
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setFrom(noReplyMail);
+        helper.setTo(to);
+        helper.setSubject("HungryScan - Jednorazowy link do zmiany hasła");
 
-        emailSender.send(message);
+        String link = cmsUrl + "/new-password/?token=" + emailToken;
+        helper.setText("<p>Aby zmienić hasło <a href='" + link + "'>kliknij tutaj</a>.</p>");
+
+        emailSender.send(mimeMessage);
     }
 
     @Override
-    public void activateAccount(String to, String emailToken) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(noReplyMail);
-        message.setTo(to);
-        message.setSubject("HungryScan - Link aktywacyjny konta");
+    public void activateAccount(String to, String emailToken) throws MessagingException {
+        MimeMessage mimeMessage = emailSender.createMimeMessage();
 
-        String link = applicationUrl + "/api/user/register/" + emailToken;
-        message.setText("Aktywuj konto: " + link);
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setFrom(noReplyMail);
+        helper.setTo(to);
+        helper.setSubject("HungryScan - Link aktywacyjny konta");
 
-        emailSender.send(message);
+        String htmlContent = getActivationHtmlContent(emailToken);
+        helper.setText(htmlContent, true);
+        emailSender.send(mimeMessage);
+    }
+
+    private String getActivationHtmlContent(String emailToken) {
+        String activationLink = applicationUrl + "/api/user/register/" + emailToken;
+        return "<p>Witaj!</p>"
+                + "<p>Dziękujemy za rejestrację w <b>HungryScan</b>. Aby aktywować swoje konto, "
+                + "prosimy <a href='" + activationLink + "'>kliknij tutaj</a>.</p>"
+                + "<p>Jeśli link nie działa, skopiuj i wklej go w pasku adresu przeglądarki:</p>"
+                + "<p>" + activationLink + "</p>"
+                + "<p>Miłego korzystania z systemu <b>HungryScan!</b></p>";
     }
 }
