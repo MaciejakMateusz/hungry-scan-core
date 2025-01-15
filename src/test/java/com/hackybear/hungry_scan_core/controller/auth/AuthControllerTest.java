@@ -8,10 +8,13 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -42,10 +45,10 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     public void shouldAuthorizeForCmsModule() throws Exception {
-        boolean isAuthorized = apiRequestUtils.fetchObject("/api/auth/cms", Boolean.class);
-        assertTrue(isAuthorized);
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/cms");
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -55,15 +58,22 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     public void shouldAuthorizeForAdminPanelModule() throws Exception {
-        boolean isAuthorized = apiRequestUtils.fetchObject("/api/auth/admin", Boolean.class);
-        assertTrue(isAuthorized);
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/admin");
+        assertEquals(200, response.getStatus());
     }
 
     @Test
     @WithMockUser(roles = {"WAITER", "COOK", "MANAGER", "CUSTOMER", "CUSTOMER_READONLY"})
     public void shouldNotAuthorizeForAdminPanelModule() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/admin");
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "fresh@user.it")
+    public void shouldRedirectToCreateRestaurant() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.fetchAndExpect("/api/auth/cms", status().isFound());
+        assertEquals("http://localhost:3002/create-restaurant", response.getHeader("Location"));
     }
 }

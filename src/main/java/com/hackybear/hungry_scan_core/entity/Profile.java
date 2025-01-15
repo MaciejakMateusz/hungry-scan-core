@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hackybear.hungry_scan_core.annotation.Pin;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -40,7 +39,6 @@ public class Profile {
 
     @Column(nullable = false)
     @NotBlank
-    @Pin
     private String pin;
 
     private String imageName;

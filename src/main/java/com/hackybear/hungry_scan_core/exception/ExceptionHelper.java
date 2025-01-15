@@ -28,7 +28,7 @@ public class ExceptionHelper {
                 messageCode, args, locale)));
     }
 
-    public String getLocalizedMessage(String messageCode, Object... args) {
-        return supplyLocalizedMessage(messageCode, args).toString();
+    public String getLocalizedMsg(String messageCode, Object... args) {
+        return String.format(messageSource.getMessage(messageCode, args, locale));
     }
 }

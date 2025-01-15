@@ -73,7 +73,7 @@ class UserControllerTest {
         User persistedUser = getDetachedUser("juan.bomboclat@test.com");
         assertNotNull(persistedUser);
         assertEquals("Juan", persistedUser.getForename());
-        assertEquals(3, persistedUser.getOrganizationId());
+        assertEquals(4, persistedUser.getOrganizationId());
         assertNotNull(persistedUser.getEmailToken());
         assertEquals(0, persistedUser.getEnabled());
     }
@@ -97,7 +97,7 @@ class UserControllerTest {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("matimemek@test.com", "Lubieplacki123!");
         Map<?, ?> response =
                 apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
-        assertEquals("authorized", response.get("message"));
+        assertEquals("/cms", response.get("redirectUrl"));
     }
 
     @Test

@@ -13,10 +13,6 @@ public class DefaultTranslationNotBlankValidator implements ConstraintValidator<
 
     @Override
     public boolean isValid(Translatable value, ConstraintValidatorContext context) {
-        if (value == null) {
-            return true;
-        }
-
         String defaultTranslation = value.getDefaultTranslation();
         return defaultTranslation != null && !defaultTranslation.trim().isEmpty();
     }

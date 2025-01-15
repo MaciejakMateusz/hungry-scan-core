@@ -6,11 +6,18 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.hackybear.hungry_scan_core.entity.RestaurantTable;
-import com.hackybear.hungry_scan_core.service.interfaces.QRService;
-import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import com.hackybear.hungry_scan_core.controller.ResponseHelper;
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
+import com.hackybear.hungry_scan_core.entity.*;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.service.interfaces.*;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -20,9 +27,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -35,12 +40,30 @@ public class QRServiceImp implements QRService {
     @Value("${server.port}")
     private String port;
 
+    @Value("${CUSTOMER_APP_URL}")
+    private String customerAppUrl;
+
+    @Value("${IS_PROD}")
+    private boolean isProduction;
+
     private static final String GENERAL_QR_NAME = "QR code - HungryScan";
 
     private final RestaurantTableService restaurantTableService;
+    private final RestaurantService restaurantService;
+    private final RestaurantMapper restaurantMapper;
+    private final RoleService roleService;
+    private final JwtService jwtService;
+    private final ResponseHelper responseHelper;
+    private final UserService userService;
 
-    public QRServiceImp(RestaurantTableService restaurantTableService) {
+    public QRServiceImp(RestaurantTableService restaurantTableService, RestaurantService restaurantService, RestaurantMapper restaurantMapper, RoleService roleService, JwtService jwtService, ResponseHelper responseHelper, UserService userService) {
         this.restaurantTableService = restaurantTableService;
+        this.restaurantService = restaurantService;
+        this.restaurantMapper = restaurantMapper;
+        this.roleService = roleService;
+        this.jwtService = jwtService;
+        this.responseHelper = responseHelper;
+        this.userService = userService;
     }
 
     @Override
@@ -85,6 +108,22 @@ public class QRServiceImp implements QRService {
         return qr.exists();
     }
 
+    @Override
+    public ResponseEntity<?> scanQRCode(HttpServletResponse response, String restaurantToken) throws IOException {
+        String username = UUID.randomUUID().toString().substring(1, 13) + "@temp.it";
+        String jwt = jwtService.generateToken(username);
+        try {
+            persistUser(new JwtToken(jwt), username, restaurantToken);
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+
+        String cookie = prepareJwtCookie(jwt);
+        response.addHeader("Set-Cookie", cookie);
+        response.sendRedirect(customerAppUrl);
+        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).build();
+    }
+
     private void createQrFile(String format, String fileName, String url) throws WriterException, IOException {
         int width = 1000;
         int height = 1000;
@@ -111,5 +150,41 @@ public class QRServiceImp implements QRService {
             System.out.println("Failed to determine server IP address: " + e.getMessage());
             return null;
         }
+    }
+
+    private String prepareJwtCookie(String jwt) {
+        ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
+                .path("/")
+                .httpOnly(true)
+                .secure(isProduction)
+                .maxAge(10800)
+                .sameSite("none")
+                .build();
+        return cookie.toString();
+    }
+
+    private void persistUser(JwtToken jwtToken, String username, String restaurantToken) throws LocalizedException {
+        User user = createTempCustomer(jwtToken, username, restaurantToken);
+        userService.saveTempUser(user);
+    }
+
+    private User createTempCustomer(JwtToken jwtToken,
+                                    String username,
+                                    String restaurantToken) throws LocalizedException {
+        User temp = new User();
+        RestaurantDTO restaurantDTO = restaurantService.findByToken(restaurantToken);
+        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        temp.setRestaurants(Set.of(restaurant));
+        temp.setActiveRestaurantId(restaurant.getId());
+        temp.setOrganizationId(0L);
+        temp.setUsername(username);
+        temp.setEmail(username);
+        temp.setForename("Temp");
+        temp.setSurname("Customer");
+        temp.setPassword(UUID.randomUUID().toString());
+        Role role = roleService.findByName("ROLE_CUSTOMER_READONLY");
+        temp.setRoles(new HashSet<>(Collections.singletonList(role)));
+        temp.setJwtToken(jwtToken);
+        return temp;
     }
 }

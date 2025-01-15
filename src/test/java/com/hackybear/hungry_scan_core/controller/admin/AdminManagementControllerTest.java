@@ -153,7 +153,7 @@ class AdminManagementControllerTest {
         List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/admins", User.class);
 
-        assertEquals(2, users.size());
+        assertEquals(3, users.size());
         assertEquals("admin@example.com", users.getFirst().getUsername());
     }
 
@@ -297,7 +297,8 @@ class AdminManagementControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/add", registrationDTO, status().isBadRequest());
 
-        assertTrue((Boolean) responseParams.get("usernameExists"));
+        assertEquals("Konto z podanym adresem email już istnieje", responseParams.get("username"));
+        assertEquals("netka@test.com", responseParams.get("givenUsername"));
     }
 
     @Test
@@ -311,7 +312,7 @@ class AdminManagementControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/admin/users/add", registrationDTO, status().isBadRequest());
 
-        assertTrue((Boolean) responseParams.get("passwordsNotMatch"));
+        assertEquals("Hasła nie są identyczne", responseParams.get("repeatedPassword"));
     }
 
     @Test
