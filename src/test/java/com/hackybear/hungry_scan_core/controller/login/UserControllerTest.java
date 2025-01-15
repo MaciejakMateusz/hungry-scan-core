@@ -73,7 +73,7 @@ class UserControllerTest {
         User persistedUser = getDetachedUser("juan.bomboclat@test.com");
         assertNotNull(persistedUser);
         assertEquals("Juan", persistedUser.getForename());
-        assertEquals(3, persistedUser.getOrganizationId());
+        assertEquals(4, persistedUser.getOrganizationId());
         assertNotNull(persistedUser.getEmailToken());
         assertEquals(0, persistedUser.getEnabled());
     }

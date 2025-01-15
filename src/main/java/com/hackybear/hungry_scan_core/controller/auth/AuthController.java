@@ -2,7 +2,6 @@ package com.hackybear.hungry_scan_core.controller.auth;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +20,6 @@ public class AuthController {
     private final UserService userService;
     private final ResponseHelper responseHelper;
 
-    @Value("${CMS_APP_URL}")
-    private String cmsAppUrl;
-
     public AuthController(UserService userService,
                           ResponseHelper responseHelper) {
         this.userService = userService;
@@ -41,7 +37,7 @@ public class AuthController {
     public ResponseEntity<?> cmsAuth() {
         return userService.hasCreatedRestaurant() ?
                 ResponseEntity.ok().build() :
-                responseHelper.redirectTo(cmsAppUrl + "/create-restaurant");
+                responseHelper.redirectTo("/create-restaurant");
     }
 
     @GetMapping("/admin")
@@ -49,7 +45,7 @@ public class AuthController {
     public ResponseEntity<?> adminAuth() {
         return userService.hasCreatedRestaurant() ?
                 ResponseEntity.ok().build() :
-                responseHelper.redirectTo(cmsAppUrl + "/create-restaurant");
+                responseHelper.redirectTo("/create-restaurant");
     }
 
     @GetMapping("/create-restaurant")

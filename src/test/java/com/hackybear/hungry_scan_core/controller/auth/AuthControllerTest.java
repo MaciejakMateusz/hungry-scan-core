@@ -14,6 +14,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -69,5 +70,10 @@ class AuthControllerTest {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/admin");
     }
 
-    //TODO dopisać przypadki dla przekierowań do formularza stworzenia restauracji
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "fresh@user.it")
+    public void shouldRedirectToCreateRestaurant() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.fetchAndExpect("/api/auth/cms", status().isFound());
+        assertEquals("http://localhost:3002/create-restaurant", response.getHeader("Location"));
+    }
 }

@@ -894,6 +894,14 @@ VALUES (2, NOW(), '0c9e683-8576@temp.it', null, 1, 'temp',
         '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW',
         null, 'surname', null, '0c9e683-8576@temp.it', 3, 2, 2);
 
+INSERT INTO users (organization_id, created, email, email_token, enabled, forename, password, phone_number, surname,
+                   updated,
+                   username,
+                   jwt_token_id, active_menu_id, active_restaurant_id)
+VALUES (3, '2024-04-23 12:50:41.531670', 'fresh@user.it', null, 1, 'Fresh',
+        '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.',
+        null, 'User', null, 'fresh@user.it', null, null, null);
+
 INSERT INTO user_role (user_id, role_id)
 VALUES (1, 1);
 INSERT INTO user_role (user_id, role_id)
@@ -912,6 +920,8 @@ INSERT INTO user_role (user_id, role_id)
 VALUES (7, 2);
 INSERT INTO user_role (user_id, role_id)
 VALUES (8, 5);
+INSERT INTO user_role (user_id, role_id)
+VALUES (9, 2);
 
 INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (1, 1);
