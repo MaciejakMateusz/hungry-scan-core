@@ -3,6 +3,8 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
+import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -24,8 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.RESTAURANTS_ALL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -43,6 +44,9 @@ public class RestaurantControllerTest {
 
     @Autowired
     private RestaurantMapper restaurantMapper;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private CacheManager cacheManager;
@@ -110,7 +114,7 @@ public class RestaurantControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", restaurantDTO);
 
         RestaurantDTO persistedRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 10, RestaurantDTO.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 11, RestaurantDTO.class);
         assertEquals("Real Greek Carbonara", persistedRestaurant.name());
         assertEquals("Korfantego 123", persistedRestaurant.address());
     }
@@ -120,6 +124,37 @@ public class RestaurantControllerTest {
     void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
         RestaurantDTO restaurantDTO = createRestaurantDTO();
         apiRequestUtils.postAndExpect("/api/cms/restaurants/add", restaurantDTO, status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "fresh@user.it")
+    @Transactional
+    @Rollback
+    void shouldCreateFirstRestaurant() throws Exception {
+        User currentUser = userService.findByUsername("fresh@user.it");
+        assertNull(currentUser.getActiveRestaurantId());
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
+
+        apiRequestUtils.postAndExpect200("/api/cms/restaurants/create-first", restaurantDTO);
+
+        RestaurantDTO persistedRestaurant =
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 10, RestaurantDTO.class);
+        assertEquals("Real Greek Carbonara", persistedRestaurant.name());
+        assertEquals("Korfantego 123", persistedRestaurant.address());
+
+        currentUser = userService.findByUsername("fresh@user.it");
+        assertNotNull(currentUser.getActiveRestaurantId());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotAllowToCreateFirstRestaurant() throws Exception {
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
+
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/create-first", restaurantDTO);
+        assertEquals("Użytkownik utworzył już restaurację.", errors.get("error"));
     }
 
     @Test

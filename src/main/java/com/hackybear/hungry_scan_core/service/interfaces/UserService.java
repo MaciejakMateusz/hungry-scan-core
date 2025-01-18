@@ -21,6 +21,8 @@ public interface UserService {
 
     void saveTempUser(User tempUser);
 
+    void save(User user);
+
     void activateAccount(String emailToken) throws LocalizedException;
 
     void resendActivation(String email) throws LocalizedException, MessagingException;

@@ -55,7 +55,7 @@ public class LoginServiceImp implements LoginService {
         if (!userService.hasCreatedRestaurant(authRequestDTO.getUsername())) {
             return ResponseEntity.ok(Map.of("redirectUrl", "/create-restaurant"));
         }
-        return ResponseEntity.ok(Map.of("redirectUrl", "/cms"));
+        return ResponseEntity.ok(Map.of("redirectUrl", "/dashboard"));
     }
 
     private String prepareJwtCookie(String jwt) {
