@@ -40,10 +40,23 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
 
     @Column(length = 100, nullable = false)
     @NotBlank
+    @Length(max = 100)
     private String name;
 
-    @Column(length = 300)
+    @Column(length = 300, nullable = false)
+    @NotBlank
+    @Length(max = 300)
     private String address;
+
+    @Column(length = 300, nullable = false)
+    @NotBlank
+    @Length(max = 300)
+    private String postalCode;
+
+    @Column(length = 300, nullable = false)
+    @NotBlank
+    @Length(max = 300)
+    private String city;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")

@@ -1,7 +1,7 @@
-INSERT IGNORE INTO restaurants (id, address, name, token)
-VALUES (1, 'Jastrzębie-Zdrój', 'Rarytas', '3f979e48-e7eb-4669-8084-72543c8538f0');
-INSERT IGNORE INTO restaurants (id, address, name, token)
-VALUES (2, 'Katowice', 'Tajska', null);
+INSERT IGNORE INTO restaurants (id, address, name, postalCode, city, token)
+VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO restaurants (id, address, name, postalCode, city, token)
+VALUES (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null);
 
 INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
 VALUES (1, true, 'Całodniowe', 1);

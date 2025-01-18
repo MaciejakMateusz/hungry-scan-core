@@ -203,6 +203,8 @@ public class RestaurantControllerTest {
         Restaurant restaurant = new Restaurant();
         restaurant.setName("Real Greek Carbonara");
         restaurant.setAddress("Korfantego 123");
+        restaurant.setCity("Katowice");
+        restaurant.setPostalCode("40-404");
         return restaurant;
     }
 
@@ -210,6 +212,8 @@ public class RestaurantControllerTest {
         Restaurant restaurant = new Restaurant();
         restaurant.setName("Real Greek Carbonara");
         restaurant.setAddress("Korfantego 123");
+        restaurant.setCity("Katowice");
+        restaurant.setPostalCode("40-404");
         return restaurantMapper.toDTO(restaurant);
     }
 
