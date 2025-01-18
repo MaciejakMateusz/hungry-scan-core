@@ -50,7 +50,7 @@ public class AuthController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createRestaurantAuth() {
         return userService.hasCreatedRestaurant() ?
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).build() :
+                ResponseEntity.status(HttpStatus.FOUND).body(Map.of("redirectUrl", "/cms")) :
                 ResponseEntity.ok().build();
     }
 

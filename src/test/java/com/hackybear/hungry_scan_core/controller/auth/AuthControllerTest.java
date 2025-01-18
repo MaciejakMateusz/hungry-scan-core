@@ -77,4 +77,12 @@ class AuthControllerTest {
         assertEquals(302, response.getStatus());
         assertEquals("{\"redirectUrl\":\"/create-restaurant\"}", response.getContentAsString());
     }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldRedirectToCmsModule() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.fetchAndExpect("/api/auth/create-restaurant", status().isFound());
+        assertEquals(302, response.getStatus());
+        assertEquals("{\"redirectUrl\":\"/cms\"}", response.getContentAsString());
+    }
 }
