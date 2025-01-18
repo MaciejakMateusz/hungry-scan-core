@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,9 @@ import java.util.function.Function;
 public class JwtServiceImp implements JwtService {
 
     private final Environment environment;
+
+    @Value("${JWT_EXPIRATION_MILLIS}")
+    private long expirationMillis;
 
     public JwtServiceImp(Environment environment) {
         this.environment = environment;
@@ -66,7 +70,7 @@ public class JwtServiceImp implements JwtService {
     }
 
     private String createToken(Map<String, Object> claims, String username) {
-        long expirationTimeMillis = System.currentTimeMillis() + (60 * 60 * 1000);
+        long expirationTimeMillis = System.currentTimeMillis() + expirationMillis;
 
         return Jwts.builder()
                 .claims(claims)
