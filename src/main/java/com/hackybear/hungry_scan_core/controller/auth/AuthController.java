@@ -62,6 +62,67 @@ public class AuthController {
                 ResponseEntity.ok().build();
     }
 
+    @GetMapping("/activation")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> activationAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/activation/*")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> activationAllAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping("/activation-error")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> activationErrorAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/account-activated")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> accountActivatedAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/sign-in")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> signInAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/sign-up")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> signUpAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/password-recovery")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> passwordRecoveryAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/new-password")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> newPasswordAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/recovery-sent")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> recoverySentAuth() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/recovery-confirmation")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<?> recoveryConfirmationAuth() {
+        return ResponseEntity.ok().build();
+    }
+
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();

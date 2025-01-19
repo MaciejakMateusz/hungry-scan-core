@@ -122,4 +122,124 @@ class AuthControllerTest {
         assertEquals(302, response.getStatus());
         assertEquals("{\"redirectUrl\":\"/dashboard\"}", response.getContentAsString());
     }
+
+    @Test
+    public void shouldAllowToActivation() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/activation");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToActivation() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/activation");
+    }
+
+    @Test
+    public void shouldAllowToActivationAll() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/activation/?resend=true");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToActivationAll() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/activation/?target=admin@example.com");
+    }
+
+    @Test
+    public void shouldAllowToActivationError() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/activation-error");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToActivationError() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/activation-error");
+    }
+
+    @Test
+    public void shouldAllowToAccountActivated() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/account-activated");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToAccountActivated() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/account-activated");
+    }
+
+    @Test
+    public void shouldAllowToSignIn() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/sign-in");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToSignIn() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/sign-in");
+    }
+
+    @Test
+    public void shouldAllowToSignUp() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/sign-up");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToSignUp() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/sign-up");
+    }
+
+    @Test
+    public void shouldAllowToPasswordRecovery() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/password-recovery");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToPasswordRecovery() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/password-recovery");
+    }
+
+    @Test
+    public void shouldAllowToNewPassword() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/new-password");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToNewPassword() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/new-password");
+    }
+
+    @Test
+    public void shouldAllowToRecoverySent() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/recovery-sent");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToRecoverySent() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/recovery-sent");
+    }
+
+    @Test
+    public void shouldAllowToRecoveryConfirmation() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/recovery-confirmation");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    public void shouldNotAllowAuthorizedToRecoveryConfirmation() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/recovery-confirmation");
+    }
 }

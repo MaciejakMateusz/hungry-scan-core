@@ -6,11 +6,9 @@ import io.micrometer.common.lang.NonNullApi;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -21,14 +19,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Component
 @NonNullApi
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final List<String> jwtInvalidateURIs;
 
     @Value("${IS_PROD}")
     private boolean isProduction;
@@ -36,6 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     public JwtAuthFilter(JwtService jwtService, CustomUserDetailsService customUserDetailsService) {
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
+        this.jwtInvalidateURIs = List.of("/api/user/register", "/api/user/recover");
     }
 
     @Override
@@ -43,7 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        Map<String, String> jwtParams = getJwtParams(request);
+        Map<String, String> jwtParams = getJwtParams(request, jwtService::extractUsername);
         String token = jwtParams.get("token");
         String username = jwtParams.get("username");
 
@@ -53,8 +55,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 token = authHeader.substring(7);
                 username = jwtService.extractUsername(token);
             }
-        } else if ("/api/user/register".equals(request.getRequestURI())) {
-            String invalidatedJwtCookie = invalidateJwtCookie();
+        } else if (jwtInvalidateURIs.contains(request.getRequestURI())) {
+            String invalidatedJwtCookie = invalidateJwtCookie(isProduction);
             response.setHeader("Set-Cookie", invalidatedJwtCookie);
             filterChain.doFilter(request, response);
             return;
@@ -62,33 +64,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         setUpSecurityContext(username, token, request);
         filterChain.doFilter(request, response);
-    }
-
-    private Map<String, String> getJwtParams(HttpServletRequest request) {
-        Map<String, String> params = new HashMap<>();
-        Cookie[] cookies = request.getCookies();
-        if (Objects.nonNull(cookies)) {
-            Optional<Cookie> jwtCookie = Arrays.stream(cookies)
-                    .filter(cookie -> "jwt".equals(cookie.getName()))
-                    .findFirst();
-            if (jwtCookie.isPresent()) {
-                String token = jwtCookie.get().getValue();
-                params.put("token", token);
-                params.put("username", jwtService.extractUsername(token));
-            }
-        }
-        return params;
-    }
-
-    private String invalidateJwtCookie() {
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
-                .path("/")
-                .httpOnly(true)
-                .secure(isProduction)
-                .maxAge(0)
-                .sameSite("Strict")
-                .build();
-        return cookie.toString();
     }
 
     private void setUpSecurityContext(@Nullable String username, String token, HttpServletRequest request) {
