@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Email {
-    String message() default "Niepoprawny format adresu email";
+    String message() default "{jakarta.validation.constraints.Email.message}";
 
     Class<?>[] groups() default {};
 

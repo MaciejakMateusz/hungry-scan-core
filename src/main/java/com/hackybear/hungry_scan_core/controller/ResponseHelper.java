@@ -1,17 +1,21 @@
 package com.hackybear.hungry_scan_core.controller;
 
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
-import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
+import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.utility.interfaces.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,10 +28,16 @@ import java.util.function.Function;
 @Component
 public class ResponseHelper {
 
-    private final UserService userService;
+    private final ExceptionHelper exceptionHelper;
+    private final UserRepository userRepository;
 
-    public ResponseHelper(UserService userService) {
-        this.userService = userService;
+    @Value("${CMS_APP_URL}")
+    private String cmsAppUrl;
+
+    public ResponseHelper(ExceptionHelper exceptionHelper,
+                          UserRepository userRepository) {
+        this.exceptionHelper = exceptionHelper;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -253,12 +263,19 @@ public class ResponseHelper {
 
     public Map<String, Object> getErrorParams(RegistrationDTO registrationDTO) {
         Map<String, Object> params = new HashMap<>();
-        if (userService.existsByUsername(registrationDTO.username())) {
-            params.put("usernameExists", true);
+        if (userRepository.existsByUsername(registrationDTO.username())) {
+            params.put("givenUsername", registrationDTO.username());
+            params.put("username", exceptionHelper.getLocalizedMsg("validation.username.usernameExists"));
         } else if (!registrationDTO.password().equals(registrationDTO.repeatedPassword())) {
-            params.put("passwordsNotMatch", true);
+            params.put("repeatedPassword", exceptionHelper.getLocalizedMsg("validation.repeatedPassword.notMatch"));
         }
         return params;
+    }
+
+    public ResponseEntity<?> redirectTo(String url) {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(cmsAppUrl + url))
+                .build();
     }
 
     private ResponseEntity<?> createErrorResponse(BindingResult br) {

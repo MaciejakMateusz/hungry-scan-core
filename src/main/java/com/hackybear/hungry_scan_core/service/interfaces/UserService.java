@@ -4,6 +4,9 @@ import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import jakarta.mail.MessagingException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 
 import java.util.List;
 import java.util.Set;
@@ -14,15 +17,19 @@ public interface UserService {
 
     Set<User> findAll() throws LocalizedException;
 
-    void save(RegistrationDTO registrationDTO);
+    void save(RegistrationDTO registrationDTO) throws MessagingException;
 
     void saveTempUser(User tempUser);
 
+    void save(User user);
+
     void activateAccount(String emailToken) throws LocalizedException;
 
-    void sendPasswordRecovery(String email) throws LocalizedException;
+    void resendActivation(String email) throws LocalizedException, MessagingException;
 
-    void recoverPassword(RecoveryDTO recovery) throws LocalizedException;
+    void sendPasswordRecovery(String email) throws LocalizedException, MessagingException;
+
+    ResponseEntity<?> recoverPassword(RecoveryDTO recovery, BindingResult br);
 
     void addToOrganization(RegistrationDTO registrationDTO) throws LocalizedException;
 
@@ -33,8 +40,6 @@ public interface UserService {
     void switchRestaurant(Long restaurantId, User user);
 
     void switchMenu(Long menuId, User user);
-
-    boolean existsByUsername(String username);
 
     boolean isUpdatedUserValid(RegistrationDTO registrationDTO) throws LocalizedException;
 
@@ -47,6 +52,10 @@ public interface UserService {
     User getCurrentUser() throws LocalizedException;
 
     Long getActiveRestaurantId() throws LocalizedException;
+
+    boolean hasCreatedRestaurant();
+
+    boolean hasCreatedRestaurant(String username);
 
     Long getActiveMenuId() throws LocalizedException;
 

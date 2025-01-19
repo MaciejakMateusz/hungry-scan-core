@@ -15,7 +15,14 @@ public record RestaurantDTO(
         @NotBlank
         String name,
 
-        String address) implements Serializable, Comparable<RestaurantDTO> {
+        @NotBlank
+        String address,
+
+        @NotBlank
+        String postalCode,
+
+        @NotBlank
+        String city) implements Serializable, Comparable<RestaurantDTO> {
 
     @Serial
     private static final long serialVersionUID = 1L;

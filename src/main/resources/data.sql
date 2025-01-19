@@ -1,7 +1,7 @@
-INSERT IGNORE INTO restaurants (id, address, name, token)
-VALUES (1, 'Jastrzębie-Zdrój', 'Rarytas', '3f979e48-e7eb-4669-8084-72543c8538f0');
-INSERT IGNORE INTO restaurants (id, address, name, token)
-VALUES (2, 'Katowice', 'Tajska', null);
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token)
+VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token)
+VALUES (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null);
 
 INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
 VALUES (1, true, 'Całodniowe', 1);
@@ -40,16 +40,24 @@ INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
 VALUES (6, 'ROLE_CUSTOMER_READONLY', 6);
 
 INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
-                          jwt_token_id, name, phone_number, surname, active_restaurant_id, active_menu_id)
+                          jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
 VALUES (1, 1, NOW(), 'admin@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, '', '',
         '', 1, 1);
+
+INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
+                          jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
+VALUES (2, 2, NOW(), 'mati@test.com', 1,
+        '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'mati@test.com', null, null, '', '',
+        '', null, null);
 
 INSERT IGNORE INTO users_restaurants (user_id, restaurant_id)
 VALUES (1, 1);
 
 INSERT IGNORE INTO user_role (user_id, role_id)
-VALUES (1, 2);
+VALUES (2, 2);
+INSERT IGNORE INTO user_role (user_id, role_id)
+VALUES (2, 2);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
     (7, 'Gluten', 'Gluten');

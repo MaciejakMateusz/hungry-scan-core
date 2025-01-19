@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.integration;
 
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
 import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
+import com.hackybear.hungry_scan_core.dto.RecoveryInitDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
@@ -74,7 +75,8 @@ public class PasswordRecoveryFlowTest {
         User user = getDetachedUser();
         assertNull(user.getEmailToken());
         assertNull(user.getEmailTokenExpiry());
-        apiRequestUtils.postAndExpect200("/api/user/recover", USERNAME);
+        RecoveryInitDTO recoveryInitDTO = new RecoveryInitDTO(USERNAME);
+        apiRequestUtils.postAndExpect200("/api/user/recover", recoveryInitDTO);
 
         user = getDetachedUser();
         assertNotNull(user.getEmailToken());
@@ -89,7 +91,7 @@ public class PasswordRecoveryFlowTest {
                 "Newpass123");
         Map<?, ?> response = apiRequestUtils.postAndExpectErrors("/api/user/confirm-recovery", recoveryDTO);
         assertEquals(1, response.size());
-        assertEquals(response.get("exceptionMsg"), "Passwords not match");
+        assertEquals("Hasła nie są identyczne", response.get("repeatedPassword"));
     }
 
     private void shouldNotUpdateWithIncorrectPassword() throws Exception {
@@ -107,7 +109,8 @@ public class PasswordRecoveryFlowTest {
                 "nonExistingEmailToken123123123123",
                 "Newpass123!",
                 "Newpass123!");
-        apiRequestUtils.postAndExpect200("/api/user/confirm-recovery", recoveryDTO);
+        Map<?, ?> response = apiRequestUtils.postAndExpectErrors("/api/user/confirm-recovery", recoveryDTO);
+        assertEquals("Nieprawidłowy klucz przywracania hasła", response.get("error"));
     }
 
     private void updateToNewPassword() throws Exception {
@@ -125,7 +128,7 @@ public class PasswordRecoveryFlowTest {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO(USERNAME, "Newpass123!");
         Map<?, ?> response =
                 apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
-        assertEquals("authorized", response.get("message"));
+        assertEquals("/dashboard", response.get("redirectUrl"));
     }
 
     private User getDetachedUser() {

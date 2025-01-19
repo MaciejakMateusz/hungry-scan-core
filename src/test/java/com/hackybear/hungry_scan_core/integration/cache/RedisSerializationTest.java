@@ -36,11 +36,30 @@ public class RedisSerializationTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Set<RestaurantDTO> originalSet = new HashSet<>();
-        originalSet.add(new RestaurantDTO(1, "token123", "Restaurant Name", "Address"));
-
-        byte[] serialized = serializer.serialize(originalSet);
-        Set<RestaurantDTO> deserialized = (Set<RestaurantDTO>) serializer.deserialize(serialized);
+        originalSet.add(createRestaurantDTO());
+        Set<?> deserialized = getDeserializedSet(serializer, originalSet);
 
         assertEquals(objectMapper.writeValueAsString(originalSet), objectMapper.writeValueAsString(deserialized));
+    }
+
+    private RestaurantDTO createRestaurantDTO() {
+        return new RestaurantDTO(
+                1,
+                "token123",
+                "Restaurant Name",
+                "Address",
+                "40-404",
+                "Katowice");
+    }
+
+    private Set<?> getDeserializedSet(GenericJackson2JsonRedisSerializer serializer, Set<RestaurantDTO> originalSet) {
+        byte[] serialized = serializer.serialize(originalSet);
+        Object deserializedObj = serializer.deserialize(serialized);
+        Set<?> deserialized = new HashSet<>();
+
+        if (deserializedObj instanceof Set<?>) {
+            deserialized = (Set<?>) deserializedObj;
+        }
+        return deserializedObj instanceof Set<?> ? deserialized : new HashSet<>();
     }
 }
