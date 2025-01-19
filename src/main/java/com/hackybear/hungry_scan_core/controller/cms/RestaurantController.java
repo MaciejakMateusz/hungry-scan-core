@@ -3,6 +3,8 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
@@ -21,13 +23,15 @@ import java.util.Map;
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
+    private final ExceptionHelper exceptionHelper;
     private final UserService userService;
     private final ResponseHelper responseHelper;
 
-    public RestaurantController(RestaurantService restaurantService,
+    public RestaurantController(RestaurantService restaurantService, ExceptionHelper exceptionHelper,
                                 UserService userService,
                                 ResponseHelper responseHelper) {
         this.restaurantService = restaurantService;
+        this.exceptionHelper = exceptionHelper;
         this.userService = userService;
         this.responseHelper = responseHelper;
     }
@@ -45,17 +49,33 @@ public class RestaurantController {
         return responseHelper.getResponseEntity(id, restaurantService::findById);
     }
 
+    @PostMapping("/create-first")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> createFirst(@Valid @RequestBody RestaurantDTO restaurantDTO, BindingResult br) {
+        Map<String, Object> params = Map.of(
+                "restaurantDTO", restaurantDTO,
+                "bindingResult", br,
+                "userService", userService,
+                "responseHelper", responseHelper);
+        User currentUser;
+        try {
+            currentUser = userService.getCurrentUser();
+        } catch (LocalizedException e) {
+            return ResponseEntity.internalServerError().body(Map.of("error",
+                    exceptionHelper.getLocalizedMsg("error.createRestaurant.currentUser")));
+        }
+        return restaurantService.getCreateFirstResponse(params, currentUser);
+    }
+
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> add(@Valid @RequestBody RestaurantDTO restaurant,
-                                 BindingResult br) {
+    public ResponseEntity<?> add(@Valid @RequestBody RestaurantDTO restaurant, BindingResult br) {
         return responseHelper.buildResponse(restaurant, br, userService::getCurrentUser, restaurantService::save);
     }
 
     @PatchMapping("/update")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> update(@Valid @RequestBody RestaurantDTO restaurant,
-                                    BindingResult br) {
+    public ResponseEntity<?> update(@Valid @RequestBody RestaurantDTO restaurant, BindingResult br) {
         return responseHelper.buildResponse(restaurant, br, userService::getCurrentUser, restaurantService::save);
     }
 

@@ -27,6 +27,9 @@ public class LoginServiceImp implements LoginService {
     @Value("${IS_PROD}")
     private boolean isProduction;
 
+    @Value("${JWT_EXPIRATION_MILLIS}")
+    private long expirationMillis;
+
     public LoginServiceImp(AuthenticationManager authenticationManager,
                            UserService userService,
                            JwtService jwtService) {
@@ -52,15 +55,16 @@ public class LoginServiceImp implements LoginService {
         if (!userService.hasCreatedRestaurant(authRequestDTO.getUsername())) {
             return ResponseEntity.ok(Map.of("redirectUrl", "/create-restaurant"));
         }
-        return ResponseEntity.ok(Map.of("redirectUrl", "/cms"));
+        return ResponseEntity.ok(Map.of("redirectUrl", "/dashboard"));
     }
 
     private String prepareJwtCookie(String jwt) {
+        long expirationTimeSeconds = expirationMillis / 1000;
         ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
                 .path("/")
                 .httpOnly(true)
                 .secure(isProduction)
-                .maxAge(28800)
+                .maxAge(expirationTimeSeconds)
                 .sameSite("Strict")
                 .build();
         return cookie.toString();

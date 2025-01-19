@@ -80,6 +80,13 @@ public class UserServiceImp implements UserService {
         prepareAndSendActivation(user);
     }
 
+    @Transactional
+    @Override
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    @Transactional
     @Override
     public void saveTempUser(User tempUser) {
         tempUser.setEnabled(1);
