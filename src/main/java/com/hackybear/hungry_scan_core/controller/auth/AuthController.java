@@ -74,7 +74,6 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-
     @GetMapping("/activation-error")
     @PreAuthorize("isAnonymous()")
     public ResponseEntity<?> activationErrorAuth() {
