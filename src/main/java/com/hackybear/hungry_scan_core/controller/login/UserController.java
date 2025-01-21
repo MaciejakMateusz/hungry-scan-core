@@ -72,11 +72,27 @@ public class UserController {
     }
 
     @GetMapping("/resend-activation/{email}")
+    @PreAuthorize("isAnonymous()")
     @WithRateLimitProtection
     public ResponseEntity<?> resendActivation(@PathVariable String email) {
         try {
             userService.resendActivation(email);
             return responseHelper.redirectTo("/activation/?resend=true");
+        } catch (LocalizedException | MessagingException e) {
+            return responseHelper.redirectTo("/activation-error");
+        }
+    }
+
+    @PostMapping("/resend-activation")
+    @PreAuthorize("isAnonymous()")
+    @WithRateLimitProtection
+    public ResponseEntity<?> reactivateAccount(@RequestBody @Valid RecoveryInitDTO recoveryInitDTO, BindingResult br) {
+        if (br.hasErrors()) {
+            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
+        }
+        try {
+            userService.resendActivation(recoveryInitDTO.username());
+            return ResponseEntity.ok(Map.of("redirectUrl", "/activation/?resend=true"));
         } catch (LocalizedException | MessagingException e) {
             return responseHelper.redirectTo("/activation-error");
         }
@@ -103,6 +119,7 @@ public class UserController {
     }
 
     @PostMapping("/confirm-recovery")
+    @PreAuthorize("isAnonymous()")
     @WithRateLimitProtection
     public ResponseEntity<?> passwordRecovery(@RequestBody @Valid RecoveryDTO recovery, BindingResult br) {
         return userService.recoverPassword(recovery, br);
