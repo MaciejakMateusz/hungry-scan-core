@@ -25,7 +25,6 @@ Central server REST-API to handle HTTP communication from
 - Caching requests using Redis to supercharge response speeds 10x and reduce database connections
 - Mapping received DTO's to entities and vice versa
 - Communicating with other servers like mailing, AI models
-- Communicating with other services like mailing, AI models
 
 ## Project design
 
