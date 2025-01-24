@@ -30,17 +30,9 @@ public class AuthController {
         return true;
     }
 
-    @GetMapping("/cms")
+    @GetMapping("/app")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> cmsAuth() {
-        return userService.hasCreatedRestaurant() ?
-                ResponseEntity.ok().build() :
-                ResponseEntity.status(HttpStatus.FOUND).body(Map.of("redirectUrl", "/create-restaurant"));
-    }
-
-    @GetMapping("/dashboard")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> dashboardAuth() {
+    public ResponseEntity<?> appAuth() {
         return userService.hasCreatedRestaurant() ?
                 ResponseEntity.ok().build() :
                 ResponseEntity.status(HttpStatus.FOUND).body(Map.of("redirectUrl", "/create-restaurant"));
@@ -58,7 +50,7 @@ public class AuthController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createRestaurantAuth() {
         return userService.hasCreatedRestaurant() ?
-                ResponseEntity.status(HttpStatus.FOUND).body(Map.of("redirectUrl", "/dashboard")) :
+                ResponseEntity.status(HttpStatus.FOUND).body(Map.of("redirectUrl", "/app")) :
                 ResponseEntity.ok().build();
     }
 
