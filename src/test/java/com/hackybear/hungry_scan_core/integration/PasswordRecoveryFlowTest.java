@@ -128,7 +128,8 @@ public class PasswordRecoveryFlowTest {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO(USERNAME, "Newpass123!");
         Map<?, ?> response =
                 apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
-        assertEquals("/dashboard", response.get("redirectUrl"));
+        assertEquals("/app", response.get("redirectUrl"));
+        assertEquals("mati", response.get("forename"));
     }
 
     private User getDetachedUser() {

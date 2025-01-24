@@ -97,7 +97,8 @@ class UserControllerTest {
         AuthRequestDTO authRequestDTO = new AuthRequestDTO("matimemek@test.com", "Lubieplacki123!");
         Map<?, ?> response =
                 apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
-        assertEquals("/dashboard", response.get("redirectUrl"));
+        assertEquals("/app", response.get("redirectUrl"));
+        assertEquals("mati", response.get("forename"));
     }
 
     @Test

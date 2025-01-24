@@ -69,19 +69,6 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
-    public void shouldAuthorizeForCmsModule() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/cms");
-        assertEquals(200, response.getStatus());
-    }
-
-    @Test
-    @WithMockUser(roles = {"WAITER", "COOK", "CUSTOMER", "CUSTOMER_READONLY"})
-    public void shouldNotAuthorizeForCmsModule() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/auth/cms");
-    }
-
-    @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     public void shouldAuthorizeForAdminPanelModule() throws Exception {
         MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/admin");
@@ -96,21 +83,21 @@ class AuthControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    public void shouldAuthorizeForDashboardModule() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/dashboard");
+    public void shouldAuthorizeForAppModule() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/app");
         assertEquals(200, response.getStatus());
     }
 
     @Test
     @WithMockUser(roles = {"WAITER", "COOK", "CUSTOMER", "CUSTOMER_READONLY"})
-    public void shouldNotAuthorizeForDashboardModule() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/auth/dashboard");
+    public void shouldNotAuthorizeForApp() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/app");
     }
 
     @Test
     @WithMockUser(roles = {"ADMIN"}, username = "fresh@user.it")
     public void shouldRedirectToCreateRestaurant() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.fetchAndExpect("/api/auth/cms", status().isFound());
+        MockHttpServletResponse response = apiRequestUtils.fetchAndExpect("/api/auth/app", status().isFound());
         assertEquals(302, response.getStatus());
         assertEquals("{\"redirectUrl\":\"/create-restaurant\"}", response.getContentAsString());
     }
@@ -120,7 +107,7 @@ class AuthControllerTest {
     public void shouldRedirectToDashboardModule() throws Exception {
         MockHttpServletResponse response = apiRequestUtils.fetchAndExpect("/api/auth/create-restaurant", status().isFound());
         assertEquals(302, response.getStatus());
-        assertEquals("{\"redirectUrl\":\"/dashboard\"}", response.getContentAsString());
+        assertEquals("{\"redirectUrl\":\"/app\"}", response.getContentAsString());
     }
 
     @Test
