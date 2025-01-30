@@ -745,3 +745,24 @@ INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatab
 VALUES (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00');
 INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
 VALUES (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');
+
+INSERT IGNORE INTO qr_scans(footprint, quantity, restaurant_token)
+VALUES ('e15e1e38-1d2e-48e0-8422-b6fbb1785ea8_3f979e48-e7eb-4669-8084-72543c8538f0', 1,
+        '3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO qr_scans(footprint, quantity, restaurant_token)
+VALUES ('a1d8ff4b-9f21-46e9-bc29-1077fbabe01a_3f979e48-e7eb-4669-8084-72543c8538f0', 3,
+        '3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO qr_scans(footprint, quantity, restaurant_token)
+VALUES ('8db91ead-53ee-4b53-a41c-f5ccc4bb7a2c_3f979e48-e7eb-4669-8084-72543c8538f0', 1,
+        '3f979e48-e7eb-4669-8084-72543c8538f0');
+
+INSERT IGNORE INTO qr_scans_dates(id, date, footprint)
+VALUES (1, '2025-01-15', 'e15e1e38-1d2e-48e0-8422-b6fbb1785ea8_3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO qr_scans_dates(id, date, footprint)
+VALUES (2, '2024-08-15', 'a1d8ff4b-9f21-46e9-bc29-1077fbabe01a_3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO qr_scans_dates(id, date, footprint)
+VALUES (3, '2024-01-06', 'a1d8ff4b-9f21-46e9-bc29-1077fbabe01a_3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO qr_scans_dates(id, date, footprint)
+VALUES (4, '2024-01-15', 'a1d8ff4b-9f21-46e9-bc29-1077fbabe01a_3f979e48-e7eb-4669-8084-72543c8538f0');
+INSERT IGNORE INTO qr_scans_dates(id, date, footprint)
+VALUES (5, '2024-01-20', '8db91ead-53ee-4b53-a41c-f5ccc4bb7a2c_3f979e48-e7eb-4669-8084-72543c8538f0');

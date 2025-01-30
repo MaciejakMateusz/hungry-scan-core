@@ -957,3 +957,24 @@ INSERT INTO onboarding_images(image_name, is_active, restaurant_id)
 VALUES ('default.png', true, 1);
 INSERT INTO onboarding_images(image_name, is_active, restaurant_id)
 VALUES ('default.png', true, 1);
+
+INSERT INTO qr_scans(footprint, quantity, restaurant_token)
+VALUES ('3d90381d-80d2-48f8-80b3-d237d5f0a8ed_e15e1e38-1d2e-48e0-8422-b6fbb1785ea8', 1,
+        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed');
+INSERT INTO qr_scans(footprint, quantity, restaurant_token)
+VALUES ('3d90381d-80d2-48f8-80b3-d237d5f0a8ed_a1d8ff4b-9f21-46e9-bc29-1077fbabe01a', 3,
+        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed');
+INSERT INTO qr_scans(footprint, quantity, restaurant_token)
+VALUES ('3d90381d-80d2-48f8-80b3-d237d5f0a8ed_8db91ead-53ee-4b53-a41c-f5ccc4bb7a2c', 1,
+        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed');
+
+INSERT INTO qr_scans_dates(date, footprint)
+VALUES ('2025-01-15', '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_e15e1e38-1d2e-48e0-8422-b6fbb1785ea8');
+INSERT INTO qr_scans_dates(date, footprint)
+VALUES ('2024-08-15', '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_a1d8ff4b-9f21-46e9-bc29-1077fbabe01a');
+INSERT INTO qr_scans_dates(date, footprint)
+VALUES ('2024-01-06', '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_a1d8ff4b-9f21-46e9-bc29-1077fbabe01a');
+INSERT INTO qr_scans_dates(date, footprint)
+VALUES ('2024-01-15', '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_a1d8ff4b-9f21-46e9-bc29-1077fbabe01a');
+INSERT INTO qr_scans_dates(date, footprint)
+VALUES ('2024-01-20', '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_8db91ead-53ee-4b53-a41c-f5ccc4bb7a2c');

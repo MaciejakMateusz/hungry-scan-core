@@ -12,7 +12,7 @@ public interface QRService {
 
     void generate(RestaurantTable table, String name) throws Exception;
 
-    boolean generalQrExists();
-
     ResponseEntity<?> scanQRCode(HttpServletResponse response, String restaurantToken) throws IOException;
+
+    void persistScanEvent(String footprint);
 }

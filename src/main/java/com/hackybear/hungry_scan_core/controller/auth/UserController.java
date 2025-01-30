@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.controller.login;
+package com.hackybear.hungry_scan_core.controller.auth;
 
 import com.hackybear.hungry_scan_core.annotation.WithRateLimitProtection;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
@@ -10,7 +10,6 @@ import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.LoginService;
-import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +24,6 @@ import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -34,7 +32,6 @@ public class UserController {
 
     private final UserService userService;
     private final LoginService loginService;
-    private final QRService qrService;
     private final ExceptionHelper exceptionHelper;
     private final ResponseHelper responseHelper;
 
@@ -43,11 +40,10 @@ public class UserController {
 
     public UserController(UserService userService,
                           LoginService loginService,
-                          QRService qrService, ExceptionHelper exceptionHelper,
+                          ExceptionHelper exceptionHelper,
                           ResponseHelper responseHelper) {
         this.userService = userService;
         this.loginService = loginService;
-        this.qrService = qrService;
         this.exceptionHelper = exceptionHelper;
         this.responseHelper = responseHelper;
     }
@@ -129,11 +125,6 @@ public class UserController {
     @WithRateLimitProtection
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response) throws LocalizedException {
         return loginService.handleLogin(authRequestDTO, response);
-    }
-
-    @GetMapping("/scan/{restaurantToken}")
-    public ResponseEntity<?> scanQr(HttpServletResponse response, @PathVariable String restaurantToken) throws IOException {
-        return qrService.scanQRCode(response, restaurantToken);
     }
 
     @PreAuthorize("isAuthenticated()")
