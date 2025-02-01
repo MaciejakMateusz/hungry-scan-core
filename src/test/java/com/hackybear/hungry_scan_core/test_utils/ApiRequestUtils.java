@@ -230,8 +230,30 @@ public class ApiRequestUtils {
      * @return MockHttpServletResponse.
      * @throws Exception If an error occurs during the request.
      */
-    public MockHttpServletResponse getResponse(String endpointUrl) throws Exception {
+    public MockHttpServletResponse executeGet(String endpointUrl) throws Exception {
         MvcResult result = mockMvc.perform(get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn();
+
+        return result.getResponse();
+    }
+
+
+    /**
+     * Executes POST HTTP request and returns response.
+     *
+     * @param endpointUrl The URL endpoint to execute the request to.
+     * @param t           The object to send along with the request.
+     * @return MockHttpServletResponse.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> MockHttpServletResponse executePost(String endpointUrl, T t) throws Exception {
+        String jsonRequest = objectMapper.writeValueAsString(t);
+
+        MvcResult result = mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andReturn();

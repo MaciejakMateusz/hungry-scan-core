@@ -1,10 +1,9 @@
 package com.hackybear.hungry_scan_core.controller.auth;
 
-import com.hackybear.hungry_scan_core.entity.QrScan;
+import com.hackybear.hungry_scan_core.entity.QrScanEvent;
 import com.hackybear.hungry_scan_core.entity.Role;
-import com.hackybear.hungry_scan_core.entity.ScanDate;
 import com.hackybear.hungry_scan_core.entity.User;
-import com.hackybear.hungry_scan_core.repository.QrScanRepository;
+import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiJwtRequestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,12 +42,12 @@ class QrScanControllerTest {
     @Value("${CUSTOMER_APP_URL}")
     private String customerAppUrl;
     @Autowired
-    private QrScanRepository qrScanRepository;
+    private QrScanEventRepository qrScanEventRepository;
     @Autowired
     private UserRepository userRepository;
 
     @Order(1)
-    @Sql("/data-h2.sql")
+    @Sql({"/data-h2.sql", "/test-packs/qr-scans.sql"})
     @Test
     void init() {
         log.info("Initializing H2 database...");
@@ -61,7 +58,7 @@ class QrScanControllerTest {
     @Rollback
     void shouldScanQr_expectSpecificResponse() throws Exception {
         String restaurantToken = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed";
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/qr/scan/" + restaurantToken);
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/qr/scan/" + restaurantToken);
         assertEquals(2, response.getCookies().length);
         assertEquals("jwt", response.getCookies()[0].getName());
         assertEquals("restaurantToken", response.getCookies()[1].getName());
@@ -81,7 +78,7 @@ class QrScanControllerTest {
         assertEquals(5, currentRestaurantUsers.size());
         String existingRestaurantToken = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed";
 
-        apiRequestUtils.getResponse("/api/qr/scan/" + existingRestaurantToken);
+        apiRequestUtils.executeGet("/api/qr/scan/" + existingRestaurantToken);
 
         List<User> updatedRestaurantUsers = userRepository.findAllByActiveRestaurantId(1L);
         assertEquals(6, updatedRestaurantUsers.size());
@@ -100,7 +97,7 @@ class QrScanControllerTest {
     @Rollback
     void shouldScanQr_wrongRestaurantToken() throws Exception {
         String restaurantToken = "3d90381d-80d2-48f8-80b3-hehe";
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/qr/scan/" + restaurantToken);
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/qr/scan/" + restaurantToken);
         assertEquals(302, response.getStatus());
         assertEquals("pl_PL", response.getLocale().toString());
         assertEquals(8, response.getHeaderNames().size());
@@ -110,49 +107,17 @@ class QrScanControllerTest {
     @Test
     @Transactional
     @Rollback
-    void shouldExecutePostScanActions_existingFootprint() throws Exception {
-        String existingFootprint = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed_e15e1e38-1d2e-48e0-8422-b6fbb1785ea8";
-        Optional<QrScan> qrScanOptional = qrScanRepository.findByFootprint(existingFootprint);
-        assertTrue(qrScanOptional.isPresent());
-        QrScan qrScan = qrScanOptional.get();
-        assertEquals(1, qrScan.getScanDates().size());
+    void shouldExecutePostScanActions() throws Exception {
+        String existingFootprint = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed_A";
+        List<QrScanEvent> qrScans = qrScanEventRepository.findByFootprint(existingFootprint);
+        assertEquals(2, qrScans.size());
+        QrScanEvent qrScan = qrScans.getFirst();
         assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", qrScan.getRestaurantToken());
-        assertEquals(1, qrScan.getQuantity());
 
         apiRequestUtils.postAndExpect200("/api/qr/post-scan", existingFootprint);
 
-        qrScanOptional = qrScanRepository.findByFootprint(existingFootprint);
-        assertTrue(qrScanOptional.isPresent());
-        qrScan = qrScanOptional.get();
-        assertEquals(2, qrScan.getScanDates().size());
-        assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", qrScan.getRestaurantToken());
-        assertEquals(2, qrScan.getQuantity());
-        List<ScanDate> scanDates = qrScan.getScanDates().stream().sorted().toList();
-        assertEquals(LocalDate.now(), scanDates.getLast().getDate());
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void shouldExecutePostScanActions_uniqueFootprint() throws Exception {
-        String newFootprint = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed_e15e1e38-1erq-48e0-8321-b6fbb1785sa2";
-        Optional<QrScan> qrScanOptional = qrScanRepository.findByFootprint(newFootprint);
-        List<QrScan> qrScans = qrScanRepository.findAllByRestaurantToken("3d90381d-80d2-48f8-80b3-d237d5f0a8ed");
-        assertTrue(qrScanOptional.isEmpty());
+        qrScans = qrScanEventRepository.findByFootprint(existingFootprint).stream().sorted().toList();
         assertEquals(3, qrScans.size());
-
-        apiRequestUtils.postAndExpect200("/api/qr/post-scan", newFootprint);
-
-        qrScanOptional = qrScanRepository.findByFootprint(newFootprint);
-        qrScans = qrScanRepository.findAllByRestaurantToken("3d90381d-80d2-48f8-80b3-d237d5f0a8ed");
-        assertTrue(qrScanOptional.isPresent());
-        assertEquals(4, qrScans.size());
-        QrScan qrScan = qrScanOptional.get();
-        assertEquals(1, qrScan.getScanDates().size());
-        assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", qrScan.getRestaurantToken());
-        assertEquals(1, qrScan.getQuantity());
-        List<ScanDate> scanDates = qrScan.getScanDates();
-        assertEquals(LocalDate.now(), scanDates.getLast().getDate());
+        assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", qrScans.getLast().getRestaurantToken());
     }
-
 }

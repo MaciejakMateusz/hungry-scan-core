@@ -71,7 +71,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     public void shouldAuthorizeForAdminPanelModule() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/admin");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/admin");
         assertEquals(200, response.getStatus());
     }
 
@@ -84,7 +84,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     public void shouldAuthorizeForAppModule() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/app");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/app");
         assertEquals(200, response.getStatus());
     }
 
@@ -112,7 +112,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToActivation() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/activation");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/activation");
         assertEquals(200, response.getStatus());
     }
 
@@ -124,7 +124,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToActivationAll() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/activation/?resend=true");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/activation/?resend=true");
         assertEquals(200, response.getStatus());
     }
 
@@ -136,7 +136,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToActivationError() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/activation-error");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/activation-error");
         assertEquals(200, response.getStatus());
     }
 
@@ -148,7 +148,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToAccountActivated() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/account-activated");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/account-activated");
         assertEquals(200, response.getStatus());
     }
 
@@ -160,7 +160,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToSignIn() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/sign-in");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/sign-in");
         assertEquals(200, response.getStatus());
     }
 
@@ -172,7 +172,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToSignUp() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/sign-up");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/sign-up");
         assertEquals(200, response.getStatus());
     }
 
@@ -184,7 +184,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToPasswordRecovery() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/password-recovery");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/password-recovery");
         assertEquals(200, response.getStatus());
     }
 
@@ -196,7 +196,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToNewPassword() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/new-password");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/new-password");
         assertEquals(200, response.getStatus());
     }
 
@@ -208,7 +208,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToRecoverySent() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/recovery-sent");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/recovery-sent");
         assertEquals(200, response.getStatus());
     }
 
@@ -220,7 +220,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToRecoveryConfirmation() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/recovery-confirmation");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/recovery-confirmation");
         assertEquals(200, response.getStatus());
     }
 

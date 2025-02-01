@@ -108,7 +108,7 @@ public class RegistrationFlowTest {
 
     private void activateAccount() throws Exception {
         User persistedUser = getDetachedUser();
-        apiRequestUtils.getResponse("/api/user/register/" + persistedUser.getEmailToken());
+        apiRequestUtils.executeGet("/api/user/register/" + persistedUser.getEmailToken());
         persistedUser = getDetachedUser();
         assertNotNull(persistedUser);
         assertEquals("Juan", persistedUser.getForename());

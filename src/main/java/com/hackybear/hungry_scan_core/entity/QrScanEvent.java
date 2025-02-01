@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,46 +11,43 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
-@Table(name = "qr_scans_dates")
+@Table(name = "qr_scan_events")
 @Entity
-public class ScanDate implements Serializable, Comparable<ScanDate> {
-
-    public ScanDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public ScanDate() {
-    }
+public class QrScanEvent implements Serializable, Comparable<QrScanEvent> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    @NotBlank
+    private String footprint;
+
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotNull
-    private LocalDate date;
+    @Column(nullable = false)
+    @NotBlank
+    private String restaurantToken;
 
-    @ManyToOne
-    @JoinColumn(name = "footprint", referencedColumnName = "footprint",
-            insertable = false, updatable = false)
-    private QrScan qrScan;
+    @Column(nullable = false)
+    @NotNull
+    private LocalDateTime scannedAt;
 
     @PrePersist
     public void prePersist() {
-        this.date = LocalDate.now();
+        this.scannedAt = LocalDateTime.now();
     }
 
     @Override
-    public int compareTo(ScanDate o) {
-        return this.date.compareTo(o.date);
+    public int compareTo(QrScanEvent o) {
+        return this.scannedAt.compareTo(o.scannedAt);
     }
 }
