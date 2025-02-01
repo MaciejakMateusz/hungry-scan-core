@@ -34,8 +34,8 @@ public class QrScanEvent implements Serializable, Comparable<QrScanEvent> {
     private static final long serialVersionUID = 1L;
 
     @Column(nullable = false)
-    @NotBlank
-    private String restaurantToken;
+    @NotNull
+    private Long restaurantId;
 
     @Column(nullable = false)
     @NotNull

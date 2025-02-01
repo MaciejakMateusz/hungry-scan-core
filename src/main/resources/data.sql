@@ -42,8 +42,9 @@ VALUES (6, 'ROLE_CUSTOMER_READONLY', 6);
 INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
                           jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
 VALUES (1, 1, NOW(), 'admin@example.com', 1,
-        '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, '', '',
-        '', 1, 1);
+        '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, 'Admin',
+        '',
+        'Admin', 1, 1);
 
 INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
                           jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
@@ -55,7 +56,7 @@ INSERT IGNORE INTO users_restaurants (user_id, restaurant_id)
 VALUES (1, 1);
 
 INSERT IGNORE INTO user_role (user_id, role_id)
-VALUES (2, 2);
+VALUES (1, 2);
 INSERT IGNORE INTO user_role (user_id, role_id)
 VALUES (2, 2);
 
@@ -745,3 +746,29 @@ INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatab
 VALUES (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00');
 INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
 VALUES (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');
+
+-- January 2024 Data
+INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
+VALUES (1, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_A', 1, '2024-01-03 10:00:00'),
+       (2, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_B', 1, '2024-01-07 09:00:00'),
+       (3, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_A', 1, '2024-01-15 12:00:00'),
+       (4, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_C', 1, '2024-01-20 11:00:00'),
+       (5, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_C', 1, '2024-01-21 15:00:00'),
+       (6, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_D', 1, '2024-01-15 10:00:00'),
+       (7, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_D', 1, '2024-01-15 10:15:00'),
+       (8, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_E', 1, '2024-01-15 15:00:00');
+
+-- February 2024 Data
+INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
+VALUES (9, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_F', 1, '2024-02-10 14:00:00');
+
+-- March 2024 Data
+INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
+VALUES (10, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_G', 1, '2024-03-05 09:00:00'),
+       (11, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_G', 1, '2024-03-05 15:00:00');
+
+-- April 2024 Data
+INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
+VALUES (12, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_H', 1, '2024-04-12 10:30:00'),
+       (13, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_I', 1, '2024-04-15 16:45:00'),
+       (14, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_H', 1, '2024-04-20 11:00:00');

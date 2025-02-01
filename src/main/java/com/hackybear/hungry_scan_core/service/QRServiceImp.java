@@ -10,6 +10,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.*;
+import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
@@ -35,9 +36,6 @@ import java.util.*;
 @Slf4j
 public class QRServiceImp implements QRService {
 
-
-    private final QrScanEventRepository qrScanEventRepository;
-    private final RestaurantRepository restaurantRepository;
     @Value("${QR_PATH}")
     private String directory;
 
@@ -52,6 +50,9 @@ public class QRServiceImp implements QRService {
 
     private static final String GENERAL_QR_NAME = "QR code - HungryScan";
 
+    private final QrScanEventRepository qrScanEventRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final ExceptionHelper exceptionHelper;
     private final RestaurantTableService restaurantTableService;
     private final RestaurantService restaurantService;
     private final RestaurantMapper restaurantMapper;
@@ -60,7 +61,16 @@ public class QRServiceImp implements QRService {
     private final ResponseHelper responseHelper;
     private final UserService userService;
 
-    public QRServiceImp(RestaurantTableService restaurantTableService, RestaurantService restaurantService, RestaurantMapper restaurantMapper, RoleService roleService, JwtService jwtService, ResponseHelper responseHelper, UserService userService, QrScanEventRepository qrScanEventRepository, RestaurantRepository restaurantRepository) {
+    public QRServiceImp(RestaurantTableService restaurantTableService,
+                        RestaurantService restaurantService,
+                        RestaurantMapper restaurantMapper,
+                        RoleService roleService,
+                        JwtService jwtService,
+                        ResponseHelper responseHelper,
+                        UserService userService,
+                        QrScanEventRepository qrScanEventRepository,
+                        RestaurantRepository restaurantRepository,
+                        ExceptionHelper exceptionHelper) {
         this.restaurantTableService = restaurantTableService;
         this.restaurantService = restaurantService;
         this.restaurantMapper = restaurantMapper;
@@ -70,6 +80,7 @@ public class QRServiceImp implements QRService {
         this.userService = userService;
         this.qrScanEventRepository = qrScanEventRepository;
         this.restaurantRepository = restaurantRepository;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
@@ -127,11 +138,17 @@ public class QRServiceImp implements QRService {
 
     @Override
     @Transactional
-    public void persistScanEvent(String footprint) {
-        QrScanEvent qrScanEvent = new QrScanEvent();
-        qrScanEvent.setFootprint(footprint);
-        qrScanEvent.setRestaurantToken(footprint.split("_")[0]);
-        qrScanEventRepository.save(qrScanEvent);
+    public ResponseEntity<?> persistScanEvent(String footprint) {
+        try {
+            QrScanEvent qrScanEvent = new QrScanEvent();
+            qrScanEvent.setFootprint(footprint);
+            qrScanEvent.setRestaurantId(userService.getActiveRestaurantId());
+            qrScanEventRepository.save(qrScanEvent);
+            return ResponseEntity.ok().build();
+        } catch (LocalizedException e) {
+            return ResponseEntity.badRequest()
+                    .body(exceptionHelper.getLocalizedMsg("error.userService.userNotFound"));
+        }
     }
 
     private void createQrFile(String format, String fileName, String url) throws WriterException, IOException {

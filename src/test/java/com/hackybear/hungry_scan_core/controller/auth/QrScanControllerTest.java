@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
@@ -105,6 +106,7 @@ class QrScanControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldExecutePostScanActions() throws Exception {
@@ -112,12 +114,12 @@ class QrScanControllerTest {
         List<QrScanEvent> qrScans = qrScanEventRepository.findByFootprint(existingFootprint);
         assertEquals(2, qrScans.size());
         QrScanEvent qrScan = qrScans.getFirst();
-        assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", qrScan.getRestaurantToken());
+        assertEquals(1L, qrScan.getRestaurantId());
 
         apiRequestUtils.postAndExpect200("/api/qr/post-scan", existingFootprint);
 
         qrScans = qrScanEventRepository.findByFootprint(existingFootprint).stream().sorted().toList();
         assertEquals(3, qrScans.size());
-        assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", qrScans.getLast().getRestaurantToken());
+        assertEquals(1L, qrScans.getLast().getRestaurantId());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
@@ -30,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class StatisticsControllerTest {
 
-    private static final String RESTAURANT_TOKEN = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed";
     private static final int YEAR_2024 = 2024;
 
     @Autowired
@@ -44,11 +44,11 @@ class StatisticsControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldGetDashboardYearlyStats() throws Exception {
         Map<String, Object> params = Map.of(
-                "restaurantToken", RESTAURANT_TOKEN,
                 "year", YEAR_2024
         );
 
@@ -62,11 +62,11 @@ class StatisticsControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldGetDashboardMonthlyStats() throws Exception {
         Map<String, Object> params = Map.of(
-                "restaurantToken", RESTAURANT_TOKEN,
                 "year", YEAR_2024,
                 "month", 1
         );
@@ -81,11 +81,11 @@ class StatisticsControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldGetDashboardWeeklyStats() throws Exception {
         Map<String, Object> params = Map.of(
-                "restaurantToken", RESTAURANT_TOKEN,
                 "year", YEAR_2024,
                 "week", 1
         );
@@ -100,11 +100,11 @@ class StatisticsControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldGetDashboardDailyStats() throws Exception {
         Map<String, Object> params = Map.of(
-                "restaurantToken", RESTAURANT_TOKEN,
                 "year", YEAR_2024,
                 "week", 1,
                 "day", 15

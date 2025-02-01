@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.service;
 
+import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.interfaces.ScanAggregation;
 import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.StatisticsService;
@@ -23,40 +24,40 @@ public class StatisticsServiceImp implements StatisticsService {
     }
 
     @Override
-    public Map<String, Object> getYearlyStatistics(Map<String, Object> params) {
-        String restaurantToken = (String) params.get("restaurantToken");
+    public Map<String, Object> getYearlyStatistics(Map<String, Object> params, User user) {
+        Long restaurantId = user.getActiveRestaurantId();
         Integer year = (Integer) params.get("year");
-        return projectYearlyScans(restaurantToken, year);
+        return projectYearlyScans(restaurantId, year);
     }
 
     @Override
-    public Map<String, Object> getMonthlyStatistics(Map<String, Object> params) {
-        String restaurantToken = (String) params.get("restaurantToken");
+    public Map<String, Object> getMonthlyStatistics(Map<String, Object> params, User user) {
+        Long restaurantId = user.getActiveRestaurantId();
         Integer year = (Integer) params.get("year");
         Integer month = (Integer) params.get("month");
-        return projectMonthlyScans(restaurantToken, year, month);
+        return projectMonthlyScans(restaurantId, year, month);
     }
 
     @Override
-    public Map<String, Object> getWeeklyStatistics(Map<String, Object> params) {
-        String restaurantToken = (String) params.get("restaurantToken");
+    public Map<String, Object> getWeeklyStatistics(Map<String, Object> params, User user) {
+        Long restaurantId = user.getActiveRestaurantId();
         Integer year = (Integer) params.get("year");
         Integer week = (Integer) params.get("week");
-        return projectWeeklyScans(restaurantToken, year, week);
+        return projectWeeklyScans(restaurantId, year, week);
     }
 
     @Override
-    public Map<String, Object> getDailyStatistics(Map<String, Object> params) {
-        String restaurantToken = (String) params.get("restaurantToken");
+    public Map<String, Object> getDailyStatistics(Map<String, Object> params, User user) {
+        Long restaurantId = user.getActiveRestaurantId();
         Integer year = (Integer) params.get("year");
         Integer month = (Integer) params.get("week");
         Integer day = (Integer) params.get("day");
         LocalDate localDate = LocalDate.of(year, month, day);
-        return projectDailyScans(restaurantToken, localDate);
+        return projectDailyScans(restaurantId, localDate);
     }
 
-    private Map<String, Object> projectYearlyScans(String restaurantToken, Integer year) {
-        List<ScanAggregation> aggregation = scanEventRepository.aggregateByMonth(restaurantToken, year);
+    private Map<String, Object> projectYearlyScans(Long restaurantId, Integer year) {
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByMonth(restaurantId, year);
         Result result = getResult(aggregation);
 
         for (int m = 1; m <= 12; m++) {
@@ -66,8 +67,8 @@ public class StatisticsServiceImp implements StatisticsService {
         return getDataProjection(aggregation, result);
     }
 
-    private Map<String, Object> projectMonthlyScans(String restaurantToken, Integer year, Integer month) {
-        List<ScanAggregation> aggregation = scanEventRepository.aggregateByDay(restaurantToken, year, month);
+    private Map<String, Object> projectMonthlyScans(Long restaurantId, Integer year, Integer month) {
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByDay(restaurantId, year, month);
         Result result = getResult(aggregation);
 
         int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
@@ -78,8 +79,8 @@ public class StatisticsServiceImp implements StatisticsService {
         return getDataProjection(aggregation, result);
     }
 
-    private Map<String, Object> projectWeeklyScans(String restaurantToken, Integer year, Integer week) {
-        List<ScanAggregation> aggregation = scanEventRepository.aggregateByDayOfWeek(restaurantToken, year, week);
+    private Map<String, Object> projectWeeklyScans(Long restaurantId, Integer year, Integer week) {
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByDayOfWeek(restaurantId, year, week);
         Result result = getResult(aggregation);
 
         for (int w = 1; w <= 7; w++) {
@@ -89,8 +90,8 @@ public class StatisticsServiceImp implements StatisticsService {
         return getDataProjection(aggregation, result);
     }
 
-    private Map<String, Object> projectDailyScans(String restaurantToken, java.time.LocalDate date) {
-        List<ScanAggregation> aggregation = scanEventRepository.aggregateByHour(restaurantToken, date);
+    private Map<String, Object> projectDailyScans(Long restaurantId, java.time.LocalDate date) {
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByHour(restaurantId, date);
         Result result = getResult(aggregation);
 
         for (int h = 0; h < 24; h++) {

@@ -19,22 +19,22 @@ public interface QrScanEventRepository extends JpaRepository<QrScanEvent, String
             "COUNT(*) AS total, " +
             "COUNT(DISTINCT footprint) AS uniqueCount " +
             "FROM qr_scan_events " +
-            "WHERE restaurant_token = :restaurantToken " +
+            "WHERE restaurant_id = :restaurantId " +
             "AND YEAR(scanned_at) = :year " +
             "GROUP BY MONTH(scanned_at)",
             nativeQuery = true)
-    List<ScanAggregation> aggregateByMonth(@Param("restaurantToken") String restaurantToken,
+    List<ScanAggregation> aggregateByMonth(@Param("restaurantId") Long restaurantId,
                                            @Param("year") int year);
 
     @Query(value = "SELECT DAY(scanned_at) AS period, " +
             "COUNT(*) AS total, " +
             "COUNT(DISTINCT footprint) AS uniqueCount " +
             "FROM qr_scan_events " +
-            "WHERE restaurant_token = :restaurantToken AND YEAR(scanned_at) = :year " +
+            "WHERE restaurant_id = :restaurantId AND YEAR(scanned_at) = :year " +
             "AND MONTH(scanned_at) = :month " +
             "GROUP BY DAY(scanned_at)",
             nativeQuery = true)
-    List<ScanAggregation> aggregateByDay(@Param("restaurantToken") String restaurantToken,
+    List<ScanAggregation> aggregateByDay(@Param("restaurantId") Long restaurantId,
                                          @Param("year") int year,
                                          @Param("month") int month);
 
@@ -42,12 +42,12 @@ public interface QrScanEventRepository extends JpaRepository<QrScanEvent, String
             "COUNT(*) AS total, " +
             "COUNT(DISTINCT footprint) AS uniqueCount " +
             "FROM qr_scan_events " +
-            "WHERE restaurant_token = :restaurantToken " +
+            "WHERE restaurant_id = :restaurantId " +
             "AND YEAR(scanned_at) = :year " +
             "AND WEEK(scanned_at) = :week " +
             "GROUP BY DAYOFWEEK(scanned_at)",
             nativeQuery = true)
-    List<ScanAggregation> aggregateByDayOfWeek(@Param("restaurantToken") String restaurantToken,
+    List<ScanAggregation> aggregateByDayOfWeek(@Param("restaurantId") Long restaurantId,
                                                @Param("year") int year,
                                                @Param("week") int week);
 
@@ -55,10 +55,10 @@ public interface QrScanEventRepository extends JpaRepository<QrScanEvent, String
             "COUNT(*) AS total, " +
             "COUNT(DISTINCT footprint) AS uniqueCount " +
             "FROM qr_scan_events " +
-            "WHERE restaurant_token = :restaurantToken " +
+            "WHERE restaurant_id = :restaurantId " +
             "AND CAST(scanned_at AS DATE) = :date " +
             "GROUP BY HOUR(scanned_at)",
             nativeQuery = true)
-    List<ScanAggregation> aggregateByHour(@Param("restaurantToken") String restaurantToken,
+    List<ScanAggregation> aggregateByHour(@Param("restaurantId") Long restaurantId,
                                           @Param("date") LocalDate date);
 }
