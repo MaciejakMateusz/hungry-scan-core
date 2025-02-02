@@ -105,9 +105,7 @@ class StatisticsControllerTest {
     @Rollback
     void shouldGetDashboardDailyStats() throws Exception {
         Map<String, Object> params = Map.of(
-                "year", YEAR_2024,
-                "week", 1,
-                "day", 15
+                "day", "2024-01-15T00:00:00Z"
         );
 
         Map<?, ?> response = apiRequestUtils.postAndReturnResponseBody(

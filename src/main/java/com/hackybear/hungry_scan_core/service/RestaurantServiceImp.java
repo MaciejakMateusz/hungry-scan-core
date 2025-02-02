@@ -86,7 +86,7 @@ public class RestaurantServiceImp implements RestaurantService {
         Restaurant restaurant = this.save(restaurantDTO, currentUser);
         currentUser.setActiveRestaurantId(restaurant.getId());
         userService.save(currentUser);
-        return ResponseEntity.ok(Map.of("redirectUrl", "/dashboard"));
+        return ResponseEntity.ok(Map.of("redirectUrl", "/app"));
     }
 
     @Override

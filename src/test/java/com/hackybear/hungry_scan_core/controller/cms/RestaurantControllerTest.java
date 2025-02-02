@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -135,7 +136,10 @@ public class RestaurantControllerTest {
         assertNull(currentUser.getActiveRestaurantId());
         RestaurantDTO restaurantDTO = createRestaurantDTO();
 
-        apiRequestUtils.postAndExpect200("/api/cms/restaurants/create-first", restaurantDTO);
+        MockHttpServletResponse response = apiRequestUtils.executePost(
+                "/api/cms/restaurants/create-first", restaurantDTO);
+        assertEquals(200, response.getStatus());
+        assertEquals("{\"redirectUrl\":\"/app\"}", response.getContentAsString());
 
         RestaurantDTO persistedRestaurant =
                 apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 10, RestaurantDTO.class);

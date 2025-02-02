@@ -6,8 +6,10 @@ import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.StatisticsService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +51,9 @@ public class StatisticsServiceImp implements StatisticsService {
     @Override
     public Map<String, Object> getDailyStatistics(Map<String, Object> params, User user) {
         Long restaurantId = user.getActiveRestaurantId();
-        Integer year = (Integer) params.get("year");
-        Integer month = (Integer) params.get("week");
-        Integer day = (Integer) params.get("day");
-        LocalDate localDate = LocalDate.of(year, month, day);
-        return projectDailyScans(restaurantId, localDate);
+        Instant instant = Instant.parse((String) params.get("day"));
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        return projectDailyScans(restaurantId, localDateTime.toLocalDate());
     }
 
     private Map<String, Object> projectYearlyScans(Long restaurantId, Integer year) {
