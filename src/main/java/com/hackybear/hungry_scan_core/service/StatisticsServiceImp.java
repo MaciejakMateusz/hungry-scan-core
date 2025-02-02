@@ -62,7 +62,7 @@ public class StatisticsServiceImp implements StatisticsService {
 
         for (int m = 1; m <= 12; m++) {
             AggregationResult data = getAggregationResult(result, m);
-            prepareChartMaps(result, data, m, "month");
+            prepareChartMaps(result, data, m);
         }
         return getDataProjection(aggregation, result);
     }
@@ -74,7 +74,7 @@ public class StatisticsServiceImp implements StatisticsService {
         int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
         for (int d = 1; d <= daysInMonth; d++) {
             AggregationResult data = getAggregationResult(result, d);
-            prepareChartMaps(result, data, d, "day");
+            prepareChartMaps(result, data, d);
         }
         return getDataProjection(aggregation, result);
     }
@@ -85,7 +85,7 @@ public class StatisticsServiceImp implements StatisticsService {
 
         for (int w = 1; w <= 7; w++) {
             AggregationResult data = getAggregationResult(result, w);
-            prepareChartMaps(result, data, w, "day");
+            prepareChartMaps(result, data, w);
         }
         return getDataProjection(aggregation, result);
     }
@@ -96,7 +96,7 @@ public class StatisticsServiceImp implements StatisticsService {
 
         for (int h = 0; h < 24; h++) {
             AggregationResult data = getAggregationResult(result, h);
-            prepareChartMaps(result, data, h, "hour");
+            prepareChartMaps(result, data, h);
         }
         return getDataProjection(aggregation, result);
     }
@@ -119,10 +119,10 @@ public class StatisticsServiceImp implements StatisticsService {
         return new AggregationResult(unique, repeated);
     }
 
-    private void prepareChartMaps(Result result, AggregationResult data, Integer index, String type) {
+    private void prepareChartMaps(Result result, AggregationResult data, Integer index) {
         result.uniqueLineData.add(Map.of("x", index, "y", data.unique));
         result.repeatedLineData.add(Map.of("x", index, "y", data.repeated));
-        result.barChartData.add(Map.of(type, index, "uniqueScans", data.unique, "repeatedScans", data.repeated));
+        result.barChartData.add(Map.of("x", index, "uniqueScans", data.unique, "repeatedScans", data.repeated));
     }
 
     private Map<String, Object> getDataProjection(List<ScanAggregation> aggregation, Result result) {
