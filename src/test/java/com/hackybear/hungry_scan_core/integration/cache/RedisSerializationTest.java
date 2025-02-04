@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.integration.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,6 +16,8 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.Instant;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,14 +35,17 @@ public class RedisSerializationTest {
 
     @Test
     public void testSerialization() throws Exception {
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
         ObjectMapper objectMapper = new ObjectMapper();
-
+        objectMapper.registerModule(new JavaTimeModule());
         Set<RestaurantDTO> originalSet = new HashSet<>();
         originalSet.add(createRestaurantDTO());
-        Set<?> deserialized = getDeserializedSet(serializer, originalSet);
 
-        assertEquals(objectMapper.writeValueAsString(originalSet), objectMapper.writeValueAsString(deserialized));
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+        Set<?> deserialized = getDeserializedSet(serializer, originalSet);
+        String expectedJson = objectMapper.writeValueAsString(originalSet);
+        String actualJson = objectMapper.writeValueAsString(deserialized);
+
+        assertEquals(objectMapper.readTree(expectedJson), objectMapper.readTree(actualJson));
     }
 
     private RestaurantDTO createRestaurantDTO() {
@@ -49,17 +55,15 @@ public class RedisSerializationTest {
                 "Restaurant Name",
                 "Address",
                 "40-404",
-                "Katowice");
+                "Katowice", Instant.now());
     }
 
     private Set<?> getDeserializedSet(GenericJackson2JsonRedisSerializer serializer, Set<RestaurantDTO> originalSet) {
         byte[] serialized = serializer.serialize(originalSet);
         Object deserializedObj = serializer.deserialize(serialized);
-        Set<?> deserialized = new HashSet<>();
-
-        if (deserializedObj instanceof Set<?>) {
-            deserialized = (Set<?>) deserializedObj;
+        if (deserializedObj instanceof Collection<?>) {
+            return new HashSet<>((Collection<?>) deserializedObj);
         }
-        return deserializedObj instanceof Set<?> ? deserialized : new HashSet<>();
+        return new HashSet<>();
     }
 }

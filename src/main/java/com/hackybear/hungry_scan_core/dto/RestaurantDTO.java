@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 
 public record RestaurantDTO(
         long id,
@@ -22,7 +23,9 @@ public record RestaurantDTO(
         String postalCode,
 
         @NotBlank
-        String city) implements Serializable, Comparable<RestaurantDTO> {
+        String city,
+
+        Instant created) implements Serializable, Comparable<RestaurantDTO> {
 
     @Serial
     private static final long serialVersionUID = 1L;
