@@ -77,6 +77,18 @@ public class MenuItemController {
         }
     }
 
+    @PostMapping("/view-event")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> persistViewEvent(@RequestBody Long menuItemId) {
+        try {
+            Long activeMenuId = userService.getActiveMenuId();
+            menuItemService.persistViewEvent(menuItemId, activeMenuId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
