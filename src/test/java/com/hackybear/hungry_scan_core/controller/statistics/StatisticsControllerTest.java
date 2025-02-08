@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.statistics;
 
+import com.hackybear.hungry_scan_core.dto.MenuItemViewCountDTO;
 import com.hackybear.hungry_scan_core.test_utils.ApiJwtRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -17,8 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -37,100 +40,168 @@ class StatisticsControllerTest {
     private ApiJwtRequestUtils apiRequestUtils;
 
     @Order(1)
-    @Sql({"/data-h2.sql", "/test-packs/qr-scans.sql"})
+    @Sql({"/data-h2.sql", "/test-packs/qr-scans.sql", "/test-packs/menu-item-view-events.sql"})
     @Test
     void init() {
         log.info("Initializing H2 database with QR scans data...");
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
     @Transactional
     @Rollback
-    void shouldGetDashboardYearlyStats() throws Exception {
+    void shouldGetYearlyScanStats() throws Exception {
         Map<String, Object> params = Map.of(
                 "year", YEAR_2024
         );
 
         Map<?, ?> response = apiRequestUtils.postAndReturnResponseBody(
-                "/api/stats/dashboard/year",
+                "/api/stats/dashboard/year/scans",
                 params,
                 status().isOk()
         );
 
-        assertYearlyResponse(response);
+        assertYearlyScansResponse(response);
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(roles = "ADMIN")
     @Transactional
     @Rollback
-    void shouldGetDashboardMonthlyStats() throws Exception {
+    void shouldGetYearlyMenuItemViewsStats() throws Exception {
+        Map<String, Object> params = Map.of("menuId", 1L, "year", YEAR_2024);
+        Set<MenuItemViewCountDTO> response =
+                apiRequestUtils.postAndGetSet(
+                        "/api/stats/dashboard/year/menu-item-views",
+                        params,
+                        MenuItemViewCountDTO.class);
+        assertYearlyMenuItemViewsResponse(response);
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
+    @Transactional
+    @Rollback
+    void shouldGetMonthlyScanStats() throws Exception {
         Map<String, Object> params = Map.of(
                 "year", YEAR_2024,
                 "month", 1
         );
 
         Map<?, ?> response = apiRequestUtils.postAndReturnResponseBody(
-                "/api/stats/dashboard/month",
+                "/api/stats/dashboard/month/scans",
                 params,
                 status().isOk()
         );
 
-        assertMonthlyResponse(response);
+        assertMonthlyScansResponse(response);
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(roles = "ADMIN")
     @Transactional
     @Rollback
-    void shouldGetDashboardWeeklyStats() throws Exception {
+    void shouldGetMonthlyMenuItemViewsStats() throws Exception {
+        Map<String, Object> params = Map.of("menuId", 1L, "month", 1, "year", YEAR_2024);
+        Set<MenuItemViewCountDTO> response =
+                apiRequestUtils.postAndGetSet(
+                        "/api/stats/dashboard/month/menu-item-views",
+                        params,
+                        MenuItemViewCountDTO.class);
+        assertMonthlyMenuItemViewsResponse(response);
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
+    @Transactional
+    @Rollback
+    void shouldGetWeeklyScanStats() throws Exception {
         Map<String, Object> params = Map.of(
                 "year", YEAR_2024,
                 "week", 1
         );
 
         Map<?, ?> response = apiRequestUtils.postAndReturnResponseBody(
-                "/api/stats/dashboard/week",
+                "/api/stats/dashboard/week/scans",
                 params,
                 status().isOk()
         );
 
-        assertWeeklyResponse(response);
+        assertWeeklyScansResponse(response);
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(roles = "ADMIN")
     @Transactional
     @Rollback
-    void shouldGetDashboardDailyStats() throws Exception {
+    void shouldGetWeeklyMenuItemViewsStats() throws Exception {
+        Map<String, Object> params = Map.of("menuId", 1L, "week", 1, "year", YEAR_2024);
+        Set<MenuItemViewCountDTO> response =
+                apiRequestUtils.postAndGetSet(
+                        "/api/stats/dashboard/week/menu-item-views",
+                        params,
+                        MenuItemViewCountDTO.class);
+        assertWeeklyMenuItemViewsResponse(response);
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com", roles = "ADMIN")
+    @Transactional
+    @Rollback
+    void shouldGetDailyScanStats() throws Exception {
         Map<String, Object> params = Map.of(
                 "day", "2024-01-15T00:00:00Z"
         );
 
         Map<?, ?> response = apiRequestUtils.postAndReturnResponseBody(
-                "/api/stats/dashboard/day",
+                "/api/stats/dashboard/day/scans",
                 params,
                 status().isOk()
         );
 
-        assertDailyResponse(response);
+        assertDailyScansResponse(response);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @Transactional
+    @Rollback
+    void shouldGetDailyMenuItemViewsStats() throws Exception {
+        Map<String, Object> params = Map.of("menuId", 1L, "day", "2024-03-31T00:00:00Z");
+        Set<MenuItemViewCountDTO> response =
+                apiRequestUtils.postAndGetSet(
+                        "/api/stats/dashboard/day/menu-item-views",
+                        params,
+                        MenuItemViewCountDTO.class);
+        assertDailyMenuItemViewsResponse(response);
     }
 
     // ---------------------------------------------------------------------------------------
     // Assertion Methods
     // ---------------------------------------------------------------------------------------
 
-    private void assertYearlyResponse(Map<?, ?> response) {
+    private void assertYearlyScansResponse(Map<?, ?> response) {
         assertEquals(9, response.get("totalUnique"));
         assertEquals(5, response.get("totalRepeated"));
         assertEquals(14, response.get("total"));
 
-        assertYearlyLineChart(response);
-        assertYearlyBarChart(response);
+        assertYearlyScansLineChart(response);
+        assertYearlyScansBarChart(response);
     }
 
-    private void assertMonthlyResponse(Map<?, ?> response) {
+    private void assertYearlyMenuItemViewsResponse(Set<MenuItemViewCountDTO> response) {
+        assertFalse(response.isEmpty());
+        for (MenuItemViewCountDTO itemViewCountDTO : response) {
+            switch (itemViewCountDTO.id().toString()) {
+                case "4", "5", "7", "8" -> assertEquals(1, itemViewCountDTO.viewsCount());
+                case "6", "9" -> assertEquals(2, itemViewCountDTO.viewsCount());
+                case "2", "3" -> assertEquals(3, itemViewCountDTO.viewsCount());
+                case "1" -> assertEquals(6, itemViewCountDTO.viewsCount());
+            }
+        }
+    }
+
+    private void assertMonthlyScansResponse(Map<?, ?> response) {
         assertEquals(7, response.get("totalUnique"));
         assertEquals(1, response.get("totalRepeated"));
         assertEquals(8, response.get("total"));
@@ -171,7 +242,18 @@ class StatisticsControllerTest {
         assertLineChartDataPoint(repeatedScansData, 20, 0);
     }
 
-    private void assertWeeklyResponse(Map<?, ?> response) {
+    private void assertMonthlyMenuItemViewsResponse(Set<MenuItemViewCountDTO> response) {
+        assertFalse(response.isEmpty());
+        for (MenuItemViewCountDTO itemViewCountDTO : response) {
+            switch (itemViewCountDTO.id().toString()) {
+                case "3", "4", "5", "6" -> assertEquals(1, itemViewCountDTO.viewsCount());
+                case "2" -> assertEquals(2, itemViewCountDTO.viewsCount());
+                case "1" -> assertEquals(4, itemViewCountDTO.viewsCount());
+            }
+        }
+    }
+
+    private void assertWeeklyScansResponse(Map<?, ?> response) {
         assertEquals(2, response.get("totalUnique"));
         assertEquals(0, response.get("totalRepeated"));
         assertEquals(2, response.get("total"));
@@ -214,7 +296,17 @@ class StatisticsControllerTest {
         }
     }
 
-    private void assertDailyResponse(Map<?, ?> response) {
+    private void assertWeeklyMenuItemViewsResponse(Set<MenuItemViewCountDTO> response) {
+        assertFalse(response.isEmpty());
+        for (MenuItemViewCountDTO itemViewCountDTO : response) {
+            switch (itemViewCountDTO.id().toString()) {
+                case "1" -> assertEquals(2, itemViewCountDTO.viewsCount());
+                case "2", "3", "4" -> assertEquals(1, itemViewCountDTO.viewsCount());
+            }
+        }
+    }
+
+    private void assertDailyScansResponse(Map<?, ?> response) {
         assertEquals(3, response.get("totalUnique"));
         assertEquals(1, response.get("totalRepeated"));
         assertEquals(4, response.get("total"));
@@ -264,6 +356,16 @@ class StatisticsControllerTest {
         }
     }
 
+    private void assertDailyMenuItemViewsResponse(Set<MenuItemViewCountDTO> response) {
+        assertFalse(response.isEmpty());
+        for (MenuItemViewCountDTO itemViewCountDTO : response) {
+            switch (itemViewCountDTO.id().toString()) {
+                case "1" -> assertEquals(2, itemViewCountDTO.viewsCount());
+                case "6" -> assertEquals(1, itemViewCountDTO.viewsCount());
+            }
+        }
+    }
+
     // ---------------------------------------------------------------------------------------
     // Helper Methods
     // ---------------------------------------------------------------------------------------
@@ -292,7 +394,7 @@ class StatisticsControllerTest {
     // Yearly-Specific Assertions
     // ---------------------------------------------------------------------------------------
 
-    private void assertYearlyLineChart(Map<?, ?> response) {
+    private void assertYearlyScansLineChart(Map<?, ?> response) {
         Object lineChartObj = response.get("lineChart");
         if (!(lineChartObj instanceof List<?> lineChartData)) {
             return;
@@ -332,7 +434,7 @@ class StatisticsControllerTest {
     }
 
     @SuppressWarnings("unchecked")
-    private void assertYearlyBarChart(Map<?, ?> response) {
+    private void assertYearlyScansBarChart(Map<?, ?> response) {
         Object barChartObj = response.get("barChart");
         if (!(barChartObj instanceof List)) {
             return;

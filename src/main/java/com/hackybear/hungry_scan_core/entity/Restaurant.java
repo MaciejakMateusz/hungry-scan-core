@@ -59,7 +59,7 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
     @Length(max = 300)
     private String city;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id")
     private Set<Menu> menus = new TreeSet<>();
 

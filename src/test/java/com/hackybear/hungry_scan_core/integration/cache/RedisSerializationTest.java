@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.integration.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
@@ -55,7 +56,15 @@ public class RedisSerializationTest {
                 "Restaurant Name",
                 "Address",
                 "40-404",
-                "Katowice", Instant.now());
+                "Katowice",
+                getMenuSimpleDTOs(),
+                Instant.now());
+    }
+
+    private Set<MenuSimpleDTO> getMenuSimpleDTOs() {
+        return Set.of(
+                new MenuSimpleDTO(1L, "Menu1", null, true)
+        );
     }
 
     private Set<?> getDeserializedSet(GenericJackson2JsonRedisSerializer serializer, Set<RestaurantDTO> originalSet) {

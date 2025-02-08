@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Set;
 
 public record RestaurantDTO(
         long id,
@@ -24,6 +25,8 @@ public record RestaurantDTO(
 
         @NotBlank
         String city,
+
+        Set<MenuSimpleDTO> menus,
 
         Instant created) implements Serializable, Comparable<RestaurantDTO> {
 

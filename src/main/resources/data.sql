@@ -748,6 +748,7 @@ VALUES (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00');
 INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
 VALUES (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');
 
+-- QR SCAN EVENTS:
 -- January 2024 Data
 INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
 VALUES (1, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_A', 1, '2024-01-03 10:00:00'),
@@ -773,3 +774,36 @@ INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
 VALUES (12, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_H', 1, '2024-04-12 10:30:00'),
        (13, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_I', 1, '2024-04-15 16:45:00'),
        (14, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_H', 1, '2024-04-20 11:00:00');
+
+-- MENU ITEM VIEWS EVENTS:
+INSERT IGNORE INTO menu_item_view_events (id, menu_id, menu_item_id, viewed_at)
+VALUES
+    -- Multiple events on the same day (Jan 3) for item 1, to test counting
+    (1, 1, 1, '2024-01-03 09:15:00'),
+    (2, 1, 1, '2024-01-03 09:30:00'),
+    (3, 1, 2, '2024-01-03 10:00:00'),
+
+    -- Different days in January (weeks differ)
+    (4, 1, 3, '2024-01-07 08:00:00'),
+    (5, 1, 4, '2024-01-07 09:00:00'),
+    (6, 1, 1, '2024-01-11 14:00:00'),
+    (7, 1, 2, '2024-01-14 14:00:00'),
+    (8, 1, 5, '2024-01-20 18:00:00'),
+    (9, 1, 1, '2024-01-27 10:00:00'),
+    (10, 1, 6, '2024-01-27 10:05:00'),
+
+    -- February
+    (11, 1, 7, '2024-02-03 11:00:00'),
+    (12, 1, 3, '2024-02-03 11:15:00'),
+    (13, 1, 8, '2024-02-14 09:00:00'),
+
+    -- March
+    (14, 1, 9, '2024-03-01 10:00:00'),
+    (15, 1, 9, '2024-03-01 10:05:00'),
+    (16, 1, 1, '2024-03-31 16:00:00'),
+    (17, 1, 1, '2024-03-31 16:00:00'), -- duplicate timestamp to test count
+    (18, 1, 6, '2024-03-31 17:00:00'),
+
+    -- April
+    (19, 1, 2, '2024-04-03 10:00:00'),
+    (20, 1, 3, '2024-04-10 12:00:00');

@@ -1,7 +1,7 @@
 package com.hackybear.hungry_scan_core.repository;
 
 import com.hackybear.hungry_scan_core.entity.QrScanEvent;
-import com.hackybear.hungry_scan_core.interfaces.ScanAggregation;
+import com.hackybear.hungry_scan_core.interfaces.aggregators.ScanAggregation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface QrScanEventRepository extends JpaRepository<QrScanEvent, String> {
+public interface QrScanEventRepository extends JpaRepository<QrScanEvent, Long> {
 
     List<QrScanEvent> findByFootprint(String footprint);
 

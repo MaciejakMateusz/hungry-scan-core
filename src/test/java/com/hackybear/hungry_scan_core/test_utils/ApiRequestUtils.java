@@ -120,6 +120,34 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Executes POST HTTP request and fetches a Set collection of objects from the specified
+     * endpoint based on passed object.
+     *
+     * @param endpointUrl The URL of the endpoint to fetch from.
+     * @param itemType    The type of objects to fetch.
+     * @param object      Object to pass to the request body.
+     * @return A Set of objects fetched from the endpoint.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T, R> Set<T> postAndGetSet(String endpointUrl, R object, Class<T> itemType) throws Exception {
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        MvcResult result = mockMvc.perform(post(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+        String jsonResponse = response.getContentAsString(StandardCharsets.UTF_8);
+
+        return objectMapper.readValue(jsonResponse,
+                objectMapper.getTypeFactory().constructCollectionType(Set.class, itemType));
+    }
+
+    /**
      * Executes PATCH HTTP request and fetches a List collection of objects from the specified
      * endpoint based on passed object.
      *
