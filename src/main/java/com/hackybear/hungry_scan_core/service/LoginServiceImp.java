@@ -95,7 +95,7 @@ public class LoginServiceImp implements LoginService {
                 .httpOnly(true)
                 .secure(isProduction)
                 .maxAge(expirationTimeSeconds)
-                .sameSite("None")
+                .sameSite(isProduction ? "None" : "Strict")
                 .build();
         return cookie.toString();
     }
