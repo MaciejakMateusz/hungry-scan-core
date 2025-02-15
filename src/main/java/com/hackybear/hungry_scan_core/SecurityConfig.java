@@ -70,6 +70,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 c -> c.dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/app/api/**")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/order-websocket/**")).permitAll()
                         .requestMatchers(PathRequest.toStaticResources()
                                 .at(Set.of(StaticResourceLocation.IMAGES))).permitAll()
