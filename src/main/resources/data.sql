@@ -55,7 +55,7 @@ INSERT IGNORE INTO users_restaurants (user_id, restaurant_id)
 VALUES (1, 1);
 
 INSERT IGNORE INTO user_role (user_id, role_id)
-VALUES (2, 2);
+VALUES (1, 2);
 INSERT IGNORE INTO user_role (user_id, role_id)
 VALUES (2, 2);
 
