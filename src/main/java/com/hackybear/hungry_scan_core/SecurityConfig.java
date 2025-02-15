@@ -63,7 +63,6 @@ public class SecurityConfig {
             corsConfiguration.addAllowedOrigin(env.getProperty("CMS_APP_URL"));
             corsConfiguration.setAllowedOriginPatterns(List.of("*"));
             corsConfiguration.setAllowCredentials(true);
-            corsConfiguration.setAllowPrivateNetwork(true);
             return corsConfiguration;
         }));
 

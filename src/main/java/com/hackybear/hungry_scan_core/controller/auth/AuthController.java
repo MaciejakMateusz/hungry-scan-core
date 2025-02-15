@@ -54,63 +54,15 @@ public class AuthController {
                 ResponseEntity.ok().build();
     }
 
-    @GetMapping("/activation")
+    @GetMapping("/anonymous")
     @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> activationAuth() {
+    public ResponseEntity<?> isAnonymous() {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/activation/*")
+    @GetMapping("/anonymous/*")
     @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> activationAllAuth() {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/activation-error")
-    @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> activationErrorAuth() {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/account-activated")
-    @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> accountActivatedAuth() {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/sign-in")
-    @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> signInAuth() {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/sign-up")
-    @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> signUpAuth() {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/password-recovery")
-    @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> passwordRecoveryAuth() {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/new-password")
-    @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> newPasswordAuth() {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/recovery-sent")
-    @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> recoverySentAuth() {
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/recovery-confirmation")
-    @PreAuthorize("isAnonymous()")
-    public ResponseEntity<?> recoveryConfirmationAuth() {
+    public ResponseEntity<?> isAnonymousSub() {
         return ResponseEntity.ok().build();
     }
 

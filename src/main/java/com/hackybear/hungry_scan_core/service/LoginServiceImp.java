@@ -56,6 +56,7 @@ public class LoginServiceImp implements LoginService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("message", "notActivated"));
         } else if (!userService.hasCreatedRestaurant(authRequestDTO.getUsername())) {
+            prepareInitialResponse(authRequestDTO, response);
             return ResponseEntity.ok(Map.of("redirectUrl", "/create-restaurant"));
         }
         return prepareInitialResponse(authRequestDTO, response);
