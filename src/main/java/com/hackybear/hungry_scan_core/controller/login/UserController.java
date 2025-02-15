@@ -165,7 +165,7 @@ public class UserController {
                 .httpOnly(true)
                 .secure(isProduction)
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
         return cookie.toString();
     }
