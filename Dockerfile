@@ -1,5 +1,4 @@
 FROM bellsoft/liberica-openjdk-alpine:21
-VOLUME /tmp
 
 ENV APP_URL=http://localhost:8082
 ENV CMS_SERVER_URL=http://localhost:3002
