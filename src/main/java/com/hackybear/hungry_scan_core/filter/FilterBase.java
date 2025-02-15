@@ -35,7 +35,7 @@ interface FilterBase {
                 .httpOnly(true)
                 .secure(isSecure)
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
         return cookie.toString();
     }

@@ -158,7 +158,7 @@ public class QRServiceImp implements QRService {
                 .httpOnly(true)
                 .secure(isProduction)
                 .maxAge(10800)
-                .sameSite("none")
+                .sameSite("None")
                 .build();
         return cookie.toString();
     }
