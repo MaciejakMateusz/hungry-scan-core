@@ -55,13 +55,11 @@ public class AuthController {
     }
 
     @GetMapping("/anonymous")
-    @PreAuthorize("isAnonymous()")
     public ResponseEntity<?> isAnonymous() {
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/anonymous/*")
-    @PreAuthorize("isAnonymous()")
     public ResponseEntity<?> isAnonymousSub() {
         return ResponseEntity.ok().build();
     }
