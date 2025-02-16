@@ -1,9 +1,9 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +24,7 @@ import java.util.TreeSet;
 @Setter
 @EqualsAndHashCode
 @Table(name = "restaurants")
-@EntityListeners({AuditingEntityListener.class, GeneralListener.class})
+@EntityListeners({AuditingEntityListener.class})
 @Entity
 public class Restaurant implements Comparable<Restaurant>, Serializable {
 
@@ -58,7 +59,7 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
     @Length(max = 300)
     private String city;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id")
     private Set<Menu> menus = new TreeSet<>();
 
@@ -87,8 +88,8 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Theme theme;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime created;
+    @NotNull
+    private Instant created;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
@@ -98,6 +99,16 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
 
     @CreatedBy
     private String createdBy;
+
+    @PrePersist
+    protected void prePersist() {
+        this.created = Instant.now();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updated = LocalDateTime.now();
+    }
 
     @Override
     public String toString() {

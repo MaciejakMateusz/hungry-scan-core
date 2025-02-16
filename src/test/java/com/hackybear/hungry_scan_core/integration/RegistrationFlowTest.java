@@ -53,6 +53,8 @@ public class RegistrationFlowTest {
     @MockBean
     private EmailService emailService;
 
+    private static final String USER_EMAIL = "juan.bomboclat@test.com";
+
     @Order(1)
     @Sql("/data-h2.sql")
     @Test
@@ -74,7 +76,7 @@ public class RegistrationFlowTest {
     }
 
     private void loginUnregistered() throws Exception {
-        AuthRequestDTO authRequestDTO = new AuthRequestDTO("juan.bomboclat@test.com", "Password123!");
+        AuthRequestDTO authRequestDTO = new AuthRequestDTO(USER_EMAIL, "Password123!");
         apiRequestUtils.postAndExpectForbidden("/api/user/login", authRequestDTO);
     }
 
@@ -99,7 +101,7 @@ public class RegistrationFlowTest {
     }
 
     private void loginRegisteredNotActivated() throws Exception {
-        AuthRequestDTO authRequestDTO = new AuthRequestDTO("juan.bomboclat@test.com", "Password123!");
+        AuthRequestDTO authRequestDTO = new AuthRequestDTO(USER_EMAIL, "Password123!");
         Map<?, ?> response =
                 apiRequestUtils.postAndReturnResponseBody("/api/user/login", authRequestDTO, status().isForbidden());
         assertEquals(response.size(), 1);
@@ -108,7 +110,7 @@ public class RegistrationFlowTest {
 
     private void activateAccount() throws Exception {
         User persistedUser = getDetachedUser();
-        apiRequestUtils.getResponse("/api/user/register/" + persistedUser.getEmailToken());
+        apiRequestUtils.executeGet("/api/user/register/" + persistedUser.getEmailToken());
         persistedUser = getDetachedUser();
         assertNotNull(persistedUser);
         assertEquals("Juan", persistedUser.getForename());
@@ -118,7 +120,7 @@ public class RegistrationFlowTest {
     }
 
     private void loginWithSuccess() throws Exception {
-        AuthRequestDTO authRequestDTO = new AuthRequestDTO("juan.bomboclat@test.com", "Password123!");
+        AuthRequestDTO authRequestDTO = new AuthRequestDTO(USER_EMAIL, "Password123!");
         Map<?, ?> response =
                 apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
         assertEquals("/create-restaurant", response.get("redirectUrl"));
@@ -130,11 +132,11 @@ public class RegistrationFlowTest {
                 apiRequestUtils.postAndExpectErrors("/api/user/register", registrationDTO);
         assertEquals(2, response.size());
         assertEquals("Konto z podanym adresem email już istnieje", response.get("username"));
-        assertEquals("juan.bomboclat@test.com", response.get("givenUsername"));
+        assertEquals(USER_EMAIL, response.get("givenUsername"));
     }
 
     private User getDetachedUser() {
-        User user = userRepository.findUserByUsername("juan.bomboclat@test.com");
+        User user = userRepository.findUserByUsername(USER_EMAIL);
         entityManager.detach(user);
         return user;
     }
@@ -143,7 +145,7 @@ public class RegistrationFlowTest {
         User user = new User();
         user.setForename("Juan");
         user.setSurname("Bomboclat");
-        user.setUsername("juan.bomboclat@test.com");
+        user.setUsername(USER_EMAIL);
         user.setPassword("Password123!");
         user.setRepeatedPassword("Password123!");
         return userMapper.toDTO(user);

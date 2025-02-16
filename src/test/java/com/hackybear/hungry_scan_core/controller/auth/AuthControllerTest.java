@@ -71,7 +71,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     public void shouldAuthorizeForAdminPanelModule() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/admin");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/admin");
         assertEquals(200, response.getStatus());
     }
 
@@ -84,7 +84,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     public void shouldAuthorizeForAppModule() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/app");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/app");
         assertEquals(200, response.getStatus());
     }
 
@@ -112,7 +112,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToActivation() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/anonymous");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/anonymous");
         assertEquals(200, response.getStatus());
     }
 
@@ -124,7 +124,7 @@ class AuthControllerTest {
 
     @Test
     public void shouldAllowToActivationAll() throws Exception {
-        MockHttpServletResponse response = apiRequestUtils.getResponse("/api/auth/anonymous/?resend=true");
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/anonymous/?resend=true");
         assertEquals(200, response.getStatus());
     }
 

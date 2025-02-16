@@ -10,7 +10,10 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.*;
+import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
+import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.*;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -32,7 +35,6 @@ import java.util.*;
 @Service
 @Slf4j
 public class QRServiceImp implements QRService {
-
 
     @Value("${QR_PATH}")
     private String directory;
@@ -48,6 +50,9 @@ public class QRServiceImp implements QRService {
 
     private static final String GENERAL_QR_NAME = "QR code - HungryScan";
 
+    private final QrScanEventRepository qrScanEventRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final ExceptionHelper exceptionHelper;
     private final RestaurantTableService restaurantTableService;
     private final RestaurantService restaurantService;
     private final RestaurantMapper restaurantMapper;
@@ -56,7 +61,16 @@ public class QRServiceImp implements QRService {
     private final ResponseHelper responseHelper;
     private final UserService userService;
 
-    public QRServiceImp(RestaurantTableService restaurantTableService, RestaurantService restaurantService, RestaurantMapper restaurantMapper, RoleService roleService, JwtService jwtService, ResponseHelper responseHelper, UserService userService) {
+    public QRServiceImp(RestaurantTableService restaurantTableService,
+                        RestaurantService restaurantService,
+                        RestaurantMapper restaurantMapper,
+                        RoleService roleService,
+                        JwtService jwtService,
+                        ResponseHelper responseHelper,
+                        UserService userService,
+                        QrScanEventRepository qrScanEventRepository,
+                        RestaurantRepository restaurantRepository,
+                        ExceptionHelper exceptionHelper) {
         this.restaurantTableService = restaurantTableService;
         this.restaurantService = restaurantService;
         this.restaurantMapper = restaurantMapper;
@@ -64,20 +78,17 @@ public class QRServiceImp implements QRService {
         this.jwtService = jwtService;
         this.responseHelper = responseHelper;
         this.userService = userService;
+        this.qrScanEventRepository = qrScanEventRepository;
+        this.restaurantRepository = restaurantRepository;
+        this.exceptionHelper = exceptionHelper;
     }
 
     @Override
     public void generate() throws Exception {
-        log.info("Generating QR code...");
-
         String format = "png";
-
         StringBuilder urlBuilder = getEndpointAddress();
         String url = urlBuilder.toString();
-
         createQrFile(format, GENERAL_QR_NAME, url);
-
-        log.info("QR code generated successfully.");
     }
 
     @Override
@@ -103,13 +114,12 @@ public class QRServiceImp implements QRService {
     }
 
     @Override
-    public boolean generalQrExists() {
-        File qr = new File(directory + GENERAL_QR_NAME);
-        return qr.exists();
-    }
-
-    @Override
+    @Transactional
     public ResponseEntity<?> scanQRCode(HttpServletResponse response, String restaurantToken) throws IOException {
+        if (!restaurantRepository.existsByToken(restaurantToken)) {
+            response.sendRedirect(customerAppUrl + "/invalid-token");
+            return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).build();
+        }
         String username = UUID.randomUUID().toString().substring(1, 13) + "@temp.it";
         String jwt = jwtService.generateToken(username);
         try {
@@ -118,10 +128,27 @@ public class QRServiceImp implements QRService {
             return responseHelper.createErrorResponse(e);
         }
 
-        String cookie = prepareJwtCookie(jwt);
-        response.addHeader("Set-Cookie", cookie);
+        String jwtCookie = prepareJwtCookie(jwt);
+        String restaurantTokenCookie = getRestaurantTokenCookie(restaurantToken);
+        response.addHeader("Set-Cookie", jwtCookie);
+        response.addHeader("Set-Cookie", restaurantTokenCookie);
         response.sendRedirect(customerAppUrl);
         return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).build();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> persistScanEvent(String footprint) {
+        try {
+            QrScanEvent qrScanEvent = new QrScanEvent();
+            qrScanEvent.setFootprint(footprint);
+            qrScanEvent.setRestaurantId(userService.getActiveRestaurantId());
+            qrScanEventRepository.save(qrScanEvent);
+            return ResponseEntity.ok().build();
+        } catch (LocalizedException e) {
+            return ResponseEntity.badRequest()
+                    .body(exceptionHelper.getLocalizedMsg("error.userService.userNotFound"));
+        }
     }
 
     private void createQrFile(String format, String fileName, String url) throws WriterException, IOException {
@@ -159,6 +186,17 @@ public class QRServiceImp implements QRService {
                 .secure(isProduction)
                 .maxAge(10800)
                 .sameSite(isProduction ? "None" : "Strict")
+                .build();
+        return cookie.toString();
+    }
+
+    private String getRestaurantTokenCookie(String value) {
+        long maxAllowedAge = 400L * 24 * 60 * 60; // 400 days in seconds
+        ResponseCookie cookie = ResponseCookie.from("restaurantToken", value)
+                .path("/")
+                .secure(isProduction)
+                .maxAge(maxAllowedAge)
+                .sameSite("none")
                 .build();
         return cookie.toString();
     }

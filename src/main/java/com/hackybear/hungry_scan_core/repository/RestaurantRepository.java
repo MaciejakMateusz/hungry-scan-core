@@ -11,4 +11,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     Optional<Restaurant> findByToken(String token);
 
+    boolean existsByToken(String token);
+
 }

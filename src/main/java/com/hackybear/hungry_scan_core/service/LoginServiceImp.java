@@ -56,7 +56,7 @@ public class LoginServiceImp implements LoginService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("message", "notActivated"));
         } else if (!userService.hasCreatedRestaurant(authRequestDTO.getUsername())) {
-            prepareInitialResponse(authRequestDTO, response);
+            prepareJwtCookie(authRequestDTO, response);
             return ResponseEntity.ok(Map.of("redirectUrl", "/create-restaurant"));
         }
         return prepareInitialResponse(authRequestDTO, response);
@@ -84,11 +84,11 @@ public class LoginServiceImp implements LoginService {
 
     private void prepareJwtCookie(AuthRequestDTO authRequestDTO, HttpServletResponse response) {
         String jwt = jwtService.generateToken(authRequestDTO.getUsername());
-        String jwtCookie = prepareJwtCookie(jwt);
+        String jwtCookie = getJwtCookie(jwt);
         response.addHeader("Set-Cookie", jwtCookie);
     }
 
-    private String prepareJwtCookie(String jwt) {
+    private String getJwtCookie(String jwt) {
         long expirationTimeSeconds = expirationMillis / 1000;
         ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
                 .path("/")

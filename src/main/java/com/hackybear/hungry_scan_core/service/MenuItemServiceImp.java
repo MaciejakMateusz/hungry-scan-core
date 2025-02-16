@@ -5,11 +5,13 @@ import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.*;
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
+import com.hackybear.hungry_scan_core.entity.MenuItemViewEvent;
 import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
+import com.hackybear.hungry_scan_core.repository.MenuItemViewEventRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
@@ -42,12 +44,13 @@ public class MenuItemServiceImp implements MenuItemService {
     private final LabelMapper labelMapper;
     private final IngredientMapper ingredientMapper;
     private final EntityManager entityManager;
+    private final MenuItemViewEventRepository menuItemViewEventRepository;
 
     public MenuItemServiceImp(MenuItemRepository menuItemRepository,
                               CategoryRepository categoryRepository,
                               ExceptionHelper exceptionHelper,
                               SortingHelper sortingHelper,
-                              VariantRepository variantRepository, MenuItemMapper menuItemMapper, TranslatableMapper translatableMapper, AllergenMapper allergenMapper, LabelMapper labelMapper, IngredientMapper ingredientMapper, EntityManager entityManager) {
+                              VariantRepository variantRepository, MenuItemMapper menuItemMapper, TranslatableMapper translatableMapper, AllergenMapper allergenMapper, LabelMapper labelMapper, IngredientMapper ingredientMapper, EntityManager entityManager, MenuItemViewEventRepository menuItemViewEventRepository) {
         this.menuItemRepository = menuItemRepository;
         this.categoryRepository = categoryRepository;
         this.exceptionHelper = exceptionHelper;
@@ -59,6 +62,7 @@ public class MenuItemServiceImp implements MenuItemService {
         this.labelMapper = labelMapper;
         this.ingredientMapper = ingredientMapper;
         this.entityManager = entityManager;
+        this.menuItemViewEventRepository = menuItemViewEventRepository;
     }
 
     @Override
@@ -135,6 +139,14 @@ public class MenuItemServiceImp implements MenuItemService {
         List<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
         sortingHelper.reassignDisplayOrders(menuItems, menuItemRepository::saveAllAndFlush);
         return getSimpleDTOs(category.getId());
+    }
+
+    @Override
+    public void persistViewEvent(Long menuItemId, Long activeMenuId) {
+        MenuItemViewEvent menuItemViewEvent = new MenuItemViewEvent();
+        menuItemViewEvent.setMenuItemId(menuItemId);
+        menuItemViewEvent.setMenuId(activeMenuId);
+        menuItemViewEventRepository.save(menuItemViewEvent);
     }
 
     private MenuItem getMenuItem(Long id) throws LocalizedException {

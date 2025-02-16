@@ -1,7 +1,8 @@
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token)
-VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0');
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token)
-VALUES (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null);
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created)
+VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
+        '2023-11-12T00:00:00Z');
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created)
+VALUES (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z');
 
 INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
 VALUES (1, true, 'Całodniowe', 1);
@@ -42,8 +43,9 @@ VALUES (6, 'ROLE_CUSTOMER_READONLY', 6);
 INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
                           jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
 VALUES (1, 1, NOW(), 'admin@example.com', 1,
-        '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, '', '',
-        '', 1, 1);
+        '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, 'Admin',
+        '',
+        'Admin', 1, 1);
 
 INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
                           jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
@@ -745,3 +747,63 @@ INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatab
 VALUES (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00');
 INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
 VALUES (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');
+
+-- QR SCAN EVENTS:
+-- January 2024 Data
+INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
+VALUES (1, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_A', 1, '2024-01-03 10:00:00'),
+       (2, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_B', 1, '2024-01-07 09:00:00'),
+       (3, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_A', 1, '2024-01-15 12:00:00'),
+       (4, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_C', 1, '2024-01-20 11:00:00'),
+       (5, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_C', 1, '2024-01-21 15:00:00'),
+       (6, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_D', 1, '2024-01-15 10:00:00'),
+       (7, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_D', 1, '2024-01-15 10:15:00'),
+       (8, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_E', 1, '2024-01-15 15:00:00');
+
+-- February 2024 Data
+INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
+VALUES (9, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_F', 1, '2024-02-10 14:00:00');
+
+-- March 2024 Data
+INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
+VALUES (10, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_G', 1, '2024-03-05 09:00:00'),
+       (11, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_G', 1, '2024-03-05 15:00:00');
+
+-- April 2024 Data
+INSERT IGNORE INTO qr_scan_events(id, footprint, restaurant_id, scanned_at)
+VALUES (12, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_H', 1, '2024-04-12 10:30:00'),
+       (13, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_I', 1, '2024-04-15 16:45:00'),
+       (14, '3d90381d-80d2-48f8-80b3-d237d5f0a8ed_H', 1, '2024-04-20 11:00:00');
+
+-- MENU ITEM VIEWS EVENTS:
+INSERT IGNORE INTO menu_item_view_events (id, menu_id, menu_item_id, viewed_at)
+VALUES
+    -- Multiple events on the same day (Jan 3) for item 1, to test counting
+    (1, 1, 1, '2024-01-03 09:15:00'),
+    (2, 1, 1, '2024-01-03 09:30:00'),
+    (3, 1, 2, '2024-01-03 10:00:00'),
+
+    -- Different days in January (weeks differ)
+    (4, 1, 3, '2024-01-07 08:00:00'),
+    (5, 1, 4, '2024-01-07 09:00:00'),
+    (6, 1, 1, '2024-01-11 14:00:00'),
+    (7, 1, 2, '2024-01-14 14:00:00'),
+    (8, 1, 5, '2024-01-20 18:00:00'),
+    (9, 1, 1, '2024-01-27 10:00:00'),
+    (10, 1, 6, '2024-01-27 10:05:00'),
+
+    -- February
+    (11, 1, 7, '2024-02-03 11:00:00'),
+    (12, 1, 3, '2024-02-03 11:15:00'),
+    (13, 1, 8, '2024-02-14 09:00:00'),
+
+    -- March
+    (14, 1, 9, '2024-03-01 10:00:00'),
+    (15, 1, 9, '2024-03-01 10:05:00'),
+    (16, 1, 1, '2024-03-31 16:00:00'),
+    (17, 1, 1, '2024-03-31 16:00:00'), -- duplicate timestamp to test count
+    (18, 1, 6, '2024-03-31 17:00:00'),
+
+    -- April
+    (19, 1, 2, '2024-04-03 10:00:00'),
+    (20, 1, 3, '2024-04-10 12:00:00');

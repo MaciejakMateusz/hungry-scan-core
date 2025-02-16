@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.utility.interfaces;
+package com.hackybear.hungry_scan_core.interfaces;
 
 @FunctionalInterface
 public interface ThrowingConsumer<T> {
