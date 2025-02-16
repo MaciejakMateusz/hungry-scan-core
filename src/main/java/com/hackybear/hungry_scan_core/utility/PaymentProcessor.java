@@ -5,7 +5,6 @@ import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import com.hackybear.hungry_scan_core.repository.OrderSummaryRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.ArchiveDataService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,16 +12,13 @@ import java.util.List;
 @Component
 public class PaymentProcessor {
 
-    private final SimpMessagingTemplate messagingTemplate;
     private final RestaurantTableService restaurantTableService;
     private final OrderSummaryRepository summaryRepository;
     private final ArchiveDataService archiveDataService;
 
-    public PaymentProcessor(SimpMessagingTemplate messagingTemplate,
-                            RestaurantTableService restaurantTableService,
+    public PaymentProcessor(RestaurantTableService restaurantTableService,
                             OrderSummaryRepository summaryRepository,
                             ArchiveDataService archiveDataService) {
-        this.messagingTemplate = messagingTemplate;
         this.restaurantTableService = restaurantTableService;
         this.summaryRepository = summaryRepository;
         this.archiveDataService = archiveDataService;
@@ -64,8 +60,8 @@ public class PaymentProcessor {
 
     private void convertAndSendMessages() {
         List<RestaurantTable> allTables = restaurantTableService.findAll();
-        messagingTemplate.convertAndSend("/topic/tables", allTables);
+        //todo websocket msg
         List<OrderSummary> allSummaries = summaryRepository.findAll();
-        messagingTemplate.convertAndSend("/topic/summaries", allSummaries);
+        //todo websocket msg
     }
 }

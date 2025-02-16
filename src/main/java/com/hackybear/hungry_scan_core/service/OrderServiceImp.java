@@ -11,7 +11,6 @@ import com.hackybear.hungry_scan_core.service.interfaces.ArchiveDataService;
 import com.hackybear.hungry_scan_core.service.interfaces.OrderService;
 import com.hackybear.hungry_scan_core.utility.OrderServiceHelper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,6 @@ public class OrderServiceImp implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderSummaryRepository orderSummaryRepository;
     private final MenuItemRepository menuItemRepository;
-    private final SimpMessagingTemplate messagingTemplate;
     private final ArchiveDataService dataTransferService;
     private final OrderServiceHelper orderHelper;
     private final ExceptionHelper exceptionHelper;
@@ -36,7 +34,6 @@ public class OrderServiceImp implements OrderService {
     public OrderServiceImp(OrderRepository orderRepository,
                            OrderSummaryRepository orderSummaryRepository,
                            MenuItemRepository menuItemRepository,
-                           SimpMessagingTemplate messagingTemplate,
                            ArchiveDataService dataTransferService,
                            OrderServiceHelper orderHelper,
                            ExceptionHelper exceptionHelper,
@@ -44,7 +41,6 @@ public class OrderServiceImp implements OrderService {
         this.orderRepository = orderRepository;
         this.orderSummaryRepository = orderSummaryRepository;
         this.menuItemRepository = menuItemRepository;
-        this.messagingTemplate = messagingTemplate;
         this.dataTransferService = dataTransferService;
         this.orderHelper = orderHelper;
         this.exceptionHelper = exceptionHelper;
@@ -110,7 +106,6 @@ public class OrderServiceImp implements OrderService {
         order.setTotalAmount(orderHelper.getOrderAmount(order));
         orderRepository.save(order);
         orderRepository.refresh(order);
-        messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
         updateMenuItemsCounterStatistics(order);
     }
 
@@ -120,7 +115,6 @@ public class OrderServiceImp implements OrderService {
         orderHelper.prepareForFinalizingTakeAway(existingOrder);
         orderRepository.saveAndFlush(existingOrder);
         dataTransferService.archiveOrder(existingOrder);
-        messagingTemplate.convertAndSend("/topic/take-away-orders", findAllTakeAway());
     }
 
     @Override
@@ -134,7 +128,6 @@ public class OrderServiceImp implements OrderService {
         orderRepository.save(order);
         orderRepository.refresh(order);
         persistOrderSummary(order);
-        messagingTemplate.convertAndSend("/topic/dine-in-orders", findAll());
         updateMenuItemsCounterStatistics(order);
     }
 

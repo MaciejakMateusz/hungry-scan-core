@@ -11,7 +11,6 @@ import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
 import com.hackybear.hungry_scan_core.utility.Money;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -26,18 +25,15 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     private final UserRepository userRepository;
     protected final OrderSummaryRepository orderSummaryRepository;
     protected final ExceptionHelper exceptionHelper;
-    protected final SimpMessagingTemplate messagingTemplate;
 
     public RestaurantTableServiceImp(RestaurantTableRepository restaurantTableRepository,
                                      UserRepository userRepository,
                                      OrderSummaryRepository orderSummaryRepository,
-                                     ExceptionHelper exceptionHelper,
-                                     SimpMessagingTemplate messagingTemplate) {
+                                     ExceptionHelper exceptionHelper) {
         this.restaurantTableRepository = restaurantTableRepository;
         this.userRepository = userRepository;
         this.orderSummaryRepository = orderSummaryRepository;
         this.exceptionHelper = exceptionHelper;
-        this.messagingTemplate = messagingTemplate;
     }
 
 
@@ -113,7 +109,6 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         validateTableAction(restaurantTable);
         restaurantTable.setWaiterCalled(true);
         save(restaurantTable);
-        messagingTemplate.convertAndSend("/topic/tables", findAll());
     }
 
     @Override
@@ -121,7 +116,6 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         RestaurantTable restaurantTable = findById(id);
         restaurantTable.setWaiterCalled(false);
         save(restaurantTable);
-        messagingTemplate.convertAndSend("/topic/tables", findAll());
     }
 
     @Override
@@ -131,7 +125,6 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
         notifyRelatedOrderSummary(id, paymentMethod);
         restaurantTable.setBillRequested(true);
         save(restaurantTable);
-        messagingTemplate.convertAndSend("/topic/tables", findAll());
     }
 
     private void notifyRelatedOrderSummary(Long tableNumber, PaymentMethod paymentMethod) throws LocalizedException {
@@ -145,7 +138,6 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
 
         existingSummary.setPaymentMethod(paymentMethod);
         orderSummaryRepository.saveAndFlush(existingSummary);
-        messagingTemplate.convertAndSend("/topic/summaries", findAll());
     }
 
     private void removeUsersAccess(RestaurantTable table) {
