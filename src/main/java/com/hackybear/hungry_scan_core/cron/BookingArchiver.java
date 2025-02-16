@@ -5,7 +5,6 @@ import com.hackybear.hungry_scan_core.entity.history.HistoryBooking;
 import com.hackybear.hungry_scan_core.repository.BookingRepository;
 import com.hackybear.hungry_scan_core.repository.history.HistoryBookingRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,7 @@ public class BookingArchiver {
         this.historyBookingRepository = historyBookingRepository;
     }
 
-    @Scheduled(initialDelay = 60000, fixedDelay = 60000 * 5)
+
     @Transactional
     public void checkAndArchive() {
         log.info("Running checkAndArchive() job...");

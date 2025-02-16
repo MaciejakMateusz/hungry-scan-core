@@ -5,7 +5,6 @@ import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ public class CustomerAccessRemover {
         this.userService = userService;
     }
 
-    @Scheduled(initialDelay = 60000, fixedDelay = 60000 * 60)
     @Transactional
     public void controlJwtAndRemoveUsers() {
         log.info("Running controlJwtAndRemoveUsers() job...");
