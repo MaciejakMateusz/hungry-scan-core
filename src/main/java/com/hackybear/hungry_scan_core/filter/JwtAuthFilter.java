@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ import java.util.Objects;
 
 @Component
 @NonNullApi
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
 
     private final JwtService jwtService;
@@ -44,6 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        log.info("Request URI: {}", request.getRequestURI());
 
         Map<String, String> jwtParams = getJwtParams(request, jwtService::extractUsername);
         String token = jwtParams.get("token");
