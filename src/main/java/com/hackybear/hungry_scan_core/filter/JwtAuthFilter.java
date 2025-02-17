@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -33,17 +32,14 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
     private final List<String> jwtInvalidateURIs;
-    private final Environment env;
 
     @Value("${IS_PROD}")
     private boolean isProduction;
 
     public JwtAuthFilter(JwtService jwtService,
-                         CustomUserDetailsService customUserDetailsService,
-                         Environment env) {
+                         CustomUserDetailsService customUserDetailsService) {
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
-        this.env = env;
         this.jwtInvalidateURIs = List.of("/api/user/register", "/api/user/recover");
     }
 
@@ -51,9 +47,6 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        log.info("REDISPASSWORD: {}", env.getProperty("REDISPASSWORD"));
-        log.info("REDISHOST: {}", env.getProperty("REDISHOST"));
-        log.info("REDISPORT: {}", env.getProperty("REDISPORT"));
 
         Map<String, String> jwtParams = getJwtParams(request, jwtService::extractUsername);
         String token = jwtParams.get("token");
