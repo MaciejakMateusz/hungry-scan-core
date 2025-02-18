@@ -8,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,7 +25,6 @@ import java.util.Objects;
 
 @Component
 @NonNullApi
-@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
 
     private final JwtService jwtService;
@@ -52,13 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
         String token = jwtParams.get("token");
         String username = jwtParams.get("username");
 
-        if (Objects.isNull(token)) {
-            String authHeader = request.getHeader("Authorization");
-            if (Objects.nonNull(authHeader) && authHeader.startsWith("Bearer ")) {
-                token = authHeader.substring(7);
-                username = jwtService.extractUsername(token);
-            }
-        } else if (jwtInvalidateURIs.contains(request.getRequestURI())) {
+        if (jwtInvalidateURIs.contains(request.getRequestURI())) {
             String invalidatedJwtCookie = invalidateJwtCookie(isProduction);
             response.setHeader("Set-Cookie", invalidatedJwtCookie);
             filterChain.doFilter(request, response);
