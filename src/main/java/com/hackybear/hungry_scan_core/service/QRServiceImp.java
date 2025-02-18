@@ -12,6 +12,7 @@ import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.*;
@@ -25,25 +26,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @Slf4j
 public class QRServiceImp implements QRService {
 
+    private final MenuRepository menuRepository;
     @Value("${QR_PATH}")
     private String directory;
 
-    @Value("${server.port}")
-    private String port;
-
     @Value("${CUSTOMER_APP_URL}")
     private String customerAppUrl;
+
+    @Value("${APP_URL}")
+    private String appUrl;
 
     @Value("${IS_PROD}")
     private boolean isProduction;
@@ -70,7 +72,7 @@ public class QRServiceImp implements QRService {
                         UserService userService,
                         QrScanEventRepository qrScanEventRepository,
                         RestaurantRepository restaurantRepository,
-                        ExceptionHelper exceptionHelper) {
+                        ExceptionHelper exceptionHelper, MenuRepository menuRepository) {
         this.restaurantTableService = restaurantTableService;
         this.restaurantService = restaurantService;
         this.restaurantMapper = restaurantMapper;
@@ -81,21 +83,19 @@ public class QRServiceImp implements QRService {
         this.qrScanEventRepository = qrScanEventRepository;
         this.restaurantRepository = restaurantRepository;
         this.exceptionHelper = exceptionHelper;
+        this.menuRepository = menuRepository;
     }
 
     @Override
     public void generate() throws Exception {
         String format = "png";
-        StringBuilder urlBuilder = getEndpointAddress();
-        String url = urlBuilder.toString();
+        String url = appUrl + "/api/scan";
         createQrFile(format, GENERAL_QR_NAME, url);
     }
 
     @Override
     public void generate(RestaurantTable table, String name) throws Exception {
-        StringBuilder urlBuilder = getEndpointAddress();
-        urlBuilder.append(table.getToken());
-        String url = urlBuilder.toString();
+        String url = appUrl + "/api/scan/" + table.getToken();
 
         String format = "png";
         String fileName;
@@ -164,21 +164,6 @@ public class QRServiceImp implements QRService {
         MatrixToImageWriter.writeToPath(bitMatrix, format, qrFilePath);
     }
 
-    private StringBuilder getEndpointAddress() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("http://").append(getServerIPAddress()).append(":").append(port).append("/api/scan");
-        return sb;
-    }
-
-    private String getServerIPAddress() {
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            System.out.println("Failed to determine server IP address: " + e.getMessage());
-            return null;
-        }
-    }
-
     private String prepareJwtCookie(String jwt) {
         ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
                 .path("/")
@@ -212,8 +197,11 @@ public class QRServiceImp implements QRService {
         User temp = new User();
         RestaurantDTO restaurantDTO = restaurantService.findByToken(restaurantToken);
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        Long restaurantId = restaurant.getId();
+        Long activeMenuId = getActiveMenuId(restaurantId);
         temp.setRestaurants(Set.of(restaurant));
-        temp.setActiveRestaurantId(restaurant.getId());
+        temp.setActiveRestaurantId(restaurantId);
+        temp.setActiveMenuId(activeMenuId);
         temp.setOrganizationId(0L);
         temp.setUsername(username);
         temp.setEmail(username);
@@ -224,5 +212,15 @@ public class QRServiceImp implements QRService {
         temp.setRoles(new HashSet<>(Collections.singletonList(role)));
         temp.setJwtToken(jwtToken);
         return temp;
+    }
+
+    private Long getActiveMenuId(Long restaurantId) throws LocalizedException {
+        LocalDateTime current = LocalDateTime.now();
+        DayOfWeek today = current.toLocalDate().getDayOfWeek();
+        int ordinal = today.getValue();
+        Optional<Long> activeMenuIdOptional =
+                menuRepository.findActiveMenuId(ordinal, current.toLocalTime(), restaurantId);
+        return activeMenuIdOptional.orElseThrow(
+                exceptionHelper.supplyLocalizedMessage("error.qrService.menuNotFound"));
     }
 }
