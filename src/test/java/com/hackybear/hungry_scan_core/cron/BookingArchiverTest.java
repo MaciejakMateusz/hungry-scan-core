@@ -60,6 +60,7 @@ class BookingArchiverTest {
         assertFalse(expiredBookings.isEmpty());
     }
 
+    @Disabled("Until version with bookings is launched")
     @Test
     @Transactional
     @Rollback
