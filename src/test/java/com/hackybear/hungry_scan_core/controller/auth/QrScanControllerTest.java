@@ -42,8 +42,10 @@ class QrScanControllerTest {
 
     @Value("${CUSTOMER_APP_URL}")
     private String customerAppUrl;
+
     @Autowired
     private QrScanEventRepository qrScanEventRepository;
+
     @Autowired
     private UserRepository userRepository;
 

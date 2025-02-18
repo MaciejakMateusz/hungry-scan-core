@@ -25,6 +25,11 @@ VALUES (false, 'Dzienne', 2);
 INSERT INTO menus (is_all_day, name, restaurant_id)
 VALUES (false, 'Wieczorne', 2);
 
+INSERT INTO schedule (menu_id)
+VALUES (1);
+INSERT INTO schedule_plan (schedule_id, end_time, start_time, plan_key)
+VALUES (1, null, null, 1);
+
 /* CATEGORIES TRANSLATIONS */
 INSERT INTO translatable(default_translation, translation_en)
 VALUES ('Przystawki', 'Starters');
