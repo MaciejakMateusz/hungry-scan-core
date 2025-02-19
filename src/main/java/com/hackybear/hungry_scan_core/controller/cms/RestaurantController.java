@@ -64,7 +64,7 @@ public class RestaurantController {
             return ResponseEntity.internalServerError().body(Map.of("error",
                     exceptionHelper.getLocalizedMsg("error.createRestaurant.currentUser")));
         }
-        return restaurantService.getCreateFirstResponse(params, currentUser);
+        return restaurantService.persistInitialRestaurant(params, currentUser);
     }
 
     @PostMapping("/add")

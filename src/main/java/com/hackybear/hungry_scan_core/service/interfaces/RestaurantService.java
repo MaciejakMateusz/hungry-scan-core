@@ -17,7 +17,7 @@ public interface RestaurantService {
 
     Restaurant save(RestaurantDTO restaurantDTO, User currentUser);
 
-    ResponseEntity<?> getCreateFirstResponse(Map<String, Object> params, User currentUser);
+    ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser);
 
     void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException;
 
