@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public record IngredientSimpleDTO(
-        long id,
+        Long id,
 
         @DefaultTranslationNotBlankDTO
         @LimitTranslationsLengthDTO
