@@ -9,11 +9,6 @@ VALUES (1, true, 'Całodniowe', 1);
 INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
 VALUES (2, true, 'Menu', 2);
 
-INSERT INTO schedule (id, menu_id)
-VALUES (1, 1);
-INSERT INTO schedule_plan (schedule_id, end_time, start_time, plan_key)
-VALUES (1, null, null, 1);
-
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
 (1, 'Kelner', 'Waiter');
 INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES

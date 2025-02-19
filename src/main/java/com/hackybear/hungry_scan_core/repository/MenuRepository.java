@@ -17,18 +17,17 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     Set<Menu> findAllByRestaurantId(Long restaurantId);
 
     @Query(value = """
-            SELECT s.menu_id
-            FROM schedule s
-            JOIN schedule_plan sp ON s.id = sp.schedule_id
-            JOIN menus m ON s.menu_id = m.id
+            SELECT m.id
+            FROM menus m
+            LEFT JOIN schedule s ON m.id = s.menu_id
+            LEFT JOIN schedule_plan sp ON s.id = sp.schedule_id
             WHERE m.restaurant_id = :restaurantId
-              AND (
-                   (sp.plan_key = :dayOfWeekOrdinal
+            AND (
+                m.is_all_day = TRUE
+                OR (sp.plan_key = :dayOfWeekOrdinal
                     AND sp.start_time <= :currentTime
-                    AND sp.end_time >= :currentTime
-                   )
-                   OR m.is_all_day = true
-                  )
+                    AND sp.end_time >= :currentTime)
+                )
             """, nativeQuery = true)
     Optional<Long> findActiveMenuId(@Param("dayOfWeekOrdinal") int dayOfWeekOrdinal,
                                     @Param("currentTime") LocalTime currentTime,
