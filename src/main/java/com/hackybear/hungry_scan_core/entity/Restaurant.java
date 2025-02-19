@@ -100,6 +100,14 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
     @CreatedBy
     private String createdBy;
 
+    public void addMenu(Menu menu) {
+        this.menus.add(menu);
+    }
+
+    public void removeMenu(Menu menu) {
+        this.menus.remove(menu);
+    }
+
     @PrePersist
     protected void prePersist() {
         this.created = Instant.now();
