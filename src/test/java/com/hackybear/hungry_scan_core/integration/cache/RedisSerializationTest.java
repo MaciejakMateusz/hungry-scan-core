@@ -51,7 +51,7 @@ public class RedisSerializationTest {
 
     private RestaurantDTO createRestaurantDTO() {
         return new RestaurantDTO(
-                1,
+                1L,
                 "token123",
                 "Restaurant Name",
                 "Address",
