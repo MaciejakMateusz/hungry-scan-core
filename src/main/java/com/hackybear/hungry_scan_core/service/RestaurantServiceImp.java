@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.service;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
+import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -58,7 +60,7 @@ public class RestaurantServiceImp implements RestaurantService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = RESTAURANT_ID, key = "#restaurantDTO.id()"),
+            @CacheEvict(value = RESTAURANT_ID, key = "#restaurantDTO.id()", condition = "#restaurantDTO.id() != null"),
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
     })
     public Restaurant save(RestaurantDTO restaurantDTO, User currentUser) {
@@ -71,7 +73,7 @@ public class RestaurantServiceImp implements RestaurantService {
     @Caching(evict = {
             @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getUsername()")
     })
-    public ResponseEntity<?> getCreateFirstResponse(Map<String, Object> params, User currentUser) {
+    public ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) {
         UserService userService = (UserService) params.get("userService");
         BindingResult br = (BindingResult) params.get("bindingResult");
         ResponseHelper responseHelper = (ResponseHelper) params.get("responseHelper");
@@ -83,9 +85,7 @@ public class RestaurantServiceImp implements RestaurantService {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
-        Restaurant restaurant = this.save(restaurantDTO, currentUser);
-        currentUser.setActiveRestaurantId(restaurant.getId());
-        userService.save(currentUser);
+        persistInitial(restaurantDTO, userService, currentUser);
         return ResponseEntity.ok(Map.of("redirectUrl", "/app"));
     }
 
@@ -130,5 +130,25 @@ public class RestaurantServiceImp implements RestaurantService {
         return restaurantRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.restaurantService.restaurantNotFound"));
+    }
+
+    private void persistInitial(RestaurantDTO restaurantDTO, UserService userService, User currentUser) {
+        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        restaurant = restaurantRepository.save(restaurant);
+        Menu initialMenu = createInitialMenu(restaurant);
+        restaurant.addMenu(initialMenu);
+        restaurant = restaurantRepository.save(restaurant);
+        currentUser.setActiveRestaurantId(restaurant.getId());
+        Optional<Menu> menu = restaurant.getMenus().stream().findFirst();
+        menu.ifPresent(m -> currentUser.setActiveMenuId(m.getId()));
+        userService.save(currentUser);
+    }
+
+    private static Menu createInitialMenu(Restaurant restaurant) {
+        Menu menu = new Menu();
+        menu.setAllDay(true);
+        menu.setName("Menu");
+        menu.setRestaurantId(restaurant.getId());
+        return menu;
     }
 }

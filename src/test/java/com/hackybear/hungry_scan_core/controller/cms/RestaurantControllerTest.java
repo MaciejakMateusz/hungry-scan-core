@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
@@ -145,9 +146,14 @@ public class RestaurantControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 10, RestaurantDTO.class);
         assertEquals("Real Greek Carbonara", persistedRestaurant.name());
         assertEquals("Korfantego 123", persistedRestaurant.address());
+        assertEquals(1, persistedRestaurant.menus().size());
+        MenuSimpleDTO menuSimpleDTO = persistedRestaurant.menus().stream().findFirst().orElse(null);
+        assertNotNull(menuSimpleDTO);
+        assertEquals("Menu", menuSimpleDTO.name());
 
         currentUser = userService.findByUsername("fresh@user.it");
         assertNotNull(currentUser.getActiveRestaurantId());
+        assertNotNull(currentUser.getActiveMenuId());
     }
 
     @Test
