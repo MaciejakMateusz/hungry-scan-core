@@ -60,7 +60,6 @@ public class SecurityConfig {
             corsConfiguration.setAllowedHeaders(List.of("*"));
             corsConfiguration.addAllowedOrigin(env.getProperty("JENKINS_URL"));
             corsConfiguration.addAllowedOrigin(env.getProperty("CUSTOMER_APP_URL"));
-            corsConfiguration.addAllowedOrigin(env.getProperty("CUSTOMER_APP_URL") + "/menu");
             corsConfiguration.addAllowedOrigin(env.getProperty("CMS_APP_URL"));
             corsConfiguration.setAllowCredentials(true);
             return corsConfiguration;
