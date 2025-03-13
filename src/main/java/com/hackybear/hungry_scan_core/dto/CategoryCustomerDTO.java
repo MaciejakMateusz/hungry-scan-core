@@ -7,20 +7,20 @@ import java.util.List;
 
 public record CategoryCustomerDTO(long id,
                                   TranslatableDTO name,
-                                  List<MenuItemSimpleDTO> menuItems) implements Serializable {
+                                  List<MenuItemFormDTO> menuItems) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     public CategoryCustomerDTO(long id,
                                TranslatableDTO name,
-                               List<MenuItemSimpleDTO> menuItems) {
+                               List<MenuItemFormDTO> menuItems) {
         this.id = id;
         this.menuItems = List.copyOf(menuItems);
         this.name = name;
     }
 
-    public List<MenuItemSimpleDTO> menuItems() {
+    public List<MenuItemFormDTO> menuItems() {
         return List.copyOf(this.menuItems);
     }
 
