@@ -9,18 +9,18 @@ VALUES (1, true, 'Całodniowe', 1);
 INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
 VALUES (2, true, 'Menu', 2);
 
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-(1, 'Kelner', 'Waiter');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-(2, 'Administrator', 'Admin');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-(3, 'Menadżer', 'Manager');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-(4, 'Kucharz', 'Cook');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-(5, 'Klient', 'Customer');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-(6, 'Klient (tylko odczyt)', 'Customer (read only)');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (1, 'Kelner', 'Waiter');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (2, 'Administrator', 'Admin');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (3, 'Menadżer', 'Manager');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (4, 'Kucharz', 'Cook');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (5, 'Klient', 'Customer');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (6, 'Klient (tylko odczyt)', 'Customer (read only)');
 
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
@@ -61,62 +61,67 @@ VALUES (1, 2);
 INSERT IGNORE INTO user_role (user_id, role_id)
 VALUES (2, 2);
 
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (7, 'Gluten', 'Gluten');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (8, 'Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.', 'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (9, 'Skorupiaki', 'Crustaceans');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (10, 'Skorupiaki i produkty pochodne.', 'Crustaceans and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (11, 'Jaja', 'Eggs');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (12, 'Jaja i produkty pochodne.', 'Eggs and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (13, 'Ryby', 'Fish');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (14, 'Ryby i produkty pochodne.', 'Fish and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (15, 'Orzeszki ziemne', 'Peanuts');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (16, 'Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'Peanuts and related products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (17, 'Soja', 'Soybeans');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (18, 'Soja i produkty pochodne.', 'Soybeans and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (19, 'Mleko', 'Milk');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (20, 'Mleko i produkty pochodne (łącznie z laktozą).', 'Milk and derived products (including lactose).');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (21, 'Orzechy', 'Nuts');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (22, 'Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.', 'Nuts, i.e. almonds, hazelnuts, walnuts, cashews, pecans, Brazil nuts, pistachios/pistachio nuts, macadamia nuts and related products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (23, 'Seler', 'Celery');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (24, 'Seler i produkty pochodne.', 'Celery amd derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (25, 'Gorczyca', 'Mustard');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (26, 'Gorczyca i produkty pochodne.', 'Mustard and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (27, 'Nasiona sezamu', 'Sesame');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (28, 'Nasiona sezamu i produkty pochodne.', 'Sesame and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (29, 'Dwutlenek siarki', 'Sulfur dioxide');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (30, 'Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.', 'Sulfur dioxide and sulphites in concentrations above 10 mg/kg or 10 mg/l expressed as SO2.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (31, 'Łubin', 'Lupin');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (32, 'Łubin i produkty pochodne.', 'Lupin and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (33, 'Mięczaki', 'Molluscs');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (34, 'Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (7, 'Gluten', 'Gluten');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (8,
+        'Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.',
+        'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (9, 'Skorupiaki', 'Crustaceans');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (10, 'Skorupiaki i produkty pochodne.', 'Crustaceans and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (11, 'Jaja', 'Eggs');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (12, 'Jaja i produkty pochodne.', 'Eggs and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (13, 'Ryby', 'Fish');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (14, 'Ryby i produkty pochodne.', 'Fish and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (15, 'Orzeszki ziemne', 'Peanuts');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (16, 'Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'Peanuts and related products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (17, 'Soja', 'Soybeans');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (18, 'Soja i produkty pochodne.', 'Soybeans and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (19, 'Mleko', 'Milk');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (20, 'Mleko i produkty pochodne (łącznie z laktozą).', 'Milk and derived products (including lactose).');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (21, 'Orzechy', 'Nuts');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (22,
+        'Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.',
+        'Nuts, i.e. almonds, hazelnuts, walnuts, cashews, pecans, Brazil nuts, pistachios/pistachio nuts, macadamia nuts and related products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (23, 'Seler', 'Celery');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (24, 'Seler i produkty pochodne.', 'Celery amd derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (25, 'Gorczyca', 'Mustard');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (26, 'Gorczyca i produkty pochodne.', 'Mustard and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (27, 'Nasiona sezamu', 'Sesame');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (28, 'Nasiona sezamu i produkty pochodne.', 'Sesame and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (29, 'Dwutlenek siarki', 'Sulfur dioxide');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (30, 'Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.',
+        'Sulfur dioxide and sulphites in concentrations above 10 mg/kg or 10 mg/l expressed as SO2.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (31, 'Łubin', 'Lupin');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (32, 'Łubin i produkty pochodne.', 'Lupin and derived products.');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (33, 'Mięczaki', 'Molluscs');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (34, 'Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
 
 INSERT IGNORE INTO allergens(id, restaurant_id, translatable_description_id, icon_name, translatable_name_id)
 VALUES (1, 1, 8, 'gluten.svg', 7),
@@ -134,18 +139,18 @@ VALUES (1, 1, 8, 'gluten.svg', 7),
        (13, 1, 32, 'lupine.svg', 31),
        (14, 1, 34, 'molluscs.svg', 33);
 
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (35, 'Bez glutenu', 'Gluten free');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (36, 'Wegańskie', 'Vegan');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (37, 'Wegetariańskie', 'Vegetarian');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (38, 'Kolendra', 'Coriander');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (39, 'Bez laktozy', 'Lactose free');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en) VALUES
-    (40, 'Ostre', 'Spicy');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (35, 'Bez glutenu', 'Gluten free');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (36, 'Wegańskie', 'Vegan');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (37, 'Wegetariańskie', 'Vegetarian');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (38, 'Kolendra', 'Coriander');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (39, 'Bez laktozy', 'Lactose free');
+INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+VALUES (40, 'Ostre', 'Spicy');
 
 INSERT IGNORE INTO labels (id, restaurant_id, icon_name, translatable_name_id)
 VALUES (1, 1, 'gluten-free.svg', 35),
@@ -164,8 +169,9 @@ VALUES (1, 'green', true, 1),
 INSERT IGNORE INTO onboarding_images(id, restaurant_id, image_name, is_active)
 VALUES (1, 1, 'default', true);
 
-INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
-                               zone_id, has_qr_code, qr_name)
+INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number,
+                                      is_visible,
+                                      zone_id, has_qr_code, qr_name)
 VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 999, 1, true, null, false, null);
 
 INSERT IGNORE INTO translatable(id, default_translation, translation_en)
@@ -485,6 +491,52 @@ INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translat
                                is_bestseller, is_new, available, visible, price, counter, bar_served,
                                category_id)
 VALUES (33, 114, 3, 115, null, null, false, false, true, true, 7.00, 0, true, 8);
+
+INSERT INTO menu_items_allergens (menu_item_id, allergens_id)
+VALUES (1, 2),
+       (3, 1),
+       (3, 2),
+       (3, 3),
+       (5, 7),
+       (6, 1),
+       (7, 1),
+       (7, 3),
+       (8, 1),
+       (8, 7),
+       (9, 1),
+       (9, 4),
+       (11, 7),
+       (13, 7),
+       (16, 7),
+       (21, 1),
+       (21, 7),
+       (22, 1),
+       (22, 7),
+       (23, 1),
+       (23, 7),
+       (24, 1),
+       (24, 7),
+       (25, 1),
+       (25, 7),
+       (28, 1),
+       (28, 3),
+       (28, 7),
+       (29, 1),
+       (30, 1);
+
+INSERT IGNORE INTO menu_items_labels (menu_item_id, labels_id)
+VALUES (1, 1),
+       (1, 6),
+       (2, 2),
+       (3, 3),
+       (4, 4),
+       (5, 5),
+       (6, 1),
+       (7, 2),
+       (8, 3),
+       (9, 4),
+       (10, 5);
+
 
 INSERT IGNORE INTO categories_menu_items(category_id, menu_items_id)
 VALUES (1, 1);
