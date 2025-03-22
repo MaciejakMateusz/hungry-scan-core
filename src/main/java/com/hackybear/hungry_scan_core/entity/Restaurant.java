@@ -80,12 +80,15 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
     private Set<OnboardingImage> onboardingImages = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "settings_id")
     private Settings settings;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "statistics_id")
     private Statistics statistics;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "theme_id")
     private Theme theme;
 
     @NotNull
