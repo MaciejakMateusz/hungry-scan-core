@@ -4,10 +4,12 @@ VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f97
 INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created)
 VALUES (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z');
 
-INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
+INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
 VALUES (1, true, 'Całodniowe', 1);
-INSERT IGNORE INTO menus (id, is_all_day, name, restaurant_id)
-VALUES (2, true, 'Menu', 2);
+INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
+VALUES (2, false, 'Śniadaniowe', 1);
+INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
+VALUES (3, true, 'Menu', 2);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
 VALUES (1, 'Kelner', 'Waiter');
@@ -492,7 +494,7 @@ INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translat
                                category_id)
 VALUES (33, 114, 3, 115, null, null, false, false, true, true, 7.00, 0, true, 8);
 
-INSERT INTO menu_items_allergens (menu_item_id, allergens_id)
+INSERT IGNORE INTO menu_items_allergens (menu_item_id, allergens_id)
 VALUES (1, 2),
        (3, 1),
        (3, 2),

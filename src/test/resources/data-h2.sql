@@ -18,11 +18,11 @@ VALUES ('Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW());
 INSERT INTO restaurants (address, name, postal_code, city, token, created)
 VALUES ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW());
 
-INSERT INTO menus (is_all_day, name, restaurant_id)
+INSERT INTO menus (standard, name, restaurant_id)
 VALUES (true, 'Całodniowe', 1);
-INSERT INTO menus (is_all_day, name, restaurant_id)
+INSERT INTO menus (standard, name, restaurant_id)
 VALUES (false, 'Dzienne', 2);
-INSERT INTO menus (is_all_day, name, restaurant_id)
+INSERT INTO menus (standard, name, restaurant_id)
 VALUES (false, 'Wieczorne', 2);
 
 /* CATEGORIES TRANSLATIONS */

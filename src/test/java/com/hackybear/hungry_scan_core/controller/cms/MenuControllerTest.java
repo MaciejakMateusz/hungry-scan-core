@@ -69,7 +69,7 @@ class MenuControllerTest {
 
         assertEquals(1, menus.size());
         assertEquals("Całodniowe", menus.getFirst().name());
-        assertTrue(menus.getFirst().allDay());
+        assertTrue(menus.getFirst().standard());
     }
 
     @Test
@@ -84,7 +84,7 @@ class MenuControllerTest {
         MenuSimpleDTO menu = apiRequestUtils.postObjectExpect200(
                 "/api/cms/menus/show", 3, MenuSimpleDTO.class);
         assertEquals("Wieczorne", menu.name());
-        assertFalse(menu.allDay());
+        assertFalse(menu.standard());
     }
 
     @Test
@@ -123,7 +123,7 @@ class MenuControllerTest {
                         "/api/cms/menus", MenuSimpleDTO.class);
         MenuSimpleDTO newMenu = menus.stream().filter(m -> m.name().equals("Great test menu")).toList().getFirst();
         assertNotNull(newMenu);
-        assertTrue(newMenu.allDay());
+        assertFalse(newMenu.standard());
     }
 
     @Test
@@ -144,6 +144,8 @@ class MenuControllerTest {
         assertEquals("Pole nie może być puste", errors.get("name"));
     }
 
+    //todo should switch standard menu
+
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
@@ -161,7 +163,7 @@ class MenuControllerTest {
 
         Menu updatedMenu = getMenu(1L);
         assertEquals("Great test menu", updatedMenu.getName());
-        assertTrue(updatedMenu.isAllDay());
+        assertTrue(updatedMenu.isStandard());
         assertNotNull(updatedMenu.getUpdated());
         assertEquals("admin@example.com", updatedMenu.getModifiedBy());
     }
@@ -280,14 +282,14 @@ class MenuControllerTest {
                 DayOfWeek.SUNDAY
         );
         menu.setSchedule(schedule);
-        menu.setAllDay(false);
+        menu.setStandard(false);
         existingMenu = menuMapper.toDTO(menu);
 
         apiRequestUtils.patchAndExpect200("/api/cms/menus/update", existingMenu);
 
         Menu updatedMenu = getMenu(1L);
         assertEquals("Całodniowe", updatedMenu.getName());
-        assertFalse(updatedMenu.isAllDay());
+        assertFalse(updatedMenu.isStandard());
         assertNotNull(updatedMenu.getUpdated());
         assertEquals("admin@example.com", updatedMenu.getModifiedBy());
 
@@ -310,7 +312,7 @@ class MenuControllerTest {
                 DayOfWeek.MONDAY
         );
         menu.setSchedule(schedule);
-        menu.setAllDay(false);
+        menu.setStandard(false);
         existingMenu = menuMapper.toDTO(menu);
 
         Map<?, ?> response =
@@ -321,7 +323,7 @@ class MenuControllerTest {
     }
 
     private MenuSimpleDTO createMenuDTO(String name) {
-        return new MenuSimpleDTO(null, name, null, true);
+        return new MenuSimpleDTO(null, name, null, false);
     }
 
     private Schedule createSchedule(Menu menu, LocalTime startTime, LocalTime endTime, DayOfWeek... dayOfWeek) {

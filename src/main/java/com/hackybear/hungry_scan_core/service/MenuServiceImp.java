@@ -82,7 +82,7 @@ public class MenuServiceImp implements MenuService {
         validateOperation(menu.getRestaurantId(), activeRestaurantId);
         validateSchedule(menuDTO, activeRestaurantId);
         menu.setName(menuDTO.name());
-        menu.setAllDay(menuDTO.allDay());
+        menu.setStandard(menuDTO.standard());
         menu.setSchedule(scheduleMapper.toSchedule(menuDTO.schedule()));
         menuRepository.saveAndFlush(menu);
     }
@@ -116,7 +116,7 @@ public class MenuServiceImp implements MenuService {
     }
 
     private void validateSchedule(MenuSimpleDTO menuDTO, Long restaurantId) throws LocalizedException {
-        if (menuDTO.allDay()) {
+        if (menuDTO.standard()) {
             return;
         }
         ScheduleDTO scheduleDTO = menuDTO.schedule();

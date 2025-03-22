@@ -146,7 +146,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     private static Menu createInitialMenu(Restaurant restaurant) {
         Menu menu = new Menu();
-        menu.setAllDay(true);
+        menu.setStandard(true);
         menu.setName("Menu");
         menu.setRestaurantId(restaurant.getId());
         return menu;

@@ -10,7 +10,7 @@ public record MenuSimpleDTO(Long id,
                             String name,
 
                             ScheduleDTO schedule,
-                            boolean allDay) implements Serializable, Comparable<MenuSimpleDTO> {
+                            boolean standard) implements Serializable, Comparable<MenuSimpleDTO> {
 
     @Override
     public int compareTo(MenuSimpleDTO other) {

@@ -51,7 +51,7 @@ public class MenuDataSeparationTest {
 
         assertEquals(1, menus.size());
         assertEquals("Całodniowe", menus.getFirst().name());
-        assertTrue(menus.getFirst().allDay());
+        assertTrue(menus.getFirst().standard());
     }
 
     @Test
@@ -65,9 +65,9 @@ public class MenuDataSeparationTest {
 
         assertEquals(2, menus.size());
         assertEquals("Dzienne", menus.getFirst().name());
-        assertFalse(menus.getFirst().allDay());
+        assertFalse(menus.getFirst().standard());
         assertEquals("Wieczorne", menus.get(1).name());
-        assertFalse(menus.get(1).allDay());
+        assertFalse(menus.get(1).standard());
     }
 
 }

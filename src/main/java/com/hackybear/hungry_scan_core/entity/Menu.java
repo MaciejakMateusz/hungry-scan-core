@@ -47,8 +47,8 @@ public class Menu implements Serializable, Comparable<Menu> {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Schedule schedule;
 
-    @Column(name = "is_all_day")
-    private boolean allDay;
+    @Column(name = "standard")
+    private boolean standard;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;

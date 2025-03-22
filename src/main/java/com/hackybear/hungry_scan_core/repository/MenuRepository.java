@@ -23,7 +23,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             LEFT JOIN schedule_plan sp ON s.id = sp.schedule_id
             WHERE m.restaurant_id = :restaurantId
             AND (
-                m.is_all_day = TRUE
+                m.standard = TRUE
                 OR (sp.plan_key = :dayOfWeekOrdinal
                     AND sp.start_time <= :currentTime
                     AND sp.end_time >= :currentTime)
