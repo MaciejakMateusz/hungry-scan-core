@@ -28,6 +28,8 @@ public record RestaurantDTO(
 
         Set<MenuSimpleDTO> menus,
 
+        SettingsDTO settings,
+
         Instant created) implements Serializable, Comparable<RestaurantDTO> {
 
     @Serial

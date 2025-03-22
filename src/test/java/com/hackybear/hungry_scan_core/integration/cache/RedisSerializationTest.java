@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.SettingsDTO;
+import com.hackybear.hungry_scan_core.enums.Language;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,6 +61,7 @@ public class RedisSerializationTest {
                 "40-404",
                 "Katowice",
                 getMenuSimpleDTOs(),
+                getSettingsDTO(),
                 Instant.now());
     }
 
@@ -65,6 +69,19 @@ public class RedisSerializationTest {
         return Set.of(
                 new MenuSimpleDTO(1L, "Menu1", null, true)
         );
+    }
+
+    private SettingsDTO getSettingsDTO() {
+        return new SettingsDTO(1L,
+                LocalTime.of(10, 0),
+                LocalTime.of(22, 0),
+                2L,
+                Language.PL,
+                1200L,
+                100L,
+                (short) 150,
+                true,
+                false);
     }
 
     private Set<?> getDeserializedSet(GenericJackson2JsonRedisSerializer serializer, Set<RestaurantDTO> originalSet) {
