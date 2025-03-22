@@ -1,8 +1,15 @@
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
+INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
+                      employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
+VALUES (3, '07:00:00', '23:00:00', 1, 120, 3, 20, true, true, 1);
+INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
+                      employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
+VALUES (3, '12:00:00', '02:00:00', 1, 312, 3, 20, false, false, 2);
+
+INSERT INTO restaurants (address, name, postal_code, city, token, created, settings_id)
 VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '12-1234', 'TEST',
-        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z');
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
-VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW());
+        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z', 1);
+INSERT INTO restaurants (address, name, postal_code, city, token, created, settings_id)
+VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), 2);
 INSERT INTO restaurants (address, name, postal_code, city, token, created)
 VALUES ('Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW());
 INSERT INTO restaurants (address, name, postal_code, city, token, created)
@@ -811,13 +818,6 @@ INSERT INTO history_bookings (id, date, expiration_time, num_of_ppl, surname, ti
 VALUES (54, '2024-01-27', '19:00:00', 2, 'Earth', '16:00:00');
 INSERT INTO history_bookings_restaurant_tables(history_booking_id, restaurant_tables_id)
 VALUES (54, 5);
-
-INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
-                      employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
-VALUES (3, '07:00:00', '23:00:00', 1, 120, 3, 20, true, true, 1);
-INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
-                      employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
-VALUES (3, '12:00:00', '02:00:00', 1, 312, 3, 20, false, false, 2);
 
 INSERT INTO jwt_tokens (token, created)
 VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZjNhYmY4LTliNmEiLCJpYXQiOjE3MTM4MTAzNTUsImV4cCI6MTcxMzg4MjM1NX0.EhIv7CDkpXcfXFHeihyju6bdUS2Te41a-m3GaxRWKHM',

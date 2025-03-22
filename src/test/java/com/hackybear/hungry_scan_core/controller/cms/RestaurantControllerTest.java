@@ -77,6 +77,7 @@ public class RestaurantControllerTest {
         assertEquals(1, restaurants.size());
         assertEquals("Rarytas", restaurants.getFirst().name());
         assertEquals("ul. Główna 123, Miastowo, Województwo, 54321", restaurants.getFirst().address());
+        assertTrue(restaurants.getFirst().settings().orderCommentAllowed());
     }
 
     @Test

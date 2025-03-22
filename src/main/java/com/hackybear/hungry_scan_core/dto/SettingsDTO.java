@@ -3,6 +3,8 @@ package com.hackybear.hungry_scan_core.dto;
 import com.hackybear.hungry_scan_core.enums.Language;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalTime;
 
 public record SettingsDTO(Long restaurantId,
@@ -29,5 +31,7 @@ public record SettingsDTO(Long restaurantId,
                           Short capacity,
 
                           boolean orderCommentAllowed,
-                          boolean waiterCommentAllowed) {
+                          boolean waiterCommentAllowed) implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 }
