@@ -1,5 +1,7 @@
 package com.hackybear.hungry_scan_core.repository;
 
+import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.User;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.USER_MENU_ID;
-import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT_ID;
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -38,13 +39,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
+    @Cacheable(value = USER_RESTAURANT_ID, key = "#username")
+    @Query("SELECT u.activeRestaurantId FROM User u WHERE u.username = :username")
+    Optional<Long> getActiveRestaurantIdByUsername(@Param("username") String username);
+
+    @Cacheable(value = USER_RESTAURANT, key = "#username")
+    @Query("SELECT r FROM Restaurant r WHERE r.id = (SELECT u.activeRestaurantId FROM User u WHERE u.username = :username)")
+    Optional<Restaurant> getCurrentRestaurantByUsername(@Param("username") String username);
+
     @Cacheable(value = USER_MENU_ID, key = "#username")
     @Query("SELECT u.activeMenuId FROM User u WHERE u.username = :username")
     Optional<Long> getActiveMenuIdByUsername(@Param("username") String username);
 
-    @Cacheable(value = USER_RESTAURANT_ID, key = "#username")
-    @Query("SELECT u.activeRestaurantId FROM User u WHERE u.username = :username")
-    Optional<Long> getActiveRestaurantIdByUsername(@Param("username") String username);
+    @Cacheable(value = USER_MENU, key = "#username")
+    @Query("SELECT m FROM Menu m WHERE m.id = (SELECT u.activeMenuId FROM User u WHERE u.username = :username)")
+    Optional<Menu> getCurrentMenuByUsername(@Param("username") String username);
 
     void deleteByUsername(String username);
 
