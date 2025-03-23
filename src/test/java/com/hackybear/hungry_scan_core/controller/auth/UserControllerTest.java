@@ -1,7 +1,9 @@
 package com.hackybear.hungry_scan_core.controller.auth;
 
 import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
+import com.hackybear.hungry_scan_core.dto.MenuDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
@@ -15,18 +17,19 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -51,8 +54,11 @@ class UserControllerTest {
     @Autowired
     private EntityManager entityManager;
 
-    @MockBean
+    @MockitoBean
     private EmailService emailService;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -133,6 +139,24 @@ class UserControllerTest {
         apiRequestUtils.patchAndExpectForbidden("/api/user/restaurant", 2);
     }
 
+    @Test
+    @Transactional
+    @Rollback
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    void shouldGetCurrentRestaurant() throws Exception {
+        RestaurantDTO restaurant =
+                apiRequestUtils.fetchObject("/api/user/current-restaurant", RestaurantDTO.class);
+        assertNotNull(restaurant);
+        assertEquals(1L, restaurant.id());
+        assertEquals("Rarytas", restaurant.name());
+        assertEquals("ul. Główna 123, Miastowo, Województwo, 54321", restaurant.address());
+        assertEquals(1, restaurant.menus().size());
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedToGetCurrentRestaurant() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/user/current-restaurant");
+    }
 
     @Test
     @Transactional
@@ -150,6 +174,25 @@ class UserControllerTest {
     @Test
     void shouldNotAllowUnauthorizedToSwitchMenu() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/user/menu", 2);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    void shouldGetCurrentMenu() throws Exception {
+        Objects.requireNonNull(cacheManager.getCache("USER_MENU")).clear();
+        MenuDTO menu = apiRequestUtils.fetchObject("/api/user/current-menu", MenuDTO.class);
+        assertNotNull(menu);
+        assertEquals(1L, menu.id());
+        assertEquals("Całodniowe", menu.name());
+        assertEquals(9, menu.categories().size());
+        assertTrue(menu.standard());
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedToGetCurrentMenu() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/user/current-menu");
     }
 
     private User getDetachedUser(String username) {

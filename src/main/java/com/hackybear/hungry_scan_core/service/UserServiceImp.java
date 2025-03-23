@@ -1,9 +1,15 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
+import com.hackybear.hungry_scan_core.dto.MenuDTO;
 import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
+import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
+import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
@@ -13,6 +19,7 @@ import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,31 +39,21 @@ import static com.hackybear.hungry_scan_core.utility.Fields.USER_MENU_ID;
 import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT_ID;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
     private final ResponseHelper responseHelper;
     private final UserMapper userMapper;
+    private final RestaurantMapper restaurantMapper;
+    private final MenuMapper menuMapper;
     private final ExceptionHelper exceptionHelper;
     private final RoleRepository roleRepository;
     private final EmailService emailService;
 
     @Value("${CMS_APP_URL}")
     private String cmsAppUrl;
-
-    public UserServiceImp(UserRepository userRepository, ResponseHelper responseHelper,
-                          UserMapper userMapper,
-                          ExceptionHelper exceptionHelper,
-                          RoleRepository roleRepository,
-                          EmailService emailService) {
-        this.userRepository = userRepository;
-        this.responseHelper = responseHelper;
-        this.userMapper = userMapper;
-        this.exceptionHelper = exceptionHelper;
-        this.roleRepository = roleRepository;
-        this.emailService = emailService;
-    }
 
     @Override
     public User findByUsername(String username) throws LocalizedException {
@@ -230,6 +227,14 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public RestaurantDTO getCurrentRestaurant() throws LocalizedException {
+        Optional<Restaurant> result = userRepository.getCurrentRestaurantByUsername(getAuthentication().getName());
+        Restaurant restaurant = result.orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                "error.restaurantService.restaurantNotFound"));
+        return restaurantMapper.toDTO(restaurant);
+    }
+
+    @Override
     public boolean hasCreatedRestaurant() {
         return userRepository.getActiveRestaurantIdByUsername(getAuthentication().getName()).isPresent();
     }
@@ -244,6 +249,14 @@ public class UserServiceImp implements UserService {
         return userRepository.getActiveMenuIdByUsername(getAuthentication().getName())
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.menuService.menuNotFound"));
+    }
+
+    @Override
+    public MenuDTO getCurrentMenu() throws LocalizedException {
+        Optional<Menu> result = userRepository.getCurrentMenuByUsername(getAuthentication().getName());
+        Menu menu = result.orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                "error.menuService.menuNotFound"));
+        return menuMapper.toDTO(menu);
     }
 
     @Override

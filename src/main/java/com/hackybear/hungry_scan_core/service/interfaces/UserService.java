@@ -1,7 +1,9 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
+import com.hackybear.hungry_scan_core.dto.MenuDTO;
 import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import jakarta.mail.MessagingException;
@@ -53,11 +55,15 @@ public interface UserService {
 
     Long getActiveRestaurantId() throws LocalizedException;
 
+    RestaurantDTO getCurrentRestaurant() throws LocalizedException;
+
     boolean hasCreatedRestaurant();
 
     boolean hasCreatedRestaurant(String username);
 
     Long getActiveMenuId() throws LocalizedException;
+
+    MenuDTO getCurrentMenu() throws LocalizedException;
 
     int isEnabled(String username) throws LocalizedException;
 }

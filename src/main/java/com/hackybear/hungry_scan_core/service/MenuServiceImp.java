@@ -50,7 +50,7 @@ public class MenuServiceImp implements MenuService {
     public Set<MenuSimpleDTO> findAll(Long activeRestaurantId) throws LocalizedException {
         Set<Menu> menus = menuRepository.findAllByRestaurantId(activeRestaurantId);
         return menus.stream()
-                .map(menuMapper::toDTO)
+                .map(menuMapper::toSimpleDTO)
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
@@ -59,7 +59,7 @@ public class MenuServiceImp implements MenuService {
     public MenuSimpleDTO findById(Long id, Long activeRestaurantId) throws LocalizedException {
         Menu menu = getById(id);
         validateOperation(menu.getRestaurantId(), activeRestaurantId);
-        return menuMapper.toDTO(menu);
+        return menuMapper.toSimpleDTO(menu);
     }
 
     @Transactional

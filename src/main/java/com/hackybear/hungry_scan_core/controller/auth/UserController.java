@@ -143,12 +143,23 @@ public class UserController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/current-restaurant")
+    public ResponseEntity<?> getCurrentRestaurant() {
+        return responseHelper.buildResponse(userService::getCurrentRestaurant);
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/menu")
     public ResponseEntity<?> switchMenu(@RequestBody Long menuId) {
         ThrowingSupplier<User> userSupplier = userService::getCurrentUser;
         return responseHelper.buildResponse(menuId, userSupplier, userService::switchMenu);
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/current-menu")
+    public ResponseEntity<?> getCurrentMenu() {
+        return responseHelper.buildResponse(userService::getCurrentMenu);
+    }
 
     private String invalidateJwtCookie() {
         ResponseCookie cookie = ResponseCookie.from("jwt", "")

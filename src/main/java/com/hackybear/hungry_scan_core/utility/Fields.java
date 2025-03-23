@@ -17,7 +17,9 @@ public class Fields {
 
     //REDIS CACHE
     public static final String USER_MENU_ID = "user.activeMenuId";
+    public static final String USER_MENU = "user.activeMenu";
     public static final String USER_RESTAURANT_ID = "user.activeRestaurantId";
+    public static final String USER_RESTAURANT = "user.activeRestaurant";
 
     public static final String RESTAURANT_ID = "restaurant.id";
     public static final String RESTAURANT_TOKEN = "restaurant.token";

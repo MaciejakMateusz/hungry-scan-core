@@ -199,6 +199,23 @@ public class ResponseHelper {
     }
 
     /**
+     * Executes the given supplier and returns the result in an OK response.
+     * If an exception occurs, an error response is returned.
+     *
+     * @param supplier a supplier to obtain a result
+     * @param <T>      the type supplied by the supplier
+     * @return a ResponseEntity containing the function's output, or an error response if an exception occurs
+     */
+    public <T> ResponseEntity<?> buildResponse(ThrowingSupplier<T> supplier) {
+        try {
+            T t = supplier.get();
+            return ResponseEntity.ok(t);
+        } catch (Exception e) {
+            return createErrorResponse(e);
+        }
+    }
+
+    /**
      * Retrieves an object by applying a function to the provided parameter
      * and returns the result in an OK response.
      * If an exception occurs, an error response is returned.

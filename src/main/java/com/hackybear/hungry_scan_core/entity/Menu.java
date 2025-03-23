@@ -41,7 +41,7 @@ public class Menu implements Serializable, Comparable<Menu> {
     @NotNull
     private Long restaurantId;
 
-    @OneToMany
+    @OneToMany(mappedBy = "menuId")
     private List<Category> categories = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

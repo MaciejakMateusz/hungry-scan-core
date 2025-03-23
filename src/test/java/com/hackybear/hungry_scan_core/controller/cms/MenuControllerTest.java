@@ -157,7 +157,7 @@ class MenuControllerTest {
         Menu menu = menuMapper.toMenu(existingMenu);
         menu.setName("Great test menu");
 
-        existingMenu = menuMapper.toDTO(menu);
+        existingMenu = menuMapper.toSimpleDTO(menu);
 
         apiRequestUtils.patchAndExpect200("/api/cms/menus/update", existingMenu);
 
@@ -235,7 +235,7 @@ class MenuControllerTest {
     void shouldNotUpdateIncorrect() throws Exception {
         Menu existingMenu = getMenu(2L);
         existingMenu.setName("");
-        MenuSimpleDTO menuDTO = menuMapper.toDTO(existingMenu);
+        MenuSimpleDTO menuDTO = menuMapper.toSimpleDTO(existingMenu);
 
         Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/update", menuDTO);
 
@@ -244,19 +244,30 @@ class MenuControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     @Transactional
     @Rollback
     void shouldRemove() throws Exception {
-        Menu existingMenu = getMenu(1L);
-        assertEquals("Całodniowe", existingMenu.getName());
+        Menu existingMenu = getMenu(2L);
+        assertEquals("Dzienne", existingMenu.getName());
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/menus/delete", 1);
+        apiRequestUtils.deleteAndExpect200("/api/cms/menus/delete", 2);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/menus/show", 1, status().isBadRequest());
+                        "/api/cms/menus/show", 2, status().isBadRequest());
         assertEquals("Menu z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotRemoveWithExistingCategories() throws Exception {
+        Menu existingMenu = getMenu(1L);
+        assertEquals("Całodniowe", existingMenu.getName());
+
+        apiRequestUtils.deleteAndExpect("/api/cms/menus/delete", 1, status().isBadRequest());
     }
 
     @Test
@@ -283,7 +294,7 @@ class MenuControllerTest {
         );
         menu.setSchedule(schedule);
         menu.setStandard(false);
-        existingMenu = menuMapper.toDTO(menu);
+        existingMenu = menuMapper.toSimpleDTO(menu);
 
         apiRequestUtils.patchAndExpect200("/api/cms/menus/update", existingMenu);
 
@@ -313,7 +324,7 @@ class MenuControllerTest {
         );
         menu.setSchedule(schedule);
         menu.setStandard(false);
-        existingMenu = menuMapper.toDTO(menu);
+        existingMenu = menuMapper.toSimpleDTO(menu);
 
         Map<?, ?> response =
                 apiRequestUtils.patchAndReturnResponseBody(
