@@ -45,7 +45,7 @@ public class Category implements Comparable<Category>, Serializable {
     @NotNull
     private Translatable name;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "categoryId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<MenuItem> menuItems = new ArrayList<>();
 
     private boolean available = true;
