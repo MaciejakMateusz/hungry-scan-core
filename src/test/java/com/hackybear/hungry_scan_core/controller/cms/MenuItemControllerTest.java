@@ -349,9 +349,4 @@ class MenuItemControllerTest {
         return translatable;
     }
 
-    private MenuItemSimpleDTO getMenuItemSimpleDTO(Long id) {
-        MenuItem menuItem = menuItemRepository.findById(id).orElseThrow();
-        return menuItemMapper.toDTO(menuItem);
-    }
-
 }
