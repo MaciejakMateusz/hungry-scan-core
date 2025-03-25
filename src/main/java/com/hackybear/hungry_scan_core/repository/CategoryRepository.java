@@ -14,6 +14,9 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
+    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.menuItems WHERE c.id = :id")
+    Optional<Category> findByIdFetchMenuItems(@Param("id") Long id);
+
     @Query("SELECT c from Category c WHERE c.available = true AND c.menuId = :menuId ORDER BY c.displayOrder")
     List<Category> findAllAvailableByMenuId(@Param("menuId") Long menuId);
 
