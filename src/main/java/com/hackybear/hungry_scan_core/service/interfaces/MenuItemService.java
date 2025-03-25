@@ -18,7 +18,7 @@ public interface MenuItemService {
 
     List<MenuItemSimpleDTO> filterByName(String name);
 
-    List<MenuItemSimpleDTO> delete(MenuItemSimpleDTO menuItemDTO, Long activeMenuId) throws LocalizedException;
+    List<MenuItemSimpleDTO> delete(Long id, Long activeMenuId) throws LocalizedException;
 
     void persistViewEvent(Long menuItemId, Long activeMenuId) throws LocalizedException;
 }

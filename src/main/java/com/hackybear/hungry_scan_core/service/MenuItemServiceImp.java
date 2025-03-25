@@ -94,9 +94,11 @@ public class MenuItemServiceImp implements MenuItemService {
     })
     public void update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
+        Long newCategoryId = menuItemFormDTO.categoryId();
         Category oldCategory = findCategoryByMenuItemId(existingMenuItem.getId());
+        Category newCategory = findCategoryById(newCategoryId);
         updateMenuItem(existingMenuItem, menuItemFormDTO);
-        switchCategory(existingMenuItem, oldCategory, menuItemFormDTO.categoryId());
+        switchCategory(existingMenuItem, oldCategory, newCategory);
         menuItemRepository.save(existingMenuItem);
     }
 
@@ -127,12 +129,11 @@ public class MenuItemServiceImp implements MenuItemService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = CATEGORIES_ALL, key = "#menuItemId"),
-            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#menuItemId"),
-            @CacheEvict(value = CATEGORY_ID, key = "#menuItemDTO.categoryId()")
+            @CacheEvict(value = CATEGORIES_ALL, key = "#menuId"),
+            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#menuId"),
     })
-    public List<MenuItemSimpleDTO> delete(MenuItemSimpleDTO menuItemDTO, Long menuItemId) throws LocalizedException {
-        MenuItem existingMenuItem = getMenuItem(menuItemDTO.id());
+    public List<MenuItemSimpleDTO> delete(Long id, Long menuId) throws LocalizedException {
+        MenuItem existingMenuItem = getMenuItem(id);
         removeVariants(existingMenuItem);
         Category category = findCategoryById(existingMenuItem.getCategoryId());
         removeMenuItem(category, existingMenuItem);
@@ -169,16 +170,15 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private void switchCategory(MenuItem existingMenuItem,
                                 Category oldCategory,
-                                Long newCategoryId) throws LocalizedException {
+                                Category newCategory) {
         if (Objects.isNull(existingMenuItem.getId())) {
             return;
         }
-        if (oldCategory.getId().equals(newCategoryId)) {
+        if (oldCategory.getId().equals(newCategory.getId())) {
             return;
         }
-        Category newCategory = findCategoryById(newCategoryId);
         existingMenuItem = entityManager.merge(existingMenuItem);
-        Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(newCategoryId);
+        Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(newCategory.getId());
         existingMenuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
         newCategory.addMenuItem(existingMenuItem);
         categoryRepository.save(newCategory);

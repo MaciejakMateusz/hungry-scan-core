@@ -267,7 +267,7 @@ class MenuItemControllerTest {
 
         List<MenuItemSimpleDTO> menuItems =
                 apiRequestUtils.deleteAndGetList(
-                        "/api/cms/items/delete", getMenuItemSimpleDTO(25L), MenuItemSimpleDTO.class);
+                        "/api/cms/items/delete", 25L, MenuItemSimpleDTO.class);
         assertEquals(4, menuItems.size());
 
         Map<String, Object> responseBody =
@@ -285,8 +285,7 @@ class MenuItemControllerTest {
         assertEquals("Carpaccio z polędwicy wołowej", menuItem.name().defaultTranslation());
 
         List<MenuItemSimpleDTO> menuItems =
-                apiRequestUtils.deleteAndGetList(
-                        "/api/cms/items/delete", getMenuItemSimpleDTO(2L), MenuItemSimpleDTO.class);
+                apiRequestUtils.deleteAndGetList("/api/cms/items/delete", 2L, MenuItemSimpleDTO.class);
 
         assertEquals(4, menuItems.size());
         MenuItemSimpleDTO secondMenuItem = menuItems.get(1);
@@ -304,7 +303,7 @@ class MenuItemControllerTest {
         assertEquals("Krewetki marynowane w cytrynie", menuItem.name().defaultTranslation());
 
         List<MenuItemSimpleDTO> menuItems = apiRequestUtils.deleteAndGetList("/api/cms/items/delete",
-                getMenuItemSimpleDTO(1L), MenuItemSimpleDTO.class);
+                1L, MenuItemSimpleDTO.class);
 
         assertEquals(4, menuItems.size());
 
@@ -328,8 +327,7 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {
-        apiRequestUtils.deleteAndExpect("/api/cms/items/delete",
-                getMenuItemSimpleDTO(15L), status().isForbidden());
+        apiRequestUtils.deleteAndExpect("/api/cms/items/delete", 15L, status().isForbidden());
     }
 
     private MenuItemFormDTO fetchMenuItemFormDTO(Long id) throws Exception {

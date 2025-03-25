@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
-import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
@@ -180,7 +179,7 @@ public class MenuItemServiceImpTest {
         MenuItemFormDTO menuItem = menuItemService.findById(23L);
         assertEquals("Pizza Capricciosa", menuItem.name().defaultTranslation());
         Long activeMenuId = userService.getActiveMenuId();
-        menuItemService.delete(getMenuItemSimpleDTO(23L), activeMenuId);
+        menuItemService.delete(23L, activeMenuId);
         assertThrows(LocalizedException.class, () -> menuItemService.findById(23L));
     }
 
@@ -201,11 +200,6 @@ public class MenuItemServiceImpTest {
         Translatable translatable = new Translatable();
         translatable.setDefaultTranslation(translation);
         return translatable;
-    }
-
-    private MenuItemSimpleDTO getMenuItemSimpleDTO(Long id) {
-        MenuItem menuItem = menuItemRepository.findById(id).orElseThrow();
-        return menuItemMapper.toDTO(menuItem);
     }
 
 }
