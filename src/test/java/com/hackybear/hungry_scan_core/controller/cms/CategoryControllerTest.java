@@ -431,7 +431,7 @@ class CategoryControllerTest {
     }
 
     private Category getCategory(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow();
+        Category category = categoryRepository.findByIdFetchMenuItems(id).orElseThrow();
         entityManager.detach(category);
         return category;
     }
