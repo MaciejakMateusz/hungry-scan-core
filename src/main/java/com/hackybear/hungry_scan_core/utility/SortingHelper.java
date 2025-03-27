@@ -6,10 +6,19 @@ import com.hackybear.hungry_scan_core.entity.Variant;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @Component
 public class SortingHelper {
+
+    public <T> void reassignDisplayOrders(Set<T> collection, Consumer<Set<T>> consumer) {
+        int i = 1;
+        for (T t : collection) {
+            setDisplayOrder(t, i++);
+        }
+        consumer.accept(collection);
+    }
 
     public <T> void reassignDisplayOrders(List<T> collection, Consumer<List<T>> consumer) {
         for (int i = 0; i <= collection.size() - 1; i++) {
@@ -20,14 +29,11 @@ public class SortingHelper {
     }
 
     private void setDisplayOrder(Object obj, Integer displayOrder) {
-        if (obj instanceof MenuItem) {
-            ((MenuItem) obj).setDisplayOrder(displayOrder);
-        } else if (obj instanceof Category) {
-            ((Category) obj).setDisplayOrder(displayOrder);
-        } else if (obj instanceof Variant) {
-            ((Variant) obj).setDisplayOrder(displayOrder);
-        } else {
-            throw new IllegalArgumentException("Unsupported type");
+        switch (obj) {
+            case MenuItem menuItem -> menuItem.setDisplayOrder(displayOrder);
+            case Category category -> category.setDisplayOrder(displayOrder);
+            case Variant variant -> variant.setDisplayOrder(displayOrder);
+            case null, default -> throw new IllegalArgumentException("Unsupported type");
         }
     }
 }
