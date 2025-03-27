@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 
 import java.util.List;
+import java.util.Set;
 
 public interface MenuItemService {
 
@@ -14,11 +15,11 @@ public interface MenuItemService {
 
     void update(MenuItemFormDTO menuItem, Long activeMenuId) throws Exception;
 
-    List<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItems, Long activeMenuId);
+    Set<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItems, Long activeMenuId);
 
-    List<MenuItemSimpleDTO> filterByName(String name);
+    Set<MenuItemSimpleDTO> filterByName(String name);
 
-    List<MenuItemSimpleDTO> delete(Long id, Long activeMenuId) throws LocalizedException;
+    Set<MenuItemSimpleDTO> delete(Long id, Long activeMenuId) throws LocalizedException;
 
     void persistViewEvent(Long menuItemId, Long activeMenuId) throws LocalizedException;
 }

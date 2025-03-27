@@ -16,9 +16,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Getter
 @Setter
@@ -46,7 +46,8 @@ public class Category implements Comparable<Category>, Serializable {
     private Translatable name;
 
     @OneToMany(mappedBy = "categoryId", cascade = CascadeType.ALL)
-    private List<MenuItem> menuItems = new ArrayList<>();
+    @OrderBy("displayOrder ASC")
+    private Set<MenuItem> menuItems = new TreeSet<>();
 
     private boolean available = true;
 

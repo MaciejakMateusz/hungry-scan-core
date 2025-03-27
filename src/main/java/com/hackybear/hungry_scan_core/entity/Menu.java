@@ -15,8 +15,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Getter
 @Setter
@@ -42,7 +42,8 @@ public class Menu implements Serializable, Comparable<Menu> {
     private Long restaurantId;
 
     @OneToMany(mappedBy = "menuId")
-    private List<Category> categories = new ArrayList<>();
+    @OrderBy("displayOrder ASC")
+    private Set<Category> categories = new TreeSet<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Schedule schedule;

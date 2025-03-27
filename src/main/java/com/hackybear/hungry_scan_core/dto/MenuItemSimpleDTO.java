@@ -14,7 +14,7 @@ public record MenuItemSimpleDTO(Long id,
                                 int labelsCount,
                                 int allergensCount,
                                 int variantsCount,
-                                int displayOrder,
+                                Integer displayOrder,
                                 boolean available,
                                 boolean visible,
                                 boolean isNew,
@@ -22,9 +22,13 @@ public record MenuItemSimpleDTO(Long id,
                                 LocalDateTime created,
                                 LocalDateTime updated,
                                 String modifiedBy,
-                                String createdBy) implements Serializable {
+                                String createdBy) implements Serializable, Comparable<MenuItemSimpleDTO> {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public int compareTo(MenuItemSimpleDTO o) {
+        return this.displayOrder.compareTo(o.displayOrder);
+    }
 }

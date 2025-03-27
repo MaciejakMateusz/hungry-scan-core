@@ -219,7 +219,7 @@ class MenuItemControllerTest {
     @Rollback
     void shouldUpdateDisplayOrders() throws Exception {
         Category category = categoryRepository.findById(1L).orElseThrow();
-        List<MenuItem> menuItems = category.getMenuItems();
+        List<MenuItem> menuItems = category.getMenuItems().stream().toList();
 
         assertEquals(1, menuItems.getFirst().getDisplayOrder());
         assertEquals("Krewetki marynowane w cytrynie", menuItems.getFirst().getName().getDefaultTranslation());

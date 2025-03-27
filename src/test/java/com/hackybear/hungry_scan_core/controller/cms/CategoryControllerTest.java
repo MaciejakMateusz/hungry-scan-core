@@ -21,10 +21,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -211,7 +211,7 @@ class CategoryControllerTest {
     void shouldAddNewCategory() throws Exception {
         CategoryFormDTO category = createCategoryFormDTO("Food");
         Optional<Integer> maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(1L);
-        assertEquals(9, maxDisplayOrder.orElse(0));
+        assertEquals(9, maxDisplayOrder.orElse(1));
 
         apiRequestUtils.postAndExpect200("/api/cms/categories/add", category);
 
@@ -367,7 +367,7 @@ class CategoryControllerTest {
 
         Category category = categoryMapper.toCategory(existingCategory);
         category.setMenuId(1L);
-        category.setMenuItems(new ArrayList<>());
+        category.setMenuItems(new TreeSet<>());
         categoryRepository.saveAndFlush(category);
 
         List<CategoryDTO> categories =

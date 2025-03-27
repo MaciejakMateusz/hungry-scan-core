@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
@@ -117,7 +118,7 @@ public class CategoryServiceImp implements CategoryService {
         Category category = categoryMapper.toCategory(categoryFormDTO);
         category.setMenuId(activeMenuId);
         Optional<Integer> maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(activeMenuId);
-        category.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
+        category.setDisplayOrder(maxDisplayOrder.orElse(1));
         categoryRepository.save(category);
     }
 
@@ -151,7 +152,7 @@ public class CategoryServiceImp implements CategoryService {
             cascadeRemoveMenuItems(existingCategory);
         }
         categoryRepository.deleteById(id);
-        List<Category> categories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(existingCategory.getMenuId());
+        Set<Category> categories = categoryRepository.findAllByMenuId(existingCategory.getMenuId());
         sortingHelper.reassignDisplayOrders(categories, categoryRepository::saveAllAndFlush);
         return getAllCategories(activeMenuId);
     }
@@ -174,7 +175,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     private void cascadeRemoveMenuItems(Category category) {
-        List<MenuItem> menuItems = category.getMenuItems();
+        Set<MenuItem> menuItems = category.getMenuItems();
         for (MenuItem menuItem : menuItems) {
             variantRepository.deleteAll(menuItem.getVariants());
         }
@@ -182,7 +183,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     private List<CategoryDTO> getAllCategories(Long activeMenuId) {
-        List<Category> categories = categoryRepository.findAllByMenuIdOrderByDisplayOrder(activeMenuId);
+        Set<Category> categories = categoryRepository.findAllByMenuId(activeMenuId);
         return categories.stream().sorted().map(this::mapToCategoryDTO).toList();
     }
 }

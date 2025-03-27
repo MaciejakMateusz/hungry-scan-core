@@ -7,21 +7,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Repository
 public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
 
-    @Query("SELECT mi from MenuItem mi WHERE mi.name.defaultTranslation LIKE LOWER(:filterValue)  ORDER BY mi.name.defaultTranslation")
-    List<MenuItem> filterByName(@Param("filterValue") String filterValue);
+    @Query("SELECT mi from MenuItem mi WHERE mi.name.defaultTranslation LIKE LOWER(:filterValue) ORDER BY mi.name.defaultTranslation")
+    Set<MenuItem> filterByName(@Param("filterValue") String filterValue);
 
-    List<MenuItem> findAllByCategoryIdOrderByDisplayOrder(Long categoryId);
+    TreeSet<MenuItem> findAllByCategoryIdOrderByDisplayOrder(Long categoryId);
 
     @Modifying
     @Query("UPDATE MenuItem mi SET mi.displayOrder = :displayOrder WHERE mi.id = :menuItemId")
     void updateDisplayOrders(@Param("menuItemId") Long menuItemId, @Param("displayOrder") Integer displayOrder);
 
-    @Query("SELECT MAX(mi.displayOrder) FROM MenuItem mi WHERE mi.categoryId = :categoryId")
+    @Query("SELECT COUNT (mi) FROM MenuItem mi WHERE mi.categoryId = :categoryId")
     Optional<Integer> findMaxDisplayOrder(@Param("categoryId") Long categoryId);
 }

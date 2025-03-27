@@ -22,9 +22,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
@@ -109,7 +107,7 @@ public class MenuItemServiceImp implements MenuItemService {
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORY_ID, key = "#menuItemsDTOs.get(0).categoryId()")
     })
-    public List<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItemsDTOs, Long activeMenuId) {
+    public Set<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItemsDTOs, Long activeMenuId) {
         List<MenuItem> menuItems = menuItemsDTOs.stream().map(menuItemMapper::toMenuItem).toList();
         for (MenuItem menuItem : menuItems) {
             menuItemRepository.updateDisplayOrders(menuItem.getId(), menuItem.getDisplayOrder());
@@ -120,10 +118,10 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public List<MenuItemSimpleDTO> filterByName(String value) {
+    public Set<MenuItemSimpleDTO> filterByName(String value) {
         String filterValue = "%" + value.toLowerCase() + "%";
-        List<MenuItem> menuItems = menuItemRepository.filterByName(filterValue);
-        return menuItems.stream().map(menuItemMapper::toDTO).toList();
+        Set<MenuItem> menuItems = menuItemRepository.filterByName(filterValue);
+        return menuItems.stream().map(menuItemMapper::toDTO).collect(Collectors.toSet());
     }
 
     @Override
@@ -132,12 +130,12 @@ public class MenuItemServiceImp implements MenuItemService {
             @CacheEvict(value = CATEGORIES_ALL, key = "#menuId"),
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#menuId"),
     })
-    public List<MenuItemSimpleDTO> delete(Long id, Long menuId) throws LocalizedException {
+    public Set<MenuItemSimpleDTO> delete(Long id, Long menuId) throws LocalizedException {
         MenuItem existingMenuItem = getMenuItem(id);
         removeVariants(existingMenuItem);
         Category category = findCategoryById(existingMenuItem.getCategoryId());
         removeMenuItem(category, existingMenuItem);
-        List<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
+        Set<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
         sortingHelper.reassignDisplayOrders(menuItems, menuItemRepository::saveAllAndFlush);
         return getSimpleDTOs(category.getId());
     }
@@ -171,7 +169,8 @@ public class MenuItemServiceImp implements MenuItemService {
     private void switchCategory(MenuItem existingMenuItem,
                                 Category oldCategory,
                                 Category newCategory) {
-        if (Objects.isNull(existingMenuItem.getId())) {
+        Long existingMenuItemId = existingMenuItem.getId();
+        if (Objects.isNull(existingMenuItemId)) {
             return;
         }
         if (oldCategory.getId().equals(newCategory.getId())) {
@@ -183,8 +182,8 @@ public class MenuItemServiceImp implements MenuItemService {
         newCategory.addMenuItem(existingMenuItem);
         categoryRepository.save(newCategory);
 
-        List<MenuItem> oldCategoryItems = oldCategory.getMenuItems();
-        oldCategoryItems.remove(existingMenuItem);
+        Set<MenuItem> oldCategoryItems = oldCategory.getMenuItems();
+        oldCategoryItems.removeIf(item -> item.getId().equals(existingMenuItemId));
         sortingHelper.reassignDisplayOrders(oldCategoryItems, menuItemRepository::saveAll);
         categoryRepository.save(oldCategory);
     }
@@ -207,9 +206,9 @@ public class MenuItemServiceImp implements MenuItemService {
         existingMenuItem.setBestseller(menuItemFormDTO.isBestseller());
     }
 
-    private List<MenuItemSimpleDTO> getSimpleDTOs(Long categoryId) {
-        List<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(categoryId);
-        return menuItems.stream().map(menuItemMapper::toDTO).toList();
+    private Set<MenuItemSimpleDTO> getSimpleDTOs(Long categoryId) {
+        Set<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(categoryId);
+        return menuItems.stream().map(menuItemMapper::toDTO).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private void removeVariants(MenuItem menuItem) {

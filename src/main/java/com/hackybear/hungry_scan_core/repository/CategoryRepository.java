@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Repository
@@ -26,14 +27,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             WHERE c.id = (SELECT m.categoryId FROM MenuItem m WHERE m.id = :menuItemId)""")
     Optional<Category> findByMenuItemId(@Param("menuItemId") Long menuItemId);
 
-    @Query("SELECT c FROM Category c " +
-            "WHERE c.menuId = :menuId ORDER BY c.displayOrder")
-    List<Category> findAllByMenuIdOrderByDisplayOrder(@Param("menuId") Long menuId);
+    Set<Category> findAllByMenuId(@Param("menuId") Long menuId);
 
     @Query("SELECT c.displayOrder FROM Category c WHERE c.menuId = :menuId ORDER BY c.displayOrder")
     List<Integer> findAllDisplayOrdersByMenuId(@Param("menuId") Long menuId);
 
-    @Query("SELECT MAX(c.displayOrder) FROM Category c WHERE c.menuId = :menuId")
+    @Query("SELECT COUNT (c) + 1 FROM Category c WHERE c.menuId = :menuId")
     Optional<Integer> findMaxDisplayOrderByMenuId(@Param("menuId") Long menuId);
 
     Long countByMenuId(Long menuId);
