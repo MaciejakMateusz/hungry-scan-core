@@ -240,21 +240,20 @@ class MenuItemControllerTest {
         menuItems.get(2).setDisplayOrder(4);
 
         List<MenuItemSimpleDTO> menuItemDTOs = menuItems.stream().map(menuItemMapper::toDTO).toList();
-        List<MenuItemSimpleDTO> updatedMenuItemDTOs =
-                apiRequestUtils.patchAndGetList(
-                        "/api/cms/items/display-orders", menuItemDTOs, MenuItemSimpleDTO.class);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/display-orders", menuItemDTOs);
+        category = categoryRepository.findById(1L).orElseThrow();
+        List<MenuItem> updatedMenuItems = category.getMenuItems().stream().sorted().toList();
+        assertEquals("Nachos z sosem serowym", updatedMenuItems.getFirst().getName().getDefaultTranslation());
+        assertEquals(1, updatedMenuItems.getFirst().getDisplayOrder());
 
-        assertEquals("Nachos z sosem serowym", updatedMenuItemDTOs.getFirst().name().defaultTranslation());
-        assertEquals(1, updatedMenuItemDTOs.getFirst().displayOrder());
+        assertEquals("Krewetki marynowane w cytrynie", updatedMenuItems.get(4).getName().getDefaultTranslation());
+        assertEquals(5, updatedMenuItems.get(4).getDisplayOrder());
 
-        assertEquals("Krewetki marynowane w cytrynie", updatedMenuItemDTOs.get(4).name().defaultTranslation());
-        assertEquals(5, updatedMenuItemDTOs.get(4).displayOrder());
+        assertEquals("Krewetki w tempurze", updatedMenuItems.get(3).getName().getDefaultTranslation());
+        assertEquals(4, updatedMenuItems.get(3).getDisplayOrder());
 
-        assertEquals("Krewetki w tempurze", updatedMenuItemDTOs.get(3).name().defaultTranslation());
-        assertEquals(4, updatedMenuItemDTOs.get(3).displayOrder());
-
-        assertEquals("Roladki z bakłażana", updatedMenuItemDTOs.get(2).name().defaultTranslation());
-        assertEquals(3, updatedMenuItemDTOs.get(2).displayOrder());
+        assertEquals("Roladki z bakłażana", updatedMenuItems.get(2).getName().getDefaultTranslation());
+        assertEquals(3, updatedMenuItems.get(2).getDisplayOrder());
     }
 
     @Test

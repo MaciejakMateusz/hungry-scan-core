@@ -107,14 +107,11 @@ public class MenuItemServiceImp implements MenuItemService {
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORY_ID, key = "#menuItemsDTOs.get(0).categoryId()")
     })
-    public Set<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItemsDTOs, Long activeMenuId) {
+    public void updateDisplayOrders(List<MenuItemSimpleDTO> menuItemsDTOs, Long activeMenuId) {
         List<MenuItem> menuItems = menuItemsDTOs.stream().map(menuItemMapper::toMenuItem).toList();
         for (MenuItem menuItem : menuItems) {
             menuItemRepository.updateDisplayOrders(menuItem.getId(), menuItem.getDisplayOrder());
         }
-        entityManager.clear();
-        Long categoryId = menuItems.getFirst().getCategoryId();
-        return getSimpleDTOs(categoryId);
     }
 
     @Override

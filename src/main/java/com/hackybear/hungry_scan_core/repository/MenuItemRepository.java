@@ -23,6 +23,6 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     @Query("UPDATE MenuItem mi SET mi.displayOrder = :displayOrder WHERE mi.id = :menuItemId")
     void updateDisplayOrders(@Param("menuItemId") Long menuItemId, @Param("displayOrder") Integer displayOrder);
 
-    @Query("SELECT COUNT (mi) FROM MenuItem mi WHERE mi.categoryId = :categoryId")
+    @Query("SELECT MAX(mi.displayOrder) FROM MenuItem mi WHERE mi.categoryId = :categoryId")
     Optional<Integer> findMaxDisplayOrder(@Param("categoryId") Long categoryId);
 }

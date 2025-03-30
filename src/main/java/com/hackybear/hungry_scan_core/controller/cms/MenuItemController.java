@@ -54,7 +54,8 @@ public class MenuItemController {
     public ResponseEntity<?> updateDisplayOrders(@RequestBody List<MenuItemSimpleDTO> menuItems) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
-            return ResponseEntity.ok(menuItemService.updateDisplayOrders(menuItems, activeMenuId));
+            menuItemService.updateDisplayOrders(menuItems, activeMenuId);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }

@@ -15,7 +15,7 @@ public interface MenuItemService {
 
     void update(MenuItemFormDTO menuItem, Long activeMenuId) throws Exception;
 
-    Set<MenuItemSimpleDTO> updateDisplayOrders(List<MenuItemSimpleDTO> menuItems, Long activeMenuId);
+    void updateDisplayOrders(List<MenuItemSimpleDTO> menuItems, Long activeMenuId);
 
     Set<MenuItemSimpleDTO> filterByName(String name);
 
