@@ -118,7 +118,7 @@ public class CategoryServiceImp implements CategoryService {
         Category category = categoryMapper.toCategory(categoryFormDTO);
         category.setMenuId(activeMenuId);
         Optional<Integer> maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(activeMenuId);
-        category.setDisplayOrder(maxDisplayOrder.orElse(1));
+        category.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
         categoryRepository.save(category);
     }
 
