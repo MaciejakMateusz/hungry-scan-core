@@ -197,10 +197,9 @@ public class MenuItemServiceImp implements MenuItemService {
                 .map(allergenMapper::toAllergen).collect(Collectors.toSet()));
         existingMenuItem.setAdditionalIngredients(menuItemFormDTO.additionalIngredients().stream()
                 .map(ingredientMapper::toIngredient).collect(Collectors.toSet()));
+        existingMenuItem.setBanners(menuItemFormDTO.banners());
         existingMenuItem.setAvailable(menuItemFormDTO.available());
         existingMenuItem.setVisible(menuItemFormDTO.visible());
-        existingMenuItem.setNew(menuItemFormDTO.isNew());
-        existingMenuItem.setBestseller(menuItemFormDTO.isBestseller());
     }
 
     private Set<MenuItemSimpleDTO> getSimpleDTOs(Long categoryId) {

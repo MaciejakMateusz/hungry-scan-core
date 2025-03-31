@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.dto;
 
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlankDTO;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLengthDTO;
+import com.hackybear.hungry_scan_core.enums.Banner;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
@@ -32,6 +33,7 @@ public record MenuItemFormDTO(Long id,
                               Set<AllergenDTO> allergens,
                               Set<IngredientSimpleDTO> additionalIngredients,
                               Set<VariantDTO> variants,
+                              Set<Banner> banners,
 
                               Integer displayOrder,
 

@@ -208,104 +208,110 @@ INSERT INTO categories (translatable_name_id, available, created, updated, bar_s
 VALUES (9, false, '2024-10-27T11:24:07.783228', null, false, 9, 1);
 
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (10, 1, 11, null, null, false, false, false, true, 19.99, 0, false, 1);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (10, 1, 11, null, null, false, true, 19.99, 0, false, 1);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (12, 2, 13, null, null, false, false, true, false, 24.50, 0, false, 1);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (12, 2, 13, null, null, true, false, 24.50, 0, false, 1);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (14, 3, 15, null, null, false, false, true, true, 22.00, 0, false, 1);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (14, 3, 15, null, null, true, true, 22.00, 0, false, 1);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (16, 4, 17, null, null, false, false, true, true, 18.75, 0, false, 1);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (16, 4, 17, null, null, true, true, 18.75, 0, false, 1);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (18, 5, 19, null, null, false, false, true, true, 16.99, 0, false, 1);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (18, 5, 19, null, null, true, true, 16.99, 0, false, 1);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (20, 1, 21, null, null, false, false, true, true, 24.00, 0, false, 2);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (20, 1, 21, null, null, true, true, 24.00, 0, false, 2);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (22, 2, 23, null, null, false, false, true, true, 22.50, 0, false, 2);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (22, 2, 23, null, null, true, true, 22.50, 0, false, 2);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (24, 3, 25, null, null, false, false, true, true, 23.25, 0, false, 2);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (24, 3, 25, null, null, true, true, 23.25, 0, false, 2);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (26, 4, 27, null, null, false, false, true, true, 26.50, 0, false, 2);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (26, 4, 27, null, null, true, true, 26.50, 0, false, 2);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (28, 5, 29, null, null, false, false, true, true, 21.75, 0, false, 2);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (28, 5, 29, null, null, true, true, 21.75, 0, false, 2);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (30, 1, 31, null, null, false, false, true, true, 18.50, 0, false, 3);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (30, 1, 31, null, null, true, true, 18.50, 0, false, 3);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (32, 2, 33, null, null, false, false, true, true, 20.75, 0, false, 3);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (32, 2, 33, null, null, true, true, 20.75, 0, false, 3);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (34, 3, 35, null, null, false, false, true, true, 22.00, 0, false, 3);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (34, 3, 35, null, null, true, true, 22.00, 0, false, 3);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (36, 4, 37, null, null, false, false, true, true, 21.50, 0, false, 3);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (36, 4, 37, null, null, true, true, 21.50, 0, false, 3);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (38, 5, 39, null, null, false, false, true, true, 23.75, 0, false, 3);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (38, 5, 39, null, null, true, true, 23.75, 0, false, 3);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (40, 1, 41, null, null, false, false, true, true, 15.50, 0, false, 4);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (40, 1, 41, null, null, true, true, 15.50, 0, false, 4);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (42, 2, 43, null, null, false, false, true, true, 16.25, 0, false, 4);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (42, 2, 43, null, null, true, true, 16.25, 0, false, 4);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (44, 3, 45, null, null, false, false, true, true, 17.50, 0, false, 4);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (44, 3, 45, null, null, true, true, 17.50, 0, false, 4);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (46, 4, 47, null, null, false, false, true, true, 15.75, 0, false, 4);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (46, 4, 47, null, null, true, true, 15.75, 0, false, 4);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (48, 5, 49, null, null, false, false, true, true, 18.00, 0, false, 4);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (48, 5, 49, null, null, true, true, 18.00, 0, false, 4);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (50, 1, 51, null, null, false, false, true, true, 26.00, 0, false, 5);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (50, 1, 51, null, null, true, true, 26.00, 0, false, 5);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (52, 2, 53, null, null, false, false, true, true, 28.50, 0, false, 5);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (52, 2, 53, null, null, true, true, 28.50, 0, false, 5);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (54, 3, 55, null, null, false, false, true, true, 30.25, 0, false, 5);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (54, 3, 55, null, null, true, true, 30.25, 0, false, 5);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (56, 4, 57, null, null, false, false, true, true, 27.75, 0, false, 5);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (56, 4, 57, null, null, true, true, 27.75, 0, false, 5);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (58, 5, 59, null, null, false, false, true, true, 29.00, 0, false, 5);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (58, 5, 59, null, null, true, true, 29.00, 0, false, 5);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (60, 1, 61, null, null, false, false, true, true, 24.50, 0, false, 6);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (60, 1, 61, null, null, true, true, 24.50, 0, false, 6);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (62, 2, 63, null, null, false, false, true, true, 22.75, 0, false, 6);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (62, 2, 63, null, null, true, true, 22.75, 0, false, 6);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (64, 3, 65, null, null, false, false, true, true, 20.00, 0, false, 6);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (64, 3, 65, null, null, true, true, 20.00, 0, false, 6);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (66, 4, 67, null, null, false, false, true, true, 21.25, 0, false, 6);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (66, 4, 67, null, null, true, true, 21.25, 0, false, 6);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (68, 5, 69, null, null, false, false, true, true, 23.00, 0, false, 6);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (68, 5, 69, null, null, true, true, 23.00, 0, false, 6);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (70, 1, 71, null, null, false, false, true, true, 9.00, 0, true, 8);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (70, 1, 71, null, null, true, true, 9.00, 0, true, 8);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (72, 2, 73, null, null, false, false, true, true, 7.00, 0, true, 8);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (72, 2, 73, null, null, true, true, 7.00, 0, true, 8);
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
-                        is_bestseller, is_new, available, visible, price, counter, bar_served, category_id)
-VALUES (74, 3, 75, null, null, false, false, true, true, 7.00, 0, true, 8);
+                        available, visible, price, counter, bar_served, category_id)
+VALUES (74, 3, 75, null, null, true, true, 7.00, 0, true, 8);
+
+INSERT INTO menu_items_banners (banner, menu_item_id)
+VALUES ('new', 1),
+       ('bestseller', 1),
+       ('promo', 1),
+       ('bestseller', 2);
 
 INSERT INTO translatable(default_translation)
 VALUES ('Z szpinakiem');

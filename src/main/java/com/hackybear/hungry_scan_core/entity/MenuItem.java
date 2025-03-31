@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
+import com.hackybear.hungry_scan_core.enums.Banner;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
@@ -60,9 +61,11 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     private Long categoryId;
 
     @Column(nullable = false)
-    @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
+    @DecimalMin(value = "1")
     @NotNull
     private BigDecimal price = Money.of(0.00);
+
+    private BigDecimal promoPrice = Money.of(0.00);
 
     @ManyToMany
     @JsonIgnore
@@ -84,6 +87,12 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     @JsonIgnore
     private Set<Variant> variants = new HashSet<>();
 
+    @ElementCollection(targetClass = Banner.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "menu_items_banners", joinColumns = @JoinColumn(name = "menu_item_id"))
+    @Column(name = "banner")
+    private Set<Banner> banners = new HashSet<>();
+
     @NotNull
     private Integer displayOrder;
 
@@ -92,10 +101,6 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     private boolean available = true;
 
     private boolean visible = true;
-
-    private boolean isNew;
-
-    private boolean isBestseller;
 
     private Integer counter = 0;
 
