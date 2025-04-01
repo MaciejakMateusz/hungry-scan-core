@@ -17,6 +17,7 @@ import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -24,13 +25,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MenuItemServiceImp implements MenuItemService {
 
     private final MenuItemRepository menuItemRepository;
@@ -45,25 +50,6 @@ public class MenuItemServiceImp implements MenuItemService {
     private final IngredientMapper ingredientMapper;
     private final EntityManager entityManager;
     private final MenuItemViewEventRepository menuItemViewEventRepository;
-
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository,
-                              CategoryRepository categoryRepository,
-                              ExceptionHelper exceptionHelper,
-                              SortingHelper sortingHelper,
-                              VariantRepository variantRepository, MenuItemMapper menuItemMapper, TranslatableMapper translatableMapper, AllergenMapper allergenMapper, LabelMapper labelMapper, IngredientMapper ingredientMapper, EntityManager entityManager, MenuItemViewEventRepository menuItemViewEventRepository) {
-        this.menuItemRepository = menuItemRepository;
-        this.categoryRepository = categoryRepository;
-        this.exceptionHelper = exceptionHelper;
-        this.sortingHelper = sortingHelper;
-        this.variantRepository = variantRepository;
-        this.menuItemMapper = menuItemMapper;
-        this.translatableMapper = translatableMapper;
-        this.allergenMapper = allergenMapper;
-        this.labelMapper = labelMapper;
-        this.ingredientMapper = ingredientMapper;
-        this.entityManager = entityManager;
-        this.menuItemViewEventRepository = menuItemViewEventRepository;
-    }
 
     @Override
     public MenuItemFormDTO findById(Long id) throws LocalizedException {
@@ -129,14 +115,13 @@ public class MenuItemServiceImp implements MenuItemService {
             @CacheEvict(value = CATEGORIES_ALL, key = "#menuId"),
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#menuId"),
     })
-    public Set<MenuItemSimpleDTO> delete(Long id, Long menuId) throws LocalizedException {
+    public void delete(Long id, Long menuId) throws LocalizedException {
         MenuItem existingMenuItem = getMenuItem(id);
         removeVariants(existingMenuItem);
         Category category = findCategoryById(existingMenuItem.getCategoryId());
         removeMenuItem(category, existingMenuItem);
         Set<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
         sortingHelper.reassignDisplayOrders(menuItems, menuItemRepository::saveAllAndFlush);
-        return getSimpleDTOs(category.getId());
     }
 
     @Override
@@ -206,11 +191,6 @@ public class MenuItemServiceImp implements MenuItemService {
         }
         existing.setPromoPrice(dto.promoPrice());
         existing.setBanners(dto.banners());
-    }
-
-    private Set<MenuItemSimpleDTO> getSimpleDTOs(Long categoryId) {
-        Set<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(categoryId);
-        return menuItems.stream().map(menuItemMapper::toDTO).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private void removeVariants(MenuItem menuItem) {

@@ -72,7 +72,8 @@ public class MenuItemController {
     public ResponseEntity<?> delete(@RequestBody Long id) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
-            return ResponseEntity.ok(menuItemService.delete(id, activeMenuId));
+            menuItemService.delete(id, activeMenuId);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
