@@ -60,6 +60,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = {"WAITER"}, username = "matimemek@test.com")
+    @Order(2)
     void shouldGetAllCategories() throws Exception {
         List<CategoryDTO> categories =
                 apiRequestUtils.fetchAsList(
@@ -123,9 +124,14 @@ class CategoryControllerTest {
         categories.get(2).setDisplayOrder(6);
 
         List<CategoryFormDTO> categoryFormDTOs = categories.stream().map(categoryMapper::toFormDTO).toList();
+        apiRequestUtils.patchAndExpect200("/api/cms/categories/display-orders", categoryFormDTOs);
+        entityManager.clear();
+
         List<CategoryDTO> updatedCategoryDTOs =
-                apiRequestUtils.patchAndGetList(
-                        "/api/cms/categories/display-orders", categoryFormDTOs, CategoryDTO.class);
+                apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class)
+                        .stream()
+                        .sorted()
+                        .toList();
 
         assertEquals("Pusta", updatedCategoryDTOs.getFirst().name().defaultTranslation());
         assertEquals(1, updatedCategoryDTOs.getFirst().displayOrder());

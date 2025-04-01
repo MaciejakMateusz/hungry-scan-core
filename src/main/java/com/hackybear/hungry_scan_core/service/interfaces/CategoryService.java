@@ -14,7 +14,7 @@ public interface CategoryService {
 
     List<Integer> findAllDisplayOrders(Long activeMenuId) throws LocalizedException;
 
-    List<CategoryDTO> updateDisplayOrders(List<CategoryFormDTO> categories, Long activeMenuId) throws LocalizedException;
+    void updateDisplayOrders(List<CategoryFormDTO> categories, Long activeMenuId) throws LocalizedException;
 
     Long countAll(Long activeMenuId) throws LocalizedException;
 

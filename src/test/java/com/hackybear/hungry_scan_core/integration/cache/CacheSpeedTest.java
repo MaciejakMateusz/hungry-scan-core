@@ -73,7 +73,9 @@ public class CacheSpeedTest {
         assertEquals(9, secondCategoriesCall.size());
         long secondRequestResult = secondRequestEnd - secondRequestBegin;
 
-        assertTrue(firstRequestResult > secondRequestResult, "Cache did not improve execution time");
+        String prepMsg = String.format("Cache did not improve execution time. Initial ms: %s, Repeated ms; %s",
+                firstRequestResult, secondRequestResult);
+        assertTrue(firstRequestResult > secondRequestResult, prepMsg);
     }
 
     @Test

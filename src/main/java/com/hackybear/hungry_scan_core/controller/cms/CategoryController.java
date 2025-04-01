@@ -60,7 +60,8 @@ public class CategoryController {
     public ResponseEntity<?> updateDisplayOrders(@RequestBody List<CategoryFormDTO> categories) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
-            return ResponseEntity.ok().body(categoryService.updateDisplayOrders(categories, activeMenuId));
+            categoryService.updateDisplayOrders(categories, activeMenuId);
+            return ResponseEntity.ok().build();
         } catch (LocalizedException e) {
             return responseHelper.createErrorResponse(e);
         }

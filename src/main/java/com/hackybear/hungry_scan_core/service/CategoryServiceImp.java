@@ -14,7 +14,7 @@ import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,8 +28,9 @@ import java.util.Set;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class CategoryServiceImp implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -37,27 +38,8 @@ public class CategoryServiceImp implements CategoryService {
     private final TranslatableMapper translatableMapper;
     private final ExceptionHelper exceptionHelper;
     private final SortingHelper sortingHelper;
-    private final EntityManager entityManager;
     private final MenuItemRepository menuItemRepository;
     private final VariantRepository variantRepository;
-
-    public CategoryServiceImp(CategoryRepository categoryRepository,
-                              CategoryMapper categoryMapper,
-                              TranslatableMapper translatableMapper,
-                              ExceptionHelper exceptionHelper,
-                              SortingHelper sortingHelper,
-                              EntityManager entityManager,
-                              MenuItemRepository menuItemRepository,
-                              VariantRepository variantRepository) {
-        this.categoryRepository = categoryRepository;
-        this.categoryMapper = categoryMapper;
-        this.translatableMapper = translatableMapper;
-        this.exceptionHelper = exceptionHelper;
-        this.sortingHelper = sortingHelper;
-        this.entityManager = entityManager;
-        this.menuItemRepository = menuItemRepository;
-        this.variantRepository = variantRepository;
-    }
 
     @Override
     @Cacheable(value = CATEGORIES_ALL, key = "#activeMenuId")
@@ -77,13 +59,11 @@ public class CategoryServiceImp implements CategoryService {
             CATEGORIES_ALL,
             CATEGORIES_DISPLAY_ORDERS},
             key = "#activeMenuId")
-    public List<CategoryDTO> updateDisplayOrders(List<CategoryFormDTO> categoryDTOs, Long activeMenuId) throws LocalizedException {
+    public void updateDisplayOrders(List<CategoryFormDTO> categoryDTOs, Long activeMenuId) throws LocalizedException {
         List<Category> categories = categoryDTOs.stream().map(categoryMapper::toCategory).toList();
         for (Category category : categories) {
             categoryRepository.updateDisplayOrders(category.getId(), category.getDisplayOrder());
         }
-        entityManager.clear();
-        return getAllCategories(activeMenuId);
     }
 
     @Override
