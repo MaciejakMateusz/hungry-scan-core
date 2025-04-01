@@ -26,5 +26,5 @@ public interface CategoryService {
 
     void update(CategoryFormDTO categoryFormDTO, Long activeMenuId) throws Exception;
 
-    List<CategoryDTO> delete(Long id, Long activeMenuId) throws LocalizedException, AuthenticationException;
+    void delete(Long id, Long activeMenuId) throws LocalizedException, AuthenticationException;
 }

@@ -112,7 +112,8 @@ public class CategoryController {
     public ResponseEntity<?> delete(@RequestBody Long id) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
-            return ResponseEntity.ok(categoryService.delete(id, activeMenuId));
+            categoryService.delete(id, activeMenuId);
+            return ResponseEntity.ok().build();
         } catch (LocalizedException | AuthenticationException e) {
             return responseHelper.createErrorResponse(e);
         }

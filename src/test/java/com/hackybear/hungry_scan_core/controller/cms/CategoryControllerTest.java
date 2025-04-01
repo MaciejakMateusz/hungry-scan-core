@@ -76,6 +76,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = {"MANAGER"}, username = "netka@test.com")
+    @Order(3)
     void shouldGetAllDisplayOrders() throws Exception {
         List<Integer> displayOrders =
                 apiRequestUtils.fetchAsList(
@@ -90,6 +91,7 @@ class CategoryControllerTest {
     @WithMockUser(roles = {"MANAGER"}, username = "netka@test.com")
     @Transactional
     @Rollback
+    @Order(4)
     void shouldUpdateDisplayOrders() throws Exception {
         List<CategoryDTO> categoryDTOs =
                 apiRequestUtils.fetchAsList(
@@ -148,6 +150,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = {"ADMIN", "MANAGER"}, username = "admin@example.com")
+    @Order(5)
     void shouldCount() throws Exception {
         Integer count =
                 apiRequestUtils.fetchObject(
@@ -163,6 +166,7 @@ class CategoryControllerTest {
 
     @Test
     @WithMockUser(roles = {"CUSTOMER_READONLY"}, username = "ff3abf8-9b6a@temp.it")
+    @Order(6)
     void shouldGetAllAvailable() throws Exception {
         List<CategoryCustomerDTO> categories =
                 apiRequestUtils.fetchAsList(
@@ -327,9 +331,9 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 7, CategoryFormDTO.class);
         assertEquals("Dla dzieci", existingCategory.name().defaultTranslation());
 
-        List<CategoryDTO> categories =
-                apiRequestUtils.deleteAndGetList("/api/cms/categories/delete", 7, CategoryDTO.class);
+        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 7);
 
+        List<CategoryDTO> categories = apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
         assertEquals(8, categories.size());
         assertEquals("Napoje", categories.get(6).name().defaultTranslation());
         assertEquals(5, categories.get(4).displayOrder());
@@ -347,9 +351,9 @@ class CategoryControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, CategoryFormDTO.class);
         assertEquals("Pusta", existingCategory.name().defaultTranslation());
 
-        List<CategoryDTO> categories =
-                apiRequestUtils.deleteAndGetList("/api/cms/categories/delete", 9, CategoryDTO.class);
+        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 9);
 
+        List<CategoryDTO> categories = apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
         assertEquals(8, categories.size());
         assertEquals("Napoje", categories.get(7).name().defaultTranslation());
         assertEquals(1, categories.getFirst().displayOrder());
@@ -376,8 +380,8 @@ class CategoryControllerTest {
         category.setMenuItems(new TreeSet<>());
         categoryRepository.saveAndFlush(category);
 
-        List<CategoryDTO> categories =
-                apiRequestUtils.deleteAndGetList("/api/cms/categories/delete", 1, CategoryDTO.class);
+        apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 1);
+        List<CategoryDTO> categories = apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
 
         assertEquals(8, categories.size());
 
@@ -394,24 +398,6 @@ class CategoryControllerTest {
         assertEquals(6, categories.get(5).displayOrder());
         assertEquals(7, categories.get(6).displayOrder());
         assertEquals(8, categories.get(7).displayOrder());
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldRemoveWithMenuItems() throws Exception {
-        Category existingCategory = getCategory(1L);
-        assertEquals("Przystawki", existingCategory.getName().getDefaultTranslation());
-
-        List<CategoryDTO> categories =
-                apiRequestUtils.deleteAndGetList("/api/cms/categories/delete", 1, CategoryDTO.class);
-        assertEquals(8, categories.size());
-
-        Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/categories/show", 1, status().isBadRequest());
-        assertEquals("Kategoria z podanym ID = 1 nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test

@@ -126,7 +126,7 @@ public class CategoryServiceImp implements CategoryService {
             @CacheEvict(value = CATEGORIES_COUNT, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORY_ID, key = "#id")
     })
-    public List<CategoryDTO> delete(Long id, Long activeMenuId) throws LocalizedException {
+    public void delete(Long id, Long activeMenuId) throws LocalizedException {
         Category existingCategory = getCategory(id);
         if (!existingCategory.getMenuItems().isEmpty()) {
             cascadeRemoveMenuItems(existingCategory);
@@ -134,7 +134,6 @@ public class CategoryServiceImp implements CategoryService {
         categoryRepository.deleteById(id);
         Set<Category> categories = categoryRepository.findAllByMenuId(existingCategory.getMenuId());
         sortingHelper.reassignDisplayOrders(categories, categoryRepository::saveAllAndFlush);
-        return getAllCategories(activeMenuId);
     }
 
     private Category getCategory(Long id) throws LocalizedException {
