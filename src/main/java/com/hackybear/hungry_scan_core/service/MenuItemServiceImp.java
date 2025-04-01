@@ -7,6 +7,7 @@ import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.MenuItemViewEvent;
 import com.hackybear.hungry_scan_core.entity.Variant;
+import com.hackybear.hungry_scan_core.enums.Banner;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
@@ -22,6 +23,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -185,21 +187,25 @@ public class MenuItemServiceImp implements MenuItemService {
         categoryRepository.save(oldCategory);
     }
 
-    private void updateMenuItem(MenuItem existingMenuItem, MenuItemFormDTO menuItemFormDTO) {
-        existingMenuItem.setImageName(menuItemFormDTO.imageName());
-        existingMenuItem.setName(translatableMapper.toTranslatable(menuItemFormDTO.name()));
-        existingMenuItem.setDescription(translatableMapper.toTranslatable(menuItemFormDTO.description()));
-        existingMenuItem.setCategoryId(menuItemFormDTO.categoryId());
-        existingMenuItem.setPrice(menuItemFormDTO.price());
-        existingMenuItem.setLabels(menuItemFormDTO.labels().stream()
+    private void updateMenuItem(MenuItem existing, MenuItemFormDTO dto) throws LocalizedException {
+        existing.setImageName(dto.imageName());
+        existing.setName(translatableMapper.toTranslatable(dto.name()));
+        existing.setDescription(translatableMapper.toTranslatable(dto.description()));
+        existing.setCategoryId(dto.categoryId());
+        existing.setPrice(dto.price());
+        existing.setLabels(dto.labels().stream()
                 .map(labelMapper::toLabel).collect(Collectors.toSet()));
-        existingMenuItem.setAllergens(menuItemFormDTO.allergens().stream()
+        existing.setAllergens(dto.allergens().stream()
                 .map(allergenMapper::toAllergen).collect(Collectors.toSet()));
-        existingMenuItem.setAdditionalIngredients(menuItemFormDTO.additionalIngredients().stream()
+        existing.setAdditionalIngredients(dto.additionalIngredients().stream()
                 .map(ingredientMapper::toIngredient).collect(Collectors.toSet()));
-        existingMenuItem.setBanners(menuItemFormDTO.banners());
-        existingMenuItem.setAvailable(menuItemFormDTO.available());
-        existingMenuItem.setVisible(menuItemFormDTO.visible());
+        existing.setAvailable(dto.available());
+        existing.setVisible(dto.visible());
+        if (dto.banners().contains(Banner.PROMO) && (Objects.isNull(dto.promoPrice()) || dto.promoPrice().equals(BigDecimal.ZERO))) {
+            exceptionHelper.throwLocalizedMessage("error.menuItemService.invalidPromoPrice");
+        }
+        existing.setPromoPrice(dto.promoPrice());
+        existing.setBanners(dto.banners());
     }
 
     private Set<MenuItemSimpleDTO> getSimpleDTOs(Long categoryId) {

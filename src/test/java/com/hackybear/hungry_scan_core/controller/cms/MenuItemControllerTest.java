@@ -7,6 +7,7 @@ import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
+import com.hackybear.hungry_scan_core.enums.Banner;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -26,10 +27,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -136,12 +135,15 @@ class MenuItemControllerTest {
     @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateExistingMenuItem() throws Exception {
+    void shouldUpdate() throws Exception {
         MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
         MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         persistedMenuItem.setName(getDefaultTranslation("Updated Item"));
         persistedMenuItem.setDescription(getDefaultTranslation("Updated Description"));
         persistedMenuItem.setImageName("/public/assets/updated.png");
+        persistedMenuItem.setBanners(Set.of(Banner.NEW, Banner.PROMO));
+        persistedMenuItem.setPromoPrice(Money.of(25));
+
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
         apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
@@ -151,6 +153,26 @@ class MenuItemControllerTest {
         assertEquals("Updated Item", updatedMenuItem.name().defaultTranslation());
         assertEquals("Updated Description", updatedMenuItem.description().defaultTranslation());
         assertEquals("/public/assets/updated.png", updatedMenuItem.imageName());
+        assertTrue(updatedMenuItem.banners().contains(Banner.NEW));
+        assertTrue(updatedMenuItem.banners().contains(Banner.PROMO));
+        assertEquals(Money.of(25), Money.of(updatedMenuItem.promoPrice()));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotUpdateWithIncorrectPromoPrice() throws Exception {
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
+        persistedMenuItem.setBanners(Set.of(Banner.BESTSELLER, Banner.PROMO));
+        persistedMenuItem.setPromoPrice(BigDecimal.ZERO);
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
+
+        Map<?, ?> errors =
+                apiRequestUtils.patchAndExpectErrors("/api/cms/items/update", menuItemFormDTO);
+        assertFalse(errors.isEmpty());
+        assertEquals("Cena promocyjna powinna był uzupełniona.", errors.get("exceptionMsg"));
     }
 
     @Test

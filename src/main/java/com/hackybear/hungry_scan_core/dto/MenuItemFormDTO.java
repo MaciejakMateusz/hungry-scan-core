@@ -28,6 +28,7 @@ public record MenuItemFormDTO(Long id,
                               @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
                               @NotNull
                               BigDecimal price,
+                              BigDecimal promoPrice,
 
                               Set<LabelDTO> labels,
                               Set<AllergenDTO> allergens,
