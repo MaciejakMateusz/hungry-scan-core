@@ -307,12 +307,6 @@ INSERT INTO menu_items (translatable_name_id, display_order, translatable_descri
                         available, visible, price, counter, bar_served, category_id)
 VALUES (74, 3, 75, null, null, true, true, 7.00, 0, true, 8);
 
-INSERT INTO menu_items_banners (banner, menu_item_id)
-VALUES ('new', 1),
-       ('bestseller', 1),
-       ('promo', 1),
-       ('bestseller', 2);
-
 INSERT INTO translatable(default_translation)
 VALUES ('Z szpinakiem');
 INSERT INTO translatable(default_translation)
@@ -650,6 +644,16 @@ INSERT INTO zones(translatable_name_id, created, updated, display_order, is_visi
 VALUES (162, NOW(), null, 4, true);
 INSERT INTO zones(translatable_name_id, created, updated, display_order, is_visible)
 VALUES (163, NOW(), null, 3, true);
+
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Nowość', 'New'),
+       ('Bestseller', 'Bestseller'),
+       ('Promocja', 'Discount');
+
+INSERT INTO banners (id, translatable_name_id)
+VALUES ('new', 164),
+       ('bestseller', 165),
+       ('promo', 166);
 
 INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
                                zone_id, has_qr_code, qr_name)
