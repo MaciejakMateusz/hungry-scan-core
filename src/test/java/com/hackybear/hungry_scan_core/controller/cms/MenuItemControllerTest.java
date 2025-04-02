@@ -4,10 +4,11 @@ import com.hackybear.hungry_scan_core.dto.CategoryDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
+import com.hackybear.hungry_scan_core.entity.Banner;
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
-import com.hackybear.hungry_scan_core.enums.Banner;
+import com.hackybear.hungry_scan_core.repository.BannerRepository;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -57,6 +58,8 @@ class MenuItemControllerTest {
 
     @Autowired
     private MenuItemRepository menuItemRepository;
+    @Autowired
+    private BannerRepository bannerRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -141,7 +144,9 @@ class MenuItemControllerTest {
         persistedMenuItem.setName(getDefaultTranslation("Updated Item"));
         persistedMenuItem.setDescription(getDefaultTranslation("Updated Description"));
         persistedMenuItem.setImageName("/public/assets/updated.png");
-        persistedMenuItem.setBanners(Set.of(Banner.NEW, Banner.PROMO));
+        Banner promoBanner = getBanner("promo");
+        Banner newBanner = getBanner("new");
+        persistedMenuItem.setBanners(Set.of(newBanner, promoBanner));
         persistedMenuItem.setPromoPrice(Money.of(25));
 
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
@@ -153,8 +158,8 @@ class MenuItemControllerTest {
         assertEquals("Updated Item", updatedMenuItem.name().defaultTranslation());
         assertEquals("Updated Description", updatedMenuItem.description().defaultTranslation());
         assertEquals("/public/assets/updated.png", updatedMenuItem.imageName());
-        assertTrue(updatedMenuItem.banners().contains(Banner.NEW));
-        assertTrue(updatedMenuItem.banners().contains(Banner.PROMO));
+        assertTrue(updatedMenuItem.banners().contains(promoBanner));
+        assertTrue(updatedMenuItem.banners().contains(newBanner));
         assertEquals(Money.of(25), Money.of(updatedMenuItem.promoPrice()));
     }
 
@@ -165,7 +170,7 @@ class MenuItemControllerTest {
     void shouldNotUpdateWithIncorrectPromoPrice() throws Exception {
         MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
         MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
-        persistedMenuItem.setBanners(Set.of(Banner.BESTSELLER, Banner.PROMO));
+        persistedMenuItem.setBanners(Set.of(getBanner("bestseller"), getBanner("promo")));
         persistedMenuItem.setPromoPrice(BigDecimal.ZERO);
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
@@ -366,6 +371,10 @@ class MenuItemControllerTest {
         Translatable translatable = new Translatable();
         translatable.setDefaultTranslation(translation);
         return translatable;
+    }
+
+    private Banner getBanner(String id) {
+        return bannerRepository.findById(id).orElseThrow();
     }
 
 }

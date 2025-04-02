@@ -495,12 +495,6 @@ INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translat
                                category_id)
 VALUES (33, 114, 3, 115, null, null, true, true, 7.00, 0, true, 8);
 
-INSERT IGNORE INTO menu_items_banners (banner, menu_item_id)
-VALUES ('new', 1),
-       ('bestseller', 1),
-       ('promo', 1),
-       ('bestseller', 2);
-
 INSERT IGNORE INTO menu_items_allergens (menu_item_id, allergens_id)
 VALUES (1, 2),
        (3, 1),
@@ -740,6 +734,16 @@ INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatab
 VALUES (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00');
 INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
 VALUES (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');
+
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (160, 'Nowość', 'New'),
+       (161, 'Bestseller', 'Bestseller'),
+       (162, 'Promocja', 'Discount');
+
+INSERT IGNORE INTO banners (id, translatable_name_id)
+VALUES ('new', 160),
+       ('bestseller', 161),
+       ('promo', 162);
 
 -- QR SCAN EVENTS:
 -- January 2024 Data

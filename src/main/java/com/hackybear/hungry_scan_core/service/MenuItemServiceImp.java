@@ -3,11 +3,7 @@ package com.hackybear.hungry_scan_core.service;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.*;
-import com.hackybear.hungry_scan_core.entity.Category;
-import com.hackybear.hungry_scan_core.entity.MenuItem;
-import com.hackybear.hungry_scan_core.entity.MenuItemViewEvent;
-import com.hackybear.hungry_scan_core.entity.Variant;
-import com.hackybear.hungry_scan_core.enums.Banner;
+import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
@@ -24,7 +20,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -186,7 +181,8 @@ public class MenuItemServiceImp implements MenuItemService {
                 .map(ingredientMapper::toIngredient).collect(Collectors.toSet()));
         existing.setAvailable(dto.available());
         existing.setVisible(dto.visible());
-        if (dto.banners().contains(Banner.PROMO) && (Objects.isNull(dto.promoPrice()) || dto.promoPrice().equals(BigDecimal.ZERO))) {
+
+        if (isPromoPriceInvalid(dto)) {
             exceptionHelper.throwLocalizedMessage("error.menuItemService.invalidPromoPrice");
         }
         existing.setPromoPrice(dto.promoPrice());
@@ -204,5 +200,10 @@ public class MenuItemServiceImp implements MenuItemService {
         category.removeMenuItem(menuItem);
         categoryRepository.save(category);
         menuItemRepository.deleteById(menuItem.getId());
+    }
+
+    private boolean isPromoPriceInvalid(MenuItemFormDTO dto) {
+        List<Banner> promo = dto.banners().stream().filter(banner -> banner.getId().equals("promo")).toList();
+        return !promo.isEmpty() && (Objects.isNull(dto.promoPrice()) || dto.promoPrice().signum() == 0);
     }
 }

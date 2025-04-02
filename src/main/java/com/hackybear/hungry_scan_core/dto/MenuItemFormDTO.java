@@ -2,7 +2,7 @@ package com.hackybear.hungry_scan_core.dto;
 
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlankDTO;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLengthDTO;
-import com.hackybear.hungry_scan_core.enums.Banner;
+import com.hackybear.hungry_scan_core.entity.Banner;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 

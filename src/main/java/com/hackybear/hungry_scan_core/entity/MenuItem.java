@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
-import com.hackybear.hungry_scan_core.enums.Banner;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
@@ -69,6 +68,10 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
 
     @ManyToMany
     @JsonIgnore
+    private Set<Banner> banners = new HashSet<>();
+
+    @ManyToMany
+    @JsonIgnore
     private Set<Label> labels = new HashSet<>();
 
     @ManyToMany
@@ -86,12 +89,6 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     @OneToMany(cascade = CascadeType.MERGE)
     @JsonIgnore
     private Set<Variant> variants = new HashSet<>();
-
-    @ElementCollection(targetClass = Banner.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "menu_items_banners", joinColumns = @JoinColumn(name = "menu_item_id"))
-    @Column(name = "banner")
-    private Set<Banner> banners = new HashSet<>();
 
     @NotNull
     private Integer displayOrder;
