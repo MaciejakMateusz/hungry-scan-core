@@ -1,9 +1,7 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
-import com.hackybear.hungry_scan_core.dto.ScheduleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
-import com.hackybear.hungry_scan_core.dto.mapper.ScheduleMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
@@ -12,6 +10,7 @@ import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,24 +25,15 @@ import java.util.stream.Collectors;
 import static com.hackybear.hungry_scan_core.utility.Fields.MENUS_ALL;
 import static com.hackybear.hungry_scan_core.utility.Fields.MENU_ID;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class MenuServiceImp implements MenuService {
 
     private final ExceptionHelper exceptionHelper;
     private final MenuRepository menuRepository;
     private final MenuMapper menuMapper;
-    private final ScheduleMapper scheduleMapper;
     private final SettingsRepository settingsRepository;
-
-    public MenuServiceImp(ExceptionHelper exceptionHelper,
-                          MenuRepository menuRepository, MenuMapper menuMapper, ScheduleMapper scheduleMapper, SettingsRepository settingsRepository) {
-        this.exceptionHelper = exceptionHelper;
-        this.menuRepository = menuRepository;
-        this.menuMapper = menuMapper;
-        this.scheduleMapper = scheduleMapper;
-        this.settingsRepository = settingsRepository;
-    }
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -83,8 +73,54 @@ public class MenuServiceImp implements MenuService {
         validateSchedule(menuDTO, activeRestaurantId);
         menu.setName(menuDTO.name());
         menu.setStandard(menuDTO.standard());
-        menu.setSchedule(scheduleMapper.toSchedule(menuDTO.schedule()));
+        menu.setPlan(menuDTO.plan());
         menuRepository.saveAndFlush(menu);
+    }
+
+    @Transactional
+    @Override
+    @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId")
+    public void updatePlans(List<MenuSimpleDTO> menuDTOs, Long activeRestaurantId) throws LocalizedException {
+        validateMenusPlans(menuDTOs);
+        Set<Menu> existing = menuRepository.findAllByRestaurantId(activeRestaurantId);
+        for (Menu menu : existing) {
+            for (MenuSimpleDTO menuDTO : menuDTOs) {
+                if (menu.getId().equals(menuDTO.id())) {
+                    menu.setPlan(menuDTO.plan());
+                    menuRepository.save(menu);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void validateMenusPlans(List<MenuSimpleDTO> menuDTOs) throws LocalizedException {
+        Map<DayOfWeek, List<TimeRange>> scheduleMap = new HashMap<>();
+
+        for (MenuSimpleDTO menuDTO : menuDTOs) {
+            if (menuDTO.standard() || menuDTO.plan() == null) continue;
+
+            for (Map.Entry<DayOfWeek, TimeRange> entry : menuDTO.plan().entrySet()) {
+                DayOfWeek day = entry.getKey();
+                TimeRange newRange = entry.getValue();
+
+                if (newRange == null) continue;
+
+                List<TimeRange> existingRanges = scheduleMap.getOrDefault(day, new ArrayList<>());
+                for (TimeRange existing : existingRanges) {
+                    if (isOverlapping(existing, newRange)) {
+                        exceptionHelper.throwLocalizedMessage("error.menuService.schedulesCollide");
+                    }
+                }
+
+                existingRanges.add(newRange);
+                scheduleMap.put(day, existingRanges);
+            }
+        }
+    }
+
+    private boolean isOverlapping(TimeRange a, TimeRange b) {
+        return a.getStartTime().isBefore(b.getEndTime()) && b.getStartTime().isBefore(a.getEndTime());
     }
 
     @Transactional
@@ -119,15 +155,14 @@ public class MenuServiceImp implements MenuService {
         if (menuDTO.standard()) {
             return;
         }
-        ScheduleDTO scheduleDTO = menuDTO.schedule();
-        validateWithinOpeningHours(scheduleDTO, restaurantId);
+        validateWithinOpeningHours(menuDTO, restaurantId);
     }
 
-    private void validateWithinOpeningHours(ScheduleDTO scheduleDTO, Long activeRestaurantId) throws LocalizedException {
-        if (Objects.isNull(scheduleDTO)) {
+    private void validateWithinOpeningHours(MenuSimpleDTO dto, Long activeRestaurantId) throws LocalizedException {
+        if (Objects.isNull(dto)) {
             return;
         }
-        Map<DayOfWeek, TimeRange> plan = scheduleDTO.plan();
+        Map<DayOfWeek, TimeRange> plan = dto.plan();
         List<TimeRange> timeRanges = plan.values().stream().toList();
         Settings settings = settingsRepository.findByRestaurantId(activeRestaurantId);
         TimeRange openingRange = new TimeRange(settings.getOpeningTime(), settings.getClosingTime());

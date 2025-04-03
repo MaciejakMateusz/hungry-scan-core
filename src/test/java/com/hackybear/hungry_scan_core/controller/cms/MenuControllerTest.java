@@ -3,7 +3,6 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
-import com.hackybear.hungry_scan_core.entity.Schedule;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
@@ -83,7 +82,7 @@ class MenuControllerTest {
     void shouldShowById() throws Exception {
         MenuSimpleDTO menu = apiRequestUtils.postObjectExpect200(
                 "/api/cms/menus/show", 3, MenuSimpleDTO.class);
-        assertEquals("Wieczorne", menu.name());
+        assertEquals("Śniadaniowe", menu.name());
         assertFalse(menu.standard());
     }
 
@@ -169,10 +168,70 @@ class MenuControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
+    @Transactional
+    @Rollback
+    void shouldUpdatePlans() throws Exception {
+        List<DayOfWeek> allDays = List.of(
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY,
+                DayOfWeek.SATURDAY,
+                DayOfWeek.SUNDAY);
+        Menu standardMenu = getMenu(2L);
+        Menu menu1 = getMenu(3L);
+        menu1.setPlan(getPlan(LocalTime.of(8, 0), LocalTime.of(12, 0), allDays));
+        Menu menu2 = getMenu(4L);
+        menu2.setPlan(getPlan(LocalTime.of(12, 0), LocalTime.of(18, 0), allDays));
+        Menu menu3 = getMenu(5L);
+        menu3.setPlan(getPlan(LocalTime.of(18, 0), LocalTime.of(22, 0), allDays));
+
+        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(standardMenu);
+        MenuSimpleDTO dto2 = menuMapper.toSimpleDTO(menu1);
+        MenuSimpleDTO dto3 = menuMapper.toSimpleDTO(menu2);
+        MenuSimpleDTO dto4 = menuMapper.toSimpleDTO(menu3);
+        List<MenuSimpleDTO> menuSimpleDTOs = List.of(dto1, dto2, dto3, dto4);
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/update-plans", menuSimpleDTOs);
+
+        List<MenuSimpleDTO> updatedMenus = apiRequestUtils.fetchAsList("/api/cms/menus", MenuSimpleDTO.class);
+        assertFalse(updatedMenus.isEmpty());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
+    @Transactional
+    @Rollback
+    void shouldNotUpdatePlans() throws Exception {
+        List<DayOfWeek> allDays = List.of(
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY,
+                DayOfWeek.SATURDAY,
+                DayOfWeek.SUNDAY);
+        Menu menu1 = getMenu(3L);
+        menu1.setPlan(getPlan(LocalTime.of(8, 0), LocalTime.of(13, 0), allDays));
+        Menu menu2 = getMenu(4L);
+        menu2.setPlan(getPlan(LocalTime.of(12, 0), LocalTime.of(18, 0), allDays));
+
+        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(menu1);
+        MenuSimpleDTO dto2 = menuMapper.toSimpleDTO(menu2);
+        List<MenuSimpleDTO> menuSimpleDTOs = List.of(dto1, dto2);
+
+        Map<?, ?> error = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/update-plans", menuSimpleDTOs);
+        assertEquals(1, error.size());
+        assertEquals("Harmonogramy nie mogą na siebie nachodzić.", error.get("exceptionMsg"));
+    }
+
+    @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateSchedule_whenTimeMatchesOpeningAndClosingHours() throws Exception {
+    void shouldUpdatePlan_whenTimeMatchesOpeningAndClosingHours() throws Exception {
         shouldUpdateSchedule(LocalTime.of(7, 0), LocalTime.of(23, 0));
     }
 
@@ -180,7 +239,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateSchedule_whenTimeIsFullyWithinOpeningHours() throws Exception {
+    void shouldUpdatePlan_whenTimeIsFullyWithinOpeningHours() throws Exception {
         shouldUpdateSchedule(LocalTime.of(9, 0), LocalTime.of(21, 0));
     }
 
@@ -188,7 +247,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateSchedule_whenStartTimeMatchesOpeningHour() throws Exception {
+    void shouldUpdatePlan_whenStartTimeMatchesOpeningHour() throws Exception {
         shouldUpdateSchedule(LocalTime.of(7, 0), LocalTime.of(20, 0));
     }
 
@@ -196,7 +255,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldUpdateSchedule_whenEndTimeMatchesClosingHour() throws Exception {
+    void shouldUpdatePlan_whenEndTimeMatchesClosingHour() throws Exception {
         shouldUpdateSchedule(LocalTime.of(9, 0), LocalTime.of(23, 0));
     }
 
@@ -204,7 +263,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotUpdateSchedule_whenTimeIsCompletelyOutsideOpeningHours() throws Exception {
+    void shouldNotUpdatePlan_whenTimeIsCompletelyOutsideOpeningHours() throws Exception {
         shouldNotUpdateSchedule(LocalTime.of(5, 0), LocalTime.of(6, 30));
     }
 
@@ -212,7 +271,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotUpdateSchedule_whenTimeStartsBeforeOpeningHour() throws Exception {
+    void shouldNotUpdatePlan_whenTimeStartsBeforeOpeningHour() throws Exception {
         shouldNotUpdateSchedule(LocalTime.of(5, 0), LocalTime.of(22, 30));
     }
 
@@ -220,7 +279,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotUpdateSchedule_whenTimeEndsAfterClosingHour() throws Exception {
+    void shouldNotUpdatePlan_whenTimeEndsAfterClosingHour() throws Exception {
         shouldNotUpdateSchedule(LocalTime.of(10, 30), LocalTime.of(23, 30));
     }
 
@@ -249,7 +308,7 @@ class MenuControllerTest {
     @Rollback
     void shouldRemove() throws Exception {
         Menu existingMenu = getMenu(2L);
-        assertEquals("Dzienne", existingMenu.getName());
+        assertEquals("Menu", existingMenu.getName());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/menus/delete", 2);
 
@@ -281,18 +340,14 @@ class MenuControllerTest {
                 "/api/cms/menus/show", 1, MenuSimpleDTO.class);
         assertEquals("Całodniowe", existingMenu.name());
         Menu menu = menuMapper.toMenu(existingMenu);
-        Schedule schedule = createSchedule(
-                menu,
-                startTime, endTime,
+        menu.setPlan(getPlan(startTime, endTime, List.of(
                 DayOfWeek.MONDAY,
                 DayOfWeek.TUESDAY,
                 DayOfWeek.WEDNESDAY,
                 DayOfWeek.THURSDAY,
                 DayOfWeek.FRIDAY,
                 DayOfWeek.SATURDAY,
-                DayOfWeek.SUNDAY
-        );
-        menu.setSchedule(schedule);
+                DayOfWeek.SUNDAY)));
         menu.setStandard(false);
         existingMenu = menuMapper.toSimpleDTO(menu);
 
@@ -304,12 +359,11 @@ class MenuControllerTest {
         assertNotNull(updatedMenu.getUpdated());
         assertEquals("admin@example.com", updatedMenu.getModifiedBy());
 
-        schedule = updatedMenu.getSchedule();
-        assertNotNull(schedule);
-        assertEquals(7, schedule.getPlan().size());
-        assertTrue(schedule.getPlan().containsKey(DayOfWeek.SATURDAY));
-        assertEquals(startTime, schedule.getPlan().get(DayOfWeek.SATURDAY).getStartTime());
-        assertEquals(endTime, schedule.getPlan().get(DayOfWeek.SATURDAY).getEndTime());
+        Map<DayOfWeek, TimeRange> updatedPlan = updatedMenu.getPlan();
+        assertEquals(7, updatedPlan.size());
+        assertTrue(updatedPlan.containsKey(DayOfWeek.SATURDAY));
+        assertEquals(startTime, updatedPlan.get(DayOfWeek.SATURDAY).getStartTime());
+        assertEquals(endTime, updatedPlan.get(DayOfWeek.SATURDAY).getEndTime());
     }
 
 
@@ -317,12 +371,7 @@ class MenuControllerTest {
         MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
                 "/api/cms/menus/show", 1, MenuSimpleDTO.class);
         Menu menu = menuMapper.toMenu(existingMenu);
-        Schedule schedule = createSchedule(
-                menu,
-                startTime, endTime,
-                DayOfWeek.MONDAY
-        );
-        menu.setSchedule(schedule);
+        menu.setPlan(getPlan(startTime, endTime, List.of(DayOfWeek.MONDAY)));
         menu.setStandard(false);
         existingMenu = menuMapper.toSimpleDTO(menu);
 
@@ -337,18 +386,9 @@ class MenuControllerTest {
         return new MenuSimpleDTO(null, name, null, false);
     }
 
-    private Schedule createSchedule(Menu menu, LocalTime startTime, LocalTime endTime, DayOfWeek... dayOfWeek) {
-        Map<DayOfWeek, TimeRange> plan = getPlan(startTime, endTime, dayOfWeek);
-        Schedule schedule = new Schedule();
-        schedule.setMenu(menu);
-        schedule.setPlan(plan);
-        return schedule;
-    }
-
-    private Map<DayOfWeek, TimeRange> getPlan(LocalTime startTime, LocalTime endTime, DayOfWeek... dayOfWeek) {
+    private Map<DayOfWeek, TimeRange> getPlan(LocalTime startTime, LocalTime endTime, List<DayOfWeek> daysOfWeek) {
         Map<DayOfWeek, TimeRange> plan = new HashMap<>();
         TimeRange timeRange = new TimeRange(startTime, endTime);
-        List<DayOfWeek> daysOfWeek = List.of(dayOfWeek);
         daysOfWeek.forEach(day -> plan.put(day, timeRange));
         return plan;
     }

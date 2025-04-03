@@ -63,11 +63,11 @@ public class MenuDataSeparationTest {
                 apiRequestUtils.fetchAsSet(
                         "/api/cms/menus", MenuSimpleDTO.class).stream().toList();
 
-        assertEquals(2, menus.size());
-        assertEquals("Dzienne", menus.getFirst().name());
+        assertEquals(4, menus.size());
+        assertEquals("Kolacyjne", menus.getFirst().name());
         assertFalse(menus.getFirst().standard());
-        assertEquals("Wieczorne", menus.get(1).name());
-        assertFalse(menus.get(1).standard());
+        assertEquals("Menu", menus.get(1).name());
+        assertTrue(menus.get(1).standard());
     }
 
 }

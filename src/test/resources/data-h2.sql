@@ -28,9 +28,13 @@ VALUES ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW());
 INSERT INTO menus (standard, name, restaurant_id)
 VALUES (true, 'Całodniowe', 1);
 INSERT INTO menus (standard, name, restaurant_id)
-VALUES (false, 'Dzienne', 2);
+VALUES (true, 'Menu', 2);
 INSERT INTO menus (standard, name, restaurant_id)
-VALUES (false, 'Wieczorne', 2);
+VALUES (false, 'Śniadaniowe', 2);
+INSERT INTO menus (standard, name, restaurant_id)
+VALUES (false, 'Obiadowe', 2);
+INSERT INTO menus (standard, name, restaurant_id)
+VALUES (false, 'Kolacyjne', 2);
 
 /* CATEGORIES TRANSLATIONS */
 INSERT INTO translatable(default_translation, translation_en)

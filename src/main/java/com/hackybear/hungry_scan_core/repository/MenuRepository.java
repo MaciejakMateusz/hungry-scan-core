@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.entity.Menu;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalTime;
@@ -14,13 +15,16 @@ import java.util.Set;
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
+    @NonNull
+    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.plan WHERE m.id = :id")
+    Optional<Menu> findById(@NonNull @Param("id") Long id);
+
     Set<Menu> findAllByRestaurantId(Long restaurantId);
 
     @Query(value = """
             SELECT m.id
             FROM menus m
-            LEFT JOIN schedule s ON m.id = s.menu_id
-            LEFT JOIN schedule_plan sp ON s.id = sp.schedule_id
+            LEFT JOIN menu_plan sp ON m.id = sp.menu_id
             WHERE m.restaurant_id = :restaurantId
             AND (
                 m.standard = TRUE

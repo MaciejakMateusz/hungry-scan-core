@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 
 import javax.naming.AuthenticationException;
+import java.util.List;
 import java.util.Set;
 
 public interface MenuService {
@@ -15,6 +16,8 @@ public interface MenuService {
     void save(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception;
 
     void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception;
+
+    void updatePlans(List<MenuSimpleDTO> menuDTOs, Long activeRestaurantId) throws Exception;
 
     void delete(Long id, Long activeRestaurantId) throws LocalizedException, AuthenticationException;
 }

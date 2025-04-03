@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +15,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -45,8 +49,9 @@ public class Menu implements Serializable, Comparable<Menu> {
     @OrderBy("displayOrder ASC")
     private Set<Category> categories = new TreeSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Schedule schedule;
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private Map<DayOfWeek, TimeRange> plan = new HashMap<>();
 
     @Column(name = "standard")
     private boolean standard;

@@ -14,6 +14,8 @@ import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/cms/menus")
@@ -59,6 +61,12 @@ public class MenuController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> update(@Valid @RequestBody MenuSimpleDTO menuDTO, BindingResult br) {
         return responseHelper.buildResponse(menuDTO, br, userService::getActiveRestaurantId, menuService::update);
+    }
+
+    @PatchMapping("/update-plans")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> updatePlans(@Valid @RequestBody List<MenuSimpleDTO> menuDTO, BindingResult br) {
+        return responseHelper.buildResponse(menuDTO, br, userService::getActiveRestaurantId, menuService::updatePlans);
     }
 
     @DeleteMapping("/delete")

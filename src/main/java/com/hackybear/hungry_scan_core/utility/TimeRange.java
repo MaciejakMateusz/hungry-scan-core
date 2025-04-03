@@ -4,15 +4,20 @@ import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalTime;
 
 @Getter
 @Embeddable
 @NoArgsConstructor
-public class TimeRange {
+public class TimeRange implements Serializable {
 
     private LocalTime startTime;
     private LocalTime endTime;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public TimeRange(LocalTime startTime, LocalTime endTime) {
         if (startTime.isAfter(endTime)) {

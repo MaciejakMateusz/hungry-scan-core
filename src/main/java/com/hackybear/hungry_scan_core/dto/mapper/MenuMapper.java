@@ -5,7 +5,7 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = {ScheduleMapper.class})
+@Mapper(componentModel = "spring")
 public interface MenuMapper {
 
     MenuSimpleDTO toSimpleDTO(Menu menu);

@@ -1,14 +1,17 @@
 package com.hackybear.hungry_scan_core.dto;
 
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Map;
 
 public record MenuDTO(Long id,
                       @NotBlank String name,
                       List<CategoryDTO> categories,
-                      ScheduleDTO schedule,
+                      Map<DayOfWeek, TimeRange> plan,
                       boolean standard) implements Serializable, Comparable<MenuDTO> {
 
     @Override
