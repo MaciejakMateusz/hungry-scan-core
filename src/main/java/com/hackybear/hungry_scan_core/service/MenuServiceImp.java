@@ -94,6 +94,17 @@ public class MenuServiceImp implements MenuService {
         }
     }
 
+    @Transactional
+    @Override
+    @Caching(evict = {
+            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
+            @CacheEvict(value = MENU_ID, key = "#newId")
+    })
+    public void switchStandard(Long newId, Long activeRestaurantId) {
+        menuRepository.resetStandardMenus(activeRestaurantId);
+        menuRepository.switchStandard(newId);
+    }
+
     private void validateMenusPlans(List<MenuSimpleDTO> menuDTOs) throws LocalizedException {
         Map<DayOfWeek, List<TimeRange>> scheduleMap = new HashMap<>();
 
