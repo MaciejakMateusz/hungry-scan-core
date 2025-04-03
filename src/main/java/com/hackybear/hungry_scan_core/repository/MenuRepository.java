@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.repository;
 
 import com.hackybear.hungry_scan_core.entity.Menu;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
@@ -36,4 +37,12 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     Optional<Long> findActiveMenuId(@Param("dayOfWeekOrdinal") int dayOfWeekOrdinal,
                                     @Param("currentTime") LocalTime currentTime,
                                     @Param("restaurantId") Long restaurantId);
+
+    @Modifying
+    @Query("UPDATE Menu m SET m.standard = false WHERE m.restaurantId = :restaurantId AND m.standard = true")
+    void resetStandardMenus(@Param("restaurantId") Long restaurantId);
+
+    @Modifying
+    @Query("UPDATE Menu m SET m.standard = true WHERE m.id = :newId")
+    void switchStandard(@Param("newId") Long newId);
 }
