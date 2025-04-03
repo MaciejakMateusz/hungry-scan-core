@@ -65,8 +65,20 @@ public class MenuController {
 
     @PatchMapping("/update-plans")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> updatePlans(@Valid @RequestBody List<MenuSimpleDTO> menuDTO, BindingResult br) {
-        return responseHelper.buildResponse(menuDTO, br, userService::getActiveRestaurantId, menuService::updatePlans);
+    public ResponseEntity<?> updatePlans(@Valid @RequestBody List<MenuSimpleDTO> dtos, BindingResult br) {
+        return responseHelper.buildResponse(dtos, br, userService::getActiveRestaurantId, menuService::updatePlans);
+    }
+
+    @PatchMapping("/switch-standard")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> switchStandard(@RequestBody Long newId) {
+        try {
+            Long activeRestaurantId = userService.getActiveRestaurantId();
+            menuService.switchStandard(newId, activeRestaurantId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
+        }
     }
 
     @DeleteMapping("/delete")

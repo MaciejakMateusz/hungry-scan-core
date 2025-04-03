@@ -143,7 +143,31 @@ class MenuControllerTest {
         assertEquals("Pole nie może być puste", errors.get("name"));
     }
 
-    //todo should switch standard menu
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
+    @Transactional
+    @Rollback
+    void shouldSwitchStandard() throws Exception {
+        Menu existing = getMenu(2L);
+        assertEquals("Menu", existing.getName());
+        assertTrue(existing.isStandard());
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/switch-standard", 4L);
+
+        Menu oldStandard = getMenu(2L);
+        assertEquals("Menu", oldStandard.getName());
+        assertFalse(oldStandard.isStandard());
+
+        Menu newStandard = getMenu(4L);
+        assertEquals("Obiadowe", newStandard.getName());
+        assertTrue(newStandard.isStandard());
+    }
+
+    @Test
+    @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
+    void shouldNotAllowAccessToSwitchStandard() throws Exception {
+        apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/switch-standard", 2);
+    }
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
@@ -225,6 +249,12 @@ class MenuControllerTest {
         Map<?, ?> error = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/update-plans", menuSimpleDTOs);
         assertEquals(1, error.size());
         assertEquals("Harmonogramy nie mogą na siebie nachodzić.", error.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
+    void shouldNotAllowAccessToUpdatePlans() throws Exception {
+        apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/update-plans", List.of());
     }
 
     @Test
