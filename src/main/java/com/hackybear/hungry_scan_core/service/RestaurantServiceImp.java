@@ -5,7 +5,9 @@ import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
+import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -85,7 +88,7 @@ public class RestaurantServiceImp implements RestaurantService {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
-        persistInitial(restaurantDTO, userService, currentUser);
+        persistInitialData(restaurantDTO, userService, currentUser);
         return ResponseEntity.ok(Map.of("redirectUrl", "/app"));
     }
 
@@ -132,23 +135,42 @@ public class RestaurantServiceImp implements RestaurantService {
                         "error.restaurantService.restaurantNotFound"));
     }
 
-    private void persistInitial(RestaurantDTO restaurantDTO, UserService userService, User currentUser) {
+    private void persistInitialData(RestaurantDTO restaurantDTO, UserService userService, User currentUser) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         restaurant = restaurantRepository.save(restaurant);
-        Menu initialMenu = createInitialMenu(restaurant);
-        restaurant.addMenu(initialMenu);
+        restaurant.setMenus(new TreeSet<>());
+        createInitialMenu(restaurant);
+        setupRestaurantSettings(restaurant);
         restaurant = restaurantRepository.save(restaurant);
-        currentUser.setActiveRestaurantId(restaurant.getId());
-        Optional<Menu> menu = restaurant.getMenus().stream().findFirst();
-        menu.ifPresent(m -> currentUser.setActiveMenuId(m.getId()));
-        userService.save(currentUser);
+        setupUser(restaurant, currentUser, userService);
     }
 
-    private static Menu createInitialMenu(Restaurant restaurant) {
+    private static void setupRestaurantSettings(Restaurant restaurant) {
+        Settings s = new Settings();
+        s.setRestaurantId(restaurant.getId());
+        s.setCapacity((short) 100);
+        s.setOpeningTime(LocalTime.of(10, 0));
+        s.setClosingTime(LocalTime.of(22, 0));
+        s.setBookingDuration(2L);
+        s.setLanguage(Language.PL);
+        s.setOrderCommentAllowed(false);
+        s.setWaiterCommentAllowed(false);
+        restaurant.setSettings(s);
+    }
+
+    private static void createInitialMenu(Restaurant restaurant) {
         Menu menu = new Menu();
         menu.setStandard(true);
         menu.setName("Menu");
         menu.setRestaurantId(restaurant.getId());
-        return menu;
+        restaurant.addMenu(menu);
+    }
+
+    private static void setupUser(Restaurant restaurant, User currentUser, UserService userService) {
+        currentUser.addRestaurant(restaurant);
+        currentUser.setActiveRestaurantId(restaurant.getId());
+        Optional<Menu> menu = restaurant.getMenus().stream().findFirst();
+        menu.ifPresent(m -> currentUser.setActiveMenuId(m.getId()));
+        userService.save(currentUser);
     }
 }

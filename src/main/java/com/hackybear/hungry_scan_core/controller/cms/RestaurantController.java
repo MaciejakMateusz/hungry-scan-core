@@ -60,11 +60,11 @@ public class RestaurantController {
         User currentUser;
         try {
             currentUser = userService.getCurrentUser();
+            return restaurantService.persistInitialRestaurant(params, currentUser);
         } catch (LocalizedException e) {
             return ResponseEntity.internalServerError().body(Map.of("error",
                     exceptionHelper.getLocalizedMsg("error.createRestaurant.currentUser")));
         }
-        return restaurantService.persistInitialRestaurant(params, currentUser);
     }
 
     @PostMapping("/add")
