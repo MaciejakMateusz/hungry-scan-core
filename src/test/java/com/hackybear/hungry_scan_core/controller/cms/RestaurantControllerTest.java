@@ -24,6 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -127,6 +128,9 @@ public class RestaurantControllerTest {
                 apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 11, RestaurantDTO.class);
         assertEquals("Real Greek Carbonara", persistedRestaurant.name());
         assertEquals("Korfantego 123", persistedRestaurant.address());
+        assertNotNull(persistedRestaurant.settings());
+        assertEquals(LocalTime.of(10, 0), persistedRestaurant.settings().openingTime());
+        assertEquals(LocalTime.of(22, 0), persistedRestaurant.settings().closingTime());
     }
 
     @Test

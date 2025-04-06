@@ -66,7 +66,6 @@ public class RestaurantController {
         Map<String, Object> params = Map.of(
                 "restaurantDTO", restaurantDTO,
                 "bindingResult", br,
-                "userService", userService,
                 "responseHelper", responseHelper);
         User currentUser;
         try {
@@ -87,7 +86,7 @@ public class RestaurantController {
     @PatchMapping("/update")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> update(@Valid @RequestBody RestaurantDTO restaurant, BindingResult br) {
-        return responseHelper.buildResponse(restaurant, br, userService::getCurrentUser, restaurantService::save);
+        return responseHelper.buildResponse(restaurant, br, userService::getCurrentUser, restaurantService::update);
     }
 
     @DeleteMapping("/delete")

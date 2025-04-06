@@ -14,6 +14,7 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -32,19 +33,13 @@ import java.util.stream.Collectors;
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Service
+@RequiredArgsConstructor
 public class RestaurantServiceImp implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final UserService userService;
     private final ExceptionHelper exceptionHelper;
     private final RestaurantMapper restaurantMapper;
-
-    public RestaurantServiceImp(RestaurantRepository restaurantRepository,
-                                ExceptionHelper exceptionHelper,
-                                RestaurantMapper restaurantMapper) {
-        this.restaurantRepository = restaurantRepository;
-        this.exceptionHelper = exceptionHelper;
-        this.restaurantMapper = restaurantMapper;
-    }
 
     @Override
     @Cacheable(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
@@ -72,12 +67,13 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = RESTAURANT_ID, key = "#restaurantDTO.id()", condition = "#restaurantDTO.id() != null"),
-            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
-    })
+    @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
     public Restaurant save(RestaurantDTO restaurantDTO, User currentUser) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        restaurant = restaurantRepository.save(restaurant);
+        currentUser.addRestaurant(restaurant);
+        userService.save(currentUser);
+        setupRestaurantSettings(restaurant);
         return restaurantRepository.save(restaurant);
     }
 
@@ -87,7 +83,6 @@ public class RestaurantServiceImp implements RestaurantService {
             @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getUsername()")
     })
     public ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) {
-        UserService userService = (UserService) params.get("userService");
         BindingResult br = (BindingResult) params.get("bindingResult");
         ResponseHelper responseHelper = (ResponseHelper) params.get("responseHelper");
         RestaurantDTO restaurantDTO = (RestaurantDTO) params.get("restaurantDTO");
