@@ -43,6 +43,17 @@ public class RestaurantController {
         return responseHelper.buildResponse(supplier, restaurantService::findAll);
     }
 
+    @GetMapping("/current")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> currentRestaurant() {
+        try {
+            User user = userService.getCurrentUser();
+            return ResponseEntity.ok(restaurantService.findCurrent(user));
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {

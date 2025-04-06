@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
@@ -47,11 +48,20 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @Override
     @Cacheable(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
-    public TreeSet<RestaurantDTO> findAll(User currentUser) {
+    public TreeSet<RestaurantSimpleDTO> findAll(User currentUser) {
         Set<Restaurant> restaurants = currentUser.getRestaurants();
         return restaurants.stream()
-                .map(restaurantMapper::toDTO)
+                .map(restaurantMapper::toSimpleDTO)
                 .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    @Override
+    @Cacheable(value = USER_RESTAURANT, key = "#currentUser.getId()")
+    public RestaurantDTO findCurrent(User currentUser) throws LocalizedException {
+        Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId())
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotFound"));
+        return restaurantMapper.toDTO(restaurant);
     }
 
     @Override
@@ -95,7 +105,8 @@ public class RestaurantServiceImp implements RestaurantService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = RESTAURANT_ID, key = "#restaurantDTO.id()"),
-            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
+            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()")
     })
     public void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
         Restaurant restaurant = getById(restaurantDTO.id());
@@ -107,7 +118,8 @@ public class RestaurantServiceImp implements RestaurantService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = RESTAURANT_ID, key = "#id"),
-            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
+            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()")
     })
     public void delete(Long id, User currentUser) throws LocalizedException {
         restaurantRepository.deleteById(id);

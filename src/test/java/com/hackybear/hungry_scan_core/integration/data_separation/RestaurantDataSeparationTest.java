@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.integration.data_separation;
 
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -45,13 +46,12 @@ public class RestaurantDataSeparationTest {
     @Transactional
     @Rollback
     void getRestaurants_1stUser() throws Exception {
-        List<RestaurantDTO> restaurants =
+        List<RestaurantSimpleDTO> restaurants =
                 apiRequestUtils.fetchAsSet(
-                        "/api/cms/restaurants", RestaurantDTO.class).stream().toList();
+                        "/api/cms/restaurants", RestaurantSimpleDTO.class).stream().toList();
 
         assertEquals(1, restaurants.size());
         assertEquals("Rarytas", restaurants.getFirst().name());
-        assertEquals("ul. Główna 123, Miastowo, Województwo, 54321", restaurants.getFirst().address());
     }
 
     @Test
@@ -59,13 +59,12 @@ public class RestaurantDataSeparationTest {
     @Transactional
     @Rollback
     void getRestaurants_2ndUser() throws Exception {
-        List<RestaurantDTO> restaurants =
+        List<RestaurantSimpleDTO> restaurants =
                 apiRequestUtils.fetchAsSet(
-                        "/api/cms/restaurants", RestaurantDTO.class).stream().toList();
+                        "/api/cms/restaurants", RestaurantSimpleDTO.class).stream().toList();
 
         assertEquals(1, restaurants.size());
         assertEquals("Wykwintna Bistro", restaurants.getFirst().name());
-        assertEquals("ul. Dębowa 456, Miasteczko, Wiejskie, 98765", restaurants.getFirst().address());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.User;
@@ -70,19 +71,25 @@ public class RestaurantControllerTest {
     @Transactional
     @Rollback
     void shouldGetAllRestaurants() throws Exception {
-        List<RestaurantDTO> restaurants =
+        List<RestaurantSimpleDTO> restaurants =
                 apiRequestUtils.fetchAsSet(
-                        "/api/cms/restaurants", RestaurantDTO.class).stream().toList();
+                        "/api/cms/restaurants", RestaurantSimpleDTO.class).stream().toList();
 
         assertEquals(1, restaurants.size());
         assertEquals("Rarytas", restaurants.getFirst().name());
-        assertEquals("ul. Główna 123, Miastowo, Województwo, 54321", restaurants.getFirst().address());
-        assertTrue(restaurants.getFirst().settings().orderCommentAllowed());
     }
 
     @Test
     void shouldNotAllowUnauthorizedAccessToRestaurants() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/cms/restaurants");
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    void shouldFindCurrentRestaurant() throws Exception {
+        RestaurantDTO restaurant =
+                apiRequestUtils.fetchObject("/api/cms/restaurants/current", RestaurantDTO.class);
+        assertEquals("Rarytas", restaurant.name());
     }
 
     @Test
