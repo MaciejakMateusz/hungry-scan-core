@@ -54,7 +54,7 @@ public class MenuController {
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody MenuSimpleDTO menuDTO, BindingResult br) {
-        return responseHelper.buildResponse(menuDTO, br, userService::getActiveRestaurantId, menuService::save);
+        return responseHelper.buildResponse(menuDTO, br, userService::getCurrentUser, menuService::save);
     }
 
     @PatchMapping("/update")

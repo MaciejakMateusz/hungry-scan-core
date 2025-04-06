@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.Settings;
+import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
@@ -22,8 +23,7 @@ import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.MENUS_ALL;
-import static com.hackybear.hungry_scan_core.utility.Fields.MENU_ID;
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Slf4j
 @Service
@@ -54,10 +54,14 @@ public class MenuServiceImp implements MenuService {
 
     @Transactional
     @Override
-    @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId")
-    public void save(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
+    @Caching(evict = {
+            @CacheEvict(value = MENUS_ALL, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
+    })
+    public void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception {
         Menu menu = menuMapper.toMenu(menuDTO);
-        menu.setRestaurantId(activeRestaurantId);
+        menu.setRestaurantId(currentUser.getActiveRestaurantId());
         menuRepository.save(menu);
     }
 
