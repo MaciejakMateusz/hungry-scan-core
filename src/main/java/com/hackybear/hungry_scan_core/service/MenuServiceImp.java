@@ -56,7 +56,7 @@ public class MenuServiceImp implements MenuService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = MENUS_ALL, key = "#currentUser.getActiveRestaurantId()"),
-            @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()"),
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
     })
     public void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception {
