@@ -36,7 +36,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.USER_MENU_ID;
-import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT_ID;
+import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT;
 
 @Service
 @RequiredArgsConstructor
@@ -168,9 +168,13 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = USER_RESTAURANT_ID, key = "#user.getUsername()")
+            @CacheEvict(value = USER_RESTAURANT, key = "#user.getId()")
     })
-    public void switchRestaurant(Long restaurantId, User user) {
+    public void switchRestaurant(Long restaurantId, User user) throws LocalizedException {
+        Long menuId = userRepository.findFirstMenuIdByRestaurantId(restaurantId)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotFound"));
+        user.setActiveMenuId(menuId);
         user.setActiveRestaurantId(restaurantId);
         userRepository.save(user);
     }

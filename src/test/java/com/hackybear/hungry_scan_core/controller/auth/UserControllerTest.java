@@ -128,10 +128,12 @@ class UserControllerTest {
     void shouldSwitchRestaurant() throws Exception {
         User currentUser = getDetachedUser("admin@example.com");
         assertEquals(1, currentUser.getActiveRestaurantId());
+        assertEquals(1, currentUser.getActiveMenuId());
         apiRequestUtils.patchAndExpect200("/api/user/restaurant", 2);
 
         currentUser = getDetachedUser("admin@example.com");
         assertEquals(2, currentUser.getActiveRestaurantId());
+        assertEquals(2, currentUser.getActiveMenuId());
     }
 
     @Test

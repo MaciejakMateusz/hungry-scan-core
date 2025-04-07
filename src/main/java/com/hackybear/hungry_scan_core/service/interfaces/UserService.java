@@ -39,7 +39,7 @@ public interface UserService {
 
     void delete(String username) throws LocalizedException;
 
-    void switchRestaurant(Long restaurantId, User user);
+    void switchRestaurant(Long restaurantId, User user) throws LocalizedException;
 
     void switchMenu(Long menuId, User user);
 
