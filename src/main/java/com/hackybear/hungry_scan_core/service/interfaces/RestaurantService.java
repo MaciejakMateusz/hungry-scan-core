@@ -2,7 +2,6 @@ package com.hackybear.hungry_scan_core.service.interfaces;
 
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
-import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ public interface RestaurantService {
 
     RestaurantDTO findById(Long id) throws LocalizedException;
 
-    Restaurant save(RestaurantDTO restaurantDTO, User currentUser);
+    void save(RestaurantDTO restaurantDTO, User currentUser);
 
     ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser);
 

@@ -131,6 +131,7 @@ public class RestaurantControllerTest {
         assertNotNull(persistedRestaurant.settings());
         assertEquals(LocalTime.of(10, 0), persistedRestaurant.settings().openingTime());
         assertEquals(LocalTime.of(22, 0), persistedRestaurant.settings().closingTime());
+        assertEquals(1, persistedRestaurant.menus().size());
     }
 
     @Test

@@ -68,13 +68,8 @@ public class RestaurantServiceImp implements RestaurantService {
     @Override
     @Transactional
     @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
-    public Restaurant save(RestaurantDTO restaurantDTO, User currentUser) {
-        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
-        restaurant = restaurantRepository.save(restaurant);
-        currentUser.addRestaurant(restaurant);
-        userService.save(currentUser);
-        setupRestaurantSettings(restaurant);
-        return restaurantRepository.save(restaurant);
+    public void save(RestaurantDTO restaurantDTO, User currentUser) {
+        createAndPersistNew(restaurantDTO, currentUser);
     }
 
     @Override
@@ -93,7 +88,7 @@ public class RestaurantServiceImp implements RestaurantService {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
-        persistInitialData(restaurantDTO, userService, currentUser);
+        createAndPersistNew(restaurantDTO, currentUser);
         return ResponseEntity.ok(Map.of("redirectUrl", "/app"));
     }
 
@@ -142,7 +137,7 @@ public class RestaurantServiceImp implements RestaurantService {
                         "error.restaurantService.restaurantNotFound"));
     }
 
-    private void persistInitialData(RestaurantDTO restaurantDTO, UserService userService, User currentUser) {
+    private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
