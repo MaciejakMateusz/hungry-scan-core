@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,19 +20,12 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/cms/menus")
+@RequiredArgsConstructor
 public class MenuController {
 
     private final MenuService menuService;
     private final UserService userService;
     private final ResponseHelper responseHelper;
-
-    public MenuController(MenuService menuService,
-                          UserService userService,
-                          ResponseHelper responseHelper) {
-        this.menuService = menuService;
-        this.userService = userService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")

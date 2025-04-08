@@ -147,9 +147,8 @@ public class MenuServiceImp implements MenuService {
     public void delete(Long id, Long activeRestaurantId) throws LocalizedException {
         Menu existingMenu = getById(id);
         validateOperation(existingMenu.getRestaurantId(), activeRestaurantId);
-        if (!existingMenu.getCategories().isEmpty()) {
-            exceptionHelper.throwLocalizedMessage("error.userService.menuNotEmpty");
-            return;
+        if (existingMenu.isStandard()) {
+            exceptionHelper.throwLocalizedMessage("error.menuService.illegalMenuRemoval");
         }
         menuRepository.delete(existingMenu);
     }

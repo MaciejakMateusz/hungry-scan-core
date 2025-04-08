@@ -14,6 +14,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
@@ -37,16 +39,6 @@ public class UserController {
 
     @Value("${IS_PROD}")
     private boolean isProduction;
-
-    public UserController(UserService userService,
-                          LoginService loginService,
-                          ExceptionHelper exceptionHelper,
-                          ResponseHelper responseHelper) {
-        this.userService = userService;
-        this.loginService = loginService;
-        this.exceptionHelper = exceptionHelper;
-        this.responseHelper = responseHelper;
-    }
 
     @PostMapping("/register")
     @WithRateLimitProtection

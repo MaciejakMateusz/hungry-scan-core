@@ -337,14 +337,14 @@ class MenuControllerTest {
     @Transactional
     @Rollback
     void shouldRemove() throws Exception {
-        Menu existingMenu = getMenu(2L);
-        assertEquals("Menu", existingMenu.getName());
+        Menu existingMenu = getMenu(3L);
+        assertEquals("Śniadaniowe", existingMenu.getName());
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/menus/delete", 2);
+        apiRequestUtils.deleteAndExpect200("/api/cms/menus/delete", 3);
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/menus/show", 2, status().isBadRequest());
+                        "/api/cms/menus/show", 3, status().isBadRequest());
         assertEquals("Menu z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
@@ -352,7 +352,7 @@ class MenuControllerTest {
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotRemoveWithExistingCategories() throws Exception {
+    void shouldNotRemoveStandard() throws Exception {
         Menu existingMenu = getMenu(1L);
         assertEquals("Całodniowe", existingMenu.getName());
 
