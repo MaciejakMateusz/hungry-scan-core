@@ -833,7 +833,7 @@ INSERT INTO users (organization_id, created, email, enabled, password, updated, 
 VALUES (2, '2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
         '$2a$10$tykyevzP4v1WV/FyuYWNOO6wspbmAHnzI.deEAZQU6SA8NSxod3Vy', null, 'restaurator@rarytas.pl', null, null,
         'Właściciel', '',
-        'Biznesmen', 2, 2);
+        'Biznesmen', 3, 2);
 INSERT INTO users (organization_id, created, email, email_token, enabled, forename, password, phone_number, surname,
                    updated,
                    username,

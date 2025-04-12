@@ -676,6 +676,22 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Sends a DELETE HTTP request to the specified endpoint URL.
+     * Expects a certain result based on the provided ResultMatcher.
+     *
+     * @param endpointUrl The URL endpoint to send the DELETE request to.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T> void deleteAndExpect(String endpointUrl, ResultMatcher matcher) throws Exception {
+
+        mockMvc.perform(delete(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(matcher)
+                .andDo(print());
+    }
+
+    /**
      * Prepares and returns an ObjectMapper instance with necessary modules registered.
      *
      * @return A prepared ObjectMapper.
@@ -838,5 +854,15 @@ public class ApiRequestUtils {
      */
     public <T> void deleteAndExpect200(String url, T t) throws Exception {
         deleteAndExpect(url, t, status().isOk());
+    }
+
+    /**
+     * Performs a DELETE request to the specified URL with the provided object and expects a successful (200) response.
+     *
+     * @param url The URL to which the DELETE request will be sent.
+     * @throws Exception If an error occurs during the request.
+     */
+    public void deleteAndExpect200(String url) throws Exception {
+        deleteAndExpect(url, status().isOk());
     }
 }

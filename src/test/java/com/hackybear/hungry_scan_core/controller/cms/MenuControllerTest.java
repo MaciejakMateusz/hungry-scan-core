@@ -26,6 +26,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +49,7 @@ class MenuControllerTest {
 
     @Autowired
     private EntityManager entityManager;
+
     @Autowired
     private MenuRepository menuRepository;
 
@@ -337,15 +339,12 @@ class MenuControllerTest {
     @Transactional
     @Rollback
     void shouldRemove() throws Exception {
-        Menu existingMenu = getMenu(3L);
-        assertEquals("Śniadaniowe", existingMenu.getName());
+        Optional<Menu> existingMenu = menuRepository.findById(3L);
+        assertTrue(existingMenu.isPresent());
+        apiRequestUtils.deleteAndExpect200("/api/cms/menus/delete");
 
-        apiRequestUtils.deleteAndExpect200("/api/cms/menus/delete", 3);
-
-        Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/menus/show", 3, status().isBadRequest());
-        assertEquals("Menu z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
+        existingMenu = menuRepository.findById(3L);
+        assertFalse(existingMenu.isPresent());
     }
 
     @Test
