@@ -9,6 +9,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.SettingsRepository;
+import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class MenuServiceImp implements MenuService {
     private final MenuRepository menuRepository;
     private final MenuMapper menuMapper;
     private final SettingsRepository settingsRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -109,6 +111,27 @@ public class MenuServiceImp implements MenuService {
         menuRepository.switchStandard(newId);
     }
 
+    @Transactional
+    @Override
+    @Caching(evict = {
+            @CacheEvict(value = MENUS_ALL, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = MENU_ID, key = "#currentUser.getActiveMenuId()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
+    })
+    public void delete(User currentUser) throws LocalizedException {
+        Menu existingMenu = getById(currentUser.getActiveMenuId());
+        Long activeRestaurantId = currentUser.getActiveRestaurantId();
+        validateOperation(existingMenu.getRestaurantId(), activeRestaurantId);
+        if (existingMenu.isStandard()) {
+            exceptionHelper.throwLocalizedMessage("error.menuService.illegalMenuRemoval");
+        }
+        Long standardId = menuRepository.findStandardIdByRestaurantId(activeRestaurantId)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.menuService.menuNotFound"));
+        currentUser.setActiveMenuId(standardId);
+        menuRepository.delete(existingMenu);
+        userRepository.save(currentUser);
+    }
+
     private void validateMenusPlans(List<MenuSimpleDTO> menuDTOs) throws LocalizedException {
         Map<DayOfWeek, List<TimeRange>> scheduleMap = new HashMap<>();
 
@@ -136,21 +159,6 @@ public class MenuServiceImp implements MenuService {
 
     private boolean isOverlapping(TimeRange a, TimeRange b) {
         return a.getStartTime().isBefore(b.getEndTime()) && b.getStartTime().isBefore(a.getEndTime());
-    }
-
-    @Transactional
-    @Override
-    @Caching(evict = {
-            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
-            @CacheEvict(value = MENU_ID, key = "#id")
-    })
-    public void delete(Long id, Long activeRestaurantId) throws LocalizedException {
-        Menu existingMenu = getById(id);
-        validateOperation(existingMenu.getRestaurantId(), activeRestaurantId);
-        if (existingMenu.isStandard()) {
-            exceptionHelper.throwLocalizedMessage("error.menuService.illegalMenuRemoval");
-        }
-        menuRepository.delete(existingMenu);
     }
 
     private Menu getById(Long id) throws LocalizedException {

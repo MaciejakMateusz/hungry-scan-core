@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
+import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
@@ -77,9 +78,13 @@ public class MenuController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> delete(@RequestBody Long id) {
-        ThrowingSupplier<Long> activeRestaurantIdProvider = userService::getActiveRestaurantId;
-        return responseHelper.buildResponse(id, activeRestaurantIdProvider, menuService::delete);
+    public ResponseEntity<?> delete() {
+        try {
+            User currentUser = userService.getCurrentUser();
+            return responseHelper.buildResponse(currentUser, menuService::delete);
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
