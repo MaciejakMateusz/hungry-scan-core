@@ -23,7 +23,7 @@ public class ForenameSurnameValidatorTest extends ValidatorTestBase {
     @Test
     void givenValidForename_whenValidate_thenNoViolations() {
         List<String> forenames =
-                Arrays.asList("Ernest", "Al", "mAtI", "MATI", "qweqweQQWEQWEQWEQWEQWEQWEQWEQWEQWEQEWQWEQWEQ");
+                Arrays.asList("Ernest", "Al", "mAtI", "MATI", "qweqweQQWEQWEQWEQWEQWEQWEQWEQWEQWEQEWQWEQWEQ", "Zażółć");
         expectNoViolations(forenames, this::getRegistrationDTO);
     }
 

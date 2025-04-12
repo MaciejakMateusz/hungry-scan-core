@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ForenameSurnameValidator implements ConstraintValidator<ForenameSurname, String> {
 
-    private static final Pattern FORENAME_REGEX = Pattern.compile("^[A-Za-z]{2,}$");
+    private static final Pattern FORENAME_REGEX = Pattern.compile("^\\p{L}[\\p{L}\\-\\s']+$");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
