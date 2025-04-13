@@ -3,7 +3,9 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
+import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.EntityManager;
@@ -52,6 +54,8 @@ class MenuControllerTest {
 
     @Autowired
     private MenuRepository menuRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -116,8 +120,11 @@ class MenuControllerTest {
     @Transactional
     @Rollback
     void shouldAddNew() throws Exception {
+        User user = userRepository.findByUsername("admin@example.com").orElseThrow();
+        assertEquals(1L, user.getActiveMenuId());
         MenuSimpleDTO menu = createMenuDTO("Great test menu");
         apiRequestUtils.postAndExpect200("/api/cms/menus/add", menu);
+
 
         List<MenuSimpleDTO> menus =
                 apiRequestUtils.fetchAsList(
@@ -125,6 +132,8 @@ class MenuControllerTest {
         MenuSimpleDTO newMenu = menus.stream().filter(m -> m.name().equals("Great test menu")).toList().getFirst();
         assertNotNull(newMenu);
         assertFalse(newMenu.standard());
+        user = userRepository.findByUsername("admin@example.com").orElseThrow();
+        assertEquals(newMenu.id(), user.getActiveMenuId());
     }
 
     @Test

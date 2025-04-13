@@ -64,7 +64,9 @@ public class MenuServiceImp implements MenuService {
     public void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception {
         Menu menu = menuMapper.toMenu(menuDTO);
         menu.setRestaurantId(currentUser.getActiveRestaurantId());
-        menuRepository.save(menu);
+        menu = menuRepository.save(menu);
+        currentUser.setActiveMenuId(menu.getId());
+        userRepository.save(currentUser);
     }
 
     @Transactional
