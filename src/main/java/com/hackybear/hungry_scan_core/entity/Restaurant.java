@@ -91,6 +91,13 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "price_plan_id", nullable = false)
+    private PricePlan pricePlan;
+
+    private Instant pricePlanTo;
+
     @NotNull
     private Instant created;
 
