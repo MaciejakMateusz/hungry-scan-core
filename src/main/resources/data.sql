@@ -1,14 +1,18 @@
+INSERT IGNORE INTO price_plans (id, price)
+VALUES ('free', 0.0),
+       ('basic', 99.0);
+
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
                              employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
 VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true, 1);
 
 INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, settings_id, statistics_id,
-                                theme_id)
+                                theme_id, price_plan_id)
 VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
-        '2023-11-12T00:00:00Z', 1, null, null);
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created)
-VALUES (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z');
+        '2023-11-12T00:00:00Z', 1, null, null, 'free');
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, price_plan_id)
+VALUES (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', 'basic');
 
 INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
 VALUES (1, true, 'Całodniowe', 1);
