@@ -71,16 +71,17 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @Override
     @Transactional
-    @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
+    @Caching(evict = {
+            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()")
+    })
     public void save(RestaurantDTO restaurantDTO, User currentUser) {
         createAndPersistNew(restaurantDTO, currentUser);
     }
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getUsername()")
-    })
+    @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getUsername()")
     public ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) {
         BindingResult br = (BindingResult) params.get("bindingResult");
         ResponseHelper responseHelper = (ResponseHelper) params.get("responseHelper");
