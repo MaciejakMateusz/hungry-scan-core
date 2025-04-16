@@ -292,7 +292,6 @@ public class RestaurantControllerTest {
         restaurant.setAddress("Korfantego 123");
         restaurant.setCity("Katowice");
         restaurant.setPostalCode("40-404");
-        restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
         return restaurantMapper.toDTO(restaurant);
     }
 

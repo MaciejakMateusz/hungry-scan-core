@@ -11,6 +11,7 @@ import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
@@ -42,6 +43,7 @@ public class RestaurantServiceImp implements RestaurantService {
     private final ExceptionHelper exceptionHelper;
     private final RestaurantMapper restaurantMapper;
     private final UserRepository userRepository;
+    private final PricePlanRepository pricePlanRepository;
 
     @Override
     @Cacheable(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
@@ -151,6 +153,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
         createInitialMenu(restaurant);
