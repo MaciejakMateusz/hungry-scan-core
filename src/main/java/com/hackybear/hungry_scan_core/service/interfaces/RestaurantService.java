@@ -23,7 +23,7 @@ public interface RestaurantService {
 
     void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException;
 
-    void delete(Long id, User currentUser) throws LocalizedException;
+    void delete(User currentUser) throws LocalizedException;
 
     RestaurantDTO findByToken(String token) throws LocalizedException;
 }

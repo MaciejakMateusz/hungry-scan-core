@@ -12,6 +12,7 @@ import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
+import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class RestaurantServiceImp implements RestaurantService {
     private final UserService userService;
     private final ExceptionHelper exceptionHelper;
     private final RestaurantMapper restaurantMapper;
+    private final UserRepository userRepository;
 
     @Override
     @Cacheable(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
@@ -107,12 +109,22 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = RESTAURANT_ID, key = "#id"),
+            @CacheEvict(value = RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()"),
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()")
     })
-    public void delete(Long id, User currentUser) throws LocalizedException {
-        restaurantRepository.deleteById(id);
+    public void delete(User currentUser) throws LocalizedException {
+        Long restaurantId = currentUser.getActiveRestaurantId();
+        validateDeletion(restaurantId, currentUser);
+        Long otherId = currentUser.getRestaurants().stream()
+                .map(Restaurant::getId)
+                .filter(id -> !id.equals(restaurantId))
+                .findFirst()
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotFound"));
+        currentUser.setActiveRestaurantId(otherId);
+        restaurantRepository.deleteById(restaurantId);
+        userRepository.save(currentUser);
     }
 
     @Override
@@ -174,5 +186,14 @@ public class RestaurantServiceImp implements RestaurantService {
         Optional<Menu> menu = restaurant.getMenus().stream().findFirst();
         menu.ifPresent(m -> currentUser.setActiveMenuId(m.getId()));
         userService.save(currentUser);
+    }
+
+    private void validateDeletion(Long id, User user) throws LocalizedException {
+        boolean hasPaidPricePlan = restaurantRepository.hasPaidPricePlan(id);
+        if (hasPaidPricePlan) {
+            exceptionHelper.throwLocalizedMessage("error.restaurantService.paidPlanRestaurantRemoval");
+        } else if (user.getRestaurants().size() == 1) {
+            exceptionHelper.throwLocalizedMessage("error.restaurantService.lastRestaurantRemoval");
+        }
     }
 }
