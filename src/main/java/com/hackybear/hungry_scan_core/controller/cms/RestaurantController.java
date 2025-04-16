@@ -8,6 +8,7 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,21 +21,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/restaurants")
+@RequiredArgsConstructor
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
     private final ExceptionHelper exceptionHelper;
     private final UserService userService;
     private final ResponseHelper responseHelper;
-
-    public RestaurantController(RestaurantService restaurantService, ExceptionHelper exceptionHelper,
-                                UserService userService,
-                                ResponseHelper responseHelper) {
-        this.restaurantService = restaurantService;
-        this.exceptionHelper = exceptionHelper;
-        this.userService = userService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -91,9 +84,13 @@ public class RestaurantController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> delete(@RequestBody Long id) {
-        ThrowingSupplier<User> userSupplier = userService::getCurrentUser;
-        return responseHelper.buildResponse(id, userSupplier, restaurantService::delete);
+    public ResponseEntity<?> delete() {
+        try {
+            User currentUser = userService.getCurrentUser();
+            return responseHelper.buildResponse(currentUser, restaurantService::delete);
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
