@@ -5,14 +5,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.SettingsDTO;
+import com.hackybear.hungry_scan_core.entity.PricePlan;
 import com.hackybear.hungry_scan_core.enums.Language;
-import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
+import com.hackybear.hungry_scan_core.utility.Money;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,9 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RedisSerializationTest {
 
-    @Autowired
-    private PricePlanRepository pricePlanRepository;
-
     @Test
     public void testSerialization() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -58,6 +55,9 @@ public class RedisSerializationTest {
     }
 
     private RestaurantDTO createRestaurantDTO() {
+        PricePlan pricePlan = new PricePlan();
+        pricePlan.setId("full");
+        pricePlan.setPrice(Money.of(250.00));
         return new RestaurantDTO(
                 1L,
                 "token123",
@@ -67,7 +67,7 @@ public class RedisSerializationTest {
                 "Katowice",
                 getMenuSimpleDTOs(),
                 getSettingsDTO(),
-                pricePlanRepository.findById("free").orElseThrow(),
+                pricePlan,
                 null,
                 Instant.now());
     }

@@ -153,7 +153,7 @@ class AdminManagementControllerTest {
         List<User> users = apiRequestUtils.fetchAsList(
                 "/api/admin/users/admins", User.class);
 
-        assertEquals(3, users.size());
+        assertEquals(4, users.size());
         assertEquals("admin@example.com", users.getFirst().getUsername());
     }
 

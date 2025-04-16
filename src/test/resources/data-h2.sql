@@ -1,3 +1,7 @@
+INSERT INTO price_plans (id, price)
+VALUES ('free', 0.0),
+       ('basic', 99.0);
+
 INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
                       employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
 VALUES (3, '07:00:00', '23:00:00', 1, 120, 3, 20, true, true, 1);
@@ -5,25 +9,29 @@ INSERT INTO settings (booking_duration, opening_time, closing_time, language, ca
                       employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
 VALUES (3, '12:00:00', '02:00:00', 1, 312, 3, 20, false, false, 2);
 
-INSERT INTO restaurants (address, name, postal_code, city, token, created, settings_id)
+INSERT INTO restaurants (address, name, postal_code, city, token, created, settings_id, price_plan_id)
 VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '12-1234', 'TEST',
-        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z', 1);
-INSERT INTO restaurants (address, name, postal_code, city, token, created, settings_id)
-VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), 2);
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
-VALUES ('Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW());
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
-VALUES ('Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW());
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
-VALUES ('Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW());
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
-VALUES ('Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW());
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
-VALUES ('Test address, 555', 'Test 5', '12-1234', 'TEST', null, NOW());
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
-VALUES ('Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW());
-INSERT INTO restaurants (address, name, postal_code, city, token, created)
-VALUES ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW());
+        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z', 1, 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, settings_id, price_plan_id)
+VALUES ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), 2, 'basic');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW(), 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW(), 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW(), 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW(), 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 555', 'Test 5', '12-1234', 'TEST', null, NOW(), 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW(), 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW(), 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 888', 'Test 8', '12-1234', 'TEST', null, NOW(), 'free');
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('Test address, 999', 'Test 9', '12-1234', 'TEST', null, NOW(), 'free');
 
 INSERT INTO menus (standard, name, restaurant_id)
 VALUES (true, 'Całodniowe', 1);
@@ -35,6 +43,8 @@ INSERT INTO menus (standard, name, restaurant_id)
 VALUES (false, 'Obiadowe', 2);
 INSERT INTO menus (standard, name, restaurant_id)
 VALUES (false, 'Kolacyjne', 2);
+INSERT INTO menus (standard, name, restaurant_id)
+VALUES (false, 'Ziemniaczane', 5);
 
 /* CATEGORIES TRANSLATIONS */
 INSERT INTO translatable(default_translation, translation_en)
@@ -849,6 +859,13 @@ INSERT INTO users (organization_id, created, email, email_token, enabled, forena
 VALUES (3, '2024-04-23 12:50:41.531670', 'fresh@user.it', null, 1, 'Fresh',
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.',
         null, 'User', null, 'fresh@user.it', null, null, null);
+INSERT INTO users (organization_id, created, email, email_token, enabled, forename, password, phone_number, surname,
+                   updated,
+                   username,
+                   jwt_token_id, active_menu_id, active_restaurant_id)
+VALUES (3, '2024-04-23 12:50:41.531670', 'fresh@user.it', null, 1, 'Free',
+        '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.',
+        null, 'User', null, 'freeplan@example.com', null, null, 10);
 
 INSERT INTO user_role (user_id, role_id)
 VALUES (1, 1);
@@ -870,6 +887,8 @@ INSERT INTO user_role (user_id, role_id)
 VALUES (8, 5);
 INSERT INTO user_role (user_id, role_id)
 VALUES (9, 2);
+INSERT INTO user_role (user_id, role_id)
+VALUES (10, 2);
 
 INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (1, 1);
@@ -893,6 +912,10 @@ INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (7, 2);
 INSERT INTO users_restaurants (user_id, restaurant_id)
 VALUES (8, 2);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (10, 10);
+INSERT INTO users_restaurants (user_id, restaurant_id)
+VALUES (10, 11);
 
 INSERT INTO themes(name, active, restaurant_id)
 VALUES ('green', true, 1),

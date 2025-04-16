@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,9 @@ public class RestaurantControllerTest {
 
     @Autowired
     private CacheManager cacheManager;
+
+    @Autowired
+    private PricePlanRepository pricePlanRepository;
 
     @BeforeEach
     void clearCache() {
@@ -125,7 +129,7 @@ public class RestaurantControllerTest {
         apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", restaurantDTO);
 
         RestaurantDTO persistedRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 11, RestaurantDTO.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 13, RestaurantDTO.class);
         assertEquals("Real Greek Carbonara", persistedRestaurant.name());
         assertEquals("Korfantego 123", persistedRestaurant.address());
         assertNotNull(persistedRestaurant.settings());
@@ -156,7 +160,7 @@ public class RestaurantControllerTest {
         assertEquals("{\"redirectUrl\":\"/app\"}", response.getContentAsString());
 
         RestaurantDTO persistedRestaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 10, RestaurantDTO.class);
+                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 12, RestaurantDTO.class);
         assertEquals("Real Greek Carbonara", persistedRestaurant.name());
         assertEquals("Korfantego 123", persistedRestaurant.address());
         assertEquals(1, persistedRestaurant.menus().size());
@@ -234,20 +238,36 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @WithMockUser(roles = "ADMIN", username = "freeplan@example.com")
     @Transactional
     @Rollback
-    void shouldRemoveRestaurant() throws Exception {
-        RestaurantDTO restaurant =
-                apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, RestaurantDTO.class);
-        assertNotNull(restaurant);
-
-        apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete", 2);
+    void shouldRemove() throws Exception {
+        apiRequestUtils.deleteAndExpect200("/api/cms/restaurants/delete");
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/restaurants/show", 2, status().isBadRequest());
+                        "/api/cms/restaurants/show", 10, status().isBadRequest());
         assertEquals("Restauracja z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
+    @Transactional
+    @Rollback
+    void shouldNotRemoveWithPaidPlan() throws Exception {
+        Map<?, ?> errors = apiRequestUtils.deleteAndReturnResponseBody("/api/cms/restaurants/delete", Map.class, status().isBadRequest());
+        String error = (String) errors.get("exceptionMsg");
+        assertEquals("Restauracja posiada płatny plan, będzie mogła być usunięta po jego wygaśnięciu.", error);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotRemoveWhenOnlyOneRemains() throws Exception {
+        Map<?, ?> errors = apiRequestUtils.deleteAndReturnResponseBody("/api/cms/restaurants/delete", Map.class, status().isBadRequest());
+        String error = (String) errors.get("exceptionMsg");
+        assertEquals("Ostatnia restauracja powiązana do użytkownika nie może zostać usunięta.", error);
     }
 
     @Test
@@ -272,6 +292,7 @@ public class RestaurantControllerTest {
         restaurant.setAddress("Korfantego 123");
         restaurant.setCity("Katowice");
         restaurant.setPostalCode("40-404");
+        restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
         return restaurantMapper.toDTO(restaurant);
     }
 
