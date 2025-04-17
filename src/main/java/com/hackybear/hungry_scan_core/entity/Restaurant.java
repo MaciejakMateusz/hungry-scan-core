@@ -22,14 +22,15 @@ import java.util.TreeSet;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "restaurants")
 @EntityListeners({AuditingEntityListener.class})
 @Entity
-public class Restaurant implements Comparable<Restaurant>, Serializable {
+public class Restaurant implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Serial
@@ -133,8 +134,4 @@ public class Restaurant implements Comparable<Restaurant>, Serializable {
         return name + ", " + address;
     }
 
-    @Override
-    public int compareTo(Restaurant other) {
-        return this.getName().compareTo(other.getName());
-    }
 }

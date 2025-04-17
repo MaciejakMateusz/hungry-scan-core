@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.Email;
 import com.hackybear.hungry_scan_core.annotation.ForenameSurname;
 import com.hackybear.hungry_scan_core.annotation.Password;
@@ -22,12 +21,11 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Slf4j
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @EntityListeners({GeneralListener.class, AuditingEntityListener.class})
 @Table(name = "users")
 @Entity
@@ -35,7 +33,7 @@ public class User implements Serializable, Comparable<User> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Serial
@@ -88,7 +86,7 @@ public class User implements Serializable, Comparable<User> {
     @ManyToMany
     @JoinTable(name = "users_restaurants", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "restaurant_id"))
-    private Set<Restaurant> restaurants = new TreeSet<>();
+    private Set<Restaurant> restaurants = new HashSet<>();
 
     @Column(name = "active_restaurant_id")
     private Long activeRestaurantId;
