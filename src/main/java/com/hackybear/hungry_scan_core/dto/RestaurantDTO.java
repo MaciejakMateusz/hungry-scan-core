@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public record RestaurantDTO(
@@ -35,7 +36,13 @@ public record RestaurantDTO(
 
         Instant pricePlanTo,
 
-        Instant created) implements Serializable, Comparable<RestaurantDTO> {
+        Instant created,
+
+        LocalDateTime updated,
+
+        String createdBy,
+
+        String modifiedBy) implements Serializable, Comparable<RestaurantDTO> {
 
     @Serial
     private static final long serialVersionUID = 1L;

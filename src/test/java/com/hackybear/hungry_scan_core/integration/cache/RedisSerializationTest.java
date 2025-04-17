@@ -22,6 +22,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -69,7 +70,10 @@ public class RedisSerializationTest {
                 getSettingsDTO(),
                 pricePlan,
                 null,
-                Instant.now());
+                Instant.now(),
+                LocalDateTime.now(),
+                "Creation",
+                "Modification");
     }
 
     private Set<MenuSimpleDTO> getMenuSimpleDTOs() {
