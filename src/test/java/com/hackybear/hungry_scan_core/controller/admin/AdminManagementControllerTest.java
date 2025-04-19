@@ -1,15 +1,12 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
-import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.entity.User;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
+import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -25,7 +22,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,13 +44,9 @@ class AdminManagementControllerTest {
     private ApiRequestUtils apiRequestUtils;
 
     @Autowired
-    private RestaurantService restaurantService;
-
-    @Autowired
-    private RestaurantMapper restaurantMapper;
-
-    @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
     @Test
     @Order(1)
@@ -417,14 +413,7 @@ class AdminManagementControllerTest {
     }
 
     private Restaurant getRestaurant(Long restaurantId) {
-        RestaurantDTO restaurantDTO = null;
-        try {
-            restaurantDTO = restaurantService.findById(restaurantId);
-        } catch (LocalizedException e) {
-            log.error(e.getMessage());
-        }
-        assert Objects.nonNull(restaurantDTO);
-        return restaurantMapper.toRestaurant(restaurantDTO);
+        return restaurantRepository.findById(restaurantId).orElseThrow();
     }
 
     private User findUser(String username) throws Exception {

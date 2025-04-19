@@ -45,6 +45,8 @@ INSERT INTO menus (standard, name, restaurant_id)
 VALUES (false, 'Kolacyjne', 2);
 INSERT INTO menus (standard, name, restaurant_id)
 VALUES (false, 'Ziemniaczane', 5);
+INSERT INTO menus (standard, name, restaurant_id)
+VALUES (false, 'Menu', 11);
 
 /* CATEGORIES TRANSLATIONS */
 INSERT INTO translatable(default_translation, translation_en)

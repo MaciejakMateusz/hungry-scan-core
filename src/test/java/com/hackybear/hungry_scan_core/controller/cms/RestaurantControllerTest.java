@@ -6,7 +6,7 @@ import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.User;
-import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
+import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public class RestaurantControllerTest {
     private CacheManager cacheManager;
 
     @Autowired
-    private PricePlanRepository pricePlanRepository;
+    private UserRepository userRepository;
 
     @BeforeEach
     void clearCache() {
@@ -248,6 +248,9 @@ public class RestaurantControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/restaurants/show", 10, status().isBadRequest());
         assertEquals("Restauracja z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
+        User user = userRepository.findUserByUsername("freeplan@example.com");
+        assertEquals(11L, user.getActiveRestaurantId());
+        assertEquals(7L, user.getActiveMenuId());
     }
 
     @Test
