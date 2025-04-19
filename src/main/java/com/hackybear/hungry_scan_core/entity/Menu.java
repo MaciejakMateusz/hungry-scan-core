@@ -1,11 +1,11 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +24,7 @@ import java.util.TreeSet;
 
 @Getter
 @Setter
-@EqualsAndHashCode()
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "menus")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
@@ -32,6 +32,7 @@ public class Menu implements Serializable, Comparable<Menu> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Serial
@@ -41,9 +42,10 @@ public class Menu implements Serializable, Comparable<Menu> {
     @NotBlank
     private String name;
 
-    @Column(name = "restaurant_id", nullable = false)
-    @NotNull
-    private Long restaurantId;
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JsonIgnore
+    private Restaurant restaurant;
 
     @OneToMany(mappedBy = "menuId")
     @OrderBy("displayOrder ASC")

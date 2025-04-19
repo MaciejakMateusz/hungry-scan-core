@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Getter
 @Setter
@@ -60,9 +59,8 @@ public class Restaurant implements Serializable {
     @Length(max = 300)
     private String city;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "restaurant_id")
-    private Set<Menu> menus = new TreeSet<>();
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Menu> menus = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")
