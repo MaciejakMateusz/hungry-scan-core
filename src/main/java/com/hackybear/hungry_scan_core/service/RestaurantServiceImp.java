@@ -116,16 +116,16 @@ public class RestaurantServiceImp implements RestaurantService {
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()")
     })
+    @Transactional
     public void delete(User currentUser) throws LocalizedException {
         Long restaurantId = currentUser.getActiveRestaurantId();
+        Long menuId = currentUser.getActiveMenuId();
         validateDeletion(restaurantId, currentUser);
-        Long otherId = currentUser.getRestaurants().stream()
-                .map(Restaurant::getId)
-                .filter(id -> !id.equals(restaurantId))
-                .findFirst()
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.restaurantService.restaurantNotFound"));
-        currentUser.setActiveRestaurantId(otherId);
+        Restaurant otherRestaurant = findOtherUserRestaurant(currentUser, restaurantId);
+        Long otherMenuId = findOtherUserMenuId(otherRestaurant, menuId);
+        currentUser.setActiveRestaurantId(otherRestaurant.getId());
+        currentUser.setActiveMenuId(otherMenuId);
+        currentUser.removeRestaurantById(restaurantId);
         restaurantRepository.deleteById(restaurantId);
         userRepository.save(currentUser);
     }
@@ -180,7 +180,7 @@ public class RestaurantServiceImp implements RestaurantService {
         Menu menu = new Menu();
         menu.setStandard(true);
         menu.setName("Menu");
-        menu.setRestaurantId(restaurant.getId());
+        menu.setRestaurant(restaurant);
         restaurant.addMenu(menu);
     }
 
@@ -199,5 +199,21 @@ public class RestaurantServiceImp implements RestaurantService {
         } else if (user.getRestaurants().size() == 1) {
             exceptionHelper.throwLocalizedMessage("error.restaurantService.lastRestaurantRemoval");
         }
+    }
+
+    private Restaurant findOtherUserRestaurant(User user, Long currentRestaurantId) throws LocalizedException {
+        return user.getRestaurants().stream()
+                .filter(r -> !r.getId().equals(currentRestaurantId))
+                .findFirst()
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotFound"));
+    }
+
+    private Long findOtherUserMenuId(Restaurant restaurant, Long currentMenuId) throws LocalizedException {
+        return restaurant.getMenus().stream()
+                .map(Menu::getId).filter(m -> !m.equals(currentMenuId))
+                .findFirst()
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuService.menuNotFound"));
     }
 }
