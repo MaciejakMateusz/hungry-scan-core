@@ -45,7 +45,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.activeMenuId FROM User u WHERE u.username = :username")
     Optional<Long> getActiveMenuIdByUsername(@Param("username") String username);
 
-    @Query("SELECT m.id FROM Menu m WHERE m.restaurantId = :restaurantId ORDER BY m.id ASC LIMIT 1")
+    @Query("SELECT m.id FROM Menu m WHERE m.restaurant.id = :restaurantId ORDER BY m.id ASC LIMIT 1")
     Optional<Long> findFirstMenuIdByRestaurantId(@Param("restaurantId") Long restaurantId);
 
     @Query("SELECT DISTINCT m FROM Menu m LEFT JOIN FETCH m.categories WHERE m.id = (SELECT u.activeMenuId FROM User u WHERE u.username = :username)")

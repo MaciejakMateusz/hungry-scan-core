@@ -39,13 +39,13 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                                     @Param("restaurantId") Long restaurantId);
 
     @Modifying
-    @Query("UPDATE Menu m SET m.standard = false WHERE m.restaurantId = :restaurantId AND m.standard = true")
+    @Query("UPDATE Menu m SET m.standard = false WHERE m.restaurant.id = :restaurantId AND m.standard = true")
     void resetStandardMenus(@Param("restaurantId") Long restaurantId);
 
     @Modifying
     @Query("UPDATE Menu m SET m.standard = true WHERE m.id = :newId")
     void switchStandard(@Param("newId") Long newId);
 
-    @Query("SELECT m.id FROM Menu m WHERE m.standard = true AND m.restaurantId = :restaurantId")
+    @Query("SELECT m.id FROM Menu m WHERE m.standard = true AND m.restaurant.id = :restaurantId")
     Optional<Long> findStandardIdByRestaurantId(@Param("restaurantId") Long restaurantId);
 }

@@ -3,11 +3,13 @@ package com.hackybear.hungry_scan_core.service;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
+import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
@@ -36,6 +38,7 @@ public class MenuServiceImp implements MenuService {
     private final MenuMapper menuMapper;
     private final SettingsRepository settingsRepository;
     private final UserRepository userRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -50,7 +53,7 @@ public class MenuServiceImp implements MenuService {
     @Cacheable(value = MENU_ID, key = "#id")
     public MenuSimpleDTO findById(Long id, Long activeRestaurantId) throws LocalizedException {
         Menu menu = getById(id);
-        validateOperation(menu.getRestaurantId(), activeRestaurantId);
+        validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
         return menuMapper.toSimpleDTO(menu);
     }
 
@@ -63,7 +66,8 @@ public class MenuServiceImp implements MenuService {
     })
     public void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception {
         Menu menu = menuMapper.toMenu(menuDTO);
-        menu.setRestaurantId(currentUser.getActiveRestaurantId());
+        Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId()).orElseThrow();
+        menu.setRestaurant(restaurant);
         menu = menuRepository.save(menu);
         currentUser.setActiveMenuId(menu.getId());
         userRepository.save(currentUser);
@@ -77,7 +81,7 @@ public class MenuServiceImp implements MenuService {
     })
     public void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = getById(menuDTO.id());
-        validateOperation(menu.getRestaurantId(), activeRestaurantId);
+        validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
         validateSchedule(menuDTO, activeRestaurantId);
         menu.setName(menuDTO.name());
         menu.setStandard(menuDTO.standard());
@@ -123,7 +127,7 @@ public class MenuServiceImp implements MenuService {
     public void delete(User currentUser) throws LocalizedException {
         Menu existingMenu = getById(currentUser.getActiveMenuId());
         Long activeRestaurantId = currentUser.getActiveRestaurantId();
-        validateOperation(existingMenu.getRestaurantId(), activeRestaurantId);
+        validateOperation(existingMenu.getRestaurant().getId(), activeRestaurantId);
         if (existingMenu.isStandard()) {
             exceptionHelper.throwLocalizedMessage("error.menuService.illegalMenuRemoval");
         }
