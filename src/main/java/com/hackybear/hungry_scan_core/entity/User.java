@@ -107,7 +107,11 @@ public class User implements Serializable, Comparable<User> {
     private String createdBy;
 
     public void addRestaurant(Restaurant restaurant) {
-        restaurants.add(restaurant);
+        this.restaurants.add(restaurant);
+    }
+
+    public void removeRestaurantById(Long id) {
+        this.restaurants.removeIf(restaurant -> restaurant.getId().equals(id));
     }
 
     @PrePersist
