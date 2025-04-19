@@ -10,53 +10,37 @@ VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true, 1);
 INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, settings_id, statistics_id,
                                 theme_id, price_plan_id)
 VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
-        '2023-11-12T00:00:00Z', 1, null, null, 'free');
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, price_plan_id)
-VALUES (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', 'basic');
+        '2023-11-12T00:00:00Z', 1, null, null, 'free'),
+       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', null, null, null, 'basic');
 
 INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
-VALUES (1, true, 'Całodniowe', 1);
-INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
-VALUES (2, false, 'Śniadaniowe', 1);
-INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
-VALUES (3, true, 'Menu', 2);
+VALUES (1, true, 'Całodniowe', 1),
+       (2, false, 'Śniadaniowe', 1),
+       (3, true, 'Menu', 2);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (1, 'Kelner', 'Waiter');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (2, 'Administrator', 'Admin');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (3, 'Menadżer', 'Manager');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (4, 'Kucharz', 'Cook');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (5, 'Klient', 'Customer');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (6, 'Klient (tylko odczyt)', 'Customer (read only)');
+VALUES (1, 'Kelner', 'Waiter'),
+       (2, 'Administrator', 'Admin'),
+       (3, 'Menadżer', 'Manager'),
+       (4, 'Kucharz', 'Cook'),
+       (5, 'Klient', 'Customer'),
+       (6, 'Klient (tylko odczyt)', 'Customer (read only)');
 
 INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
-VALUES (1, 'ROLE_WAITER', 1);
-INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
-VALUES (2, 'ROLE_ADMIN', 2);
-INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
-VALUES (3, 'ROLE_MANAGER', 3);
-INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
-VALUES (4, 'ROLE_COOK', 4);
-INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
-VALUES (5, 'ROLE_CUSTOMER', 5);
-INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
-VALUES (6, 'ROLE_CUSTOMER_READONLY', 6);
+VALUES (1, 'ROLE_WAITER', 1),
+       (2, 'ROLE_ADMIN', 2),
+       (3, 'ROLE_MANAGER', 3),
+       (4, 'ROLE_COOK', 4),
+       (5, 'ROLE_CUSTOMER', 5),
+       (6, 'ROLE_CUSTOMER_READONLY', 6);
 
 INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
                           jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
 VALUES (1, 1, NOW(), 'admin@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, 'Admin',
         '',
-        'Admin', 1, 1);
-
-INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
-                          jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
-VALUES (2, 2, NOW(), 'mati@test.com', 1,
+        'Admin', 1, 1),
+       (2, 2, NOW(), 'mati@test.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'mati@test.com', null, null, '', '',
         '', null, null);
 
@@ -64,71 +48,44 @@ INSERT IGNORE INTO users_restaurants (user_id, restaurant_id)
 VALUES (1, 1);
 
 INSERT IGNORE INTO user_role (user_id, role_id)
-VALUES (1, 2);
-INSERT IGNORE INTO user_role (user_id, role_id)
-VALUES (2, 2);
+VALUES (1, 2),
+       (2, 2);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (7, 'Gluten', 'Gluten');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (8,
+VALUES (7, 'Gluten', 'Gluten'),
+       (8,
         'Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.',
-        'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (9, 'Skorupiaki', 'Crustaceans');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (10, 'Skorupiaki i produkty pochodne.', 'Crustaceans and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (11, 'Jaja', 'Eggs');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (12, 'Jaja i produkty pochodne.', 'Eggs and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (13, 'Ryby', 'Fish');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (14, 'Ryby i produkty pochodne.', 'Fish and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (15, 'Orzeszki ziemne', 'Peanuts');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (16, 'Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'Peanuts and related products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (17, 'Soja', 'Soybeans');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (18, 'Soja i produkty pochodne.', 'Soybeans and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (19, 'Mleko', 'Milk');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (20, 'Mleko i produkty pochodne (łącznie z laktozą).', 'Milk and derived products (including lactose).');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (21, 'Orzechy', 'Nuts');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (22,
+        'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.'),
+       (9, 'Skorupiaki', 'Crustaceans'),
+       (10, 'Skorupiaki i produkty pochodne.', 'Crustaceans and derived products.'),
+       (11, 'Jaja', 'Eggs'),
+       (12, 'Jaja i produkty pochodne.', 'Eggs and derived products.'),
+       (13, 'Ryby', 'Fish'),
+       (14, 'Ryby i produkty pochodne.', 'Fish and derived products.'),
+       (15, 'Orzeszki ziemne', 'Peanuts'),
+       (16, 'Orzeszki ziemne (orzeszki arachidowe) i produkty pochodne.', 'Peanuts and related products.'),
+       (17, 'Soja', 'Soybeans'),
+       (18, 'Soja i produkty pochodne.', 'Soybeans and derived products.'),
+       (19, 'Mleko', 'Milk'),
+       (20, 'Mleko i produkty pochodne (łącznie z laktozą).', 'Milk and derived products (including lactose).'),
+       (21, 'Orzechy', 'Nuts'),
+       (22,
         'Orzechy, tj. migdały, orzechy laskowe, orzechy włoskie, orzechy nerkowca, orzechy pekan, orzechy brazylijskie, pistacje/orzech pistacjowy, orzechy makadamia i produkty pochodne.',
-        'Nuts, i.e. almonds, hazelnuts, walnuts, cashews, pecans, Brazil nuts, pistachios/pistachio nuts, macadamia nuts and related products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (23, 'Seler', 'Celery');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (24, 'Seler i produkty pochodne.', 'Celery amd derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (25, 'Gorczyca', 'Mustard');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (26, 'Gorczyca i produkty pochodne.', 'Mustard and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (27, 'Nasiona sezamu', 'Sesame');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (28, 'Nasiona sezamu i produkty pochodne.', 'Sesame and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (29, 'Dwutlenek siarki', 'Sulfur dioxide');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (30, 'Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.',
-        'Sulfur dioxide and sulphites in concentrations above 10 mg/kg or 10 mg/l expressed as SO2.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (31, 'Łubin', 'Lupin');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (32, 'Łubin i produkty pochodne.', 'Lupin and derived products.');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (33, 'Mięczaki', 'Molluscs');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (34, 'Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
+        'Nuts, i.e. almonds, hazelnuts, walnuts, cashews, pecans, Brazil nuts, pistachios/pistachio nuts, macadamia nuts and related products.'),
+       (23, 'Seler', 'Celery'),
+       (24, 'Seler i produkty pochodne.', 'Celery amd derived products.'),
+       (25, 'Gorczyca', 'Mustard'),
+       (26, 'Gorczyca i produkty pochodne.', 'Mustard and derived products.'),
+       (27, 'Nasiona sezamu', 'Sesame'),
+       (28, 'Nasiona sezamu i produkty pochodne.', 'Sesame and derived products.'),
+       (29, 'Dwutlenek siarki', 'Sulfur dioxide'),
+       (30, 'Dwutlenek siarki i siarczyny w stężeniach powyżej 10 mg/kg lub 10 mg/l w przeliczeniu na SO2.',
+        'Sulfur dioxide and sulphites in concentrations above 10 mg/kg or 10 mg/l expressed as SO2.'),
+       (31, 'Łubin', 'Lupin'),
+       (32, 'Łubin i produkty pochodne.', 'Lupin and derived products.'),
+       (33, 'Mięczaki', 'Molluscs'),
+       (34, 'Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
+
 
 INSERT IGNORE INTO allergens(id, restaurant_id, translatable_description_id, icon_name, translatable_name_id)
 VALUES (1, 1, 8, 'gluten.svg', 7),
@@ -147,17 +104,12 @@ VALUES (1, 1, 8, 'gluten.svg', 7),
        (14, 1, 34, 'molluscs.svg', 33);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (35, 'Bez glutenu', 'Gluten free');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (36, 'Wegańskie', 'Vegan');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (37, 'Wegetariańskie', 'Vegetarian');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (38, 'Kolendra', 'Coriander');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (39, 'Bez laktozy', 'Lactose free');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (40, 'Ostre', 'Spicy');
+VALUES (35, 'Bez glutenu', 'Gluten free'),
+       (36, 'Wegańskie', 'Vegan'),
+       (37, 'Wegetariańskie', 'Vegetarian'),
+       (38, 'Kolendra', 'Coriander'),
+       (39, 'Bez laktozy', 'Lactose free'),
+       (40, 'Ostre', 'Spicy');
 
 INSERT IGNORE INTO labels (id, restaurant_id, icon_name, translatable_name_id)
 VALUES (1, 1, 'gluten-free.svg', 35),
@@ -182,322 +134,133 @@ INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requ
 VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 999, 1, true, null, false, null);
 
 INSERT IGNORE INTO translatable(id, default_translation, translation_en)
-VALUES (41, 'Przystawki', 'Starters');
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
-VALUES (42, 'Makarony', 'Pastas');
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
-VALUES (43, 'Sałatki', 'Salads');
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
-VALUES (44, 'Zupy', 'Soups');
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
-VALUES (45, 'Pizza', 'Pizza');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (46, 'Wegetariańskie');
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
-VALUES (47, 'Dla dzieci', 'For kids');
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
-VALUES (48, 'Napoje', 'Drinks');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (49, 'Pusta');
+VALUES (41, 'Przystawki', 'Starters'),
+       (42, 'Makarony', 'Pastas'),
+       (43, 'Sałatki', 'Salads'),
+       (44, 'Zupy', 'Soups'),
+       (45, 'Pizza', 'Pizza'),
+       (46, 'Wegetariańskie', null),
+       (47, 'Dla dzieci', 'For kids'),
+       (48, 'Napoje', 'Drinks'),
+       (49, 'Pusta', null);
 
 INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (50, 'Krewetki marynowane w cytrynie');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (51, 'Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (52, 'Carpaccio z polędwicy wołowej');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (53, 'Cienko pokrojona polędwica wołowa podana z rukolą, parmezanem i kaparami.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (54, 'Krewetki w tempurze');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (55, 'Delikatne krewetki w cieście tempura, podawane z sosem słodko-kwaśnym');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (56, 'Roladki z bakłażana');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (57, 'Dostępne w różnych wariantach');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (58, 'Nachos z sosem serowym');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (59, 'Chrupiące nachos z sosem serowym, podane z guacamole i pikantnym sosem salsa.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (60, 'Spaghetti Bolognese');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (61, 'Długie spaghetti podane z aromatycznym sosem bolognese na bazie mięsa mielonego i pomidorów.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (62, 'Penne Carbonara');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (63, 'Penne z sosem carbonara na bazie jajek, boczku, sera parmezan i śmietanki.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (64, 'Lasagne warzywna');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (65, 'Warstwy makaronu lasagne przeplatane warzywami, beszamelem i sosem pomidorowym.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (66, 'Tagliatelle z łososiem i szpinakiem');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (67, 'Cienkie tagliatelle z kawałkami łososia i świeżym szpinakiem w sosie śmietanowym.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (68, 'Rigatoni z kurczakiem i brokułami');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (69, 'Rurki rigatoni z duszonym kurczakiem, brokułami i sosem śmietanowym.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (70, 'Sałatka grecka');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (71, 'Tradycyjna grecka sałatka z pomidorami, ogórkiem, cebulą, oliwkami, serem feta i sosem vinegrette.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (72, 'Sałatka z grillowanym kurczakiem i awokado');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (73, 'Sałatka z grillowanymi kawałkami kurczaka, awokado, pomidorami i orzechami.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (74, 'Sałatka z rukolą, serem kozim i suszonymi żurawinami');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (75, 'Świeża rukola z serem kozim, prażonymi orzechami włoskimi i suszonymi żurawinami.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (76, 'Sałatka z grillowanym ananasem i kurczakiem');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (77, 'Sałatka z soczystym grillowanym ananasem, kawałkami kurczaka i mieszanką sałat.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (78, 'Sałatka z quinoa i pieczonymi warzywami');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (79, 'Sałatka z quinoa, pieczonymi marchewkami, burakami i suszonymi pomidorami.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (80, 'Krem z pomidorów');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (81, 'Gładki krem z pomidorów z dodatkiem śmietany i świeżego bazylia.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (82, 'Rosołek z kury');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (83, 'Tradycyjny rosół z kury z makaronem, warzywami i natką pietruszki.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (84, 'Zupa krem z dyni');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (85, 'Kremowa zupa z dyni z nutą cynamonu i prażonymi pestkami dyni.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (86, 'Zupa pomidorowa z ryżem');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (87, 'Zupa pomidorowa z dodatkiem ryżu i świeżego kopru.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (88, 'Zupa krem z brokułów');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (89, 'Delikatny krem z zielonych brokułów podawany z grzankami.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (90, 'Pizza Margherita');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (91, 'Klasyka włoskiej kuchni - sos pomidorowy, mozzarella i świeża bazylia.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (92, 'Pizza Pepperoni');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (93, 'Pizza z pikantnym salami pepperoni, serem mozzarella i papryką.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (94, 'Pizza Capricciosa');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (95, 'Pizza z szynką, pieczarkami, karczochami i oliwkami.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (96, 'Pizza Hawajska');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (97, 'Pizza z szynką, ananasem i kukurydzą.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (98, 'Pizza Quattro Formaggi');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (99, 'Pizza z 4 rodzajami sera: mozzarella, gorgonzola, parmezan i camembert.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (100, 'Risotto z grzybami leśnymi');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (101, 'Klasyczne włoskie risotto z wybornymi grzybami leśnymi i parmezanem.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (102, 'Curry z ciecierzycą i szpinakiem');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (103, 'Aromatyczne curry z ciecierzycą, świeżym szpinakiem i mlekiem kokosowym.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (104, 'Naleśniki z serem i szpinakiem');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (105, 'Delikatne naleśniki nadziewane serem i szpinakiem, podane z sosem pomidorowym.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (106, 'Falafel w pitce z hummusem');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (107, 'Smakowite kulki falafel w cieście pita z sosem hummus i warzywami.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (108, 'Makaron z pesto bazyliowym');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (109, 'Makaron spaghetti z pysznym pesto bazyliowym, parmezanem i prażonymi orzechami.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (110, 'Kawa');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (111, 'Czarna sypana.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (112, 'Sok pomarańczowy');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (113, 'Świeżo wyciskany.');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (114, 'Coca-cola');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (115, '250ml');
+VALUES (50, 'Krewetki marynowane w cytrynie'),
+       (51, 'Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.'),
+       (52, 'Carpaccio z polędwicy wołowej'),
+       (53, 'Cienko pokrojona polędwica wołowa podana z rukolą, parmezanem i kaparami.'),
+       (54, 'Krewetki w tempurze'),
+       (55, 'Delikatne krewetki w cieście tempura, podawane z sosem słodko-kwaśnym'),
+       (56, 'Roladki z bakłażana'),
+       (57, 'Dostępne w różnych wariantach'),
+       (58, 'Nachos z sosem serowym'),
+       (59, 'Chrupiące nachos z sosem serowym, podane z guacamole i pikantnym sosem salsa.'),
+       (60, 'Spaghetti Bolognese'),
+       (61, 'Długie spaghetti podane z aromatycznym sosem bolognese na bazie mięsa mielonego i pomidorów.'),
+       (62, 'Penne Carbonara'),
+       (63, 'Penne z sosem carbonara na bazie jajek, boczku, sera parmezan i śmietanki.'),
+       (64, 'Lasagne warzywna'),
+       (65, 'Warstwy makaronu lasagne przeplatane warzywami, beszamelem i sosem pomidorowym.'),
+       (66, 'Tagliatelle z łososiem i szpinakiem'),
+       (67, 'Cienkie tagliatelle z kawałkami łososia i świeżym szpinakiem w sosie śmietanowym.'),
+       (68, 'Rigatoni z kurczakiem i brokułami'),
+       (69, 'Rurki rigatoni z duszonym kurczakiem, brokułami i sosem śmietanowym.'),
+       (70, 'Sałatka grecka'),
+       (71, 'Tradycyjna grecka sałatka z pomidorami, ogórkiem, cebulą, oliwkami, serem feta i sosem vinegrette.'),
+       (72, 'Sałatka z grillowanym kurczakiem i awokado'),
+       (73, 'Sałatka z grillowanymi kawałkami kurczaka, awokado, pomidorami i orzechami.'),
+       (74, 'Sałatka z rukolą, serem kozim i suszonymi żurawinami'),
+       (75, 'Świeża rukola z serem kozim, prażonymi orzechami włoskimi i suszonymi żurawinami.'),
+       (76, 'Sałatka z grillowanym ananasem i kurczakiem'),
+       (77, 'Sałatka z soczystym grillowanym ananasem, kawałkami kurczaka i mieszanką sałat.'),
+       (78, 'Sałatka z quinoa i pieczonymi warzywami'),
+       (79, 'Sałatka z quinoa, pieczonymi marchewkami, burakami i suszonymi pomidorami.'),
+       (80, 'Krem z pomidorów'),
+       (81, 'Gładki krem z pomidorów z dodatkiem śmietany i świeżego bazylia.'),
+       (82, 'Rosołek z kury'),
+       (83, 'Tradycyjny rosół z kury z makaronem, warzywami i natką pietruszki.'),
+       (84, 'Zupa krem z dyni'),
+       (85, 'Kremowa zupa z dyni z nutą cynamonu i prażonymi pestkami dyni.'),
+       (86, 'Zupa pomidorowa z ryżem'),
+       (87, 'Zupa pomidorowa z dodatkiem ryżu i świeżego kopru.'),
+       (88, 'Zupa krem z brokułów'),
+       (89, 'Delikatny krem z zielonych brokułów podawany z grzankami.'),
+       (90, 'Pizza Margherita'),
+       (91, 'Klasyka włoskiej kuchni - sos pomidorowy, mozzarella i świeża bazylia.'),
+       (92, 'Pizza Pepperoni'),
+       (93, 'Pizza z pikantnym salami pepperoni, serem mozzarella i papryką.'),
+       (94, 'Pizza Capricciosa'),
+       (95, 'Pizza z szynką, pieczarkami, karczochami i oliwkami.'),
+       (96, 'Pizza Hawajska'),
+       (97, 'Pizza z szynką, ananasem i kukurydzą.'),
+       (98, 'Pizza Quattro Formaggi'),
+       (99, 'Pizza z 4 rodzajami sera: mozzarella, gorgonzola, parmezan i camembert.'),
+       (100, 'Risotto z grzybami leśnymi'),
+       (101, 'Klasyczne włoskie risotto z wybornymi grzybami leśnymi i parmezanem.'),
+       (102, 'Curry z ciecierzycą i szpinakiem'),
+       (103, 'Aromatyczne curry z ciecierzycą, świeżym szpinakiem i mlekiem kokosowym.'),
+       (104, 'Naleśniki z serem i szpinakiem'),
+       (105, 'Delikatne naleśniki nadziewane serem i szpinakiem, podane z sosem pomidorowym.'),
+       (106, 'Falafel w pitce z hummusem'),
+       (107, 'Smakowite kulki falafel w cieście pita z sosem hummus i warzywami.'),
+       (108, 'Makaron z pesto bazyliowym'),
+       (109, 'Makaron spaghetti z pysznym pesto bazyliowym, parmezanem i prażonymi orzechami.'),
+       (110, 'Kawa'),
+       (111, 'Czarna sypana.'),
+       (112, 'Sok pomarańczowy'),
+       (113, 'Świeżo wyciskany.'),
+       (114, 'Coca-cola'),
+       (115, '250ml');
+
 
 INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
                                display_order)
-VALUES (1, 1, 41, true, NOW(), null, false, 1);
-INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
-                               display_order)
-VALUES (2, 1, 42, true, NOW(), null, false, 2);
-INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
-                               display_order)
-VALUES (3, 1, 43, true, NOW(), null, false, 3);
-INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
-                               display_order)
-VALUES (4, 1, 44, true, NOW(), null, false, 4);
-INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
-                               display_order)
-VALUES (5, 1, 45, true, NOW(), null, false, 5);
-INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
-                               display_order)
-VALUES (6, 1, 46, true, NOW(), null, false, 6);
-INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
-                               display_order)
-VALUES (7, 1, 47, true, NOW(), null, false, 7);
-INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
-                               display_order)
-VALUES (8, 1, 48, true, NOW(), null, true, 8);
-INSERT IGNORE INTO categories (id, menu_id, translatable_name_id, available, created, updated, bar_served,
-                               display_order)
-VALUES (9, 1, 49, true, NOW(), null, false, 9);
+VALUES (1, 1, 41, true, NOW(), null, false, 1),
+       (2, 1, 42, true, NOW(), null, false, 2),
+       (3, 1, 43, true, NOW(), null, false, 3),
+       (4, 1, 44, true, NOW(), null, false, 4),
+       (5, 1, 45, true, NOW(), null, false, 5),
+       (6, 1, 46, true, NOW(), null, false, 6),
+       (7, 1, 47, true, NOW(), null, false, 7),
+       (8, 1, 48, true, NOW(), null, true, 8),
+       (9, 1, 49, true, NOW(), null, false, 9);
 
 INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
                                available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (1, 50, 1, 51, null, null, true, true, 19.99, 0, false, 1);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (2, 52, 2, 53, null, null, true, true, 24.50, 0, false, 1);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (3, 54, 3, 55, null, null, true, true, 22.00, 0, false, 1);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (4, 56, 4, 57, null, null, true, true, 18.75, 0, false, 1);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (5, 58, 5, 59, null, null, true, true, 16.99, 0, false, 1);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (6, 60, 1, 61, null, null, true, true, 24.00, 0, false, 2);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (7, 62, 2, 63, null, null, true, true, 22.50, 0, false, 2);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (8, 64, 3, 65, null, null, true, true, 23.25, 0, false, 2);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (9, 66, 4, 67, null, null, true, true, 26.50, 0, false, 2);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (10, 68, 5, 69, null, null, true, true, 21.75, 0, false, 2);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (11, 70, 1, 71, null, null, true, true, 18.50, 0, false, 3);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (12, 72, 2, 73, null, null, true, true, 20.75, 0, false, 3);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (13, 74, 3, 75, null, null, true, true, 22.00, 0, false, 3);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (14, 76, 4, 77, null, null, true, true, 21.50, 0, false, 3);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (15, 78, 5, 79, null, null, true, true, 23.75, 0, false, 3);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (16, 80, 1, 81, null, null, true, true, 15.50, 0, false, 4);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (17, 82, 2, 83, null, null, true, true, 16.25, 0, false, 4);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (18, 84, 3, 85, null, null, true, true, 17.50, 0, false, 4);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (19, 86, 4, 87, null, null, true, true, 15.75, 0, false, 4);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (20, 88, 5, 89, null, null, true, true, 18.00, 0, false, 4);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id,
-                               image_name)
-VALUES (21, 90, 1, 91, null, null, true, true, 26.00, 0, false, 5, 'pizza1.jpg');
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id,
-                               image_name)
-VALUES (22, 92, 2, 93, null, null, true, true, 28.50, 0, false, 5, 'pizza2.jpg');
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id,
-                               image_name)
-VALUES (23, 94, 3, 95, null, null, true, true, 30.25, 0, false, 5, 'pizza3.jpg');
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id,
-                               image_name)
-VALUES (24, 96, 4, 97, null, null, true, true, 27.75, 0, false, 5, 'pizza4.jpg');
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id,
-                               image_name)
-VALUES (25, 98, 5, 99, null, null, true, true, 29.00, 0, false, 5, 'pizza5.jpg');
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (26, 100, 1, 101, null, null, true, true, 24.50, 0, false, 6);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (27, 102, 2, 103, null, null, true, true, 22.75, 0, false, 6);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (28, 104, 3, 105, null, null, true, true, 20.00, 0, false, 6);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (29, 106, 4, 107, null, null, true, true, 21.25, 0, false, 6);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (30, 108, 5, 109, null, null, true, true, 23.00, 0, false, 6);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (31, 110, 1, 111, null, null, true, true, 9.00, 0, true, 8);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (32, 112, 2, 113, null, null, true, true, 7.00, 0, true, 8);
-INSERT IGNORE INTO menu_items (id, translatable_name_id, display_order, translatable_description_id, created, updated,
-                               available, visible, price, counter, bar_served,
-                               category_id)
-VALUES (33, 114, 3, 115, null, null, true, true, 7.00, 0, true, 8);
+                               category_id, image_name)
+VALUES (1, 50, 1, 51, null, null, true, true, 19.99, 0, false, 1, null),
+       (2, 52, 2, 53, null, null, true, true, 24.50, 0, false, 1, null),
+       (3, 54, 3, 55, null, null, true, true, 22.00, 0, false, 1, null),
+       (4, 56, 4, 57, null, null, true, true, 18.75, 0, false, 1, null),
+       (5, 58, 5, 59, null, null, true, true, 16.99, 0, false, 1, null),
+       (6, 60, 1, 61, null, null, true, true, 24.00, 0, false, 2, null),
+       (7, 62, 2, 63, null, null, true, true, 22.50, 0, false, 2, null),
+       (8, 64, 3, 65, null, null, true, true, 23.25, 0, false, 2, null),
+       (9, 66, 4, 67, null, null, true, true, 26.50, 0, false, 2, null),
+       (10, 68, 5, 69, null, null, true, true, 21.75, 0, false, 2, null),
+       (11, 70, 1, 71, null, null, true, true, 18.50, 0, false, 3, null),
+       (12, 72, 2, 73, null, null, true, true, 20.75, 0, false, 3, null),
+       (13, 74, 3, 75, null, null, true, true, 22.00, 0, false, 3, null),
+       (14, 76, 4, 77, null, null, true, true, 21.50, 0, false, 3, null),
+       (15, 78, 5, 79, null, null, true, true, 23.75, 0, false, 3, null),
+       (16, 80, 1, 81, null, null, true, true, 15.50, 0, false, 4, null),
+       (17, 82, 2, 83, null, null, true, true, 16.25, 0, false, 4, null),
+       (18, 84, 3, 85, null, null, true, true, 17.50, 0, false, 4, null),
+       (19, 86, 4, 87, null, null, true, true, 15.75, 0, false, 4, null),
+       (20, 88, 5, 89, null, null, true, true, 18.00, 0, false, 4, null),
+       (21, 90, 1, 91, null, null, true, true, 26.00, 0, false, 5, 'pizza1.jpg'),
+       (22, 92, 2, 93, null, null, true, true, 28.50, 0, false, 5, 'pizza2.jpg'),
+       (23, 94, 3, 95, null, null, true, true, 30.25, 0, false, 5, 'pizza3.jpg'),
+       (24, 96, 4, 97, null, null, true, true, 27.75, 0, false, 5, 'pizza4.jpg'),
+       (25, 98, 5, 99, null, null, true, true, 29.00, 0, false, 5, 'pizza5.jpg'),
+       (26, 100, 1, 101, null, null, true, true, 24.50, 0, false, 6, null),
+       (27, 102, 2, 103, null, null, true, true, 22.75, 0, false, 6, null),
+       (28, 104, 3, 105, null, null, true, true, 20.00, 0, false, 6, null),
+       (29, 106, 4, 107, null, null, true, true, 21.25, 0, false, 6, null),
+       (30, 108, 5, 109, null, null, true, true, 23.00, 0, false, 6, null),
+       (31, 110, 1, 111, null, null, true, true, 9.00, 0, true, 8, null),
+       (32, 112, 2, 113, null, null, true, true, 7.00, 0, true, 8, null),
+       (33, 114, 3, 115, null, null, true, true, 7.00, 0, true, 8, null);
 
 INSERT IGNORE INTO menu_items_allergens (menu_item_id, allergens_id)
 VALUES (1, 2),
@@ -545,199 +308,101 @@ VALUES (1, 1),
        (10, 5);
 
 INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (116, 'Z szpinakiem');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (117, 'Z konfiturą cebulową');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (118, 'Mała');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (119, 'Średnia');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (120, 'Duża');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (121, 'Mała');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (122, 'Średnia');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (123, 'Duża');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (124, 'Mała');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (125, 'Średnia');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (126, 'Duża');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (127, 'Mała');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (128, 'Średnia');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (129, 'Duża');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (130, 'Mała');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (131, 'Średnia');
-INSERT IGNORE INTO translatable(id, default_translation)
-VALUES (132, 'Duża');
+VALUES (116, 'Z szpinakiem'),
+       (117, 'Z konfiturą cebulową'),
+       (118, 'Mała'),
+       (119, 'Średnia'),
+       (120, 'Duża'),
+       (121, 'Mała'),
+       (122, 'Średnia'),
+       (123, 'Duża'),
+       (124, 'Mała'),
+       (125, 'Średnia'),
+       (126, 'Duża'),
+       (127, 'Mała'),
+       (128, 'Średnia'),
+       (129, 'Duża'),
+       (130, 'Mała'),
+       (131, 'Średnia'),
+       (132, 'Duża');
 
 INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
                             menu_item_id, display_order)
-VALUES (1, NOW(), true, true, 116, '0.00', null, 4, 1);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (2, NOW(), true, false, 117, '4.00', null, 4, 2);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (3, NOW(), true, true, 118, '0.00', null, 21, 1);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (4, NOW(), true, false, 119, '5.00', null, 21, 2);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (5, NOW(), true, false, 120, '10.00', null, 21, 3);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (6, NOW(), true, true, 121, '0.00', null, 22, 1);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (7, NOW(), true, false, 122, '5.00', null, 22, 2);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (8, NOW(), true, false, 123, '10.00', null, 22, 3);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (9, NOW(), true, true, 124, '0.00', null, 23, 1);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (10, NOW(), true, false, 125, '5.00', null, 23, 2);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (11, NOW(), true, false, 126, '10.00', null, 23, 3);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (12, NOW(), true, true, 127, '0.00', null, 24, 1);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (13, NOW(), true, false, 128, '5.00', null, 24, 2);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (14, NOW(), true, false, 129, '10.00', null, 24, 3);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (15, NOW(), true, true, 130, '0.00', null, 25, 1);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (16, NOW(), true, false, 131, '5.00', null, 25, 2);
-INSERT IGNORE INTO variants(id, created, available, default_variant, translatable_name_id, price, updated,
-                            menu_item_id, display_order)
-VALUES (17, NOW(), true, false, 132, '10.00', null, 25, 3);
+VALUES (1, NOW(), true, true, 116, '0.00', null, 4, 1),
+       (2, NOW(), true, false, 117, '4.00', null, 4, 2),
+       (3, NOW(), true, true, 118, '0.00', null, 21, 1),
+       (4, NOW(), true, false, 119, '5.00', null, 21, 2),
+       (5, NOW(), true, false, 120, '10.00', null, 21, 3),
+       (6, NOW(), true, true, 121, '0.00', null, 22, 1),
+       (7, NOW(), true, false, 122, '5.00', null, 22, 2),
+       (8, NOW(), true, false, 123, '10.00', null, 22, 3),
+       (9, NOW(), true, true, 124, '0.00', null, 23, 1),
+       (10, NOW(), true, false, 125, '5.00', null, 23, 2),
+       (11, NOW(), true, false, 126, '10.00', null, 23, 3),
+       (12, NOW(), true, true, 127, '0.00', null, 24, 1),
+       (13, NOW(), true, false, 128, '5.00', null, 24, 2),
+       (14, NOW(), true, false, 129, '10.00', null, 24, 3),
+       (15, NOW(), true, true, 130, '0.00', null, 25, 1),
+       (16, NOW(), true, false, 131, '5.00', null, 25, 2),
+       (17, NOW(), true, false, 132, '10.00', null, 25, 3);
+
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (133, 'Pomidory', 'Tomatoes');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (134, 'Cebula', 'Onion');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (135, 'Czosnek', 'Garlic');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (136, 'Oliwa z oliwek', 'Olive oil');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (137, 'Bazylia', 'Basil');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (138, 'Mozzarella', 'Mozzarella');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (139, 'Makaron penne', 'Pasta penne');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (140, 'Mięso mielone', 'Minced meat');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (141, 'Papryka', 'Bell pepper');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (142, 'Ser parmezan', 'Parmesan cheese');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (144, 'Oregano', 'Oregano');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (145, 'Sól', 'Salt');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (146, 'Pieprz', 'Pepper');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (147, 'Kiełbasa', 'Sausage');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (148, 'Makaron spaghetti', 'Spaghetti pasta');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (149, 'Kurczak', 'Chicken');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (150, 'Szpinak', 'Spinach');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (151, 'Kapusta', 'Cabbage');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (152, 'Masło', 'Butter');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (153, 'Marchew', 'Carrot');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (154, 'Sos pomidorowy', 'Tomato sauce');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (155, 'Cukier', 'Sugar');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (156, 'Cukinia', 'Zucchini');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (157, 'Pietruszka', 'Parsley');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (158, 'Koper', 'Dill');
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
-VALUES (159, 'Ser biały', 'White cheese');
+VALUES (133, 'Pomidory', 'Tomatoes'),
+       (134, 'Cebula', 'Onion'),
+       (135, 'Czosnek', 'Garlic'),
+       (136, 'Oliwa z oliwek', 'Olive oil'),
+       (137, 'Bazylia', 'Basil'),
+       (138, 'Mozzarella', 'Mozzarella'),
+       (139, 'Makaron penne', 'Pasta penne'),
+       (140, 'Mięso mielone', 'Minced meat'),
+       (141, 'Papryka', 'Bell pepper'),
+       (142, 'Ser parmezan', 'Parmesan cheese'),
+       (144, 'Oregano', 'Oregano'),
+       (145, 'Sól', 'Salt'),
+       (146, 'Pieprz', 'Pepper'),
+       (147, 'Kiełbasa', 'Sausage'),
+       (148, 'Makaron spaghetti', 'Spaghetti pasta'),
+       (149, 'Kurczak', 'Chicken'),
+       (150, 'Szpinak', 'Spinach'),
+       (151, 'Kapusta', 'Cabbage'),
+       (152, 'Masło', 'Butter'),
+       (153, 'Marchew', 'Carrot'),
+       (154, 'Sos pomidorowy', 'Tomato sauce'),
+       (155, 'Cukier', 'Sugar'),
+       (156, 'Cukinia', 'Zucchini'),
+       (157, 'Pietruszka', 'Parsley'),
+       (158, 'Koper', 'Dill'),
+       (159, 'Ser biały', 'White cheese');
 
 INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (1, 1, '2024-03-30', 1, 133, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (2, 1, '2024-03-30', 1, 134, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (3, 1, '2024-03-30', 1, 135, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (4, 1, '2024-03-30', 1, 136, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (5, 1, '2024-03-30', 1, 137, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (6, 1, '2024-03-30', 1, 138, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (7, 1, '2024-03-30', 1, 139, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (8, 1, '2024-03-30', 1, 140, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (9, 1, '2024-03-30', 1, 141, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (10, 1, '2024-03-30', 1, 142, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (11, 1, '2024-03-30', 1, 143, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (12, 1, '2024-03-30', 1, 144, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (13, 1, '2024-03-30', 1, 145, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (14, 1, '2024-03-30', 1, 146, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (15, 1, '2024-03-30', 1, 147, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (16, 1, '2024-03-30', 1, 148, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (17, 1, '2024-03-30', 1, 149, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (18, 1, '2024-03-30', 1, 150, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (19, 1, '2024-03-30', 1, 151, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (20, 1, '2024-03-30', 1, 152, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (21, 1, '2024-03-30', 1, 153, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (22, 1, '2024-03-30', 1, 154, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (23, 1, '2024-03-30', 1, 155, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (24, 1, '2024-03-30', 1, 156, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (25, 1, '2024-03-30', 1, 157, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00');
-INSERT IGNORE INTO ingredients(id, restaurant_id, created, available, translatable_name_id, updated, price)
-VALUES (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');
+VALUES (1, 1, '2024-03-30', 1, 133, '2024-03-30', '4.00'),
+       (2, 1, '2024-03-30', 1, 134, '2024-03-30', '4.00'),
+       (3, 1, '2024-03-30', 1, 135, '2024-03-30', '4.00'),
+       (4, 1, '2024-03-30', 1, 136, '2024-03-30', '4.00'),
+       (5, 1, '2024-03-30', 1, 137, '2024-03-30', '4.00'),
+       (6, 1, '2024-03-30', 1, 138, '2024-03-30', '4.00'),
+       (7, 1, '2024-03-30', 1, 139, '2024-03-30', '4.00'),
+       (8, 1, '2024-03-30', 1, 140, '2024-03-30', '4.00'),
+       (9, 1, '2024-03-30', 1, 141, '2024-03-30', '4.00'),
+       (10, 1, '2024-03-30', 1, 142, '2024-03-30', '4.00'),
+       (11, 1, '2024-03-30', 1, 143, '2024-03-30', '4.00'),
+       (12, 1, '2024-03-30', 1, 144, '2024-03-30', '4.00'),
+       (13, 1, '2024-03-30', 1, 145, '2024-03-30', '4.00'),
+       (14, 1, '2024-03-30', 1, 146, '2024-03-30', '4.00'),
+       (15, 1, '2024-03-30', 1, 147, '2024-03-30', '4.00'),
+       (16, 1, '2024-03-30', 1, 148, '2024-03-30', '4.00'),
+       (17, 1, '2024-03-30', 1, 149, '2024-03-30', '4.00'),
+       (18, 1, '2024-03-30', 1, 150, '2024-03-30', '4.00'),
+       (19, 1, '2024-03-30', 1, 151, '2024-03-30', '4.00'),
+       (20, 1, '2024-03-30', 1, 152, '2024-03-30', '4.00'),
+       (21, 1, '2024-03-30', 1, 153, '2024-03-30', '4.00'),
+       (22, 1, '2024-03-30', 1, 154, '2024-03-30', '4.00'),
+       (23, 1, '2024-03-30', 1, 155, '2024-03-30', '4.00'),
+       (24, 1, '2024-03-30', 1, 156, '2024-03-30', '4.00'),
+       (25, 1, '2024-03-30', 1, 157, '2024-03-30', '4.00'),
+       (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00'),
+       (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');
 
 INSERT IGNORE INTO translatable(id, default_translation, translation_en)
 VALUES (160, 'Nowość', 'New'),
