@@ -17,7 +17,7 @@ public record VariantDTO(Long id,
                          TranslatableDTO name,
 
                          @NotNull
-                         Long menuItemId,
+                         MenuItemSimpleDTO menuItem,
 
                          @DecimalMin(value = "0.00")
                          BigDecimal price,
