@@ -1,11 +1,9 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.MenuDeepCopyMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
-import com.hackybear.hungry_scan_core.entity.Menu;
-import com.hackybear.hungry_scan_core.entity.Restaurant;
-import com.hackybear.hungry_scan_core.entity.Settings;
-import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
@@ -39,6 +37,7 @@ public class MenuServiceImp implements MenuService {
     private final SettingsRepository settingsRepository;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
+    private final MenuDeepCopyMapper menuDeepCopyMapper;
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -135,6 +134,35 @@ public class MenuServiceImp implements MenuService {
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.menuService.menuNotFound"));
         currentUser.setActiveMenuId(standardId);
         menuRepository.delete(existingMenu);
+        userRepository.save(currentUser);
+    }
+
+    @Transactional
+    @Override
+    @Caching(evict = {
+            @CacheEvict(value = MENUS_ALL, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = MENU_ID, key = "#currentUser.getActiveMenuId()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
+    })
+    public void duplicate(User currentUser) throws LocalizedException {
+        Menu src = menuRepository.findByIdWithAllGraph(currentUser.getActiveMenuId())
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.menuService.menuNotFound"));
+
+        Menu copy = menuDeepCopyMapper.duplicateMenu(src);
+        copy.setRestaurant(src.getRestaurant());
+        copy.setName(src.getName());
+
+        for (Category cat : copy.getCategories()) {
+            cat.setMenu(copy);
+            for (MenuItem item : cat.getMenuItems()) {
+                item.setCategory(cat);
+                for (Variant v : item.getVariants()) {
+                    v.setMenuItem(item);
+                }
+            }
+        }
+        copy = menuRepository.save(copy);
+        currentUser.setActiveMenuId(copy.getId());
         userRepository.save(currentUser);
     }
 

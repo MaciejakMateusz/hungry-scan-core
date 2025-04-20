@@ -23,4 +23,6 @@ public interface MenuService {
     void switchStandard(Long newId, Long activeRestaurantId);
 
     void delete(User user) throws LocalizedException, AuthenticationException;
+
+    void duplicate(User currentUser) throws LocalizedException;
 }
