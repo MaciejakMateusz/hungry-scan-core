@@ -87,6 +87,17 @@ public class MenuController {
         }
     }
 
+    @PatchMapping("/duplicate")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    public ResponseEntity<?> duplicate() {
+        try {
+            User currentUser = userService.getCurrentUser();
+            return responseHelper.buildResponse(currentUser, menuService::duplicate);
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
