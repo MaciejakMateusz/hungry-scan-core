@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.annotation.validator;
 
 import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -57,7 +58,7 @@ public class LimitTranslationsLengthValidatorTest extends ValidatorTestBase {
         Translatable translatable = new Translatable();
         translatable.setDefaultTranslation(translation);
         Category category = new Category();
-        category.setMenuId(1L);
+        category.setMenu(new Menu());
         category.setName(translatable);
         category.setDisplayOrder(1);
         return category;
@@ -68,7 +69,7 @@ public class LimitTranslationsLengthValidatorTest extends ValidatorTestBase {
         translatable.setDefaultTranslation("Default");
         translatable.setTranslationEn(translation);
         Category category = new Category();
-        category.setMenuId(1L);
+        category.setMenu(new Menu());
         category.setName(translatable);
         category.setDisplayOrder(1);
         return category;

@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.dto.mapper.CategoryMapper;
 import com.hackybear.hungry_scan_core.entity.Category;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
+import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +51,8 @@ class CategoryControllerTest {
 
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private MenuRepository menuRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -71,7 +74,7 @@ class CategoryControllerTest {
         assertEquals("Przystawki", categories.getFirst().name().defaultTranslation());
         assertEquals("Napoje", categories.get(7).name().defaultTranslation());
         assertEquals(5, menuItems.size());
-        assertEquals(4, menuItems.getFirst().categoryId());
+        assertEquals(4, menuItems.getFirst().category().id());
     }
 
     @Test
@@ -376,8 +379,8 @@ class CategoryControllerTest {
         assertEquals("Przystawki", existingCategory.name().defaultTranslation());
 
         Category category = categoryMapper.toCategory(existingCategory);
-        category.setMenuId(1L);
-        category.setMenuItems(new TreeSet<>());
+        category.setMenu(menuRepository.findById(1L).orElseThrow());
+        category.setMenuItems(new HashSet<>());
         categoryRepository.saveAndFlush(category);
 
         apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 1);

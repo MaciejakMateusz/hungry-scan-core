@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
@@ -49,6 +50,9 @@ public class MenuItemServiceImpTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Test
     @Order(1)
@@ -192,7 +196,7 @@ public class MenuItemServiceImpTest {
         menuItem.setPrice(Money.of(42.50));
         menuItem.setImageName(imageName);
         menuItem.setDisplayOrder(6);
-        menuItem.setCategoryId(2L);
+        menuItem.setCategory(categoryRepository.findById(2L).orElseThrow());
         return menuItem;
     }
 

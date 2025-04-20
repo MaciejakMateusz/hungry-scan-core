@@ -3,26 +3,22 @@ package com.hackybear.hungry_scan_core.test_utils;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.repository.AllergenRepository;
+import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.IngredientRepository;
 import com.hackybear.hungry_scan_core.repository.LabelRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
 @Component
+@RequiredArgsConstructor
 public class MenuItemFactory {
 
     private final AllergenRepository allergenRepository;
     private final LabelRepository labelRepository;
     private final IngredientRepository ingredientRepository;
-
-    public MenuItemFactory(AllergenRepository allergenRepository,
-                           LabelRepository labelRepository,
-                           IngredientRepository ingredientRepository) {
-        this.allergenRepository = allergenRepository;
-        this.labelRepository = labelRepository;
-        this.ingredientRepository = ingredientRepository;
-    }
+    private final CategoryRepository categoryRepository;
 
     public MenuItem createMenuItem(String name,
                                    String description,
@@ -31,7 +27,7 @@ public class MenuItemFactory {
         MenuItem menuItem = new MenuItem();
         menuItem.setName(getDefaultTranslation(name));
         menuItem.setDescription(getDefaultTranslation(description));
-        menuItem.setCategoryId(categoryId);
+        menuItem.setCategory(categoryRepository.findById(categoryId).orElseThrow());
         menuItem.setPrice(price);
         menuItem.setAvailable(true);
         menuItem.setImageName("/public/assets/sample.png");

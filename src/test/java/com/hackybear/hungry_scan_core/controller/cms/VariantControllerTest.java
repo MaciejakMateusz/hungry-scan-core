@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.dto.VariantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.VariantMapper;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.entity.Variant;
+import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.utility.Money;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,8 @@ class VariantControllerTest {
 
     @Autowired
     private VariantMapper variantMapper;
+    @Autowired
+    private MenuItemRepository menuItemRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -335,7 +338,7 @@ class VariantControllerTest {
                                   String name,
                                   BigDecimal price) {
         Variant variant = new Variant();
-        variant.setMenuItemId(menuItemId);
+        variant.setMenuItem(menuItemRepository.findById(menuItemId).orElseThrow());
         variant.setName(getDefaultTranslation(name));
         variant.setPrice(price);
         variant.setAvailable(true);

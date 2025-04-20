@@ -607,6 +607,23 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Sends a PATCH HTTP request to the specified endpoint URL.
+     * Expects a certain result based on the provided ResultMatcher.
+     *
+     * @param endpointUrl The URL endpoint to send the PATCH request to.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T> void patchAndExpect(String endpointUrl,
+                                   ResultMatcher matcher) throws Exception {
+
+        mockMvc.perform(patch(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(matcher)
+                .andDo(print());
+    }
+
+    /**
      * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      *
@@ -842,6 +859,16 @@ public class ApiRequestUtils {
      */
     public <T> void patchAndExpect200(String url, T t) throws Exception {
         patchAndExpect(url, t, status().isOk());
+    }
+
+    /**
+     * Performs a PATCH request to the specified URL and expects a successful (200) response.
+     *
+     * @param url The URL to which the PATCH request will be sent.
+     * @throws Exception If an error occurs during the request.
+     */
+    public void patchAndExpect200(String url) throws Exception {
+        patchAndExpect(url, status().isOk());
     }
 
     /**

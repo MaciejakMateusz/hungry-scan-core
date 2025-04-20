@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.CategoryDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.CategoryMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
 import com.hackybear.hungry_scan_core.entity.Banner;
 import com.hackybear.hungry_scan_core.entity.Category;
@@ -57,7 +58,11 @@ class MenuItemControllerTest {
     private MenuItemMapper menuItemMapper;
 
     @Autowired
+    private CategoryMapper categoryMapper;
+
+    @Autowired
     private MenuItemRepository menuItemRepository;
+
     @Autowired
     private BannerRepository bannerRepository;
 
@@ -199,9 +204,9 @@ class MenuItemControllerTest {
         assertEquals(5, newCategory.menuItems().size());
 
         MenuItemFormDTO existingMenuItemDTO = fetchMenuItemFormDTO(23L);
-        assertEquals(existingMenuItemDTO.categoryId(), oldCategory.id());
+        assertEquals(existingMenuItemDTO.category().id(), oldCategory.id());
         MenuItem existingMenuItem = menuItemMapper.toMenuItem(existingMenuItemDTO);
-        existingMenuItem.setCategoryId(newCategory.id());
+        existingMenuItem.setCategory(categoryMapper.toCategory(newCategory));
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(existingMenuItem);
 
         //WHEN
@@ -222,7 +227,7 @@ class MenuItemControllerTest {
         assertEquals(4, updatedNewItems.get(3).displayOrder());
         assertEquals(5, updatedNewItems.get(4).displayOrder());
         assertEquals(6, updatedNewItems.get(5).displayOrder());
-        assertEquals(1L, updatedMenuItem.categoryId());
+        assertEquals(1L, updatedMenuItem.category().id());
         boolean isUpdatedMenuItemPresent = updatedNewItems
                 .stream()
                 .anyMatch(menuItem -> Objects.equals(menuItem.id(), updatedMenuItem.id()));
