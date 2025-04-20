@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
@@ -26,8 +27,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode
+@ToString(exclude = {"menuItem"})
 @Table(name = "variants")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
@@ -35,6 +35,7 @@ public class Variant implements Comparable<Variant>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Serial
@@ -46,8 +47,10 @@ public class Variant implements Comparable<Variant>, Serializable {
     @LimitTranslationsLength
     private Translatable name;
 
-    @NotNull
-    private Long menuItemId;
+    @ManyToOne
+    @JoinColumn(name = "menu_item_id", nullable = false)
+    @JsonIgnore
+    private MenuItem menuItem;
 
     @DecimalMin(value = "0.00")
     private BigDecimal price = Money.of(0.00);
@@ -75,5 +78,18 @@ public class Variant implements Comparable<Variant>, Serializable {
     @Override
     public int compareTo(Variant other) {
         return this.displayOrder.compareTo(other.displayOrder);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Variant that)) return false;
+        if (this.id == null || that.id == null) return false;
+        return this.id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return (id != null ? id.hashCode() : System.identityHashCode(this));
     }
 }

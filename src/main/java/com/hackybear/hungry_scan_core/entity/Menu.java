@@ -18,9 +18,9 @@ import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Getter
 @Setter
@@ -47,9 +47,9 @@ public class Menu implements Serializable, Comparable<Menu> {
     @JsonIgnore
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "menuId")
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("displayOrder ASC")
-    private Set<Category> categories = new TreeSet<>();
+    private Set<Category> categories = new HashSet<>();
 
     @ElementCollection
     @Enumerated(EnumType.STRING)

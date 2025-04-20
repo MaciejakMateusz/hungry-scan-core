@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
@@ -16,13 +17,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Table(name = "categories")
 @Entity
@@ -30,13 +30,16 @@ public class Category implements Comparable<Category>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotNull
-    private Long menuId;
+    @ManyToOne
+    @JoinColumn(name = "menu_id", nullable = false)
+    @JsonIgnore
+    private Menu menu;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
@@ -45,9 +48,9 @@ public class Category implements Comparable<Category>, Serializable {
     @NotNull
     private Translatable name;
 
-    @OneToMany(mappedBy = "categoryId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("displayOrder ASC")
-    private Set<MenuItem> menuItems = new TreeSet<>();
+    private Set<MenuItem> menuItems = new HashSet<>();
 
     private boolean available = true;
 
@@ -81,9 +84,21 @@ public class Category implements Comparable<Category>, Serializable {
         menuItems.removeIf(item -> Objects.equals(item.getId(), menuItem.getId()));
     }
 
-    @Override
     public int compareTo(Category other) {
         return this.displayOrder.compareTo(other.displayOrder);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Category that)) return false;
+        if (this.id == null || that.id == null) return false;
+        return this.id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return (id != null ? id.hashCode() : System.identityHashCode(this));
     }
 
 }

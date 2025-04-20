@@ -29,7 +29,6 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Table(name = "menu_items")
 @Entity
@@ -37,6 +36,7 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Serial
@@ -56,8 +56,10 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     @LimitTranslationsLength
     private Translatable description;
 
-    @NotNull
-    private Long categoryId;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnore
+    private Category category;
 
     @Column(nullable = false)
     @DecimalMin(value = "1")
@@ -86,8 +88,7 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     @JsonIgnore
     private Set<Ingredient> additionalIngredients = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.MERGE)
-    @JsonIgnore
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Variant> variants = new HashSet<>();
 
     @NotNull
@@ -133,9 +134,21 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
         this.variants.remove(variant);
     }
 
-    @Override
     public int compareTo(MenuItem other) {
         return this.displayOrder.compareTo(other.displayOrder);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MenuItem that)) return false;
+        if (this.id == null || that.id == null) return false;
+        return this.id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return (id != null ? id.hashCode() : System.identityHashCode(this));
     }
 
 }
