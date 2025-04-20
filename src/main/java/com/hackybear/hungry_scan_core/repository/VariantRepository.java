@@ -19,7 +19,7 @@ public interface VariantRepository extends JpaRepository<Variant, Long> {
     @Query("UPDATE Variant v SET v.displayOrder = :displayOrder WHERE v.id = :variantId")
     void updateDisplayOrders(@Param("variantId") Long variantId, @Param("displayOrder") Integer displayOrder);
 
-    @Query("SELECT MAX(v.displayOrder) FROM Variant v WHERE v.menuItemId = :menuItemId")
+    @Query("SELECT MAX(v.displayOrder) FROM Variant v WHERE v.menuItem.id = :menuItemId")
     Optional<Integer> findMaxDisplayOrderByMenuItemId(@Param("menuItemId") Long menuItemId);
 
 }

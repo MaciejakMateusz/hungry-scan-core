@@ -20,6 +20,15 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.plan WHERE m.id = :id")
     Optional<Menu> findById(@NonNull @Param("id") Long id);
 
+    @Query("""
+            SELECT m
+            FROM Menu m
+            LEFT JOIN FETCH m.categories c
+            LEFT JOIN FETCH c.menuItems mi
+            WHERE m.id = :id
+            """)
+    Optional<Menu> findByIdWithAllGraph(@Param("id") Long id);
+
     Set<Menu> findAllByRestaurantId(Long restaurantId);
 
     @Query(value = """
@@ -48,4 +57,5 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     @Query("SELECT m.id FROM Menu m WHERE m.standard = true AND m.restaurant.id = :restaurantId")
     Optional<Long> findStandardIdByRestaurantId(@Param("restaurantId") Long restaurantId);
+
 }
