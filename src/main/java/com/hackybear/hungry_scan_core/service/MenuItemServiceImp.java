@@ -57,11 +57,11 @@ public class MenuItemServiceImp implements MenuItemService {
     @Caching(evict = {
             @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
-            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.category().id()")
     })
     public void save(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
         MenuItem menuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
-        Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategoryId());
+        Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategory().getId());
         menuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
         menuItemRepository.save(menuItem);
     }
@@ -71,11 +71,11 @@ public class MenuItemServiceImp implements MenuItemService {
     @Caching(evict = {
             @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
-            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.category().id()")
     })
     public void update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
-        Long newCategoryId = menuItemFormDTO.categoryId();
+        Long newCategoryId = menuItemFormDTO.category().id();
         Category oldCategory = findCategoryByMenuItemId(existingMenuItem.getId());
         Category newCategory = findCategoryById(newCategoryId);
         updateMenuItem(existingMenuItem, menuItemFormDTO);
@@ -88,7 +88,7 @@ public class MenuItemServiceImp implements MenuItemService {
     @Caching(evict = {
             @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
-            @CacheEvict(value = CATEGORY_ID, key = "#menuItemsDTOs.get(0).categoryId()")
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemsDTOs.get(0).category().id()")
     })
     public void updateDisplayOrders(List<MenuItemSimpleDTO> menuItemsDTOs, Long activeMenuId) {
         List<MenuItem> menuItems = menuItemsDTOs.stream().map(menuItemMapper::toMenuItem).toList();
@@ -113,7 +113,7 @@ public class MenuItemServiceImp implements MenuItemService {
     public void delete(Long id, Long menuId) throws LocalizedException {
         MenuItem existingMenuItem = getMenuItem(id);
         removeVariants(existingMenuItem);
-        Category category = findCategoryById(existingMenuItem.getCategoryId());
+        Category category = existingMenuItem.getCategory();
         removeMenuItem(category, existingMenuItem);
         Set<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
         sortingHelper.reassignDisplayOrders(menuItems, menuItemRepository::saveAllAndFlush);
@@ -171,7 +171,7 @@ public class MenuItemServiceImp implements MenuItemService {
         existing.setImageName(dto.imageName());
         existing.setName(translatableMapper.toTranslatable(dto.name()));
         existing.setDescription(translatableMapper.toTranslatable(dto.description()));
-        existing.setCategoryId(dto.categoryId());
+        existing.setCategory(categoryRepository.findById(dto.category().id()).orElseThrow());
         existing.setPrice(dto.price());
         existing.setLabels(dto.labels().stream()
                 .map(labelMapper::toLabel).collect(Collectors.toSet()));

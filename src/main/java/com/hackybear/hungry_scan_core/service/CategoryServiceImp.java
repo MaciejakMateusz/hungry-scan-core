@@ -11,6 +11,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
+import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
@@ -40,6 +41,7 @@ public class CategoryServiceImp implements CategoryService {
     private final SortingHelper sortingHelper;
     private final MenuItemRepository menuItemRepository;
     private final VariantRepository variantRepository;
+    private final MenuRepository menuRepository;
 
     @Override
     @Cacheable(value = CATEGORIES_ALL, key = "#activeMenuId")
@@ -96,7 +98,7 @@ public class CategoryServiceImp implements CategoryService {
             key = "#activeMenuId")
     public void save(CategoryFormDTO categoryFormDTO, Long activeMenuId) throws Exception {
         Category category = categoryMapper.toCategory(categoryFormDTO);
-        category.setMenuId(activeMenuId);
+        category.setMenu(menuRepository.findById(activeMenuId).orElseThrow());
         Optional<Integer> maxDisplayOrder = categoryRepository.findMaxDisplayOrderByMenuId(activeMenuId);
         category.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
         categoryRepository.save(category);
@@ -132,7 +134,7 @@ public class CategoryServiceImp implements CategoryService {
             cascadeRemoveMenuItems(existingCategory);
         }
         categoryRepository.deleteById(id);
-        Set<Category> categories = categoryRepository.findAllByMenuId(existingCategory.getMenuId());
+        Set<Category> categories = categoryRepository.findAllByMenuId(existingCategory.getMenu().getId());
         sortingHelper.reassignDisplayOrders(categories, categoryRepository::saveAllAndFlush);
     }
 

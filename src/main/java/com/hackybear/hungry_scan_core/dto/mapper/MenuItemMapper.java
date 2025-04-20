@@ -28,5 +28,4 @@ public interface MenuItemMapper {
 
     MenuItem toMenuItem(MenuItemFormDTO menuItemFormDTO);
 
-
 }

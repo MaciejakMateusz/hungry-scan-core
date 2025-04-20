@@ -57,13 +57,13 @@ public class VariantServiceImp implements VariantService {
 
     @Override
     @Transactional
-    @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItemId()")
+    @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItem().id()")
     public void save(VariantDTO variantDTO) throws Exception {
         Variant variant = variantMapper.toVariant(variantDTO);
-        if (!isFirstVariant(variant.getMenuItemId())) {
+        if (!isFirstVariant(variant.getMenuItem().getId())) {
             switchDefaultVariant(variant);
         }
-        Optional<Integer> maxDisplayOrder = variantRepository.findMaxDisplayOrderByMenuItemId(variant.getMenuItemId());
+        Optional<Integer> maxDisplayOrder = variantRepository.findMaxDisplayOrderByMenuItemId(variant.getMenuItem().getId());
         variant.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
         variantRepository.save(variant);
     }
@@ -72,7 +72,7 @@ public class VariantServiceImp implements VariantService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = VARIANT_ID, key = "#variantDTO.id()"),
-            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItemId()")
+            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItem().id()")
     })
     public void update(VariantDTO variantDTO) throws Exception {
         Variant existingVariant = getById(variantDTO.id());
@@ -83,7 +83,7 @@ public class VariantServiceImp implements VariantService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTOs.get(0) != null ? #variantDTOs.get(0).menuItemId() : null")
+            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTOs.get(0) != null ? #variantDTOs.get(0).menuItem().id() : null")
     })
     public List<VariantDTO> updateDisplayOrders(List<VariantDTO> variantDTOs) {
         List<Variant> variants = variantDTOs.stream().map(variantMapper::toVariant).toList();
@@ -91,7 +91,7 @@ public class VariantServiceImp implements VariantService {
             variantRepository.updateDisplayOrders(variant.getId(), variant.getDisplayOrder());
         }
         entityManager.clear();
-        Long menuItemId = Optional.ofNullable(variants.getFirst()).map(Variant::getMenuItemId).orElse(0L);
+        Long menuItemId = Optional.ofNullable(variants.getFirst()).map(v -> v.getMenuItem().getId()).orElse(0L);
         return getVariantByMenuItemId(menuItemId).stream().map(variantMapper::toDTO).toList();
     }
 
@@ -111,11 +111,11 @@ public class VariantServiceImp implements VariantService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = VARIANT_ID, key = "#variantDTO.id()"),
-            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItemId()")
+            @CacheEvict(value = VARIANTS_ALL, key = "#variantDTO.menuItem().id()")
     })
     public List<VariantDTO> delete(VariantDTO variantDTO) throws LocalizedException {
         Variant existingVariant = getById(variantDTO.id());
-        Long menuItemId = existingVariant.getMenuItemId();
+        Long menuItemId = existingVariant.getMenuItem().getId();
         removeVariant(existingVariant);
         variantRepository.delete(existingVariant);
         List<Variant> variants = getVariantByMenuItemId(menuItemId);
@@ -126,7 +126,7 @@ public class VariantServiceImp implements VariantService {
     private void updateVariant(VariantDTO variantDTO, Variant existingVariant) {
         Translatable name = translatableMapper.toTranslatable(variantDTO.name());
         existingVariant.setName(entityManager.merge(name));
-        existingVariant.setMenuItemId(variantDTO.menuItemId());
+        existingVariant.setMenuItem(menuItemRepository.findById(variantDTO.menuItem().id()).orElseThrow());
         existingVariant.setPrice(variantDTO.price());
         existingVariant.setAvailable(variantDTO.available());
         existingVariant.setDefaultVariant(variantDTO.defaultVariant());
@@ -159,7 +159,7 @@ public class VariantServiceImp implements VariantService {
             return;
         }
         boolean isNewVariant = Objects.isNull(variant.getId());
-        List<Variant> variants = getVariantByMenuItemId(variant.getMenuItemId());
+        List<Variant> variants = getVariantByMenuItemId(variant.getMenuItem().getId());
 
         if (isNewVariant) {
             for (Variant v : variants) {
@@ -178,7 +178,7 @@ public class VariantServiceImp implements VariantService {
     }
 
     private void removeVariant(Variant variant) throws LocalizedException {
-        MenuItem menuItem = findMenuItemById(variant.getMenuItemId());
+        MenuItem menuItem = findMenuItemById(variant.getMenuItem().getId());
         menuItem.removeVariant(variant);
         menuItemRepository.save(menuItem);
         variantRepository.deleteById(variant.getId());
