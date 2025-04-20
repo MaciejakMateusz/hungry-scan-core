@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -25,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,6 +54,8 @@ class MenuControllerTest {
     private MenuRepository menuRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -371,6 +371,39 @@ class MenuControllerTest {
     @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
     void shouldNotAllowAccessToRemove() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/menus/delete", 5, status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldDuplicate() throws Exception {
+        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
+                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
+        Long categoriesCount = categoryRepository.countByMenuId(1L);
+        assertEquals("Całodniowe", existingMenu.name());
+        assertTrue(existingMenu.standard());
+        assertEquals(9L, categoriesCount);
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/duplicate");
+
+        Set<Menu> restaurantMenus = menuRepository.findAllByRestaurantId(1L);
+        assertEquals(2, restaurantMenus.size());
+        Menu duplicatedMenu = restaurantMenus.stream()
+                .filter(m -> 1L != m.getId())
+                .findFirst()
+                .orElseThrow();
+        assertFalse(duplicatedMenu.isStandard());
+        assertEquals(9, duplicatedMenu.getCategories().size());
+
+        User user = userRepository.findUserByUsername("admin@example.com");
+        assertEquals(duplicatedMenu.getId(), user.getActiveMenuId());
+    }
+
+    @Test
+    @WithMockUser(roles = "CUSTOMER", username = "ff3abf8-9b6a@temp.it")
+    void shouldNotAllowUnauthorizedDuplication() throws Exception {
+        apiRequestUtils.patchAndExpect("/api/cms/menus/duplicate", status().isForbidden());
     }
 
     private void shouldUpdateSchedule(LocalTime startTime, LocalTime endTime) throws Exception {
