@@ -58,4 +58,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query("SELECT m.id FROM Menu m WHERE m.standard = true AND m.restaurant.id = :restaurantId")
     Optional<Long> findStandardIdByRestaurantId(@Param("restaurantId") Long restaurantId);
 
+    boolean existsByRestaurantIdAndName(Long restaurantId, String name);
+
 }

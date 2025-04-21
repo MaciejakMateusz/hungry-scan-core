@@ -118,24 +118,37 @@ class MenuControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
     @Transactional
     @Rollback
     void shouldAddNew() throws Exception {
-        User user = userRepository.findByUsername("admin@example.com").orElseThrow();
-        assertEquals(1L, user.getActiveMenuId());
-        MenuSimpleDTO menu = createMenuDTO("Great test menu");
+        User user = userRepository.findByUsername("restaurator@rarytas.pl").orElseThrow();
+        assertEquals(3L, user.getActiveMenuId());
+        MenuSimpleDTO menu = createMenuDTO("Całodniowe");
         apiRequestUtils.postAndExpect200("/api/cms/menus/add", menu);
 
 
         List<MenuSimpleDTO> menus =
                 apiRequestUtils.fetchAsList(
                         "/api/cms/menus", MenuSimpleDTO.class);
-        MenuSimpleDTO newMenu = menus.stream().filter(m -> m.name().equals("Great test menu")).toList().getFirst();
+        MenuSimpleDTO newMenu = menus.stream().filter(m -> m.name().equals("Całodniowe")).toList().getFirst();
         assertNotNull(newMenu);
         assertFalse(newMenu.standard());
-        user = userRepository.findByUsername("admin@example.com").orElseThrow();
+        user = userRepository.findByUsername("restaurator@rarytas.pl").orElseThrow();
         assertEquals(newMenu.id(), user.getActiveMenuId());
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotAddNonUniqueName() throws Exception {
+        User user = userRepository.findByUsername("admin@example.com").orElseThrow();
+        assertEquals(1L, user.getActiveMenuId());
+        MenuSimpleDTO menu = createMenuDTO("Całodniowe");
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/menus/add", menu);
+        assertEquals(1, errors.size());
+        assertEquals("Nazwy menu powinny być unikalne.", errors.get("exceptionMsg"));
     }
 
     @Test

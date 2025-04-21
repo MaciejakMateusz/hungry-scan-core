@@ -65,6 +65,7 @@ public class MenuServiceImp implements MenuService {
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
     })
     public void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception {
+        validateUniqueness(menuDTO, currentUser.getActiveRestaurantId());
         Menu menu = menuMapper.toMenu(menuDTO);
         Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId()).orElseThrow();
         menu.setRestaurant(restaurant);
@@ -81,6 +82,9 @@ public class MenuServiceImp implements MenuService {
     })
     public void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = getById(menuDTO.id());
+        if (!Objects.equals(menu.getName(), menuDTO.name())) {
+            validateUniqueness(menuDTO, activeRestaurantId);
+        }
         validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
         validateSchedule(menuDTO, activeRestaurantId);
         menu.setName(menuDTO.name());
@@ -228,6 +232,12 @@ public class MenuServiceImp implements MenuService {
         boolean isWithinOpeningHours = timeRanges.stream().allMatch(openingRange::includes);
         if (!isWithinOpeningHours) {
             exceptionHelper.throwLocalizedMessage("error.menuService.scheduleNotWithinOpeningHours");
+        }
+    }
+
+    private void validateUniqueness(MenuSimpleDTO menuDTO, Long restaurantId) throws LocalizedException {
+        if (menuRepository.existsByRestaurantIdAndName(restaurantId, menuDTO.name())) {
+            exceptionHelper.throwLocalizedMessage("error.menuService.uniqueNameViolation");
         }
     }
 }

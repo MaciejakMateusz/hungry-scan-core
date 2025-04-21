@@ -25,7 +25,13 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "menus")
+@Table(
+        name = "menus",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_menu_restaurant_name",
+                columnNames = {"restaurant_id", "name"}
+        )
+)
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
 public class Menu implements Serializable, Comparable<Menu> {
