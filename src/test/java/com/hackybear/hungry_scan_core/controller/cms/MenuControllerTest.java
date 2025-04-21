@@ -52,8 +52,10 @@ class MenuControllerTest {
 
     @Autowired
     private MenuRepository menuRepository;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -390,7 +392,89 @@ class MenuControllerTest {
         Set<Menu> restaurantMenus = menuRepository.findAllByRestaurantId(1L);
         assertEquals(2, restaurantMenus.size());
         Menu duplicatedMenu = restaurantMenus.stream()
-                .filter(m -> 1L != m.getId())
+                .filter(m -> "Całodniowe - kopia".equals(m.getName()))
+                .findFirst()
+                .orElseThrow();
+        assertFalse(duplicatedMenu.isStandard());
+        assertEquals(9, duplicatedMenu.getCategories().size());
+
+        User user = userRepository.findUserByUsername("admin@example.com");
+        assertEquals(duplicatedMenu.getId(), user.getActiveMenuId());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldDuplicateMultipleTimes() throws Exception {
+        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
+                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
+        Long categoriesCount = categoryRepository.countByMenuId(1L);
+        assertEquals("Całodniowe", existingMenu.name());
+        assertTrue(existingMenu.standard());
+        assertEquals(9L, categoriesCount);
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/duplicate");
+
+        Set<Menu> restaurantMenus = menuRepository.findAllByRestaurantId(1L);
+        assertEquals(2, restaurantMenus.size());
+        Menu duplicatedMenu = restaurantMenus.stream()
+                .filter(m -> "Całodniowe - kopia".equals(m.getName()))
+                .findFirst()
+                .orElseThrow();
+        assertFalse(duplicatedMenu.isStandard());
+        assertEquals(9, duplicatedMenu.getCategories().size());
+
+        User user = userRepository.findUserByUsername("admin@example.com");
+        assertEquals(duplicatedMenu.getId(), user.getActiveMenuId());
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/duplicate");
+
+        restaurantMenus = menuRepository.findAllByRestaurantId(1L);
+        assertEquals(3, restaurantMenus.size());
+        duplicatedMenu = restaurantMenus.stream()
+                .filter(m -> "Całodniowe - kopia(1)".equals(m.getName()))
+                .findFirst()
+                .orElseThrow();
+        assertFalse(duplicatedMenu.isStandard());
+        assertEquals(9, duplicatedMenu.getCategories().size());
+
+        user = userRepository.findUserByUsername("admin@example.com");
+        assertEquals(duplicatedMenu.getId(), user.getActiveMenuId());
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/duplicate");
+
+        restaurantMenus = menuRepository.findAllByRestaurantId(1L);
+        assertEquals(4, restaurantMenus.size());
+        duplicatedMenu = restaurantMenus.stream()
+                .filter(m -> "Całodniowe - kopia(2)".equals(m.getName()))
+                .findFirst()
+                .orElseThrow();
+        assertFalse(duplicatedMenu.isStandard());
+        assertEquals(9, duplicatedMenu.getCategories().size());
+
+        user = userRepository.findUserByUsername("admin@example.com");
+        assertEquals(duplicatedMenu.getId(), user.getActiveMenuId());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldDuplicateWithEnLang() throws Exception {
+        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
+                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
+        Long categoriesCount = categoryRepository.countByMenuId(1L);
+        assertEquals("Całodniowe", existingMenu.name());
+        assertTrue(existingMenu.standard());
+        assertEquals(9L, categoriesCount);
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/duplicate", "en");
+
+        Set<Menu> restaurantMenus = menuRepository.findAllByRestaurantId(1L);
+        assertEquals(2, restaurantMenus.size());
+        Menu duplicatedMenu = restaurantMenus.stream()
+                .filter(m -> "Całodniowe - copy".equals(m.getName()))
                 .findFirst()
                 .orElseThrow();
         assertFalse(duplicatedMenu.isStandard());
@@ -403,7 +487,7 @@ class MenuControllerTest {
     @Test
     @WithMockUser(roles = "CUSTOMER", username = "ff3abf8-9b6a@temp.it")
     void shouldNotAllowUnauthorizedDuplication() throws Exception {
-        apiRequestUtils.patchAndExpect("/api/cms/menus/duplicate", status().isForbidden());
+        apiRequestUtils.patchAndExpect("/api/cms/menus/duplicate", status().isForbidden(), "pl");
     }
 
     private void shouldUpdateSchedule(LocalTime startTime, LocalTime endTime) throws Exception {
@@ -448,7 +532,13 @@ class MenuControllerTest {
 
         Map<?, ?> response =
                 apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/cms/menus/update", existingMenu, status().isBadRequest());
+                        "/api/cms/menus/update", existingMenu, status().isBadRequest(), "en");
+        assertEquals(1, response.size());
+        assertEquals("Schedule does not fit within restaurant opening hours.", response.get("exceptionMsg"));
+
+        response =
+                apiRequestUtils.patchAndReturnResponseBody(
+                        "/api/cms/menus/update", existingMenu, status().isBadRequest(), "pl");
         assertEquals(1, response.size());
         assertEquals("Harmonogram nie mieści się w godzinach otwarcia restauracji.", response.get("exceptionMsg"));
     }
