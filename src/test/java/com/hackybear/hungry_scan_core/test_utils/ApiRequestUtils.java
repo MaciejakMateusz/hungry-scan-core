@@ -542,6 +542,39 @@ public class ApiRequestUtils {
         return objectMapper.readValue(responseBody, typeReference);
     }
 
+
+    /**
+     * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
+     * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
+     *
+     * @param endpointUrl The URL endpoint to send the POST request to.
+     * @param object      The object to be serialized and sent as the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @param lang        Language identifier to put into Accept-Language header.
+     * @param <T>         The type of the object being sent in the request body.
+     * @return A Map representing the response body, with String keys and Object values.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T> Map<String, Object> patchAndReturnResponseBody(String endpointUrl,
+                                                              T object,
+                                                              ResultMatcher matcher,
+                                                              String lang) throws Exception {
+        String jsonRequest = objectMapper.writeValueAsString(object);
+
+        ResultActions resultActions = mockMvc.perform(patch(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+                        .header("Accept-Language", lang))
+                .andExpect(matcher)
+                .andDo(print());
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+        };
+        return objectMapper.readValue(responseBody, typeReference);
+    }
+
     /**
      * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
@@ -611,14 +644,16 @@ public class ApiRequestUtils {
      * Expects a certain result based on the provided ResultMatcher.
      *
      * @param endpointUrl The URL endpoint to send the PATCH request to.
+     * @param lang        Language identifier to put into Accept-Language header.
      * @param matcher     The ResultMatcher to apply to the response.
      * @throws Exception If there are any errors during the request or response handling.
      */
-    public <T> void patchAndExpect(String endpointUrl,
-                                   ResultMatcher matcher) throws Exception {
-
+    public void patchAndExpect(String endpointUrl,
+                               ResultMatcher matcher,
+                               String lang) throws Exception {
         mockMvc.perform(patch(endpointUrl)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Accept-Language", lang))
                 .andExpect(matcher)
                 .andDo(print());
     }
@@ -868,7 +903,18 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the request.
      */
     public void patchAndExpect200(String url) throws Exception {
-        patchAndExpect(url, status().isOk());
+        patchAndExpect(url, status().isOk(), "pl");
+    }
+
+    /**
+     * Performs a PATCH request to the specified URL and expects a successful (200) response.
+     *
+     * @param url  The URL to which the PATCH request will be sent.
+     * @param lang Language identifier to put into Accept-Language header.
+     * @throws Exception If an error occurs during the request.
+     */
+    public void patchAndExpect200(String url, String lang) throws Exception {
+        patchAndExpect(url, status().isOk(), lang);
     }
 
     /**
