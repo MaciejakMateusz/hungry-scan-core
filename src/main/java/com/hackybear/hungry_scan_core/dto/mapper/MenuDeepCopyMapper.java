@@ -15,6 +15,7 @@ public interface MenuDeepCopyMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "restaurant", ignore = true)
     @Mapping(target = "standard", ignore = true)
+    @Mapping(target = "name", ignore = true)
     @Mapping(target = "categories", qualifiedByName = "deepCopyCategories")
     Menu duplicateMenu(Menu source);
 
@@ -51,10 +52,6 @@ public interface MenuDeepCopyMapper {
     @Mapping(target = "name", qualifiedByName = "deepCopyTranslatable")
     @Mapping(target = "description", qualifiedByName = "deepCopyTranslatable")
     @Mapping(target = "variants", qualifiedByName = "deepCopyVariants")
-    @Mapping(target = "labels", qualifiedByName = "deepCopyLabels")
-    @Mapping(target = "banners", qualifiedByName = "deepCopyBanners")
-    @Mapping(target = "allergens", qualifiedByName = "deepCopyAllergens")
-    @Mapping(target = "ingredients", qualifiedByName = "deepCopyIngredients")
     MenuItem deepCopyItem(MenuItem src);
 
     @Named("deepCopyVariants")
@@ -72,57 +69,6 @@ public interface MenuDeepCopyMapper {
     @Mapping(target = "modifiedBy", ignore = true)
     @Mapping(target = "name", qualifiedByName = "deepCopyTranslatable")
     Variant deepCopyVariant(Variant src);
-
-    @Named("deepCopyLabels")
-    default Set<Label> deepCopyLabels(Set<Label> srcLabels) {
-        return srcLabels.stream()
-                .map(l -> {
-                    Label copy = new Label();
-                    copy.setName(l.getName());
-                    copy.setRestaurantId(l.getRestaurantId());
-                    copy.setIconName(l.getIconName());
-                    return copy;
-                })
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    @Named("deepCopyBanners")
-    default Set<Banner> deepCopyBanners(Set<Banner> srcBanner) {
-        return srcBanner.stream()
-                .map(b -> {
-                    Banner copy = new Banner();
-                    copy.setName(b.getName());
-                    return copy;
-                })
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    @Named("deepCopyAllergens")
-    default Set<Allergen> deepCopyAllergens(Set<Allergen> srcAllergens) {
-        return srcAllergens.stream()
-                .map(a -> {
-                    Allergen copy = new Allergen();
-                    copy.setName(a.getName());
-                    copy.setDescription(a.getDescription());
-                    copy.setIconName(a.getIconName());
-                    return copy;
-                })
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    @Named("deepCopyIngredients")
-    default Set<Ingredient> deepCopyIngredients(Set<Ingredient> srcIngredients) {
-        return srcIngredients.stream()
-                .map(i -> {
-                    Ingredient copy = new Ingredient();
-                    copy.setRestaurantId(i.getRestaurantId());
-                    copy.setName(i.getName());
-                    copy.setPrice(i.getPrice());
-                    copy.setAvailable(i.isAvailable());
-                    return copy;
-                })
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
 
     @Named("deepCopyTranslatable")
     default Translatable deepCopyTranslatable(Translatable src) {

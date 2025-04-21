@@ -24,6 +24,7 @@ import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hackybear.hungry_scan_core.utility.DeepCopyUtils.constructDuplicateName;
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Slf4j
@@ -150,7 +151,9 @@ public class MenuServiceImp implements MenuService {
 
         Menu copy = menuDeepCopyMapper.duplicateMenu(src);
         copy.setRestaurant(src.getRestaurant());
-        copy.setName(src.getName());
+
+        String srcName = src.getName();
+        copy.setName(constructDuplicateName(srcName));
 
         for (Category cat : copy.getCategories()) {
             cat.setMenu(copy);
