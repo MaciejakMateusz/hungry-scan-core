@@ -55,7 +55,7 @@ public class RestaurantServiceImp implements RestaurantService {
     }
 
     @Override
-    @Cacheable(value = USER_RESTAURANT, key = "#currentUser.getId()")
+    @Cacheable(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     public RestaurantDTO findCurrent(User currentUser) throws LocalizedException {
         Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId())
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
@@ -73,7 +73,8 @@ public class RestaurantServiceImp implements RestaurantService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
-            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()")
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()")
     })
     public void save(RestaurantDTO restaurantDTO, User currentUser) {
         createAndPersistNew(restaurantDTO, currentUser);
@@ -81,7 +82,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @Override
     @Transactional
-    @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getUsername()")
+    @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()")
     public ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) {
         BindingResult br = (BindingResult) params.get("bindingResult");
         ResponseHelper responseHelper = (ResponseHelper) params.get("responseHelper");
@@ -101,7 +102,7 @@ public class RestaurantServiceImp implements RestaurantService {
     @Caching(evict = {
             @CacheEvict(value = RESTAURANT_ID, key = "#restaurantDTO.id()"),
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
-            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()")
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
     public void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
         Restaurant restaurant = getById(restaurantDTO.id());
@@ -114,7 +115,7 @@ public class RestaurantServiceImp implements RestaurantService {
     @Caching(evict = {
             @CacheEvict(value = RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()"),
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
-            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()")
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
     @Transactional
     public void delete(User currentUser) throws LocalizedException {

@@ -168,15 +168,15 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = USER_RESTAURANT, key = "#user.getId()")
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
-    public void switchRestaurant(Long restaurantId, User user) throws LocalizedException {
+    public void switchRestaurant(Long restaurantId, User currentUser) throws LocalizedException {
         Long menuId = userRepository.findFirstMenuIdByRestaurantId(restaurantId)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.restaurantService.restaurantNotFound"));
-        user.setActiveMenuId(menuId);
-        user.setActiveRestaurantId(restaurantId);
-        userRepository.save(user);
+        currentUser.setActiveMenuId(menuId);
+        currentUser.setActiveRestaurantId(restaurantId);
+        userRepository.save(currentUser);
     }
 
     @Override

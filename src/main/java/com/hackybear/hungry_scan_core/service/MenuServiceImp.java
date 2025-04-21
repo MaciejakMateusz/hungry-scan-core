@@ -61,11 +61,11 @@ public class MenuServiceImp implements MenuService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = MENUS_ALL, key = "#currentUser.getActiveRestaurantId()"),
-            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getId()"),
-            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getActiveRestaurantId()")
     })
     public void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception {
-        validateUniqueness(menuDTO, currentUser.getActiveRestaurantId());
+        validateUniqueness(menuDTO.name(), currentUser.getActiveRestaurantId());
         Menu menu = menuMapper.toMenu(menuDTO);
         Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId()).orElseThrow();
         menu.setRestaurant(restaurant);
@@ -83,13 +83,11 @@ public class MenuServiceImp implements MenuService {
     public void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = getById(menuDTO.id());
         if (!Objects.equals(menu.getName(), menuDTO.name())) {
-            validateUniqueness(menuDTO, activeRestaurantId);
+            validateUniqueness(menuDTO.name(), activeRestaurantId);
         }
         validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
         validateSchedule(menuDTO, activeRestaurantId);
         menu.setName(menuDTO.name());
-        menu.setStandard(menuDTO.standard());
-        menu.setPlan(menuDTO.plan());
         menuRepository.saveAndFlush(menu);
     }
 
@@ -98,15 +96,22 @@ public class MenuServiceImp implements MenuService {
     @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId")
     public void updatePlans(List<MenuSimpleDTO> menuDTOs, Long activeRestaurantId) throws LocalizedException {
         validateMenusPlans(menuDTOs);
-        Set<Menu> existing = menuRepository.findAllByRestaurantId(activeRestaurantId);
-        for (Menu menu : existing) {
-            for (MenuSimpleDTO menuDTO : menuDTOs) {
-                if (menu.getId().equals(menuDTO.id())) {
-                    menu.setPlan(menuDTO.plan());
-                    menuRepository.save(menu);
-                    break;
-                }
-            }
+
+        Map<Long, Map<DayOfWeek, TimeRange>> dtoPlanMap = menuDTOs.stream()
+                .collect(Collectors.toMap(MenuSimpleDTO::id, MenuSimpleDTO::plan));
+
+        Set<Menu> existingMenus = menuRepository.findAllByRestaurantId(activeRestaurantId);
+
+        List<Menu> toSave = existingMenus.stream()
+                .filter(menu -> {
+                    Map<DayOfWeek, TimeRange> newPlan = dtoPlanMap.get(menu.getId());
+                    return newPlan != null && !Objects.equals(menu.getPlan(), newPlan);
+                })
+                .peek(menu -> menu.setPlan(dtoPlanMap.get(menu.getId())))
+                .collect(Collectors.toList());
+
+        if (!toSave.isEmpty()) {
+            menuRepository.saveAll(toSave);
         }
     }
 
@@ -147,6 +152,7 @@ public class MenuServiceImp implements MenuService {
     @Caching(evict = {
             @CacheEvict(value = MENUS_ALL, key = "#currentUser.getActiveRestaurantId()"),
             @CacheEvict(value = MENU_ID, key = "#currentUser.getActiveMenuId()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()"),
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
     public void duplicate(User currentUser) throws LocalizedException {
@@ -158,6 +164,8 @@ public class MenuServiceImp implements MenuService {
 
         String srcName = src.getName();
         copy.setName(constructDuplicateName(srcName));
+
+        validateUniqueness(copy.getName(), currentUser.getActiveRestaurantId());
 
         for (Category cat : copy.getCategories()) {
             cat.setMenu(copy);
@@ -235,8 +243,8 @@ public class MenuServiceImp implements MenuService {
         }
     }
 
-    private void validateUniqueness(MenuSimpleDTO menuDTO, Long restaurantId) throws LocalizedException {
-        if (menuRepository.existsByRestaurantIdAndName(restaurantId, menuDTO.name())) {
+    private void validateUniqueness(String menuName, Long restaurantId) throws LocalizedException {
+        if (menuRepository.existsByRestaurantIdAndName(restaurantId, menuName)) {
             exceptionHelper.throwLocalizedMessage("error.menuService.uniqueNameViolation");
         }
     }
