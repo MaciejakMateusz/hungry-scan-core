@@ -11,19 +11,10 @@ public class MessageSourceConfig {
 
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
-        return getMessageSource("messages");
-    }
-
-    @Bean
-    public ReloadableResourceBundleMessageSource validationMessageSource() {
-        return getMessageSource("validationMessages");
-    }
-
-    private ReloadableResourceBundleMessageSource getMessageSource(String bundleName) {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:" + bundleName);
-        messageSource.setDefaultLocale(Locale.forLanguageTag("pl"));
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
+        ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
+        ms.setBasenames("classpath:messages", "classpath:validationMessages");
+        ms.setDefaultEncoding("UTF-8");
+        ms.setDefaultLocale(Locale.forLanguageTag("pl"));
+        return ms;
     }
 }
