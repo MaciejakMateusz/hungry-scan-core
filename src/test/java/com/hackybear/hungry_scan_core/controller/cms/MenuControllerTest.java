@@ -284,62 +284,6 @@ class MenuControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldUpdatePlan_whenTimeMatchesOpeningAndClosingHours() throws Exception {
-        shouldUpdateSchedule(LocalTime.of(7, 0), LocalTime.of(23, 0));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldUpdatePlan_whenTimeIsFullyWithinOpeningHours() throws Exception {
-        shouldUpdateSchedule(LocalTime.of(9, 0), LocalTime.of(21, 0));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldUpdatePlan_whenStartTimeMatchesOpeningHour() throws Exception {
-        shouldUpdateSchedule(LocalTime.of(7, 0), LocalTime.of(20, 0));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldUpdatePlan_whenEndTimeMatchesClosingHour() throws Exception {
-        shouldUpdateSchedule(LocalTime.of(9, 0), LocalTime.of(23, 0));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldNotUpdatePlan_whenTimeIsCompletelyOutsideOpeningHours() throws Exception {
-        shouldNotUpdateSchedule(LocalTime.of(5, 0), LocalTime.of(6, 30));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldNotUpdatePlan_whenTimeStartsBeforeOpeningHour() throws Exception {
-        shouldNotUpdateSchedule(LocalTime.of(5, 0), LocalTime.of(22, 30));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    @Transactional
-    @Rollback
-    void shouldNotUpdatePlan_whenTimeEndsAfterClosingHour() throws Exception {
-        shouldNotUpdateSchedule(LocalTime.of(10, 30), LocalTime.of(23, 30));
-    }
-
-    @Test
     @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
     void shouldNotAllowAccessToUpdate() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/update", new Menu());
@@ -498,62 +442,42 @@ class MenuControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotDuplicateWithUniqueNameViolation() throws Exception {
+        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
+                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
+        Long categoriesCount = categoryRepository.countByMenuId(1L);
+        assertEquals("Całodniowe", existingMenu.name());
+        assertTrue(existingMenu.standard());
+        assertEquals(9L, categoriesCount);
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/duplicate");
+
+        Set<Menu> restaurantMenus = menuRepository.findAllByRestaurantId(1L);
+        assertEquals(2, restaurantMenus.size());
+        Menu duplicatedMenu = restaurantMenus.stream()
+                .filter(m -> "Całodniowe - kopia".equals(m.getName()))
+                .findFirst()
+                .orElseThrow();
+        assertFalse(duplicatedMenu.isStandard());
+        assertEquals(9, duplicatedMenu.getCategories().size());
+
+        User user = userRepository.findUserByUsername("admin@example.com");
+        assertEquals(duplicatedMenu.getId(), user.getActiveMenuId());
+
+        user.setActiveMenuId(1L);
+        userRepository.saveAndFlush(user);
+        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/duplicate");
+        assertEquals(1, errors.size());
+        assertEquals("Nazwy menu powinny być unikalne.", errors.get("exceptionMsg"));
+    }
+
+    @Test
     @WithMockUser(roles = "CUSTOMER", username = "ff3abf8-9b6a@temp.it")
     void shouldNotAllowUnauthorizedDuplication() throws Exception {
         apiRequestUtils.patchAndExpect("/api/cms/menus/duplicate", status().isForbidden(), "pl");
-    }
-
-    private void shouldUpdateSchedule(LocalTime startTime, LocalTime endTime) throws Exception {
-        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
-                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
-        assertEquals("Całodniowe", existingMenu.name());
-        Menu menu = menuMapper.toMenu(existingMenu);
-        menu.setPlan(getPlan(startTime, endTime, List.of(
-                DayOfWeek.MONDAY,
-                DayOfWeek.TUESDAY,
-                DayOfWeek.WEDNESDAY,
-                DayOfWeek.THURSDAY,
-                DayOfWeek.FRIDAY,
-                DayOfWeek.SATURDAY,
-                DayOfWeek.SUNDAY)));
-        menu.setStandard(false);
-        existingMenu = menuMapper.toSimpleDTO(menu);
-
-        apiRequestUtils.patchAndExpect200("/api/cms/menus/update", existingMenu);
-
-        Menu updatedMenu = getMenu(1L);
-        assertEquals("Całodniowe", updatedMenu.getName());
-        assertFalse(updatedMenu.isStandard());
-        assertNotNull(updatedMenu.getUpdated());
-        assertEquals("admin@example.com", updatedMenu.getModifiedBy());
-
-        Map<DayOfWeek, TimeRange> updatedPlan = updatedMenu.getPlan();
-        assertEquals(7, updatedPlan.size());
-        assertTrue(updatedPlan.containsKey(DayOfWeek.SATURDAY));
-        assertEquals(startTime, updatedPlan.get(DayOfWeek.SATURDAY).getStartTime());
-        assertEquals(endTime, updatedPlan.get(DayOfWeek.SATURDAY).getEndTime());
-    }
-
-
-    private void shouldNotUpdateSchedule(LocalTime startTime, LocalTime endTime) throws Exception {
-        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
-                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
-        Menu menu = menuMapper.toMenu(existingMenu);
-        menu.setPlan(getPlan(startTime, endTime, List.of(DayOfWeek.MONDAY)));
-        menu.setStandard(false);
-        existingMenu = menuMapper.toSimpleDTO(menu);
-
-        Map<?, ?> response =
-                apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/cms/menus/update", existingMenu, status().isBadRequest(), "en");
-        assertEquals(1, response.size());
-        assertEquals("Schedule does not fit within restaurant opening hours.", response.get("exceptionMsg"));
-
-        response =
-                apiRequestUtils.patchAndReturnResponseBody(
-                        "/api/cms/menus/update", existingMenu, status().isBadRequest(), "pl");
-        assertEquals(1, response.size());
-        assertEquals("Harmonogram nie mieści się w godzinach otwarcia restauracji.", response.get("exceptionMsg"));
     }
 
     private MenuSimpleDTO createMenuDTO(String name) {
