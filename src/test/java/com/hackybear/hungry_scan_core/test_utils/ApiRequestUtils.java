@@ -514,6 +514,29 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Sends a PATCH HTTP request to the specified endpoint URL.
+     * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
+     *
+     * @param endpointUrl The URL endpoint to send the POST request to.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @return A Map representing the response body, with String keys and Object values.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public Map<String, Object> patchAndReturnResponseBody(String endpointUrl,
+                                                          ResultMatcher matcher) throws Exception {
+        ResultActions resultActions = mockMvc.perform(patch(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(matcher)
+                .andDo(print());
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+        };
+        return objectMapper.readValue(responseBody, typeReference);
+    }
+
+    /**
      * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
      * Expects a certain result based on the provided ResultMatcher.
      * Retrieves and returns the response body as a Map of String keys to Object values.
@@ -822,6 +845,17 @@ public class ApiRequestUtils {
      */
     public <T> Map<?, ?> patchAndExpectErrors(String url, T t) throws Exception {
         return patchAndReturnResponseBody(url, t, status().isBadRequest());
+    }
+
+    /**
+     * Performs a PATCH HTTP request to the specified URL and expects error responses.
+     *
+     * @param url The URL to which the POST request will be sent.
+     * @return A map containing error responses received from the server.
+     * @throws Exception If an error occurs during the request.
+     */
+    public Map<?, ?> patchAndExpectErrors(String url) throws Exception {
+        return patchAndReturnResponseBody(url, status().isBadRequest());
     }
 
     /**
