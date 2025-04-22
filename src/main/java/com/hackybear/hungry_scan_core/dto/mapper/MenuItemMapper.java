@@ -24,8 +24,12 @@ public interface MenuItemMapper {
 
     MenuItem toMenuItem(MenuItemSimpleDTO menuItemSimpleDTO);
 
+    @Mapping(expression = "java(menuItem.getCategory().getId())",
+            target = "categoryId")
     MenuItemFormDTO toFormDTO(MenuItem menuItem);
 
+    @Mapping(expression = "java(new Category(menuItemFormDTO.categoryId()))",
+            target = "category")
     MenuItem toMenuItem(MenuItemFormDTO menuItemFormDTO);
 
 }

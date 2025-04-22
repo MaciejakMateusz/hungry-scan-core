@@ -57,7 +57,7 @@ public class MenuItemServiceImp implements MenuItemService {
     @Caching(evict = {
             @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
-            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.category().id()")
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
     })
     public void save(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
         MenuItem menuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
@@ -71,11 +71,11 @@ public class MenuItemServiceImp implements MenuItemService {
     @Caching(evict = {
             @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
-            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.category().id()")
+            @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
     })
     public void update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
-        Long newCategoryId = menuItemFormDTO.category().id();
+        Long newCategoryId = menuItemFormDTO.categoryId();
         Category oldCategory = findCategoryByMenuItemId(existingMenuItem.getId());
         Category newCategory = findCategoryById(newCategoryId);
         updateMenuItem(existingMenuItem, menuItemFormDTO);
@@ -171,7 +171,7 @@ public class MenuItemServiceImp implements MenuItemService {
         existing.setImageName(dto.imageName());
         existing.setName(translatableMapper.toTranslatable(dto.name()));
         existing.setDescription(translatableMapper.toTranslatable(dto.description()));
-        existing.setCategory(categoryRepository.findById(dto.category().id()).orElseThrow());
+        existing.setCategory(categoryRepository.findById(dto.categoryId()).orElseThrow());
         existing.setPrice(dto.price());
         existing.setLabels(dto.labels().stream()
                 .map(labelMapper::toLabel).collect(Collectors.toSet()));

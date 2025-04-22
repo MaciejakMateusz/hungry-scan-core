@@ -204,7 +204,7 @@ class MenuItemControllerTest {
         assertEquals(5, newCategory.menuItems().size());
 
         MenuItemFormDTO existingMenuItemDTO = fetchMenuItemFormDTO(23L);
-        assertEquals(existingMenuItemDTO.category().id(), oldCategory.id());
+        assertEquals(existingMenuItemDTO.categoryId(), oldCategory.id());
         MenuItem existingMenuItem = menuItemMapper.toMenuItem(existingMenuItemDTO);
         existingMenuItem.setCategory(categoryMapper.toCategory(newCategory));
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(existingMenuItem);
@@ -227,7 +227,7 @@ class MenuItemControllerTest {
         assertEquals(4, updatedNewItems.get(3).displayOrder());
         assertEquals(5, updatedNewItems.get(4).displayOrder());
         assertEquals(6, updatedNewItems.get(5).displayOrder());
-        assertEquals(1L, updatedMenuItem.category().id());
+        assertEquals(1L, updatedMenuItem.categoryId());
         boolean isUpdatedMenuItemPresent = updatedNewItems
                 .stream()
                 .anyMatch(menuItem -> Objects.equals(menuItem.id(), updatedMenuItem.id()));

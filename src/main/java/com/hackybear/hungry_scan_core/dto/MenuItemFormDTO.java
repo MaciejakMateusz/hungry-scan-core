@@ -23,7 +23,7 @@ public record MenuItemFormDTO(Long id,
                               TranslatableDTO description,
 
                               @NotNull
-                              CategoryFormDTO category,
+                              Long categoryId,
 
                               @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
                               @NotNull
