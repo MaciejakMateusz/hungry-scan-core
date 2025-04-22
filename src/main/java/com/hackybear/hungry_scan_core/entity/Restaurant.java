@@ -62,31 +62,19 @@ public class Restaurant implements Serializable {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Menu> menus = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "restaurant_id")
-    private Set<Allergen> allergens = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "restaurant_id")
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Ingredient> ingredients = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "restaurant_id")
-    private Set<Label> labels = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "restaurant_id")
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OnboardingImage> onboardingImages = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "settings_id")
+    @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Settings settings;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "statistics_id")
+    @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Statistics statistics;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
@@ -111,10 +99,6 @@ public class Restaurant implements Serializable {
 
     public void addMenu(Menu menu) {
         this.menus.add(menu);
-    }
-
-    public void removeMenu(Menu menu) {
-        this.menus.remove(menu);
     }
 
     @PrePersist

@@ -1,7 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,9 +28,10 @@ public class Statistics implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "restaurant_id", nullable = false)
-    @NotNull
-    private Long restaurantId;
+    @OneToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JsonIgnore
+    private Restaurant restaurant;
 
     private LocalTime rushHour;
 

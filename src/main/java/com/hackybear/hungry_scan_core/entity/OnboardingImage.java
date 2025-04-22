@@ -1,10 +1,10 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,9 +35,10 @@ public class OnboardingImage implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "restaurant_id", nullable = false)
-    @NotNull
-    private Long restaurantId;
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JsonIgnore
+    private Restaurant restaurant;
 
     @NotBlank
     String imageName;

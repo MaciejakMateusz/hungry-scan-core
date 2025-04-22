@@ -166,7 +166,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     private static void setupRestaurantSettings(Restaurant restaurant) {
         Settings s = new Settings();
-        s.setRestaurantId(restaurant.getId());
+        s.setRestaurant(restaurant);
         s.setCapacity((short) 100);
         s.setOpeningTime(LocalTime.of(10, 0));
         s.setClosingTime(LocalTime.of(22, 0));

@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.enums.Language;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -23,8 +24,10 @@ public class Settings implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    @OneToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JsonIgnore
+    private Restaurant restaurant;
 
     @NotNull
     @Column(nullable = false)

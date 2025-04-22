@@ -2,24 +2,24 @@ INSERT INTO price_plans (id, price)
 VALUES ('free', 0.0),
        ('basic', 99.0);
 
+INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '12-1234', 'TEST',
+        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z', 'free'),
+       ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), 'basic'),
+       ('Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW(), 'free'),
+       ('Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW(), 'free'),
+       ('Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW(), 'free'),
+       ('Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW(), 'free'),
+       ('Test address, 555', 'Test 5', '12-1234', 'TEST', null, NOW(), 'free'),
+       ('Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW(), 'free'),
+       ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW(), 'free'),
+       ('Test address, 888', 'Test 8', '12-1234', 'TEST', null, NOW(), 'free'),
+       ('Test address, 999', 'Test 9', '12-1234', 'TEST', null, NOW(), 'free');
+
 INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
                       employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
 VALUES (3, '07:00:00', '23:00:00', 1, 120, 3, 20, true, true, 1),
        (3, '12:00:00', '02:00:00', 1, 312, 3, 20, false, false, 2);
-
-INSERT INTO restaurants (address, name, postal_code, city, token, created, settings_id, price_plan_id)
-VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '12-1234', 'TEST',
-        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z', 1, 'free'),
-       ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), 2, 'basic'),
-       ('Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW(), null, 'free'),
-       ('Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW(), null, 'free'),
-       ('Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW(), null, 'free'),
-       ('Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW(), null, 'free'),
-       ('Test address, 555', 'Test 5', '12-1234', 'TEST', null, NOW(), null, 'free'),
-       ('Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW(), null, 'free'),
-       ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW(), null, 'free'),
-       ('Test address, 888', 'Test 8', '12-1234', 'TEST', null, NOW(), null, 'free'),
-       ('Test address, 999', 'Test 9', '12-1234', 'TEST', null, NOW(), null, 'free');
 
 INSERT INTO menus (standard, name, restaurant_id)
 VALUES (true, 'Całodniowe', 1),
@@ -249,21 +249,21 @@ VALUES ('Gluten', 'Gluten'),
        ('Mięczaki', 'Molluscs'),
        ('Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
 
-INSERT INTO allergens(id, translatable_description_id, icon_name, translatable_name_id, restaurant_id)
-VALUES (1, 100, 'icon_gluten', 99, 1),
-       (2, 102, 'icon_crustaceans', 101, 1),
-       (3, 104, 'icon_eggs', 103, 1),
-       (4, 106, 'icon_fish', 105, 1),
-       (5, 108, 'icon_peanuts', 107, 1),
-       (6, 110, 'icon_soybeans', 109, 1),
-       (7, 112, 'icon_milk', 111, 1),
-       (8, 114, 'icon_nuts', 113, 1),
-       (9, 116, 'icon_celery', 115, 1),
-       (10, 118, 'icon_mustard', 117, 1),
-       (11, 120, 'icon_sesame', 119, 1),
-       (12, 122, 'icon_sulfur_dioxide', 121, 1),
-       (13, 124, 'icon_lupin', 123, 1),
-       (14, 126, 'icon_molluscs', 125, 1);
+INSERT INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
+VALUES (1, 100, 'icon_gluten', 99),
+       (2, 102, 'icon_crustaceans', 101),
+       (3, 104, 'icon_eggs', 103),
+       (4, 106, 'icon_fish', 105),
+       (5, 108, 'icon_peanuts', 107),
+       (6, 110, 'icon_soybeans', 109),
+       (7, 112, 'icon_milk', 111),
+       (8, 114, 'icon_nuts', 113),
+       (9, 116, 'icon_celery', 115),
+       (10, 118, 'icon_mustard', 117),
+       (11, 120, 'icon_sesame', 119),
+       (12, 122, 'icon_sulfur_dioxide', 121),
+       (13, 124, 'icon_lupin', 123),
+       (14, 126, 'icon_molluscs', 125);
 
 INSERT INTO translatable (default_translation, translation_en)
 VALUES ('Bez glutenu', 'Gluten free'),
@@ -273,13 +273,13 @@ VALUES ('Bez glutenu', 'Gluten free'),
        ('Bez laktozy', 'Lactose free'),
        ('Ostre', 'Spicy');
 
-INSERT INTO labels (icon_name, translatable_name_id, restaurant_id)
-VALUES ('icon_gluten_free', 127, 1),
-       ('icon_vegan', 128, 1),
-       ('icon_vegetarian', 129, 1),
-       ('icon_coriander', 130, 1),
-       ('icon_lactose_free', 131, 1),
-       ('icon_spicy', 132, 1);
+INSERT INTO labels (icon_name, translatable_name_id)
+VALUES ('icon_gluten_free', 127),
+       ('icon_vegan', 128),
+       ('icon_vegetarian', 129),
+       ('icon_coriander', 130),
+       ('icon_lactose_free', 131),
+       ('icon_spicy', 132);
 
 INSERT INTO translatable (default_translation, translation_en)
 VALUES ('Pomidory', 'Tomatoes'),
@@ -489,11 +489,11 @@ VALUES (1, 1),
        (10, 10),
        (10, 11);
 
-INSERT INTO themes(name, active, restaurant_id)
-VALUES ('green', true, 1),
-       ('pink', false, 1),
-       ('grey', false, 1),
-       ('orange', false, 1);
+INSERT INTO themes(name, active)
+VALUES ('green', true),
+       ('pink', false),
+       ('grey', false),
+       ('orange', false);
 
 INSERT INTO onboarding_images(image_name, is_active, restaurant_id)
 VALUES ('default.png', true, 1),

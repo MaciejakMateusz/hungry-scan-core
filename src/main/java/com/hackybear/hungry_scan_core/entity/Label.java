@@ -29,10 +29,6 @@ public class Label implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "restaurant_id", nullable = false)
-    @NotNull
-    private Long restaurantId;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank

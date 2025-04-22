@@ -2,16 +2,15 @@ INSERT IGNORE INTO price_plans (id, price)
 VALUES ('free', 0.0),
        ('basic', 99.0);
 
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, theme_id, price_plan_id)
+VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
+        '2023-11-12T00:00:00Z', null, 'free'),
+       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', null, 'basic');
+
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
                              employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
 VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true, 1);
-
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, settings_id, statistics_id,
-                                theme_id, price_plan_id)
-VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
-        '2023-11-12T00:00:00Z', 1, null, null, 'free'),
-       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', null, null, null, 'basic');
 
 INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
 VALUES (1, true, 'Całodniowe', 1),
@@ -87,21 +86,21 @@ VALUES (7, 'Gluten', 'Gluten'),
        (34, 'Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
 
 
-INSERT IGNORE INTO allergens(id, restaurant_id, translatable_description_id, icon_name, translatable_name_id)
-VALUES (1, 1, 8, 'gluten.svg', 7),
-       (2, 1, 10, 'crustaceans.svg', 9),
-       (3, 1, 12, 'eggs.svg', 11),
-       (4, 1, 14, 'fish.svg', 13),
-       (5, 1, 16, 'peanuts.svg', 15),
-       (6, 1, 18, 'soy.svg', 17),
-       (7, 1, 20, 'milk.svg', 19),
-       (8, 1, 22, 'nuts.svg', 21),
-       (9, 1, 24, 'celery.svg', 23),
-       (10, 1, 26, 'mustard.svg', 25),
-       (11, 1, 28, 'sesame.svg', 27),
-       (12, 1, 30, 'SO2.svg', 29),
-       (13, 1, 32, 'lupine.svg', 31),
-       (14, 1, 34, 'molluscs.svg', 33);
+INSERT IGNORE INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
+VALUES (1, 8, 'gluten.svg', 7),
+       (2, 10, 'crustaceans.svg', 9),
+       (3, 12, 'eggs.svg', 11),
+       (4, 14, 'fish.svg', 13),
+       (5, 16, 'peanuts.svg', 15),
+       (6, 18, 'soy.svg', 17),
+       (7, 20, 'milk.svg', 19),
+       (8, 22, 'nuts.svg', 21),
+       (9, 24, 'celery.svg', 23),
+       (10, 26, 'mustard.svg', 25),
+       (11, 28, 'sesame.svg', 27),
+       (12, 30, 'SO2.svg', 29),
+       (13, 32, 'lupine.svg', 31),
+       (14, 34, 'molluscs.svg', 33);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
 VALUES (35, 'Bez glutenu', 'Gluten free'),
@@ -111,19 +110,19 @@ VALUES (35, 'Bez glutenu', 'Gluten free'),
        (39, 'Bez laktozy', 'Lactose free'),
        (40, 'Ostre', 'Spicy');
 
-INSERT IGNORE INTO labels (id, restaurant_id, icon_name, translatable_name_id)
-VALUES (1, 1, 'gluten-free.svg', 35),
-       (2, 1, 'vegan.svg', 36),
-       (3, 1, 'vegetarian.svg', 37),
-       (4, 1, 'coriander.svg', 38),
-       (5, 1, 'lactose-free.svg', 39),
-       (6, 1, 'spicy.svg', 40);
+INSERT IGNORE INTO labels (id, icon_name, translatable_name_id)
+VALUES (1, 'gluten-free.svg', 35),
+       (2, 'vegan.svg', 36),
+       (3, 'vegetarian.svg', 37),
+       (4, 'coriander.svg', 38),
+       (5, 'lactose-free.svg', 39),
+       (6, 'spicy.svg', 40);
 
-INSERT IGNORE INTO themes(id, name, active, restaurant_id)
-VALUES (1, 'green', true, 1),
-       (2, 'pink', false, 1),
-       (3, 'grey', false, 1),
-       (4, 'orange', false, 1);
+INSERT IGNORE INTO themes(id, name, active)
+VALUES (1, 'green', true),
+       (2, 'pink', false),
+       (3, 'grey', false),
+       (4, 'orange', false);
 
 INSERT IGNORE INTO onboarding_images(id, restaurant_id, image_name, is_active)
 VALUES (1, 1, 'default', true);

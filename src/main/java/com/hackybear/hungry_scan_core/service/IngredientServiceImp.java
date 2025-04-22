@@ -5,11 +5,14 @@ import com.hackybear.hungry_scan_core.dto.IngredientSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.IngredientMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.TranslatableMapper;
 import com.hackybear.hungry_scan_core.entity.Ingredient;
+import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.IngredientRepository;
+import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.IngredientService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +23,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class IngredientServiceImp implements IngredientService {
 
     private final IngredientRepository ingredientRepository;
@@ -27,21 +31,15 @@ public class IngredientServiceImp implements IngredientService {
     private final IngredientMapper ingredientMapper;
     private final TranslatableMapper translatableMapper;
     private final UserService userService;
-
-    public IngredientServiceImp(IngredientRepository ingredientRepository, ExceptionHelper exceptionHelper, IngredientMapper ingredientMapper, TranslatableMapper translatableMapper, UserService userService) {
-        this.ingredientRepository = ingredientRepository;
-        this.exceptionHelper = exceptionHelper;
-        this.ingredientMapper = ingredientMapper;
-        this.translatableMapper = translatableMapper;
-        this.userService = userService;
-    }
+    private final RestaurantRepository restaurantRepository;
 
     @Override
     @Transactional
     public void save(IngredientSimpleDTO ingredientDTO) throws LocalizedException {
         Long restaurantId = userService.getActiveRestaurantId();
         Ingredient ingredient = ingredientMapper.toIngredient(ingredientDTO);
-        ingredient.setRestaurantId(restaurantId);
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+        ingredient.setRestaurant(restaurant);
         ingredientRepository.save(ingredient);
     }
 
@@ -50,7 +48,8 @@ public class IngredientServiceImp implements IngredientService {
     public void update(IngredientSimpleDTO ingredientDTO) throws LocalizedException {
         Ingredient existing = getIngredient(ingredientDTO.id());
         Long restaurantId = userService.getActiveRestaurantId();
-        existing.setRestaurantId(restaurantId);
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+        existing.setRestaurant(restaurant);
         existing.setName(translatableMapper.toTranslatable(ingredientDTO.name()));
         existing.setPrice(ingredientDTO.price());
         existing.setAvailable(ingredientDTO.available());

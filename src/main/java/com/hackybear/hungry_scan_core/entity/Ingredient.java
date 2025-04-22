@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
@@ -38,9 +39,10 @@ public class Ingredient implements Comparable<Ingredient>, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "restaurant_id", nullable = false)
-    @NotNull
-    private Long restaurantId;
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @JsonIgnore
+    private Restaurant restaurant;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
