@@ -71,6 +71,13 @@ public class Category implements Comparable<Category>, Serializable {
     @CreatedBy
     private String createdBy;
 
+    public Category() {
+    }
+
+    public Category(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return name.getDefaultTranslation();
