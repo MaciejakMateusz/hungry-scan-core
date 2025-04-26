@@ -37,24 +37,14 @@ public class Settings implements Serializable {
     @Column(nullable = false)
     private LocalTime closingTime;
 
-    @NotNull
-    @Column(nullable = false)
     private Long bookingDuration;
 
-    @NotNull
-    @Column(nullable = false)
     private Language language = Language.PL;
 
-    @NotNull
-    @Column(nullable = false)
     private Long employeeSessionTime = 20L;
 
-    @NotNull
-    @Column(nullable = false)
     private Long customerSessionTime = 20L;
 
-    @NotNull
-    @Column(nullable = false)
     private Short capacity;
 
     private boolean orderCommentAllowed = true;
