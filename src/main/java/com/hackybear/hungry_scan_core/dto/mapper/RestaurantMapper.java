@@ -5,7 +5,7 @@ import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {SettingsMapper.class})
 public interface RestaurantMapper {
 
     RestaurantDTO toDTO(Restaurant restaurant);
