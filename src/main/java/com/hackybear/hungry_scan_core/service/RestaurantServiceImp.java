@@ -77,7 +77,16 @@ public class RestaurantServiceImp implements RestaurantService {
             @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()")
     })
     public void save(RestaurantDTO restaurantDTO, User currentUser) {
-        createAndPersistNew(restaurantDTO, currentUser);
+        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        Settings s = restaurant.getSettings();
+        s.setRestaurant(restaurant);
+        restaurant.setSettings(s);
+        restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
+        restaurant = restaurantRepository.save(restaurant);
+        restaurant.setMenus(new TreeSet<>());
+        createInitialMenu(restaurant);
+        restaurant = restaurantRepository.save(restaurant);
+        setupUser(restaurant, currentUser, userService);
     }
 
     @Override
@@ -105,10 +114,7 @@ public class RestaurantServiceImp implements RestaurantService {
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
     public void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
-        Restaurant restaurant = getById(restaurantDTO.id());
-        restaurant.setName(restaurantDTO.name());
-        restaurant.setAddress(restaurantDTO.address());
-        restaurantRepository.save(restaurant);
+        restaurantRepository.save(restaurantMapper.toRestaurant(restaurantDTO));
     }
 
     @Override
@@ -145,12 +151,6 @@ public class RestaurantServiceImp implements RestaurantService {
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.restaurantService.restaurantNotFound"));
         return restaurantMapper.toDTO(restaurant);
-    }
-
-    private Restaurant getById(Long id) throws LocalizedException {
-        return restaurantRepository.findById(id)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.restaurantService.restaurantNotFound"));
     }
 
     private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) {
