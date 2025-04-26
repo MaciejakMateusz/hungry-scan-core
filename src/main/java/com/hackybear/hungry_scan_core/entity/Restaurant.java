@@ -97,6 +97,13 @@ public class Restaurant implements Serializable {
     @CreatedBy
     private String createdBy;
 
+    public Restaurant() {
+    }
+
+    public Restaurant(Long id) {
+        this.id = id;
+    }
+
     public void addMenu(Menu menu) {
         this.menus.add(menu);
     }
