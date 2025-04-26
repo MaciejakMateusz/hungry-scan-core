@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ValidatorTestBase {
 
-    private static Validator validator;
+    protected static Validator validator;
 
     public ValidatorTestBase() {
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {

@@ -3,7 +3,6 @@ package com.hackybear.hungry_scan_core.annotation.validator;
 import com.hackybear.hungry_scan_core.dto.IngredientDTO;
 import com.hackybear.hungry_scan_core.dto.TranslatableDTO;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,7 +18,6 @@ import java.util.Map;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LimitTranslationsLengthDTOValidatorTest extends ValidatorTestBase {
 
     @Test
