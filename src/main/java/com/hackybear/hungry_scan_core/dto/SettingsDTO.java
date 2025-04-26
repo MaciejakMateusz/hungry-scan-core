@@ -7,7 +7,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalTime;
 
-public record SettingsDTO(Long restaurantId,
+public record SettingsDTO(Long id,
+                          Long restaurantId,
 
                           @NotNull
                           LocalTime openingTime,
@@ -15,19 +16,14 @@ public record SettingsDTO(Long restaurantId,
                           @NotNull
                           LocalTime closingTime,
 
-                          @NotNull
                           Long bookingDuration,
 
-                          @NotNull
                           Language language,
 
-                          @NotNull
                           Long employeeSessionTime,
 
-                          @NotNull
                           Long customerSessionTime,
 
-                          @NotNull
                           Short capacity,
 
                           boolean orderCommentAllowed,
