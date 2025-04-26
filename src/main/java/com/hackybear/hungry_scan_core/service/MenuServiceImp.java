@@ -8,7 +8,6 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
-import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
@@ -35,7 +34,6 @@ public class MenuServiceImp implements MenuService {
     private final ExceptionHelper exceptionHelper;
     private final MenuRepository menuRepository;
     private final MenuMapper menuMapper;
-    private final SettingsRepository settingsRepository;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuDeepCopyMapper menuDeepCopyMapper;
@@ -78,7 +76,8 @@ public class MenuServiceImp implements MenuService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
-            @CacheEvict(value = MENU_ID, key = "#menuDTO.id()")
+            @CacheEvict(value = MENU_ID, key = "#menuDTO.id()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#activeRestaurantId")
     })
     public void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = getById(menuDTO.id());
@@ -86,7 +85,6 @@ public class MenuServiceImp implements MenuService {
             validateUniqueness(menuDTO.name(), activeRestaurantId);
         }
         validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
-        validateSchedule(menuDTO, activeRestaurantId);
         menu.setName(menuDTO.name());
         menuRepository.saveAndFlush(menu);
     }
@@ -219,27 +217,6 @@ public class MenuServiceImp implements MenuService {
     private void validateOperation(Long restaurantId, Long activeRestaurantId) throws LocalizedException {
         if (!Objects.equals(restaurantId, activeRestaurantId)) {
             exceptionHelper.throwLocalizedMessage("error.general.unauthorizedOperation");
-        }
-    }
-
-    private void validateSchedule(MenuSimpleDTO menuDTO, Long restaurantId) throws LocalizedException {
-        if (menuDTO.standard()) {
-            return;
-        }
-        validateWithinOpeningHours(menuDTO, restaurantId);
-    }
-
-    private void validateWithinOpeningHours(MenuSimpleDTO dto, Long activeRestaurantId) throws LocalizedException {
-        if (Objects.isNull(dto)) {
-            return;
-        }
-        Map<DayOfWeek, TimeRange> plan = dto.plan();
-        List<TimeRange> timeRanges = plan.values().stream().toList();
-        Settings settings = settingsRepository.findByRestaurantId(activeRestaurantId);
-        TimeRange openingRange = new TimeRange(settings.getOpeningTime(), settings.getClosingTime());
-        boolean isWithinOpeningHours = timeRanges.stream().allMatch(openingRange::includes);
-        if (!isWithinOpeningHours) {
-            exceptionHelper.throwLocalizedMessage("error.menuService.scheduleNotWithinOpeningHours");
         }
     }
 
