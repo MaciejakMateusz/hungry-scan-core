@@ -83,7 +83,7 @@ public class RedisSerializationTest {
     }
 
     private SettingsDTO getSettingsDTO() {
-        return new SettingsDTO(1L,
+        return new SettingsDTO(1L, 1L,
                 LocalTime.of(10, 0),
                 LocalTime.of(22, 0),
                 2L,
