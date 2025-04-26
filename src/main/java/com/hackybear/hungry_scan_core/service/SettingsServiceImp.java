@@ -8,7 +8,6 @@ import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.SettingsService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SettingsServiceImp implements SettingsService {
@@ -30,24 +29,4 @@ public class SettingsServiceImp implements SettingsService {
         return settingsMapper.toDTO(settings);
     }
 
-    @Override
-    @Transactional
-    public void save(SettingsDTO settingsDTO) throws LocalizedException {
-        Long restaurantId = userService.getActiveRestaurantId();
-        Settings settings = settingsRepository.findByRestaurantId(restaurantId);
-        updateSettings(settings, settingsDTO);
-        settingsRepository.save(settings);
-    }
-
-    private void updateSettings(Settings settings, SettingsDTO settingsDTO) {
-        settings.setOpeningTime(settingsDTO.openingTime());
-        settings.setClosingTime(settingsDTO.closingTime());
-        settings.setBookingDuration(settingsDTO.bookingDuration());
-        settings.setLanguage(settingsDTO.language());
-        settings.setEmployeeSessionTime(settingsDTO.employeeSessionTime());
-        settings.setCustomerSessionTime(settingsDTO.customerSessionTime());
-        settings.setCapacity(settingsDTO.capacity());
-        settings.setOrderCommentAllowed(settingsDTO.orderCommentAllowed());
-        settings.setWaiterCommentAllowed(settingsDTO.waiterCommentAllowed());
-    }
 }
