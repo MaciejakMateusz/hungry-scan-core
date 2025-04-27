@@ -26,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
 import java.time.LocalTime;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
@@ -82,6 +79,7 @@ public class RestaurantServiceImp implements RestaurantService {
         s.setRestaurant(restaurant);
         restaurant.setSettings(s);
         restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
+        restaurant.setToken(UUID.randomUUID().toString());
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
         createInitialMenu(restaurant);
@@ -108,13 +106,16 @@ public class RestaurantServiceImp implements RestaurantService {
     }
 
     @Override
+    @Transactional
     @Caching(evict = {
             @CacheEvict(value = RESTAURANT_ID, key = "#restaurantDTO.id()"),
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
     public void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
-        restaurantRepository.save(restaurantMapper.toRestaurant(restaurantDTO));
+        Restaurant restaurant = getById(restaurantDTO.id());
+        restaurantMapper.updateFromDTO(restaurantDTO, restaurant);
+        restaurantRepository.save(restaurant);
     }
 
     @Override
@@ -146,6 +147,12 @@ public class RestaurantServiceImp implements RestaurantService {
         return restaurantMapper.toDTO(restaurant);
     }
 
+    private Restaurant getById(Long id) throws LocalizedException {
+        return restaurantRepository.findById(id)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotFound"));
+    }
+
     private RestaurantDTO getDTOById(Long id) throws LocalizedException {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
@@ -156,6 +163,7 @@ public class RestaurantServiceImp implements RestaurantService {
     private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
+        restaurant.setToken(UUID.randomUUID().toString());
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
         createInitialMenu(restaurant);

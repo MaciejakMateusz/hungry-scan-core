@@ -137,6 +137,7 @@ public class RestaurantControllerTest {
         assertEquals(LocalTime.of(12, 0), persistedRestaurant.settings().openingTime());
         assertEquals(LocalTime.of(19, 0), persistedRestaurant.settings().closingTime());
         assertEquals(1, persistedRestaurant.menus().size());
+        assertNotNull(persistedRestaurant.token());
     }
 
     @Test
@@ -168,6 +169,7 @@ public class RestaurantControllerTest {
         MenuSimpleDTO menuSimpleDTO = persistedRestaurant.menus().stream().findFirst().orElse(null);
         assertNotNull(menuSimpleDTO);
         assertEquals("Menu", menuSimpleDTO.name());
+        assertNotNull(persistedRestaurant.token());
 
         currentUser = userService.findByUsername("fresh@user.it");
         assertNotNull(currentUser.getActiveRestaurantId());
