@@ -8,6 +8,7 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Component
 public class LocaleResolver extends AcceptHeaderLocaleResolver {
@@ -20,7 +21,7 @@ public class LocaleResolver extends AcceptHeaderLocaleResolver {
     public Locale resolveLocale(HttpServletRequest request) {
         String headerLang = request.getHeader("Accept-Language");
 
-        if (headerLang == null || headerLang.isEmpty()) {
+        if (Objects.isNull(headerLang) || headerLang.isEmpty()) {
             return FALLBACK_LOCALE;
         }
 
