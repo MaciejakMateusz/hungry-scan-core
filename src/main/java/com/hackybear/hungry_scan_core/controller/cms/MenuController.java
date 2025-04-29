@@ -60,8 +60,8 @@ public class MenuController {
 
     @PatchMapping("/update-plans")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> updatePlans(@Valid @RequestBody List<MenuSimpleDTO> dtos, BindingResult br) {
-        return responseHelper.buildResponse(dtos, br, userService::getActiveRestaurantId, menuService::updatePlans);
+    public ResponseEntity<?> updatePlans(@Valid @RequestBody List<MenuSimpleDTO> menus, BindingResult br) {
+        return responseHelper.buildResponse(menus, br, userService::getActiveRestaurantId, menuService::updatePlans);
     }
 
     @PatchMapping("/switch-standard")
