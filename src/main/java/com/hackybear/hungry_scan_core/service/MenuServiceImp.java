@@ -91,7 +91,10 @@ public class MenuServiceImp implements MenuService {
 
     @Transactional
     @Override
-    @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId")
+    @Caching(evict = {
+            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#activeRestaurantId")
+    })
     public void updatePlans(List<MenuSimpleDTO> menuDTOs, Long activeRestaurantId) throws LocalizedException {
         validateMenusPlans(menuDTOs);
 
@@ -116,12 +119,16 @@ public class MenuServiceImp implements MenuService {
     @Transactional
     @Override
     @Caching(evict = {
-            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
-            @CacheEvict(value = MENU_ID, key = "#newId")
+            @CacheEvict(value = MENUS_ALL, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = MENU_ID, key = "#currentUser.getActiveMenuId()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
-    public void switchStandard(Long newId, Long activeRestaurantId) {
-        menuRepository.resetStandardMenus(activeRestaurantId);
-        menuRepository.switchStandard(newId);
+    public void switchStandard(User currentUser) {
+        menuRepository.resetStandardMenus(currentUser.getActiveRestaurantId());
+        menuRepository.switchStandard(currentUser.getActiveMenuId());
+        Menu menu = menuRepository.findById(currentUser.getActiveMenuId()).orElseThrow();
+        menu.setPlan(new HashMap<>());
+        menuRepository.save(menu);
     }
 
     @Transactional

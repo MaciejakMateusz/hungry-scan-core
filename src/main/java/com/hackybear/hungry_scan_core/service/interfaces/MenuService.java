@@ -20,7 +20,7 @@ public interface MenuService {
 
     void updatePlans(List<MenuSimpleDTO> menuDTOs, Long activeRestaurantId) throws Exception;
 
-    void switchStandard(Long newId, Long activeRestaurantId);
+    void switchStandard(User currentUser);
 
     void delete(User user) throws LocalizedException, AuthenticationException;
 

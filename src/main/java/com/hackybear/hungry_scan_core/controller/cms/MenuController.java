@@ -66,10 +66,10 @@ public class MenuController {
 
     @PatchMapping("/switch-standard")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> switchStandard(@RequestBody Long newId) {
+    public ResponseEntity<?> switchStandard() {
         try {
-            Long activeRestaurantId = userService.getActiveRestaurantId();
-            menuService.switchStandard(newId, activeRestaurantId);
+            User currentUser = userService.getCurrentUser();
+            menuService.switchStandard(currentUser);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
