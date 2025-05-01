@@ -30,6 +30,10 @@ VALUES (true, 'Całodniowe', 1),
        (false, 'Ziemniaczane', 5),
        (false, 'Menu', 11);
 
+INSERT INTO menu_plan (menu_id, end_time, start_time, plan_key)
+VALUES (4, '14:00:00', '16:00:00', 1),
+       (4, '11:00:00', '13:00:00', 4);
+
 /* CATEGORIES TRANSLATIONS */
 INSERT INTO translatable(default_translation, translation_en)
 VALUES ('Przystawki', 'Starters'),

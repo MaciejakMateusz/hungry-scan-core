@@ -178,7 +178,8 @@ class MenuControllerTest {
         assertEquals("Menu", existing.getName());
         assertTrue(existing.isStandard());
 
-        apiRequestUtils.patchAndExpect200("/api/cms/menus/switch-standard", 4L);
+        apiRequestUtils.patchAndExpect200("/api/user/menu", 4L);
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/switch-standard");
 
         Menu oldStandard = getMenu(2L);
         assertEquals("Menu", oldStandard.getName());
@@ -187,6 +188,7 @@ class MenuControllerTest {
         Menu newStandard = getMenu(4L);
         assertEquals("Obiadowe", newStandard.getName());
         assertTrue(newStandard.isStandard());
+        assertTrue(newStandard.getPlan().isEmpty());
     }
 
     @Test
