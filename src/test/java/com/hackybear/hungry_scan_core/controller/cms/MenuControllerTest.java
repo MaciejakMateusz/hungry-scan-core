@@ -124,7 +124,7 @@ class MenuControllerTest {
     void shouldAddNew() throws Exception {
         User user = userRepository.findByUsername("restaurator@rarytas.pl").orElseThrow();
         assertEquals(3L, user.getActiveMenuId());
-        MenuSimpleDTO menu = createMenuDTO("Całodniowe");
+        MenuSimpleDTO menu = createMenuDTO("Całodniowe", 2L);
         apiRequestUtils.postAndExpect200("/api/cms/menus/add", menu);
 
 
@@ -145,7 +145,7 @@ class MenuControllerTest {
     void shouldNotAddNonUniqueName() throws Exception {
         User user = userRepository.findByUsername("admin@example.com").orElseThrow();
         assertEquals(1L, user.getActiveMenuId());
-        MenuSimpleDTO menu = createMenuDTO("Całodniowe");
+        MenuSimpleDTO menu = createMenuDTO("Całodniowe", 1L);
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/menus/add", menu);
         assertEquals(1, errors.size());
         assertEquals("Nazwy menu powinny być unikalne.", errors.get("exceptionMsg"));
@@ -154,14 +154,14 @@ class MenuControllerTest {
     @Test
     @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
     void shouldNotAllowAccessToAdd() throws Exception {
-        MenuSimpleDTO menu = createMenuDTO("Test");
+        MenuSimpleDTO menu = createMenuDTO("Test", 1L);
         apiRequestUtils.postAndExpect("/api/cms/menus/add", menu, status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     void shouldNotAddWithIncorrectName() throws Exception {
-        MenuSimpleDTO menu = createMenuDTO("");
+        MenuSimpleDTO menu = createMenuDTO("", 2L);
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/menus/add", menu);
 
@@ -482,8 +482,8 @@ class MenuControllerTest {
         apiRequestUtils.patchAndExpect("/api/cms/menus/duplicate", status().isForbidden(), "pl");
     }
 
-    private MenuSimpleDTO createMenuDTO(String name) {
-        return new MenuSimpleDTO(null, name, null, false);
+    private MenuSimpleDTO createMenuDTO(String name, Long restaurantId) {
+        return new MenuSimpleDTO(null, restaurantId, name, null, null, false);
     }
 
     private Map<DayOfWeek, TimeRange> getPlan(LocalTime startTime, LocalTime endTime, List<DayOfWeek> daysOfWeek) {
