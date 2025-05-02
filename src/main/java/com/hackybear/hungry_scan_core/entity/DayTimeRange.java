@@ -22,6 +22,9 @@ public class DayTimeRange implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @ManyToOne
     @JoinColumn(name = "standard_day_plan_id", nullable = false)
     @JsonIgnore
@@ -30,9 +33,6 @@ public class DayTimeRange implements Serializable {
     private LocalTime startTime;
 
     private LocalTime endTime;
-
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     @Override
     public String toString() {

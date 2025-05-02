@@ -76,6 +76,13 @@ public class Menu implements Serializable, Comparable<Menu> {
     @CreatedBy
     private String createdBy;
 
+    public Menu() {
+    }
+
+    public Menu(Long id) {
+        this.id = id;
+    }
+
     @Override
     public int compareTo(Menu other) {
         return this.getName().compareTo(other.getName());
