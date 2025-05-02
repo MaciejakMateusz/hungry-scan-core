@@ -6,14 +6,17 @@ import jakarta.validation.constraints.NotBlank;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.DayOfWeek;
+import java.util.List;
 import java.util.Map;
 
 public record MenuSimpleDTO(Long id,
+                            Long restaurantId,
 
                             @NotBlank
                             String name,
 
                             Map<DayOfWeek, TimeRange> plan,
+                            List<StandardDayPlanDTO> standardPlan,
                             boolean standard) implements Serializable, Comparable<MenuSimpleDTO> {
 
     @Serial
