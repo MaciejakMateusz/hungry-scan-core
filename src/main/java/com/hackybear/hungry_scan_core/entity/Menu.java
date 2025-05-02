@@ -17,10 +17,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -60,6 +57,9 @@ public class Menu implements Serializable, Comparable<Menu> {
     @ElementCollection
     @Enumerated(EnumType.STRING)
     private Map<DayOfWeek, TimeRange> plan = new HashMap<>();
+
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StandardDayPlan> standardDayPlan = new ArrayList<>();
 
     @Column(name = "standard")
     private boolean standard;
