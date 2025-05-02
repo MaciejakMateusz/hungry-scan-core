@@ -10,6 +10,7 @@ import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
+import com.hackybear.hungry_scan_core.utility.StandardDayPlanScheduler;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class MenuServiceImp implements MenuService {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuDeepCopyMapper menuDeepCopyMapper;
+    private final StandardDayPlanScheduler standardDayPlanScheduler;
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -114,6 +116,7 @@ public class MenuServiceImp implements MenuService {
         if (!toSave.isEmpty()) {
             menuRepository.saveAll(toSave);
         }
+        standardDayPlanScheduler.mapStandardPlan(menuDTOs);
     }
 
     @Transactional
@@ -123,12 +126,15 @@ public class MenuServiceImp implements MenuService {
             @CacheEvict(value = MENU_ID, key = "#currentUser.getActiveMenuId()"),
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
-    public void switchStandard(User currentUser) {
+    public void switchStandard(User currentUser) throws LocalizedException {
         menuRepository.resetStandardMenus(currentUser.getActiveRestaurantId());
         menuRepository.switchStandard(currentUser.getActiveMenuId());
         Menu menu = menuRepository.findById(currentUser.getActiveMenuId()).orElseThrow();
         menu.setPlan(new HashMap<>());
-        menuRepository.save(menu);
+        menuRepository.saveAndFlush(menu);
+        List<Menu> menus = menuRepository.findAllByRestaurantId(currentUser.getActiveRestaurantId()).stream().toList();
+        List<MenuSimpleDTO> menuDTOs = menus.stream().map(menuMapper::toSimpleDTO).toList();
+        standardDayPlanScheduler.mapStandardPlan(menuDTOs);
     }
 
     @Transactional
