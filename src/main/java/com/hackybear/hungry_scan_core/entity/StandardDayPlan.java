@@ -37,4 +37,11 @@ public class StandardDayPlan implements Serializable {
 
     @OneToMany(mappedBy = "standardDayPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DayTimeRange> timeRanges;
+
+    public StandardDayPlan() {
+    }
+
+    public StandardDayPlan(Long id) {
+        this.id = id;
+    }
 }
