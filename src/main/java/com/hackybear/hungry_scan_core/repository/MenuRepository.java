@@ -17,7 +17,7 @@ import java.util.Set;
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     @NonNull
-    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.plan WHERE m.id = :id")
+    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.plan LEFT JOIN FETCH m.standardDayPlan WHERE m.id = :id")
     Optional<Menu> findById(@NonNull @Param("id") Long id);
 
     @Query("""
