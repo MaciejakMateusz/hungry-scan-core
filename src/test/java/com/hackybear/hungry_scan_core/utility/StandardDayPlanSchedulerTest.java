@@ -9,219 +9,146 @@ import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
 
+import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class StandardDayPlanSchedulerTest {
 
     @Mock
-    private MenuRepository menuRepository;
-
+    MenuRepository menuRepository;
     @Mock
-    private MenuMapper menuMapper;
-
+    MenuMapper menuMapper;
     @Mock
-    private SettingsRepository settingsRepository;
-
+    SettingsRepository settingsRepository;
     @Mock
-    private ExceptionHelper exceptionHelper;
+    ExceptionHelper exceptionHelper;
 
     @InjectMocks
-    private StandardDayPlanScheduler mapper;
+    StandardDayPlanScheduler scheduler;
+
+    @Captor
+    ArgumentCaptor<Menu> menuCaptor;
 
     @Test
-    void mapStandardPlan_noStandard_throwsLocalizedException() {
-        when(exceptionHelper
-                .supplyLocalizedMessage("error.menuService.menuNotFound"))
-                .thenReturn(() -> new LocalizedException("menu not found"));
+    void mapStandardPlan_withoutStandardMenu_shouldThrow() {
+        MenuSimpleDTO dto = mock(MenuSimpleDTO.class);
+        when(dto.standard()).thenReturn(false);
+
+        when(exceptionHelper.supplyLocalizedMessage(anyString()))
+                .thenReturn(() -> new LocalizedException("menu.not.found"));
 
         LocalizedException ex = assertThrows(
                 LocalizedException.class,
-                () -> mapper.mapStandardPlan(Collections.emptyList())
+                () -> scheduler.mapStandardPlan(singletonList(dto))
         );
-        assertEquals("menu not found", ex.getMessage());
+        assertEquals("menu.not.found", ex.getMessage());
     }
 
     @Test
-    void mapStandardPlan_noNonStandard_fullAvailability() throws LocalizedException {
+    void mapStandardPlan_onlyStandardMenu_normalHours_createsFullDayPlan() throws Exception {
         MenuSimpleDTO stdDto = mock(MenuSimpleDTO.class);
-        when(stdDto.standard()).thenReturn(true);
+        doReturn(true).when(stdDto).standard();
 
-        Menu stdMenu = new Menu();
-        Restaurant r = mock(Restaurant.class);
-        when(r.getId()).thenReturn(42L);
-        stdMenu.setRestaurant(r);
-        when(menuMapper.toMenu(stdDto)).thenReturn(stdMenu);
+        Menu standardMenu = spy(new Menu());
+        when(standardMenu.getId()).thenReturn(1L);
+        when(standardMenu.getRestaurant()).thenReturn(new Restaurant(1L));
+        when(menuMapper.toMenu(stdDto)).thenReturn(standardMenu);
 
         Settings settings = new Settings();
         settings.setOpeningTime(LocalTime.of(8, 0));
-        settings.setClosingTime(LocalTime.of(18, 0));
-        when(settingsRepository.findByRestaurantId(42L))
+        settings.setClosingTime(LocalTime.of(20, 0));
+        when(settingsRepository.findByRestaurantId(anyLong()))
                 .thenReturn(settings);
 
-        mapper.mapStandardPlan(List.of(stdDto));
+        when(menuRepository.findById(1L))
+                .thenReturn(Optional.of(standardMenu));
 
-        ArgumentCaptor<Menu> cap = ArgumentCaptor.forClass(Menu.class);
-        verify(menuRepository).save(cap.capture());
-        Menu saved = cap.getValue();
+        scheduler.mapStandardPlan(singletonList(stdDto));
+
+        ArgumentCaptor<Menu> captor = ArgumentCaptor.forClass(Menu.class);
+        verify(menuRepository).save(captor.capture());
+        Menu saved = captor.getValue();
 
         List<StandardDayPlan> plans = saved.getStandardDayPlan();
-        assertEquals(7, plans.size(),
-                "Should have one StandardDayPlan per weekday");
-
-        plans.forEach(p -> {
-            List<DayTimeRange> tr = p.getTimeRanges();
-            assertEquals(1, tr.size());
-            assertEquals(LocalTime.of(8, 0), tr.getFirst().getStartTime());
-            assertEquals(LocalTime.of(18, 0), tr.getFirst().getEndTime());
-        });
+        assertEquals(7, plans.size());
+        for (StandardDayPlan p : plans) {
+            List<DayTimeRange> ranges = p.getTimeRanges();
+            assertEquals(1, ranges.size());
+            assertEquals(LocalTime.of(8, 0), ranges.getFirst().getStartTime());
+            assertEquals(LocalTime.of(20, 0), ranges.getFirst().getEndTime());
+        }
     }
 
     @Test
-    void mapStandardPlan_withBlockedRanges_splitsRanges() throws LocalizedException {
-        MenuSimpleDTO standardMenu = mock(MenuSimpleDTO.class);
-        when(standardMenu.standard()).thenReturn(true);
-        Menu stdMenu = new Menu();
-        Restaurant r = mock(Restaurant.class);
-        when(r.getId()).thenReturn(42L);
-        stdMenu.setRestaurant(r);
-        when(menuMapper.toMenu(standardMenu)).thenReturn(stdMenu);
-
-        MenuSimpleDTO additionalMenu = mock(MenuSimpleDTO.class);
-        when(additionalMenu.standard()).thenReturn(false);
-        Menu nonMenu = new Menu();
-        Map<DayOfWeek, com.hackybear.hungry_scan_core.utility.TimeRange> plan =
-                new EnumMap<>(DayOfWeek.class);
-        plan.put(DayOfWeek.MONDAY,
-                new com.hackybear.hungry_scan_core.utility.TimeRange(
-                        LocalTime.of(10, 0),
-                        LocalTime.of(12, 0)
-                )
-        );
-        nonMenu.setPlan(plan);
-        when(menuMapper.toMenu(additionalMenu)).thenReturn(nonMenu);
-
-        Settings settings = new Settings();
-        settings.setOpeningTime(LocalTime.of(8, 0));
-        settings.setClosingTime(LocalTime.of(18, 0));
-        when(settingsRepository.findByRestaurantId(42L))
-                .thenReturn(settings);
-
-        mapper.mapStandardPlan(List.of(standardMenu, additionalMenu));
-
-        ArgumentCaptor<Menu> cap = ArgumentCaptor.forClass(Menu.class);
-        verify(menuRepository).save(cap.capture());
-        Menu saved = cap.getValue();
-
-        List<StandardDayPlan> plans = saved.getStandardDayPlan();
-        assertEquals(7, plans.size(),
-                "Should still have exactly 7 day-plans");
-
-        StandardDayPlan monday = plans.stream()
-                .filter(p -> p.getDayOfWeek() == DayOfWeek.MONDAY)
-                .findFirst().orElseThrow();
-        List<DayTimeRange> mr = monday.getTimeRanges();
-        assertEquals(2, mr.size(), "Monday must split into two slots");
-
-        assertEquals(LocalTime.of(8, 0), mr.getFirst().getStartTime());
-        assertEquals(LocalTime.of(10, 0), mr.getFirst().getEndTime());
-        assertEquals(LocalTime.of(12, 0), mr.get(1).getStartTime());
-        assertEquals(LocalTime.of(18, 0), mr.get(1).getEndTime());
-
-        StandardDayPlan tuesday = plans.stream()
-                .filter(p -> p.getDayOfWeek() == DayOfWeek.TUESDAY)
-                .findFirst().orElseThrow();
-        List<DayTimeRange> tr = tuesday.getTimeRanges();
-        assertEquals(1, tr.size());
-        assertEquals(LocalTime.of(8, 0), tr.getFirst().getStartTime());
-        assertEquals(LocalTime.of(18, 0), tr.getFirst().getEndTime());
-    }
-
-    @Test
-    void mapStandardPlan_crossMidnight_withNonStandardBlocks() throws LocalizedException {
+    void mapStandardPlan_crossMidnightBlocks_correctForFriday() throws Exception {
         MenuSimpleDTO stdDto = mock(MenuSimpleDTO.class);
         when(stdDto.standard()).thenReturn(true);
-        Menu stdMenu = new Menu();
-        Restaurant r = mock(Restaurant.class);
-        when(r.getId()).thenReturn(42L);
-        stdMenu.setRestaurant(r);
-        when(menuMapper.toMenu(stdDto)).thenReturn(stdMenu);
+        Menu standardMenu = Mockito.spy(new Menu());
+        when(standardMenu.getId()).thenReturn(1L);
+        when(menuMapper.toMenu(stdDto)).thenReturn(standardMenu);
 
-        MenuSimpleDTO nonDto = mock(MenuSimpleDTO.class);
-        when(nonDto.standard()).thenReturn(false);
-        Menu nonMenu = new Menu();
-        Map<DayOfWeek, com.hackybear.hungry_scan_core.utility.TimeRange> nonPlan =
-                new EnumMap<>(DayOfWeek.class);
-        nonPlan.put(DayOfWeek.MONDAY,
-                new com.hackybear.hungry_scan_core.utility.TimeRange(
-                        LocalTime.of(21, 0),
-                        LocalTime.MIDNIGHT
+        MenuSimpleDTO dailyDto = mock(MenuSimpleDTO.class);
+        when(dailyDto.standard()).thenReturn(false);
+        Menu dailyMenu = mock(Menu.class);
+        Map<DayOfWeek, TimeRange> dailyPlan = new EnumMap<>(DayOfWeek.class);
+        for (DayOfWeek d : DayOfWeek.values()) {
+            dailyPlan.put(d, new TimeRange(LocalTime.of(15, 0), LocalTime.of(17, 0)));
+        }
+        when(menuMapper.toMenu(dailyDto)).thenReturn(dailyMenu);
+        when(dailyMenu.getPlan()).thenReturn(dailyPlan);
+
+        MenuSimpleDTO nightFri = mock(MenuSimpleDTO.class);
+        when(nightFri.standard()).thenReturn(false);
+        Menu nightMenuFri = mock(Menu.class);
+        when(menuMapper.toMenu(nightFri)).thenReturn(nightMenuFri);
+        when(nightMenuFri.getPlan()).thenReturn(
+                Collections.singletonMap(
+                        DayOfWeek.FRIDAY,
+                        new TimeRange(LocalTime.of(22, 0), LocalTime.of(3, 0))
                 )
         );
-        nonMenu.setPlan(nonPlan);
-        when(menuMapper.toMenu(nonDto)).thenReturn(nonMenu);
 
-        MenuSimpleDTO nonDto2 = mock(MenuSimpleDTO.class);
-        when(nonDto2.standard()).thenReturn(false);
-        Menu nonMenu2 = new Menu();
-        Map<DayOfWeek, com.hackybear.hungry_scan_core.utility.TimeRange> nonPlan2 =
-                new EnumMap<>(DayOfWeek.class);
-        nonPlan2.put(DayOfWeek.MONDAY,
-                new com.hackybear.hungry_scan_core.utility.TimeRange(
-                        LocalTime.of(13, 0),
-                        LocalTime.of(18, 0)
+        MenuSimpleDTO nightSat = mock(MenuSimpleDTO.class);
+        when(nightSat.standard()).thenReturn(false);
+        Menu nightMenuSat = mock(Menu.class);
+        when(menuMapper.toMenu(nightSat)).thenReturn(nightMenuSat);
+        when(nightMenuSat.getPlan()).thenReturn(
+                Collections.singletonMap(
+                        DayOfWeek.SATURDAY,
+                        new TimeRange(LocalTime.of(22, 0), LocalTime.of(3, 0))
                 )
         );
-        nonMenu2.setPlan(nonPlan2);
-        when(menuMapper.toMenu(nonDto2)).thenReturn(nonMenu2);
 
-        Settings settings = new Settings();
-        settings.setOpeningTime(LocalTime.of(12, 0));
-        settings.setClosingTime(LocalTime.of(2, 0));
-        when(settingsRepository.findByRestaurantId(42L))
-                .thenReturn(settings);
+        when(menuRepository.findById(1L))
+                .thenReturn(Optional.of(standardMenu));
 
-        mapper.mapStandardPlan(List.of(stdDto, nonDto, nonDto2));
+        List<MenuSimpleDTO> all = Arrays.asList(stdDto, dailyDto, nightFri, nightSat);
+        scheduler.mapStandardPlan(all, new TimeRange(LocalTime.of(15, 0), LocalTime.of(4, 0)));
 
-        ArgumentCaptor<Menu> cap = ArgumentCaptor.forClass(Menu.class);
-        verify(menuRepository).save(cap.capture());
-        Menu saved = cap.getValue();
+        verify(menuRepository).save(menuCaptor.capture());
+        Menu saved = menuCaptor.getValue();
 
-        assertTrue(nonMenu.getPlan().containsKey(DayOfWeek.MONDAY),
-                "Non-standard menu should have a Monday block");
-        com.hackybear.hungry_scan_core.utility.TimeRange blocked =
-                nonMenu.getPlan().get(DayOfWeek.MONDAY);
-        assertEquals(LocalTime.of(21, 0), blocked.getStartTime());
-        assertEquals(LocalTime.MIDNIGHT, blocked.getEndTime());
+        Optional<StandardDayPlan> friday = saved.getStandardDayPlan().stream()
+                .filter(p -> p.getDayOfWeek() == DayOfWeek.FRIDAY)
+                .findFirst();
+        assertTrue(friday.isPresent());
 
-        StandardDayPlan mondayPlan = saved.getStandardDayPlan().stream()
-                .filter(p -> p.getDayOfWeek() == DayOfWeek.MONDAY)
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("Missing MONDAY plan"));
-
-        List<DayTimeRange> slots = new ArrayList<>(mondayPlan.getTimeRanges());
-        assertEquals(3, slots.size(), "Should have three open windows after blocking");
-
-        slots.sort(Comparator.comparing(DayTimeRange::getStartTime));
-
-        assertEquals(LocalTime.MIDNIGHT, slots.get(0).getStartTime());
-        assertEquals(LocalTime.of(2, 0), slots.getFirst().getEndTime());
-
-        assertEquals(LocalTime.of(12, 0), slots.get(1).getStartTime());
-        assertEquals(LocalTime.of(13, 0), slots.get(1).getEndTime());
-
-        assertEquals(LocalTime.of(18, 0), slots.get(2).getStartTime());
-        assertEquals(LocalTime.of(21, 0), slots.get(2).getEndTime());
+        List<DayTimeRange> fr = friday.get().getTimeRanges();
+        assertEquals(2, fr.size(), "should be two available windows on Friday");
+        assertEquals(LocalTime.of(3, 0), fr.get(0).getStartTime());
+        assertEquals(LocalTime.of(4, 0), fr.get(0).getEndTime());
+        assertEquals(LocalTime.of(17, 0), fr.get(1).getStartTime());
+        assertEquals(LocalTime.of(22, 0), fr.get(1).getEndTime());
     }
-
 }
