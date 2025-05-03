@@ -16,7 +16,7 @@ public record MenuSimpleDTO(Long id,
                             String name,
 
                             Map<DayOfWeek, TimeRange> plan,
-                            List<StandardDayPlanDTO> standardPlan,
+                            List<StandardDayPlanDTO> standardDayPlan,
                             boolean standard) implements Serializable, Comparable<MenuSimpleDTO> {
 
     @Serial

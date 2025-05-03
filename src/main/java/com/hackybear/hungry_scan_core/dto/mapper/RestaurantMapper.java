@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring", uses = {SettingsMapper.class})
+@Mapper(componentModel = "spring", uses = {SettingsMapper.class, MenuMapper.class})
 public interface RestaurantMapper {
 
     RestaurantDTO toDTO(Restaurant restaurant);
