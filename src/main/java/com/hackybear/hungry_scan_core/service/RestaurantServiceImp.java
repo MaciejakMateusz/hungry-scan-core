@@ -16,6 +16,7 @@ import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import com.hackybear.hungry_scan_core.utility.MenuPlanUpdater;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -41,6 +42,7 @@ public class RestaurantServiceImp implements RestaurantService {
     private final RestaurantMapper restaurantMapper;
     private final UserRepository userRepository;
     private final PricePlanRepository pricePlanRepository;
+    private final MenuPlanUpdater menuPlanUpdater;
 
     @Override
     @Cacheable(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
@@ -114,6 +116,7 @@ public class RestaurantServiceImp implements RestaurantService {
     })
     public void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
         Restaurant restaurant = getById(restaurantDTO.id());
+        menuPlanUpdater.updateMenusPlans(restaurant, restaurantDTO);
         restaurantMapper.updateFromDTO(restaurantDTO, restaurant);
         restaurantRepository.save(restaurant);
     }
