@@ -201,7 +201,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     @Transactional
     @Rollback
     void shouldUpdateRestaurant() throws Exception {
