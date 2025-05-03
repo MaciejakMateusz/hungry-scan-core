@@ -83,6 +83,18 @@ public class Menu implements Serializable, Comparable<Menu> {
         this.id = id;
     }
 
+    public void setStandardDayPlan(List<StandardDayPlan> newPlans) {
+        this.standardDayPlan.clear();
+        if (newPlans != null) {
+            newPlans.forEach(this::addStandardDayPlan);
+        }
+    }
+
+    public void addStandardDayPlan(StandardDayPlan plan) {
+        plan.setMenu(this);
+        this.standardDayPlan.add(plan);
+    }
+
     @Override
     public int compareTo(Menu other) {
         return this.getName().compareTo(other.getName());
