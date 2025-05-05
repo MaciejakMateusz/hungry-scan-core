@@ -13,10 +13,11 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,6 +78,34 @@ public class S3ServiceImp implements S3Service {
                 .build();
 
         s3.deleteObject(deleteRequest);
+    }
+
+    @Override
+    public void deleteAllFiles(List<Long> menuItemIds) {
+        List<ObjectIdentifier> toDelete = menuItemIds.stream()
+                .map(id -> ObjectIdentifier.builder()
+                        .key("menuItems/" + id)
+                        .build())
+                .collect(Collectors.toList());
+
+        int chunkSize = 1000;
+        for (int i = 0; i < toDelete.size(); i += chunkSize) {
+            List<ObjectIdentifier> chunk = toDelete.subList(
+                    i,
+                    Math.min(i + chunkSize, toDelete.size())
+            );
+
+            Delete delete = Delete.builder()
+                    .objects(chunk)
+                    .build();
+
+            DeleteObjectsRequest deleteRequest = DeleteObjectsRequest.builder()
+                    .bucket(bucketName)
+                    .delete(delete)
+                    .build();
+
+            s3.deleteObjects(deleteRequest);
+        }
     }
 
     @Override
