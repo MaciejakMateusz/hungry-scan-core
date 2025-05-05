@@ -14,10 +14,14 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -114,6 +118,32 @@ class S3ServiceImpTest {
         DeleteObjectRequest req = cap.getValue();
         assertEquals("test-bucket", req.bucket());
         assertEquals("menuItems/99", req.key());
+    }
+
+    @Test
+    void testDeleteAllFiles_invokesBulkDelete() {
+        // given
+        List<Long> ids = Arrays.asList(1L, 2L, 3L);
+
+        // when
+        service.deleteAllFiles(ids);
+
+        // then
+        ArgumentCaptor<DeleteObjectsRequest> cap = ArgumentCaptor.forClass(DeleteObjectsRequest.class);
+        verify(s3Client).deleteObjects(cap.capture());
+
+        DeleteObjectsRequest req = cap.getValue();
+        assertEquals("test-bucket", req.bucket(), "Bucket name should match");
+
+        // extract the list of keys we asked to delete
+        List<String> keys = req.delete().objects().stream()
+                .map(ObjectIdentifier::key)
+                .toList();
+
+        assertEquals(3, keys.size(), "Should have three objects to delete");
+        assertTrue(keys.containsAll(
+                Arrays.asList("menuItems/1", "menuItems/2", "menuItems/3")
+        ), "All requested keys must be present");
     }
 
     @Test
