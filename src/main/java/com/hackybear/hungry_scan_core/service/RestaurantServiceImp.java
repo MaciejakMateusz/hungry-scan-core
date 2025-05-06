@@ -6,10 +6,7 @@ import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
-import com.hackybear.hungry_scan_core.entity.Menu;
-import com.hackybear.hungry_scan_core.entity.Restaurant;
-import com.hackybear.hungry_scan_core.entity.Settings;
-import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
@@ -17,6 +14,7 @@ import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
+import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.utility.MenuPlanUpdater;
 import com.hackybear.hungry_scan_core.utility.StandardDayPlanScheduler;
@@ -49,6 +47,7 @@ public class RestaurantServiceImp implements RestaurantService {
     private final PricePlanRepository pricePlanRepository;
     private final MenuPlanUpdater menuPlanUpdater;
     private final StandardDayPlanScheduler standardDayPlanScheduler;
+    private final S3Service s3Service;
 
     @Override
     @Cacheable(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
@@ -145,8 +144,10 @@ public class RestaurantServiceImp implements RestaurantService {
         currentUser.setActiveRestaurantId(otherRestaurant.getId());
         currentUser.setActiveMenuId(otherMenuId);
         currentUser.removeRestaurantById(restaurantId);
-        restaurantRepository.deleteById(restaurantId);
+        Restaurant restaurant = getById(restaurantId);
+        restaurantRepository.delete(restaurant);
         userRepository.save(currentUser);
+        removeMenuItemsFiles(restaurant);
     }
 
     @Override
@@ -243,5 +244,16 @@ public class RestaurantServiceImp implements RestaurantService {
         LocalTime openingTime = restaurant.getSettings().getOpeningTime();
         LocalTime closingTime = restaurant.getSettings().getClosingTime();
         return new TimeRange(openingTime, closingTime);
+    }
+
+    private void removeMenuItemsFiles(Restaurant restaurant) {
+        List<MenuItem> menuItems = new ArrayList<>();
+        for (Menu menu : restaurant.getMenus()) {
+            for (Category category : menu.getCategories()) {
+                menuItems.addAll(category.getMenuItems());
+            }
+        }
+        List<Long> menuItemIds = menuItems.stream().map(MenuItem::getId).toList();
+        s3Service.deleteAllFiles(menuItemIds);
     }
 }
