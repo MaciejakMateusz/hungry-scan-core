@@ -10,6 +10,7 @@ import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
+import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.StandardDayPlanScheduler;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class MenuServiceImp implements MenuService {
     private final RestaurantRepository restaurantRepository;
     private final MenuDeepCopyMapper menuDeepCopyMapper;
     private final StandardDayPlanScheduler standardDayPlanScheduler;
+    private final S3Service s3Service;
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -156,6 +158,7 @@ public class MenuServiceImp implements MenuService {
         currentUser.setActiveMenuId(standardId);
         menuRepository.delete(existingMenu);
         userRepository.save(currentUser);
+        removeMenuItemsFiles(existingMenu);
     }
 
     @Transactional
@@ -237,5 +240,14 @@ public class MenuServiceImp implements MenuService {
         if (menuRepository.existsByRestaurantIdAndName(restaurantId, menuName)) {
             exceptionHelper.throwLocalizedMessage("error.menuService.uniqueNameViolation");
         }
+    }
+
+    private void removeMenuItemsFiles(Menu existingMenu) {
+        List<MenuItem> menuPositions = new ArrayList<>();
+        for (Category category : existingMenu.getCategories()) {
+            menuPositions.addAll(category.getMenuItems());
+        }
+        List<Long> menuItemIds = menuPositions.stream().map(MenuItem::getId).toList();
+        s3Service.deleteAllFiles(menuItemIds);
     }
 }
