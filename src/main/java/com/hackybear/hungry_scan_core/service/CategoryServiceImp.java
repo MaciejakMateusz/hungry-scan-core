@@ -14,6 +14,7 @@ import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
+import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ public class CategoryServiceImp implements CategoryService {
     private final MenuItemRepository menuItemRepository;
     private final VariantRepository variantRepository;
     private final MenuRepository menuRepository;
+    private final S3Service s3Service;
 
     @Override
     @Cacheable(value = CATEGORIES_ALL, key = "#activeMenuId")
@@ -130,12 +132,13 @@ public class CategoryServiceImp implements CategoryService {
     })
     public void delete(Long id, Long activeMenuId) throws LocalizedException {
         Category existingCategory = getCategory(id);
-        if (!existingCategory.getMenuItems().isEmpty()) {
-            cascadeRemoveMenuItems(existingCategory);
-        }
+        Set<MenuItem> menuItems = existingCategory.getMenuItems();
+        if (!menuItems.isEmpty()) cascadeRemoveMenuItems(existingCategory);
         categoryRepository.deleteById(id);
         Set<Category> categories = categoryRepository.findAllByMenuId(existingCategory.getMenu().getId());
         sortingHelper.reassignDisplayOrders(categories, categoryRepository::saveAllAndFlush);
+        List<Long> menuItemIds = menuItems.stream().map(MenuItem::getId).toList();
+        if (!menuItems.isEmpty()) s3Service.deleteAllFiles(menuItemIds);
     }
 
     private Category getCategory(Long id) throws LocalizedException {
