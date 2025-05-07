@@ -42,8 +42,6 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private String imageName;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
     @DefaultTranslationNotBlank

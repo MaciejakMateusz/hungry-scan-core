@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 public record MenuItemFormDTO(Long id,
-                              String imageName,
 
                               @DefaultTranslationNotBlankDTO
                               @LimitTranslationsLengthDTO
@@ -38,10 +37,7 @@ public record MenuItemFormDTO(Long id,
 
                               Integer displayOrder,
 
-                              boolean available,
-                              boolean visible,
-                              boolean isNew,
-                              boolean isBestseller) implements Serializable {
+                              boolean available) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
