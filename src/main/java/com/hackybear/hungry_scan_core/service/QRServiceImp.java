@@ -19,6 +19,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.*;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -130,10 +131,12 @@ public class QRServiceImp implements QRService {
 
         String jwtCookie = prepareJwtCookie(jwt);
         String restaurantTokenCookie = getRestaurantTokenCookie(restaurantToken);
-        response.addHeader("Set-Cookie", jwtCookie);
-        response.addHeader("Set-Cookie", restaurantTokenCookie);
-        response.sendRedirect(customerAppUrl);
-        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION, customerAppUrl);
+        headers.add(HttpHeaders.SET_COOKIE, jwtCookie);
+        headers.add(HttpHeaders.SET_COOKIE, restaurantTokenCookie);
+        return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
     }
 
     @Override
