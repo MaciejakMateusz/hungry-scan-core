@@ -8,10 +8,12 @@ import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -37,16 +39,34 @@ public class MenuItemController {
         return responseHelper.getResponseEntity(id, menuItemService::findById);
     }
 
-    @PostMapping(value = "/add")
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> add(@RequestBody @Valid MenuItemFormDTO menuItem, BindingResult br) {
-        return responseHelper.buildResponse(menuItem, br, userService::getActiveMenuId, menuItemService::save);
+    public ResponseEntity<?> add(@RequestPart("menuItem") @Valid MenuItemFormDTO menuItem,
+                                 BindingResult br,
+                                 @RequestPart(value = "image", required = false) MultipartFile image) {
+        if (br.hasErrors()) return responseHelper.createErrorResponse(br);
+        try {
+            Long activeMenuId = userService.getActiveMenuId();
+            menuItemService.save(menuItem, activeMenuId, image);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
-    @PatchMapping(value = "/update")
+    @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> update(@RequestBody @Valid MenuItemFormDTO menuItem, BindingResult br) {
-        return responseHelper.buildResponse(menuItem, br, userService::getActiveMenuId, menuItemService::update);
+    public ResponseEntity<?> update(@RequestPart("menuItem") @Valid MenuItemFormDTO menuItem,
+                                    BindingResult br,
+                                    @RequestPart(value = "image", required = false) MultipartFile image) {
+        if (br.hasErrors()) return responseHelper.createErrorResponse(br);
+        try {
+            Long activeMenuId = userService.getActiveMenuId();
+            menuItemService.update(menuItem, activeMenuId, image);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @PatchMapping(value = "/display-orders")

@@ -372,7 +372,7 @@ public class ResponseHelper {
      * @param br the BindingResult containing validation errors
      * @return a ResponseEntity with a bad request status and a map of field errors
      */
-    private ResponseEntity<?> createErrorResponse(BindingResult br) {
+    public ResponseEntity<?> createErrorResponse(BindingResult br) {
         return ResponseEntity.badRequest().body(getFieldErrors(br));
     }
 
