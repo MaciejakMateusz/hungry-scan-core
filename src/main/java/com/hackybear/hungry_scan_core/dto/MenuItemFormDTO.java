@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public record MenuItemFormDTO(Long id,
@@ -34,10 +35,9 @@ public record MenuItemFormDTO(Long id,
                               Set<IngredientSimpleDTO> additionalIngredients,
                               Set<VariantDTO> variants,
                               Set<Banner> banners,
-
                               Integer displayOrder,
-
-                              boolean available) implements Serializable {
+                              boolean available,
+                              LocalDateTime updated) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
