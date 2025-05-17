@@ -11,6 +11,7 @@ import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemViewEventRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
+import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +47,9 @@ public class MenuItemServiceImp implements MenuItemService {
     private final IngredientMapper ingredientMapper;
     private final EntityManager entityManager;
     private final MenuItemViewEventRepository menuItemViewEventRepository;
+    private final S3Service s3Service;
+
+    private static final String S3_PATH = "menuItems";
 
     @Override
     public MenuItemFormDTO findById(Long id) throws LocalizedException {
@@ -59,11 +64,12 @@ public class MenuItemServiceImp implements MenuItemService {
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
     })
-    public void save(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
+    public void save(MenuItemFormDTO menuItemFormDTO, Long activeMenuId, MultipartFile image) throws Exception {
         MenuItem menuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
         Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategory().getId());
         menuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
-        menuItemRepository.save(menuItem);
+        menuItem = menuItemRepository.save(menuItem);
+        if (Objects.nonNull(image)) s3Service.uploadFile(S3_PATH, menuItem.getId(), image);
     }
 
     @Override
@@ -73,7 +79,7 @@ public class MenuItemServiceImp implements MenuItemService {
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
     })
-    public void update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId) throws Exception {
+    public void update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId, MultipartFile image) throws Exception {
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
         Long newCategoryId = menuItemFormDTO.categoryId();
         Category oldCategory = findCategoryByMenuItemId(existingMenuItem.getId());
@@ -81,6 +87,8 @@ public class MenuItemServiceImp implements MenuItemService {
         updateMenuItem(existingMenuItem, menuItemFormDTO);
         switchCategory(existingMenuItem, oldCategory, newCategory);
         menuItemRepository.save(existingMenuItem);
+        if (Objects.isNull(image)) s3Service.deleteFile(S3_PATH, existingMenuItem.getId());
+        if (Objects.nonNull(image)) s3Service.uploadFile(S3_PATH, existingMenuItem.getId(), image);
     }
 
     @Override
@@ -98,10 +106,10 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public Set<MenuItemSimpleDTO> filterByName(String value) {
+    public Set<MenuItemFormDTO> filterByName(String value) {
         String filterValue = "%" + value.toLowerCase() + "%";
         Set<MenuItem> menuItems = menuItemRepository.filterByName(filterValue);
-        return menuItems.stream().map(menuItemMapper::toDTO).collect(Collectors.toSet());
+        return menuItems.stream().map(menuItemMapper::toFormDTO).collect(Collectors.toSet());
     }
 
     @Override
@@ -117,6 +125,7 @@ public class MenuItemServiceImp implements MenuItemService {
         removeMenuItem(category, existingMenuItem);
         Set<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
         sortingHelper.reassignDisplayOrders(menuItems, menuItemRepository::saveAllAndFlush);
+        s3Service.deleteFile(S3_PATH, existingMenuItem.getId());
     }
 
     @Override
@@ -168,7 +177,6 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     private void updateMenuItem(MenuItem existing, MenuItemFormDTO dto) throws LocalizedException {
-        existing.setImageName(dto.imageName());
         existing.setName(translatableMapper.toTranslatable(dto.name()));
         existing.setDescription(translatableMapper.toTranslatable(dto.description()));
         existing.setCategory(categoryRepository.findById(dto.categoryId()).orElseThrow());
@@ -180,7 +188,6 @@ public class MenuItemServiceImp implements MenuItemService {
         existing.setAdditionalIngredients(dto.additionalIngredients().stream()
                 .map(ingredientMapper::toIngredient).collect(Collectors.toSet()));
         existing.setAvailable(dto.available());
-        existing.setVisible(dto.visible());
 
         if (isPromoPriceInvalid(dto)) {
             exceptionHelper.throwLocalizedMessage("error.menuItemService.invalidPromoPrice");
