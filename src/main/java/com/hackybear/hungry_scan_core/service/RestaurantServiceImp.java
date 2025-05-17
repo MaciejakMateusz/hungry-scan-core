@@ -49,6 +49,8 @@ public class RestaurantServiceImp implements RestaurantService {
     private final StandardDayPlanScheduler standardDayPlanScheduler;
     private final S3Service s3Service;
 
+    private static final String S3_PATH = "menuItems";
+
     @Override
     @Cacheable(value = RESTAURANTS_ALL, key = "#currentUser.getId()")
     public TreeSet<RestaurantSimpleDTO> findAll(User currentUser) {
@@ -254,6 +256,6 @@ public class RestaurantServiceImp implements RestaurantService {
             }
         }
         List<Long> menuItemIds = menuItems.stream().map(MenuItem::getId).toList();
-        s3Service.deleteAllFiles(menuItemIds);
+        s3Service.deleteAllFiles(S3_PATH, menuItemIds);
     }
 }

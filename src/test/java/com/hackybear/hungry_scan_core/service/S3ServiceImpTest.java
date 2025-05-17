@@ -39,6 +39,8 @@ class S3ServiceImpTest {
 
     private AutoCloseable mocks;
 
+    private static final String S3_PATH = "menuItems";
+
     @BeforeEach
     void setUp() {
         this.mocks = MockitoAnnotations.openMocks(this);
@@ -79,7 +81,7 @@ class S3ServiceImpTest {
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(content));
         when(file.getSize()).thenReturn((long) content.length);
 
-        service.uploadFile(menuItemId, file);
+        service.uploadFile(S3_PATH, menuItemId, file);
 
         ArgumentCaptor<PutObjectRequest> reqCap = ArgumentCaptor.forClass(PutObjectRequest.class);
         ArgumentCaptor<RequestBody> bodyCap = ArgumentCaptor.forClass(RequestBody.class);
@@ -102,7 +104,7 @@ class S3ServiceImpTest {
                 .when(exceptionHelper).throwLocalizedMessage("error.s3Service.uploadingFailed");
 
         assertThrows(LocalizedException.class,
-                () -> service.uploadFile(2L, file),
+                () -> service.uploadFile(S3_PATH, 2L, file),
                 "IOException during getInputStream() should trigger a LocalizedException");
     }
 
@@ -110,7 +112,7 @@ class S3ServiceImpTest {
     void testDeleteFile_invokesDeleteObject() {
         long menuItemId = 99L;
 
-        service.deleteFile(menuItemId);
+        service.deleteFile(S3_PATH, menuItemId);
 
         ArgumentCaptor<DeleteObjectRequest> cap = ArgumentCaptor.forClass(DeleteObjectRequest.class);
         verify(s3Client).deleteObject(cap.capture());
@@ -122,20 +124,16 @@ class S3ServiceImpTest {
 
     @Test
     void testDeleteAllFiles_invokesBulkDelete() {
-        // given
         List<Long> ids = Arrays.asList(1L, 2L, 3L);
 
-        // when
-        service.deleteAllFiles(ids);
+        service.deleteAllFiles(S3_PATH, ids);
 
-        // then
         ArgumentCaptor<DeleteObjectsRequest> cap = ArgumentCaptor.forClass(DeleteObjectsRequest.class);
         verify(s3Client).deleteObjects(cap.capture());
 
         DeleteObjectsRequest req = cap.getValue();
         assertEquals("test-bucket", req.bucket(), "Bucket name should match");
 
-        // extract the list of keys we asked to delete
         List<String> keys = req.delete().objects().stream()
                 .map(ObjectIdentifier::key)
                 .toList();
@@ -150,7 +148,7 @@ class S3ServiceImpTest {
     void testGetPublicUrl_returnsCorrectlyConcatenatedUrl() {
         long menuItemId = 5L;
 
-        String url = service.getPublicUrl(menuItemId);
+        String url = service.getPublicUrl(S3_PATH, menuItemId);
 
         assertEquals(
                 "http://test-bucket-url/menuItems/5",

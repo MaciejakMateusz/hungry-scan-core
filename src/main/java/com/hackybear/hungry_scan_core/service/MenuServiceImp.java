@@ -42,6 +42,8 @@ public class MenuServiceImp implements MenuService {
     private final StandardDayPlanScheduler standardDayPlanScheduler;
     private final S3Service s3Service;
 
+    private static final String S3_PATH = "menuItems";
+
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
     public Set<MenuSimpleDTO> findAll(Long activeRestaurantId) throws LocalizedException {
@@ -248,6 +250,6 @@ public class MenuServiceImp implements MenuService {
             menuPositions.addAll(category.getMenuItems());
         }
         List<Long> menuItemIds = menuPositions.stream().map(MenuItem::getId).toList();
-        s3Service.deleteAllFiles(menuItemIds);
+        s3Service.deleteAllFiles(S3_PATH, menuItemIds);
     }
 }

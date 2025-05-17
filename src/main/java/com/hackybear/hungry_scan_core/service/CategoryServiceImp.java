@@ -45,6 +45,8 @@ public class CategoryServiceImp implements CategoryService {
     private final MenuRepository menuRepository;
     private final S3Service s3Service;
 
+    private static final String S3_PATH = "menuItems";
+
     @Override
     @Cacheable(value = CATEGORIES_ALL, key = "#activeMenuId")
     public List<CategoryDTO> findAll(Long activeMenuId) throws LocalizedException {
@@ -138,7 +140,7 @@ public class CategoryServiceImp implements CategoryService {
         Set<Category> categories = categoryRepository.findAllByMenuId(existingCategory.getMenu().getId());
         sortingHelper.reassignDisplayOrders(categories, categoryRepository::saveAllAndFlush);
         List<Long> menuItemIds = menuItems.stream().map(MenuItem::getId).toList();
-        if (!menuItems.isEmpty()) s3Service.deleteAllFiles(menuItemIds);
+        if (!menuItems.isEmpty()) s3Service.deleteAllFiles(S3_PATH, menuItemIds);
     }
 
     private Category getCategory(Long id) throws LocalizedException {

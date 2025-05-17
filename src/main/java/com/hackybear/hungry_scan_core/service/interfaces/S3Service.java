@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface S3Service {
 
-    void uploadFile(Long menuItemId, MultipartFile file) throws LocalizedException;
+    void uploadFile(String path, Long menuItemId, MultipartFile file) throws LocalizedException;
 
-    void deleteFile(Long menuItemId);
+    void deleteFile(String path, Long menuItemId);
 
-    void deleteAllFiles(List<Long> menuItemIds);
+    void deleteAllFiles(String path, List<Long> menuItemIds);
 
-    String getPublicUrl(Long menuItemId);
+    String getPublicUrl(String path, Long menuItemId);
 }

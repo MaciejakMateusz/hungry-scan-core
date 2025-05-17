@@ -53,8 +53,8 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public void uploadFile(Long menuItemId, MultipartFile file) throws LocalizedException {
-        String key = "menuItems" + "/" + menuItemId;
+    public void uploadFile(String path, Long menuItemId, MultipartFile file) throws LocalizedException {
+        String key = path + "/" + menuItemId;
 
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -70,8 +70,8 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public void deleteFile(Long menuItemId) {
-        String key = "menuItems/" + menuItemId;
+    public void deleteFile(String path, Long menuItemId) {
+        String key = path + "/" + menuItemId;
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
@@ -81,10 +81,10 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public void deleteAllFiles(List<Long> menuItemIds) {
+    public void deleteAllFiles(String path, List<Long> menuItemIds) {
         List<ObjectIdentifier> toDelete = menuItemIds.stream()
                 .map(id -> ObjectIdentifier.builder()
-                        .key("menuItems/" + id)
+                        .key(path + "/" + id)
                         .build())
                 .collect(Collectors.toList());
 
@@ -109,7 +109,7 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public String getPublicUrl(Long menuItemId) {
-        return bucketUrl + "/menuItems/" + menuItemId;
+    public String getPublicUrl(String path, Long menuItemId) {
+        return bucketUrl + "/" + path + "/" + menuItemId;
     }
 }
