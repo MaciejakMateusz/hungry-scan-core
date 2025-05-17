@@ -6,20 +6,21 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -492,6 +493,68 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Sends a POST HTTP request to the specified endpoint URL with the provided object as the request body.
+     * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
+     *
+     * @param endpointUrl The URL endpoint to send the POST request to.
+     * @param object      The object to be serialized and sent as the request body.
+     * @param file        The MultipartFile object to send along with the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @param <T>         The type of the object being sent in the request body.
+     * @return A Map representing the response body, with String keys and Object values.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T> Map<String, Object> postWithMultipartAndReturnResponseBody(String endpointUrl,
+                                                                          T object,
+                                                                          MultipartFile file,
+                                                                          ResultMatcher matcher) throws Exception {
+        String json = objectMapper.writeValueAsString(object);
+
+        MockMultipartFile menuItemPart = new MockMultipartFile(
+                "menuItem",
+                "menuItem.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                json.getBytes(StandardCharsets.UTF_8)
+        );
+
+        MockMultipartFile imagePart = Objects.nonNull(file) ? new MockMultipartFile(
+                "image",
+                file.getOriginalFilename(),
+                file.getContentType(),
+                file.getBytes())
+                : null;
+
+        MockMultipartHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders
+                        .multipart(HttpMethod.PATCH, endpointUrl)
+                        .file(menuItemPart);
+
+        if (Objects.nonNull(imagePart)) {
+            builder.file(imagePart);
+        }
+
+        builder.with(request -> {
+            request.setMethod("POST");
+            return request;
+        });
+
+        ResultActions result = mockMvc.perform(builder)
+                .andExpect(matcher)
+                .andDo(print());
+
+        String resp = result.andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+        if (resp.isEmpty()) {
+            return new HashMap<>();
+        }
+        return objectMapper.readValue(resp,
+                new TypeReference<>() {
+                });
+    }
+
+    /**
      * Sends a GET HTTP request to the specified endpoint URL.
      * Expects a certain result based on the provided ResultMatcher.
      * Retrieves and returns the response body as a Map of String keys to Object values.
@@ -563,6 +626,68 @@ public class ApiRequestUtils {
         TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
         };
         return objectMapper.readValue(responseBody, typeReference);
+    }
+
+    /**
+     * Sends a PATCH HTTP request to the specified endpoint URL with the provided object as the request body.
+     * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
+     *
+     * @param endpointUrl The URL endpoint to send the POST request to.
+     * @param object      The object to be serialized and sent as the request body.
+     * @param file        The MultipartFile object to send along with the request body.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @param <T>         The type of the object being sent in the request body.
+     * @return A Map representing the response body, with String keys and Object values.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public <T> Map<String, Object> patchWithMultipartAndReturnResponseBody(String endpointUrl,
+                                                                           T object,
+                                                                           MultipartFile file,
+                                                                           ResultMatcher matcher) throws Exception {
+        String json = objectMapper.writeValueAsString(object);
+
+        MockMultipartFile menuItemPart = new MockMultipartFile(
+                "menuItem",
+                "menuItem.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                json.getBytes(StandardCharsets.UTF_8)
+        );
+
+        MockMultipartFile imagePart = Objects.nonNull(file) ? new MockMultipartFile(
+                "image",
+                file.getOriginalFilename(),
+                file.getContentType(),
+                file.getBytes())
+                : null;
+
+        MockMultipartHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders
+                        .multipart(HttpMethod.PATCH, endpointUrl)
+                        .file(menuItemPart);
+
+        if (Objects.nonNull(imagePart)) {
+            builder.file(imagePart);
+        }
+
+        builder.with(request -> {
+            request.setMethod("PATCH");
+            return request;
+        });
+
+        ResultActions result = mockMvc.perform(builder)
+                .andExpect(matcher)
+                .andDo(print());
+
+        String resp = result.andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+        if (resp.isEmpty()) {
+            return new HashMap<>();
+        }
+        return objectMapper.readValue(resp,
+                new TypeReference<>() {
+                });
     }
 
 
@@ -758,7 +883,7 @@ public class ApiRequestUtils {
      * @param matcher     The ResultMatcher to apply to the response.
      * @throws Exception If there are any errors during the request or response handling.
      */
-    public <T> void deleteAndExpect(String endpointUrl, ResultMatcher matcher) throws Exception {
+    public void deleteAndExpect(String endpointUrl, ResultMatcher matcher) throws Exception {
 
         mockMvc.perform(delete(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -859,6 +984,52 @@ public class ApiRequestUtils {
     }
 
     /**
+     * Performs a PATCH HTTP request to the specified URL with the provided object and MultipartFile
+     * and expects error responses.
+     *
+     * @param url  The URL to which the POST request will be sent.
+     * @param t    The object to be sent as part of the request.
+     * @param file The MultipartFile to be sent as part of the request.
+     * @param <T>  The type of the object.
+     * @return A map containing error responses received from the server.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> Map<?, ?> patchAndExpectErrors(String url, T t, MultipartFile file) throws Exception {
+        return patchWithMultipartAndReturnResponseBody(url, t, file, status().isBadRequest());
+    }
+
+    /**
+     * Performs a PATCH HTTP request to the specified URL with the provided object and MultipartFile
+     * expecting specific result by passing ResultMatcher.
+     *
+     * @param url     The URL to which the PATCH request will be sent.
+     * @param t       The object to be sent as part of the request.
+     * @param file    The MultipartFile to be sent as part of the request.
+     * @param matcher The ResultMatcher to apply to the response.
+     * @param <T>     The type of the object.
+     * @return A map containing error responses received from the server.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> Map<?, ?> patchAndExpect(String url, T t, MultipartFile file, ResultMatcher matcher) throws Exception {
+        return patchWithMultipartAndReturnResponseBody(url, t, file, matcher);
+    }
+
+    /**
+     * Performs a PATCH HTTP request to the specified URL with the provided object and MultipartFile
+     * expecting 200 response.
+     *
+     * @param url  The URL to which the PATCH request will be sent.
+     * @param t    The object to be sent as part of the request.
+     * @param file The MultipartFile to be sent as part of the request.
+     * @param <T>  The type of the object.
+     * @return A map containing error responses received from the server.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> Map<?, ?> patchAndExpect200(String url, T t, MultipartFile file) throws Exception {
+        return patchWithMultipartAndReturnResponseBody(url, t, file, status().isOk());
+    }
+
+    /**
      * Performs a POST request to the specified URL with the provided object and expects unauthorized response.
      *
      * @param url The URL to which the POST request will be sent.
@@ -917,6 +1088,52 @@ public class ApiRequestUtils {
     public <T> void postAndExpect200(String url, T t) throws Exception {
         postAndExpect(url, t, status().isOk());
     }
+
+    /**
+     * Performs a POST request to the specified URL with the provided object and MultipartFile
+     * and expects a successful (200) response.
+     *
+     * @param url  The URL to which the POST request will be sent.
+     * @param t    The object to be sent as part of the request.
+     * @param file The MultipartFile to be sent as part of the request.
+     * @param <T>  The type of the object.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> void postAndExpect200(String url, T t, MultipartFile file) throws Exception {
+        postWithMultipartAndReturnResponseBody(url, t, file, status().isOk());
+    }
+
+    /**
+     * Performs a POST HTTP request to the specified URL with the provided object and MultipartFile
+     * expecting specific result by passing ResultMatcher.
+     *
+     * @param url     The URL to which the POST request will be sent.
+     * @param t       The object to be sent as part of the request.
+     * @param file    The MultipartFile to be sent as part of the request.
+     * @param matcher The ResultMatcher to apply to the response.
+     * @param <T>     The type of the object.
+     * @return A map containing error responses received from the server.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> Map<?, ?> postAndExpect(String url, T t, MultipartFile file, ResultMatcher matcher) throws Exception {
+        return postWithMultipartAndReturnResponseBody(url, t, file, matcher);
+    }
+
+    /**
+     * Performs a POST HTTP request to the specified URL with the provided object and MultipartFile
+     * and expects error response.
+     *
+     * @param url  The URL to which the POST request will be sent.
+     * @param t    The object to be sent as part of the request.
+     * @param file The MultipartFile to be sent as part of the request.
+     * @param <T>  The type of the object.
+     * @return A map containing error responses received from the server.
+     * @throws Exception If an error occurs during the request.
+     */
+    public <T> Map<?, ?> postAndExpectErrors(String url, T t, MultipartFile file) throws Exception {
+        return postWithMultipartAndReturnResponseBody(url, t, file, status().isBadRequest());
+    }
+
 
     /**
      * Performs a PATCH request to the specified URL with the provided object and expects a successful (200) response.

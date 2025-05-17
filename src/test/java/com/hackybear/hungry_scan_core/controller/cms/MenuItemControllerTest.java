@@ -12,6 +12,7 @@ import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.repository.BannerRepository;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
+import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.test_utils.MenuItemFactory;
 import com.hackybear.hungry_scan_core.utility.Money;
@@ -25,7 +26,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest(properties = {"spring.profiles.active=test"})
+@SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -65,6 +69,9 @@ class MenuItemControllerTest {
 
     @Autowired
     private BannerRepository bannerRepository;
+
+    @MockitoBean
+    private S3Service s3Service;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -104,7 +111,7 @@ class MenuItemControllerTest {
         Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(2L);
         assertEquals(5, maxDisplayOrder.orElse(0));
 
-        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItemFormDTO);
+        apiRequestUtils.postAndExpect200("/api/cms/items/add", menuItemFormDTO, null);
 
         MenuItemFormDTO persistedMenuItem = fetchMenuItemFormDTO(34L);
 
@@ -113,7 +120,6 @@ class MenuItemControllerTest {
         assertEquals(5, persistedMenuItem.additionalIngredients().size());
         assertEquals(1, persistedMenuItem.allergens().size());
         assertEquals(2, persistedMenuItem.labels().size());
-        assertEquals("/public/assets/sample.png", persistedMenuItem.imageName());
         Integer displayOrder = menuItemRepository.findById(persistedMenuItem.id()).orElseThrow().getDisplayOrder();
         assertEquals(6, displayOrder);
     }
@@ -123,7 +129,7 @@ class MenuItemControllerTest {
     void shouldNotAllowUnauthorizedAccessToItemsAdd() throws Exception {
         MenuItem menuItem = createMenuItem();
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
-        apiRequestUtils.postAndExpect("/api/cms/items/add", menuItemFormDTO, status().isForbidden());
+        apiRequestUtils.postAndExpect("/api/cms/items/add", menuItemFormDTO, null, status().isForbidden());
     }
 
     @Test
@@ -133,7 +139,7 @@ class MenuItemControllerTest {
         menuItem.setName(getDefaultTranslation(""));
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItemFormDTO);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/items/add", menuItemFormDTO, null);
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
@@ -148,7 +154,6 @@ class MenuItemControllerTest {
         MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         persistedMenuItem.setName(getDefaultTranslation("Updated Item"));
         persistedMenuItem.setDescription(getDefaultTranslation("Updated Description"));
-        persistedMenuItem.setImageName("/public/assets/updated.png");
         Banner promoBanner = getBanner("promo");
         Banner newBanner = getBanner("new");
         persistedMenuItem.setBanners(Set.of(newBanner, promoBanner));
@@ -156,13 +161,12 @@ class MenuItemControllerTest {
 
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
-        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO, null);
 
         MenuItemFormDTO updatedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItemFormDTO.class);
         assertEquals("Updated Item", updatedMenuItem.name().defaultTranslation());
         assertEquals("Updated Description", updatedMenuItem.description().defaultTranslation());
-        assertEquals("/public/assets/updated.png", updatedMenuItem.imageName());
         assertTrue(updatedMenuItem.banners().contains(promoBanner));
         assertTrue(updatedMenuItem.banners().contains(newBanner));
         assertEquals(Money.of(25), Money.of(updatedMenuItem.promoPrice()));
@@ -180,7 +184,7 @@ class MenuItemControllerTest {
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
 
         Map<?, ?> errors =
-                apiRequestUtils.patchAndExpectErrors("/api/cms/items/update", menuItemFormDTO);
+                apiRequestUtils.patchAndExpectErrors("/api/cms/items/update", menuItemFormDTO, null);
         assertFalse(errors.isEmpty());
         assertEquals("Cena promocyjna powinna był uzupełniona.", errors.get("exceptionMsg"));
     }
@@ -210,7 +214,7 @@ class MenuItemControllerTest {
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(existingMenuItem);
 
         //WHEN
-        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO, null);
 
         //THEN
         MenuItemFormDTO updatedMenuItem =

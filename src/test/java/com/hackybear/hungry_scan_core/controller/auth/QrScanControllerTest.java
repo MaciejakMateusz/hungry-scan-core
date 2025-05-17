@@ -66,7 +66,7 @@ class QrScanControllerTest {
         assertEquals("jwt", response.getCookies()[0].getName());
         assertEquals("restaurantToken", response.getCookies()[1].getName());
         assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", response.getCookies()[1].getValue());
-        assertEquals(302, response.getStatus());
+        assertEquals(308, response.getStatus());
         assertEquals("pl_PL", response.getLocale().toString());
         assertEquals(9, response.getHeaderNames().size());
         assertEquals(this.customerAppUrl, response.getHeader("Location"));

@@ -30,7 +30,6 @@ public class MenuItemFactory {
         menuItem.setCategory(categoryRepository.findById(categoryId).orElseThrow());
         menuItem.setPrice(price);
         menuItem.setAvailable(true);
-        menuItem.setImageName("/public/assets/sample.png");
         menuItem.setDisplayOrder(6);
         setIngredients(menuItem);
         setAdditionalIngredients(menuItem);
