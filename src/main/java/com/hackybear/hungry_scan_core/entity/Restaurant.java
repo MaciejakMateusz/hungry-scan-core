@@ -66,19 +66,12 @@ public class Restaurant implements Serializable {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Ingredient> ingredients = new HashSet<>();
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OnboardingImage> onboardingImages = new HashSet<>();
-
     @OpeningTimesNotNull
     @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Settings settings;
 
     @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Statistics statistics;
-
-    @OneToOne
-    @JoinColumn(name = "theme_id")
-    private Theme theme;
 
     @ManyToOne
     @NotNull
