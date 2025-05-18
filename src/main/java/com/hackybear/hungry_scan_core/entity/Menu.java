@@ -2,10 +2,14 @@ package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
+import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
+import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -63,6 +67,16 @@ public class Menu implements Serializable, Comparable<Menu> {
 
     @Column(name = "standard")
     private boolean standard;
+
+    @Enumerated(EnumType.STRING)
+    private Theme theme;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "translatable_message_id", referencedColumnName = "id")
+    @DefaultTranslationNotBlank
+    @LimitTranslationsLength
+    @NotNull
+    private Translatable message;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
