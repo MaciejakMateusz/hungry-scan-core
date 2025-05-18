@@ -46,6 +46,13 @@ public class MenuController {
         return responseHelper.buildResponse(id, activeRestaurantIdProvider, menuService::findById);
     }
 
+    @PostMapping("/customer")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> projectPlannedMenu(@RequestBody Long id) {
+        ThrowingSupplier<Long> activeRestaurantIdProvider = userService::getActiveRestaurantId;
+        return responseHelper.buildResponse(id, activeRestaurantIdProvider, menuService::projectPlannedMenu);
+    }
+
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody MenuSimpleDTO menuDTO, BindingResult br) {
