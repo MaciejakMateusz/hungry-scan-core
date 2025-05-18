@@ -21,14 +21,23 @@ INSERT INTO settings (booking_duration, opening_time, closing_time, language, ca
 VALUES (3, '07:00:00', '23:00:00', 1, 120, 3, 20, true, true, 1),
        (3, '12:00:00', '02:00:00', 1, 312, 3, 20, false, false, 2);
 
-INSERT INTO menus (standard, name, restaurant_id)
-VALUES (true, 'Całodniowe', 1),
-       (true, 'Menu', 2),
-       (false, 'Śniadaniowe', 2),
-       (false, 'Obiadowe', 2),
-       (false, 'Kolacyjne', 2),
-       (false, 'Ziemniaczane', 5),
-       (false, 'Menu', 11);
+INSERT INTO translatable(default_translation, translation_en)
+VALUES ('Smacznego!', 'Enjoy your meal!'),
+       ('Smacznego!', 'Enjoy your meal!'),
+       ('Smacznego!', 'Enjoy your meal!'),
+       ('Smacznego!', 'Enjoy your meal!'),
+       ('Smacznego!', 'Enjoy your meal!'),
+       ('Smacznego!', 'Enjoy your meal!'),
+       ('Smacznego!', 'Enjoy your meal!');
+
+INSERT INTO menus (standard, name, restaurant_id, theme, translatable_message_id)
+VALUES (true, 'Całodniowe', 1, 'COLOR_318E41', 1),
+       (true, 'Menu', 2, 'COLOR_318E41', 2),
+       (false, 'Śniadaniowe', 2, 'COLOR_318E41', 3),
+       (false, 'Obiadowe', 2, 'COLOR_318E41', 4),
+       (false, 'Kolacyjne', 2, 'COLOR_318E41', 5),
+       (false, 'Ziemniaczane', 5, 'COLOR_318E41', 6),
+       (false, 'Menu', 11, 'COLOR_318E41', 7);
 
 INSERT INTO menu_plan (menu_id, end_time, start_time, plan_key)
 VALUES (4, '14:00:00', '16:00:00', 1),
@@ -119,51 +128,51 @@ VALUES ('Krewetki marynowane w cytrynie'),
 /* END OF MENU ITEMS TRANSLATIONS */
 
 INSERT INTO categories (translatable_name_id, available, created, updated, bar_served, display_order, menu_id)
-VALUES (1, true, '2024-10-27T11:24:07.783228', null, false, 1, 1),
-       (2, true, '2024-10-27T11:24:07.783228', null, false, 2, 1),
-       (3, true, '2024-10-27T11:24:07.783228', null, false, 3, 1),
-       (4, true, '2024-10-27T11:24:07.783228', null, false, 4, 1),
-       (5, true, '2024-10-27T11:24:07.783228', null, false, 5, 1),
-       (6, true, '2024-10-27T11:24:07.783228', null, false, 6, 1),
-       (7, true, '2024-10-27T11:24:07.783228', null, false, 7, 1),
-       (8, true, '2024-10-27T11:24:07.783228', null, true, 8, 1),
-       (9, false, '2024-10-27T11:24:07.783228', null, false, 9, 1);
+VALUES (8, true, '2024-10-27T11:24:07.783228', null, false, 1, 1),
+       (9, true, '2024-10-27T11:24:07.783228', null, false, 2, 1),
+       (10, true, '2024-10-27T11:24:07.783228', null, false, 3, 1),
+       (11, true, '2024-10-27T11:24:07.783228', null, false, 4, 1),
+       (12, true, '2024-10-27T11:24:07.783228', null, false, 5, 1),
+       (13, true, '2024-10-27T11:24:07.783228', null, false, 6, 1),
+       (14, true, '2024-10-27T11:24:07.783228', null, false, 7, 1),
+       (15, true, '2024-10-27T11:24:07.783228', null, true, 8, 1),
+       (16, false, '2024-10-27T11:24:07.783228', null, false, 9, 1);
 
 INSERT INTO menu_items (translatable_name_id, display_order, translatable_description_id, created, updated,
                         available, visible, price, counter, bar_served, category_id)
-VALUES (10, 1, 11, null, null, false, true, 19.99, 0, false, 1),
-       (12, 2, 13, null, null, true, false, 24.50, 0, false, 1),
-       (14, 3, 15, null, null, true, true, 22.00, 0, false, 1),
-       (16, 4, 17, null, null, true, true, 18.75, 0, false, 1),
-       (18, 5, 19, null, null, true, true, 16.99, 0, false, 1),
-       (20, 1, 21, null, null, true, true, 24.00, 0, false, 2),
-       (22, 2, 23, null, null, true, true, 22.50, 0, false, 2),
-       (24, 3, 25, null, null, true, true, 23.25, 0, false, 2),
-       (26, 4, 27, null, null, true, true, 26.50, 0, false, 2),
-       (28, 5, 29, null, null, true, true, 21.75, 0, false, 2),
-       (30, 1, 31, null, null, true, true, 18.50, 0, false, 3),
-       (32, 2, 33, null, null, true, true, 20.75, 0, false, 3),
-       (34, 3, 35, null, null, true, true, 22.00, 0, false, 3),
-       (36, 4, 37, null, null, true, true, 21.50, 0, false, 3),
-       (38, 5, 39, null, null, true, true, 23.75, 0, false, 3),
-       (40, 1, 41, null, null, true, true, 15.50, 0, false, 4),
-       (42, 2, 43, null, null, true, true, 16.25, 0, false, 4),
-       (44, 3, 45, null, null, true, true, 17.50, 0, false, 4),
-       (46, 4, 47, null, null, true, true, 15.75, 0, false, 4),
-       (48, 5, 49, null, null, true, true, 18.00, 0, false, 4),
-       (50, 1, 51, null, null, true, true, 26.00, 0, false, 5),
-       (52, 2, 53, null, null, true, true, 28.50, 0, false, 5),
-       (54, 3, 55, null, null, true, true, 30.25, 0, false, 5),
-       (56, 4, 57, null, null, true, true, 27.75, 0, false, 5),
-       (58, 5, 59, null, null, true, true, 29.00, 0, false, 5),
-       (60, 1, 61, null, null, true, true, 24.50, 0, false, 6),
-       (62, 2, 63, null, null, true, true, 22.75, 0, false, 6),
-       (64, 3, 65, null, null, true, true, 20.00, 0, false, 6),
-       (66, 4, 67, null, null, true, true, 21.25, 0, false, 6),
-       (68, 5, 69, null, null, true, true, 23.00, 0, false, 6),
-       (70, 1, 71, null, null, true, true, 9.00, 0, true, 8),
-       (72, 2, 73, null, null, true, true, 7.00, 0, true, 8),
-       (74, 3, 75, null, null, true, true, 7.00, 0, true, 8);
+VALUES (17, 1, 18, null, null, false, true, 19.99, 0, false, 1),
+       (19, 2, 20, null, null, true, false, 24.50, 0, false, 1),
+       (21, 3, 22, null, null, true, true, 22.00, 0, false, 1),
+       (23, 4, 24, null, null, true, true, 18.75, 0, false, 1),
+       (25, 5, 26, null, null, true, true, 16.99, 0, false, 1),
+       (27, 1, 28, null, null, true, true, 24.00, 0, false, 2),
+       (29, 2, 30, null, null, true, true, 22.50, 0, false, 2),
+       (31, 3, 32, null, null, true, true, 23.25, 0, false, 2),
+       (33, 4, 34, null, null, true, true, 26.50, 0, false, 2),
+       (35, 5, 36, null, null, true, true, 21.75, 0, false, 2),
+       (37, 1, 38, null, null, true, true, 18.50, 0, false, 3),
+       (39, 2, 40, null, null, true, true, 20.75, 0, false, 3),
+       (41, 3, 42, null, null, true, true, 22.00, 0, false, 3),
+       (43, 4, 44, null, null, true, true, 21.50, 0, false, 3),
+       (45, 5, 46, null, null, true, true, 23.75, 0, false, 3),
+       (47, 1, 48, null, null, true, true, 15.50, 0, false, 4),
+       (49, 2, 50, null, null, true, true, 16.25, 0, false, 4),
+       (51, 3, 52, null, null, true, true, 17.50, 0, false, 4),
+       (53, 4, 54, null, null, true, true, 15.75, 0, false, 4),
+       (55, 5, 56, null, null, true, true, 18.00, 0, false, 4),
+       (57, 1, 58, null, null, true, true, 26.00, 0, false, 5),
+       (59, 2, 60, null, null, true, true, 28.50, 0, false, 5),
+       (61, 3, 62, null, null, true, true, 30.25, 0, false, 5),
+       (63, 4, 64, null, null, true, true, 27.75, 0, false, 5),
+       (65, 5, 66, null, null, true, true, 29.00, 0, false, 5),
+       (67, 1, 68, null, null, true, true, 24.50, 0, false, 6),
+       (69, 2, 70, null, null, true, true, 22.75, 0, false, 6),
+       (71, 3, 72, null, null, true, true, 20.00, 0, false, 6),
+       (73, 4, 74, null, null, true, true, 21.25, 0, false, 6),
+       (75, 5, 76, null, null, true, true, 23.00, 0, false, 6),
+       (77, 1, 78, null, null, true, true, 9.00, 0, true, 8),
+       (79, 2, 80, null, null, true, true, 7.00, 0, true, 8),
+       (81, 3, 82, null, null, true, true, 7.00, 0, true, 8);
 
 INSERT INTO translatable(default_translation)
 VALUES ('Z szpinakiem'),
@@ -186,23 +195,23 @@ VALUES ('Z szpinakiem'),
 
 INSERT INTO variants(created, available, default_variant, translatable_name_id, price, updated, menu_item_id,
                      display_order)
-VALUES (NOW(), true, true, 76, '0.00', null, 4, 1),
-       (NOW(), true, false, 77, '4.00', null, 4, 2),
-       (NOW(), true, true, 78, '0.00', null, 21, 1),
-       (NOW(), true, false, 79, '5.00', null, 21, 2),
-       (NOW(), true, false, 80, '10.00', null, 21, 3),
-       (NOW(), true, true, 81, '0.00', null, 22, 1),
-       (NOW(), true, false, 82, '5.00', null, 22, 2),
-       (NOW(), true, false, 83, '10.00', null, 22, 3),
-       (NOW(), true, true, 84, '0.00', null, 23, 1),
-       (NOW(), true, false, 85, '5.00', null, 23, 2),
-       (NOW(), true, false, 86, '10.00', null, 23, 3),
-       (NOW(), true, true, 87, '0.00', null, 24, 1),
-       (NOW(), true, false, 88, '5.00', null, 24, 2),
-       (NOW(), true, false, 89, '10.00', null, 24, 3),
-       (NOW(), true, true, 90, '0.00', null, 25, 1),
-       (NOW(), true, false, 91, '5.00', null, 25, 2),
-       (NOW(), true, false, 92, '10.00', null, 25, 3);
+VALUES (NOW(), true, true, 83, '0.00', null, 4, 1),
+       (NOW(), true, false, 84, '4.00', null, 4, 2),
+       (NOW(), true, true, 85, '0.00', null, 21, 1),
+       (NOW(), true, false, 86, '5.00', null, 21, 2),
+       (NOW(), true, false, 87, '10.00', null, 21, 3),
+       (NOW(), true, true, 88, '0.00', null, 22, 1),
+       (NOW(), true, false, 89, '5.00', null, 22, 2),
+       (NOW(), true, false, 90, '10.00', null, 22, 3),
+       (NOW(), true, true, 91, '0.00', null, 23, 1),
+       (NOW(), true, false, 92, '5.00', null, 23, 2),
+       (NOW(), true, false, 93, '10.00', null, 23, 3),
+       (NOW(), true, true, 94, '0.00', null, 24, 1),
+       (NOW(), true, false, 95, '5.00', null, 24, 2),
+       (NOW(), true, false, 96, '10.00', null, 24, 3),
+       (NOW(), true, true, 97, '0.00', null, 25, 1),
+       (NOW(), true, false, 98, '5.00', null, 25, 2),
+       (NOW(), true, false, 99, '10.00', null, 25, 3);
 
 INSERT INTO translatable (default_translation, translation_en)
 VALUES ('Kelner', 'Waiter'),
@@ -213,12 +222,12 @@ VALUES ('Kelner', 'Waiter'),
        ('Klient (tylko odczyt)', 'Customer (read only)');
 
 INSERT INTO role (name, translatable_displayed_name_id)
-VALUES ('ROLE_WAITER', 93),
-       ('ROLE_ADMIN', 94),
-       ('ROLE_MANAGER', 95),
-       ('ROLE_COOK', 96),
-       ('ROLE_CUSTOMER', 97),
-       ('ROLE_CUSTOMER_READONLY', 98);
+VALUES ('ROLE_WAITER', 100),
+       ('ROLE_ADMIN', 101),
+       ('ROLE_MANAGER', 102),
+       ('ROLE_COOK', 103),
+       ('ROLE_CUSTOMER', 104),
+       ('ROLE_CUSTOMER_READONLY', 105);
 
 INSERT INTO translatable (default_translation, translation_en)
 VALUES ('Gluten', 'Gluten'),
@@ -254,20 +263,20 @@ VALUES ('Gluten', 'Gluten'),
        ('Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
 
 INSERT INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
-VALUES (1, 100, 'icon_gluten', 99),
-       (2, 102, 'icon_crustaceans', 101),
-       (3, 104, 'icon_eggs', 103),
-       (4, 106, 'icon_fish', 105),
-       (5, 108, 'icon_peanuts', 107),
-       (6, 110, 'icon_soybeans', 109),
-       (7, 112, 'icon_milk', 111),
-       (8, 114, 'icon_nuts', 113),
-       (9, 116, 'icon_celery', 115),
-       (10, 118, 'icon_mustard', 117),
-       (11, 120, 'icon_sesame', 119),
-       (12, 122, 'icon_sulfur_dioxide', 121),
-       (13, 124, 'icon_lupin', 123),
-       (14, 126, 'icon_molluscs', 125);
+VALUES (1, 107, 'icon_gluten', 106),
+       (2, 109, 'icon_crustaceans', 108),
+       (3, 111, 'icon_eggs', 110),
+       (4, 113, 'icon_fish', 112),
+       (5, 115, 'icon_peanuts', 114),
+       (6, 117, 'icon_soybeans', 116),
+       (7, 119, 'icon_milk', 118),
+       (8, 121, 'icon_nuts', 120),
+       (9, 123, 'icon_celery', 122),
+       (10, 125, 'icon_mustard', 124),
+       (11, 127, 'icon_sesame', 126),
+       (12, 129, 'icon_sulfur_dioxide', 128),
+       (13, 131, 'icon_lupin', 130),
+       (14, 133, 'icon_molluscs', 132);
 
 INSERT INTO translatable (default_translation, translation_en)
 VALUES ('Bez glutenu', 'Gluten free'),
@@ -278,12 +287,12 @@ VALUES ('Bez glutenu', 'Gluten free'),
        ('Ostre', 'Spicy');
 
 INSERT INTO labels (icon_name, translatable_name_id)
-VALUES ('icon_gluten_free', 127),
-       ('icon_vegan', 128),
-       ('icon_vegetarian', 129),
-       ('icon_coriander', 130),
-       ('icon_lactose_free', 131),
-       ('icon_spicy', 132);
+VALUES ('icon_gluten_free', 134),
+       ('icon_vegan', 135),
+       ('icon_vegetarian', 136),
+       ('icon_coriander', 137),
+       ('icon_lactose_free', 138),
+       ('icon_spicy', 139);
 
 INSERT INTO translatable (default_translation, translation_en)
 VALUES ('Pomidory', 'Tomatoes'),
@@ -315,14 +324,7 @@ VALUES ('Pomidory', 'Tomatoes'),
        ('Ser biały', 'White cheese');
 
 INSERT INTO ingredients(created, available, translatable_name_id, updated, price, restaurant_id)
-VALUES ('2024-03-30', 1, 133, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 134, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 135, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 136, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 137, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 138, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 139, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 140, '2024-03-30', '4.00', 1),
+VALUES ('2024-03-30', 1, 140, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 141, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 142, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 143, '2024-03-30', '4.00', 1),
@@ -341,7 +343,14 @@ VALUES ('2024-03-30', 1, 133, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 156, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 157, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 158, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 159, '2024-03-30', '4.00', 1);
+       ('2024-03-30', 1, 159, '2024-03-30', '4.00', 1),
+       ('2024-03-30', 1, 160, '2024-03-30', '4.00', 1),
+       ('2024-03-30', 1, 161, '2024-03-30', '4.00', 1),
+       ('2024-03-30', 1, 162, '2024-03-30', '4.00', 1),
+       ('2024-03-30', 1, 163, '2024-03-30', '4.00', 1),
+       ('2024-03-30', 1, 164, '2024-03-30', '4.00', 1),
+       ('2024-03-30', 1, 165, '2024-03-30', '4.00', 1),
+       ('2024-03-30', 1, 166, '2024-03-30', '4.00', 1);
 
 INSERT INTO translatable(default_translation, translation_en)
 VALUES ('Sekcja 1', 'Section 1'),
@@ -350,10 +359,10 @@ VALUES ('Sekcja 1', 'Section 1'),
        ('Loża VIP', 'VIP Lounge');
 
 INSERT INTO zones(translatable_name_id, created, updated, display_order, is_visible)
-VALUES (160, NOW(), null, 1, true),
-       (161, NOW(), null, 2, true),
-       (162, NOW(), null, 4, true),
-       (163, NOW(), null, 3, true);
+VALUES (167, NOW(), null, 1, true),
+       (168, NOW(), null, 2, true),
+       (169, NOW(), null, 4, true),
+       (170, NOW(), null, 3, true);
 
 INSERT INTO translatable(default_translation, translation_en)
 VALUES ('Nowość', 'New'),
@@ -361,9 +370,9 @@ VALUES ('Nowość', 'New'),
        ('Promocja', 'Discount');
 
 INSERT INTO banners (id, translatable_name_id)
-VALUES ('new', 164),
-       ('bestseller', 165),
-       ('promo', 166);
+VALUES ('new', 171),
+       ('bestseller', 172),
+       ('promo', 173);
 
 INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
                                zone_id, has_qr_code, qr_name)
@@ -492,13 +501,3 @@ VALUES (1, 1),
        (8, 2),
        (10, 10),
        (10, 11);
-
-INSERT INTO themes(name, active)
-VALUES ('green', true),
-       ('pink', false),
-       ('grey', false),
-       ('orange', false);
-
-INSERT INTO onboarding_images(image_name, is_active, restaurant_id)
-VALUES ('default.png', true, 1),
-       ('default.png', true, 1);

@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
@@ -115,6 +116,19 @@ class MenuControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/menus/show", 55, status().isBadRequest());
         assertEquals("Menu z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    void shouldProjectPlannedMenu() throws Exception {
+        MenuCustomerDTO menu = apiRequestUtils.postObjectExpect200(
+                "/api/cms/menus/customer", 1, MenuCustomerDTO.class);
+        assertEquals("Rarytas", menu.restaurant().name());
+        assertEquals("#318E41", menu.theme());
+        assertEquals("Smacznego!", menu.message().defaultTranslation());
+        assertEquals("Enjoy your meal!", menu.message().translationEn());
+        assertEquals(9, menu.categories().size());
+        assertEquals(5, menu.categories().getFirst().menuItems().size());
     }
 
     @Test

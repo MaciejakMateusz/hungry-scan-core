@@ -2,20 +2,25 @@ INSERT IGNORE INTO price_plans (id, price)
 VALUES ('free', 0.0),
        ('basic', 99.0);
 
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, theme_id, price_plan_id)
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, price_plan_id)
 VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
-        '2023-11-12T00:00:00Z', null, 'free'),
-       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', null, 'basic');
+        '2023-11-12T00:00:00Z', 'free'),
+       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', 'basic');
 
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
                              employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
 VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true, 1);
 
-INSERT IGNORE INTO menus (id, standard, name, restaurant_id)
-VALUES (1, true, 'Całodniowe', 1),
-       (2, false, 'Śniadaniowe', 1),
-       (3, true, 'Menu', 2);
+INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+VALUES (163, 'Smacznego!', 'Enjoy your meal!'),
+       (164, 'Smacznego!', 'Enjoy your meal!'),
+       (165, 'Smacznego!', 'Enjoy your meal!');
+
+INSERT IGNORE INTO menus (id, standard, name, restaurant_id, theme, translatable_message_id)
+VALUES (1, true, 'Całodniowe', 1, 'COLOR_318E41', 163),
+       (2, false, 'Śniadaniowe', 1, 'COLOR_318E41', 164),
+       (3, true, 'Menu', 2, 'COLOR_318E41', 165);
 
 INSERT IGNORE INTO translatable (id, default_translation, translation_en)
 VALUES (1, 'Kelner', 'Waiter'),
@@ -117,15 +122,6 @@ VALUES (1, 'gluten-free.svg', 35),
        (4, 'coriander.svg', 38),
        (5, 'lactose-free.svg', 39),
        (6, 'spicy.svg', 40);
-
-INSERT IGNORE INTO themes(id, name, active)
-VALUES (1, 'green', true),
-       (2, 'pink', false),
-       (3, 'grey', false),
-       (4, 'orange', false);
-
-INSERT IGNORE INTO onboarding_images(id, restaurant_id, image_name, is_active)
-VALUES (1, 1, 'default', true);
 
 INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number,
                                       is_visible,
