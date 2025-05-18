@@ -17,6 +17,7 @@ public interface MenuDeepCopyMapper {
     @Mapping(target = "standard", ignore = true)
     @Mapping(target = "name", ignore = true)
     @Mapping(target = "categories", qualifiedByName = "deepCopyCategories")
+    @Mapping(target = "message", qualifiedByName = "deepCopyTranslatable")
     Menu duplicateMenu(Menu source);
 
     @Named("deepCopyCategories")
