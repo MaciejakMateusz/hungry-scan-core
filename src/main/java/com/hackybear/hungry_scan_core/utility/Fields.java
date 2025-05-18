@@ -26,6 +26,7 @@ public class Fields {
     public static final String RESTAURANTS_ALL = "restaurants.all";
 
     public static final String MENU_ID = "menu.id";
+    public static final String MENU_CUSTOMER_ID = "menu.customer.id";
     public static final String MENUS_ALL = "menus.all";
 
     public static final String CATEGORIES_ALL = "categories.all";

@@ -1,9 +1,11 @@
 package com.hackybear.hungry_scan_core.service;
 
+import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuDeepCopyMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.*;
+import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
@@ -61,6 +63,14 @@ public class MenuServiceImp implements MenuService {
         return menuMapper.toSimpleDTO(menu);
     }
 
+    @Override
+    @Cacheable(value = MENU_CUSTOMER_ID, key = "#id")
+    public MenuCustomerDTO projectPlannedMenu(Long id, Long activeRestaurantId) throws LocalizedException {
+        Menu menu = getById(id);
+        validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
+        return menuMapper.toCustomerDTO(menu);
+    }
+
     @Transactional
     @Override
     @Caching(evict = {
@@ -73,6 +83,8 @@ public class MenuServiceImp implements MenuService {
         Menu menu = menuMapper.toMenu(menuDTO);
         Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId()).orElseThrow();
         menu.setRestaurant(restaurant);
+        menu.setTheme(Theme.COLOR_318E41);
+        menu.setMessage(getMenuMessage());
         menu = menuRepository.save(menu);
         currentUser.setActiveMenuId(menu.getId());
         userRepository.save(currentUser);
@@ -251,5 +263,11 @@ public class MenuServiceImp implements MenuService {
         }
         List<Long> menuItemIds = menuPositions.stream().map(MenuItem::getId).toList();
         s3Service.deleteAllFiles(S3_PATH, menuItemIds);
+    }
+
+    private static Translatable getMenuMessage() {
+        return new Translatable()
+                .withDefaultTranslation("Welcome!")
+                .withTranslationEn("Enjoy your meal!");
     }
 }
