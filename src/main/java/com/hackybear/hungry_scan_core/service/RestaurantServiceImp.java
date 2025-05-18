@@ -8,6 +8,7 @@ import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.enums.Language;
+import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
@@ -19,6 +20,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.utility.MenuPlanUpdater;
 import com.hackybear.hungry_scan_core.utility.StandardDayPlanScheduler;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -87,11 +89,7 @@ public class RestaurantServiceImp implements RestaurantService {
         Settings s = restaurant.getSettings();
         s.setRestaurant(restaurant);
         restaurant.setSettings(s);
-        restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
-        restaurant.setToken(UUID.randomUUID().toString());
-        restaurant = restaurantRepository.save(restaurant);
-        restaurant.setMenus(new TreeSet<>());
-        createInitialMenu(restaurant);
+        restaurant = setupInitial(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
         List<MenuSimpleDTO> menuDTOs = restaurant.getMenus().stream().map(menuMapper::toSimpleDTO).toList();
@@ -176,16 +174,22 @@ public class RestaurantServiceImp implements RestaurantService {
 
     private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
-        restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
-        restaurant.setToken(UUID.randomUUID().toString());
-        restaurant = restaurantRepository.save(restaurant);
-        restaurant.setMenus(new TreeSet<>());
-        createInitialMenu(restaurant);
+        restaurant = setupInitial(restaurant);
         setupRestaurantSettings(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
         List<MenuSimpleDTO> menuDTOs = restaurant.getMenus().stream().map(menuMapper::toSimpleDTO).toList();
         standardDayPlanScheduler.mapStandardPlan(menuDTOs, getOperatingHours(restaurant));
+    }
+
+    @NotNull
+    private Restaurant setupInitial(Restaurant restaurant) {
+        restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
+        restaurant.setToken(UUID.randomUUID().toString());
+        restaurant = restaurantRepository.save(restaurant);
+        restaurant.setMenus(new TreeSet<>());
+        createInitialMenu(restaurant);
+        return restaurant;
     }
 
     private static void setupRestaurantSettings(Restaurant restaurant) {
@@ -206,6 +210,8 @@ public class RestaurantServiceImp implements RestaurantService {
         menu.setStandard(true);
         menu.setName("Menu");
         menu.setRestaurant(restaurant);
+        menu.setTheme(Theme.COLOR_318E41);
+        menu.setMessage(getMenuMessage());
         restaurant.addMenu(menu);
     }
 
@@ -257,5 +263,11 @@ public class RestaurantServiceImp implements RestaurantService {
         }
         List<Long> menuItemIds = menuItems.stream().map(MenuItem::getId).toList();
         s3Service.deleteAllFiles(S3_PATH, menuItemIds);
+    }
+
+    private static Translatable getMenuMessage() {
+        return new Translatable()
+                .withDefaultTranslation("Welcome!")
+                .withTranslationEn("Enjoy your meal!");
     }
 }
