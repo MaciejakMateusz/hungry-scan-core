@@ -46,4 +46,14 @@ public class Translatable implements Serializable {
     @CreatedBy
     private String createdBy;
 
+    public Translatable withDefaultTranslation(String defaultTranslation) {
+        this.defaultTranslation = defaultTranslation;
+        return this;
+    }
+
+    public Translatable withTranslationEn(String translationEn) {
+        this.translationEn = translationEn;
+        return this;
+    }
+
 }
