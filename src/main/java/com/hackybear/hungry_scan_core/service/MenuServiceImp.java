@@ -65,9 +65,8 @@ public class MenuServiceImp implements MenuService {
 
     @Override
     @Cacheable(value = MENU_CUSTOMER_ID, key = "#id")
-    public MenuCustomerDTO projectPlannedMenu(Long id, Long activeRestaurantId) throws LocalizedException {
+    public MenuCustomerDTO projectPlannedMenu(Long id) throws LocalizedException {
         Menu menu = getById(id);
-        validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
         return menuMapper.toCustomerDTO(menu);
     }
 

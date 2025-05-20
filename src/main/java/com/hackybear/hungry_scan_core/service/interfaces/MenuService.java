@@ -15,7 +15,7 @@ public interface MenuService {
 
     MenuSimpleDTO findById(Long id, Long activeRestaurantId) throws LocalizedException;
 
-    MenuCustomerDTO projectPlannedMenu(Long id, Long activeRestaurantId) throws LocalizedException;
+    MenuCustomerDTO projectPlannedMenu(Long id) throws LocalizedException;
 
     void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception;
 
