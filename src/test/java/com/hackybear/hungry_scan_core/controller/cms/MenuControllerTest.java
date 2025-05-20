@@ -121,8 +121,8 @@ class MenuControllerTest {
     @Test
     @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
     void shouldProjectPlannedMenu() throws Exception {
-        MenuCustomerDTO menu = apiRequestUtils.postObjectExpect200(
-                "/api/cms/menus/customer", 1, MenuCustomerDTO.class);
+        MenuCustomerDTO menu = apiRequestUtils.fetchObject(
+                "/api/cms/menus/customer", MenuCustomerDTO.class);
         assertEquals("Rarytas", menu.restaurant().name());
         assertEquals("#318E41", menu.theme());
         assertEquals("Smacznego!", menu.message().defaultTranslation());

@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
@@ -46,11 +47,15 @@ public class MenuController {
         return responseHelper.buildResponse(id, activeRestaurantIdProvider, menuService::findById);
     }
 
-    @PostMapping("/customer")
+    @GetMapping("/customer")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> projectPlannedMenu(@RequestBody Long id) {
-        ThrowingSupplier<Long> activeRestaurantIdProvider = userService::getActiveRestaurantId;
-        return responseHelper.buildResponse(id, activeRestaurantIdProvider, menuService::projectPlannedMenu);
+    public ResponseEntity<?> projectPlannedMenu() {
+        try {
+            Long menuId = userService.getActiveMenuId();
+            return ResponseEntity.ok(menuService.projectPlannedMenu(menuId));
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @PostMapping("/add")
