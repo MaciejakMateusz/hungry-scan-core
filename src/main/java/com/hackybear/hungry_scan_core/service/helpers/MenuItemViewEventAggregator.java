@@ -44,15 +44,17 @@ public class MenuItemViewEventAggregator {
     }
 
     private static Set<MenuItemViewCountDTO> getMenuItemViewCountDTOS(List<MenuItemViewAggregation> menuItemViews) {
-        Map<Long, MenuItemViewAggregation> aggregationByYear =
-                menuItemViews
-                        .stream()
-                        .collect(Collectors.toMap(MenuItemViewAggregation::id, Function.identity()));
+        Map<Long, MenuItemViewAggregation> aggregationByYear = menuItemViews
+                .stream()
+                .collect(Collectors.toMap(MenuItemViewAggregation::getId, Function.identity()));
         Set<MenuItemViewCountDTO> results = new HashSet<>();
         for (MenuItemViewAggregation aggregation : menuItemViews) {
-            MenuItemViewAggregation event = aggregationByYear.get(aggregation.id());
-            MenuItemViewCountDTO viewCountDTO =
-                    new MenuItemViewCountDTO(event.id(), event.getDefaultTranslation(), event.getTranslationEn(), event.views());
+            MenuItemViewAggregation event = aggregationByYear.get(aggregation.getId());
+            MenuItemViewCountDTO viewCountDTO = new MenuItemViewCountDTO(
+                    event.getId(),
+                    event.getDefaultTranslation(),
+                    event.getTranslationEn(),
+                    event.getViews());
             results.add(viewCountDTO);
         }
         return results;

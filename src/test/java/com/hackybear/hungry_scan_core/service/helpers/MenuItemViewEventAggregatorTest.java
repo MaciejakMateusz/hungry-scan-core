@@ -31,13 +31,25 @@ class MenuItemViewEventAggregatorTest {
 
         @Override
         public String getDefaultTranslation() {
-            return def;
+            return this.def;
         }
 
         @Override
         public String getTranslationEn() {
-            return en;
+            return this.en;
         }
+
+        @Override
+        public Integer getViews() {
+            return this.views;
+        }
+
+        @Override
+        public Long getId() {
+            return this.id;
+        }
+
+
     }
 
     @Test

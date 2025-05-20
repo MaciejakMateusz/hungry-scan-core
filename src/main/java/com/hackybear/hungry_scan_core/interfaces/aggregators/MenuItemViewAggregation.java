@@ -1,11 +1,11 @@
 package com.hackybear.hungry_scan_core.interfaces.aggregators;
 
 public interface MenuItemViewAggregation {
-    Long id();
+    Long getId();
 
     String getDefaultTranslation();
 
     String getTranslationEn();
 
-    Integer views();
+    Integer getViews();
 }
