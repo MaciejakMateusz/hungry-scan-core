@@ -44,7 +44,7 @@ public class MenuServiceImp implements MenuService {
     private final StandardDayPlanScheduler standardDayPlanScheduler;
     private final S3Service s3Service;
 
-    private static final String S3_PATH = "menuItems";
+    static final String S3_PATH = "menuItems";
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
