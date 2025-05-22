@@ -4,8 +4,12 @@ import java.io.Serial;
 import java.io.Serializable;
 
 public record TranslatableDTO(Long id,
-                              String defaultTranslation,
-                              String translationEn) implements Serializable {
+                              String pl,
+                              String en,
+                              String fr,
+                              String de,
+                              String es,
+                              String uk) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

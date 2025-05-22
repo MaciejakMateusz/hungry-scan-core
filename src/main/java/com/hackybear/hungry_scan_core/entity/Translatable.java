@@ -29,10 +29,17 @@ public class Translatable implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Column(nullable = false)
-    private String defaultTranslation;
+    private String pl;
 
-    private String translationEn;
+    private String en;
+
+    private String fr;
+
+    private String de;
+
+    private String es;
+
+    private String uk;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
@@ -46,13 +53,33 @@ public class Translatable implements Serializable {
     @CreatedBy
     private String createdBy;
 
-    public Translatable withDefaultTranslation(String defaultTranslation) {
-        this.defaultTranslation = defaultTranslation;
+    public Translatable withPl(String translation) {
+        this.pl = translation;
         return this;
     }
 
-    public Translatable withTranslationEn(String translationEn) {
-        this.translationEn = translationEn;
+    public Translatable withEn(String translation) {
+        this.en = translation;
+        return this;
+    }
+
+    public Translatable withFr(String translation) {
+        this.fr = translation;
+        return this;
+    }
+
+    public Translatable withDe(String translation) {
+        this.de = translation;
+        return this;
+    }
+
+    public Translatable withEs(String translation) {
+        this.es = translation;
+        return this;
+    }
+
+    public Translatable withUk(String translation) {
+        this.uk = translation;
         return this;
     }
 
