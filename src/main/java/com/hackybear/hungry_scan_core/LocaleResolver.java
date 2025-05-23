@@ -13,7 +13,14 @@ import java.util.Objects;
 @Component
 public class LocaleResolver extends AcceptHeaderLocaleResolver {
 
-    private static final List<Locale> LOCALES = Arrays.asList(Locale.of("pl"), Locale.of("en"));
+    private static final List<Locale> LOCALES = Arrays.asList(
+            Locale.of("pl"),
+            Locale.of("en"),
+            Locale.of("de"),
+            Locale.of("es"),
+            Locale.of("fr"),
+            Locale.of("uk")
+    );
     private static final Locale FALLBACK_LOCALE = Locale.of("pl");
 
     @Override
