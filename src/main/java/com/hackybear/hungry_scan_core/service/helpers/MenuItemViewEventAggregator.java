@@ -52,8 +52,12 @@ public class MenuItemViewEventAggregator {
             MenuItemViewAggregation event = aggregationByYear.get(aggregation.getId());
             MenuItemViewCountDTO viewCountDTO = new MenuItemViewCountDTO(
                     event.getId(),
-                    event.getDefaultTranslation(),
-                    event.getTranslationEn(),
+                    event.getPl(),
+                    event.getEn(),
+                    event.getFr(),
+                    event.getDe(),
+                    event.getEs(),
+                    event.getUk(),
                     event.getViews());
             results.add(viewCountDTO);
         }

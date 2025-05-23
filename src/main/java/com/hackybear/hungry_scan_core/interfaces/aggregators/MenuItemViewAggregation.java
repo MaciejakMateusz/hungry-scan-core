@@ -3,9 +3,17 @@ package com.hackybear.hungry_scan_core.interfaces.aggregators;
 public interface MenuItemViewAggregation {
     Long getId();
 
-    String getDefaultTranslation();
+    String getPl();
 
-    String getTranslationEn();
+    String getEn();
+
+    String getFr();
+
+    String getDe();
+
+    String getEs();
+
+    String getUk();
 
     Integer getViews();
 }

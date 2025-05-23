@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.service.helpers;
 import com.hackybear.hungry_scan_core.dto.MenuItemViewCountDTO;
 import com.hackybear.hungry_scan_core.interfaces.aggregators.MenuItemViewAggregation;
 import com.hackybear.hungry_scan_core.repository.MenuItemViewEventRepository;
+import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,29 +28,57 @@ class MenuItemViewEventAggregatorTest {
     @InjectMocks
     private MenuItemViewEventAggregator aggregator;
 
-    private record TestAgg(Long id, String def, String en, Integer views) implements MenuItemViewAggregation {
+    @Getter
+    private static class TestAgg implements MenuItemViewAggregation {
 
-        @Override
-        public String getDefaultTranslation() {
-            return this.def;
+        private Long id;
+        private String pl;
+        private String en;
+        private String fr;
+        private String de;
+        private String es;
+        private String uk;
+        private Integer views;
+
+        public TestAgg withId(Long id) {
+            this.id = id;
+            return this;
         }
 
-        @Override
-        public String getTranslationEn() {
-            return this.en;
+        public TestAgg withPl(String pl) {
+            this.pl = pl;
+            return this;
         }
 
-        @Override
-        public Integer getViews() {
-            return this.views;
+        public TestAgg withEn(String en) {
+            this.en = en;
+            return this;
         }
 
-        @Override
-        public Long getId() {
-            return this.id;
+        public TestAgg withFr(String fr) {
+            this.fr = fr;
+            return this;
         }
 
+        public TestAgg withDe(String de) {
+            this.de = de;
+            return this;
+        }
 
+        public TestAgg withEs(String es) {
+            this.es = es;
+            return this;
+        }
+
+        public TestAgg withUk(String uk) {
+            this.uk = uk;
+            return this;
+        }
+
+        public TestAgg withViews(Integer views) {
+            this.views = views;
+            return this;
+        }
     }
 
     @Test
@@ -65,8 +94,8 @@ class MenuItemViewEventAggregatorTest {
     @Test
     void projectYearlyMenuItemViews_ShouldReturnCorrectDTOs_WhenAggregationsExist() {
         List<MenuItemViewAggregation> aggs = Arrays.asList(
-                new TestAgg(10L, "Domyślny10", "Default10", 100),
-                new TestAgg(20L, "Domyślny20", "Default20", 200)
+                new TestAgg().withId(10L).withPl("Domyślny10").withEn("Default10").withViews(100),
+                new TestAgg().withId(20L).withPl("Domyślny20").withEn("Default20").withViews(200)
         );
         when(repository.aggregateByYear(1L, 2024)).thenReturn(aggs);
 
@@ -78,14 +107,14 @@ class MenuItemViewEventAggregatorTest {
 
         MenuItemViewCountDTO dto10 = map.get(10L);
         assertNotNull(dto10);
-        assertEquals("Domyślny10", dto10.defaultTranslation());
-        assertEquals("Default10", dto10.translationEn());
+        assertEquals("Domyślny10", dto10.pl());
+        assertEquals("Default10", dto10.en());
         assertEquals(100, dto10.viewsCount());
 
         MenuItemViewCountDTO dto20 = map.get(20L);
         assertNotNull(dto20);
-        assertEquals("Domyślny20", dto20.defaultTranslation());
-        assertEquals("Default20", dto20.translationEn());
+        assertEquals("Domyślny20", dto20.pl());
+        assertEquals("Default20", dto20.en());
         assertEquals(200, dto20.viewsCount());
 
         verify(repository).aggregateByYear(1L, 2024);
@@ -94,7 +123,7 @@ class MenuItemViewEventAggregatorTest {
     @Test
     void projectMonthlyMenuItemViews_ShouldDelegateToRepositoryAndReturnDTOs() {
         List<MenuItemViewAggregation> aggs = Collections.singletonList(
-                new TestAgg(5L, "M-Def", "M-En", 55)
+                new TestAgg().withId(5L).withPl("M-Def").withEn("M-En").withViews(55)
         );
         when(repository.aggregateByMonth(7L, 2025, 3)).thenReturn(aggs);
 
@@ -103,8 +132,8 @@ class MenuItemViewEventAggregatorTest {
         assertEquals(1, result.size());
         MenuItemViewCountDTO dto = result.iterator().next();
         assertEquals(5L, dto.id());
-        assertEquals("M-Def", dto.defaultTranslation());
-        assertEquals("M-En", dto.translationEn());
+        assertEquals("M-Def", dto.pl());
+        assertEquals("M-En", dto.en());
         assertEquals(55, dto.viewsCount());
 
         verify(repository).aggregateByMonth(7L, 2025, 3);
@@ -113,7 +142,7 @@ class MenuItemViewEventAggregatorTest {
     @Test
     void projectWeeklyMenuItemViews_ShouldDelegateToRepositoryAndReturnDTOs() {
         List<MenuItemViewAggregation> aggs = Collections.singletonList(
-                new TestAgg(99L, "W-Def", "W-En", 999)
+                new TestAgg().withId(99L).withPl("W-Def").withEn("W-En").withViews(999)
         );
         when(repository.aggregateByWeek(8L, 2025, 15)).thenReturn(aggs);
 
@@ -122,8 +151,8 @@ class MenuItemViewEventAggregatorTest {
         assertEquals(1, result.size());
         MenuItemViewCountDTO dto = result.iterator().next();
         assertEquals(99L, dto.id());
-        assertEquals("W-Def", dto.defaultTranslation());
-        assertEquals("W-En", dto.translationEn());
+        assertEquals("W-Def", dto.pl());
+        assertEquals("W-En", dto.en());
         assertEquals(999, dto.viewsCount());
 
         verify(repository).aggregateByWeek(8L, 2025, 15);
@@ -133,8 +162,8 @@ class MenuItemViewEventAggregatorTest {
     void projectDailyMenuItemViews_ShouldDelegateToRepositoryAndReturnDTOs() {
         LocalDate date = LocalDate.of(2025, 5, 1);
         List<MenuItemViewAggregation> aggs = Arrays.asList(
-                new TestAgg(1L, "D-Def1", "D-En1", 11),
-                new TestAgg(2L, "D-Def2", "D-En2", 22)
+                new TestAgg().withId(1L).withPl("D-Def1").withEn("D-En1").withViews(11),
+                new TestAgg().withId(2L).withPl("D-Def2").withEn("D-En2").withViews(22)
         );
         when(repository.aggregateByDay(99L, date)).thenReturn(aggs);
 
@@ -145,7 +174,7 @@ class MenuItemViewEventAggregatorTest {
                 .collect(Collectors.toMap(MenuItemViewCountDTO::id, Function.identity()));
 
         assertEquals(11, map.get(1L).viewsCount());
-        assertEquals("D-En2", map.get(2L).translationEn());
+        assertEquals("D-En2", map.get(2L).en());
 
         verify(repository).aggregateByDay(99L, date);
     }
@@ -187,8 +216,8 @@ class MenuItemViewEventAggregatorTest {
     @Test
     void projectYearlyMenuItemViews_ShouldThrowException_WhenDuplicateIds() {
         List<MenuItemViewAggregation> aggs = Arrays.asList(
-                new TestAgg(1L, "DefA", "EnA", 10),
-                new TestAgg(1L, "DefB", "EnB", 20)
+                new TestAgg().withId(1L).withPl("DefA").withEn("EnA").withViews(10),
+                new TestAgg().withId(1L).withPl("DefB").withEn("EnB").withViews(20)
         );
         when(repository.aggregateByYear(3L, 2025)).thenReturn(aggs);
 
@@ -201,7 +230,8 @@ class MenuItemViewEventAggregatorTest {
     @Test
     void projectWeeklyMenuItemViews_ShouldHandleNullTranslationFields() {
         List<MenuItemViewAggregation> aggs = Collections.singletonList(
-                new TestAgg(7L, null, null, 0)
+                new TestAgg().withId(7L).withViews(0)
+
         );
         when(repository.aggregateByWeek(4L, 2025, 10)).thenReturn(aggs);
 
@@ -209,8 +239,8 @@ class MenuItemViewEventAggregatorTest {
 
         assertEquals(1, result.size());
         MenuItemViewCountDTO dto = result.iterator().next();
-        assertNull(dto.defaultTranslation(), "Default translation should be null");
-        assertNull(dto.translationEn(), "English translation should be null");
+        assertNull(dto.pl(), "Default translation should be null");
+        assertNull(dto.en(), "English translation should be null");
         assertEquals(0, dto.viewsCount(), "View count should still be 0");
 
         verify(repository).aggregateByWeek(4L, 2025, 10);

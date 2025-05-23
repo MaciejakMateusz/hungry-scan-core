@@ -15,8 +15,12 @@ public interface MenuItemViewEventRepository extends JpaRepository<MenuItemViewE
 
     @Query(value =
             "SELECT "
-                    + "  t.default_translation AS defaultTranslation, "
-                    + "  t.translation_en AS translationEn, "
+                    + "  t.pl AS pl, "
+                    + "  t.en AS en, "
+                    + "  t.fr AS fr, "
+                    + "  t.de AS de, "
+                    + "  t.es AS es, "
+                    + "  t.uk AS uk, "
                     + "  mi.id AS id, "
                     + "  COUNT(*) AS views "
                     + "FROM menu_item_view_events mive "
@@ -24,7 +28,7 @@ public interface MenuItemViewEventRepository extends JpaRepository<MenuItemViewE
                     + "JOIN translatable t ON mi.translatable_name_id = t.id "
                     + "WHERE mive.menu_id = :menuId "
                     + "  AND YEAR(mive.viewed_at) = :year "
-                    + "GROUP BY mi.id, t.default_translation, t.translation_en "
+                    + "GROUP BY mi.id, t.en, t.fr, t.de, t.es, t.uk, t.pl "
                     + "ORDER BY views",
             nativeQuery = true)
     List<MenuItemViewAggregation> aggregateByYear(@Param("menuId") Long menuId,
@@ -32,8 +36,12 @@ public interface MenuItemViewEventRepository extends JpaRepository<MenuItemViewE
 
     @Query(value =
             "SELECT "
-                    + "  t.default_translation AS defaultTranslation, "
-                    + "  t.translation_en AS translationEn, "
+                    + "  t.pl AS pl, "
+                    + "  t.en AS en, "
+                    + "  t.fr AS fr, "
+                    + "  t.de AS de, "
+                    + "  t.es AS es, "
+                    + "  t.uk AS uk, "
                     + "  mi.id AS id, "
                     + "  COUNT(*) AS views "
                     + "FROM menu_item_view_events mive "
@@ -42,7 +50,7 @@ public interface MenuItemViewEventRepository extends JpaRepository<MenuItemViewE
                     + "WHERE mive.menu_id = :menuId "
                     + "  AND YEAR(mive.viewed_at) = :year "
                     + "  AND MONTH(mive.viewed_at) = :month "
-                    + "GROUP BY mi.id, t.default_translation, t.translation_en "
+                    + "GROUP BY mi.id, t.en, t.fr, t.de, t.es, t.uk, t.pl "
                     + "ORDER BY views",
             nativeQuery = true)
     List<MenuItemViewAggregation> aggregateByMonth(@Param("menuId") Long menuId,
@@ -51,8 +59,12 @@ public interface MenuItemViewEventRepository extends JpaRepository<MenuItemViewE
 
     @Query(value =
             "SELECT "
-                    + "  t.default_translation AS defaultTranslation, "
-                    + "  t.translation_en AS translationEn, "
+                    + "  t.pl AS pl, "
+                    + "  t.en AS en, "
+                    + "  t.fr AS fr, "
+                    + "  t.de AS de, "
+                    + "  t.es AS es, "
+                    + "  t.uk AS uk, "
                     + "  mi.id AS id, "
                     + "  COUNT(*) AS views "
                     + "FROM menu_item_view_events mive "
@@ -61,7 +73,7 @@ public interface MenuItemViewEventRepository extends JpaRepository<MenuItemViewE
                     + "WHERE mive.menu_id = :menuId "
                     + "  AND YEAR(mive.viewed_at) = :year "
                     + "  AND WEEK(mive.viewed_at) = :week "
-                    + "GROUP BY mi.id, t.default_translation, t.translation_en "
+                    + "GROUP BY mi.id, t.pl, t.en, t.fr, t.de, t.es, t.uk "
                     + "ORDER BY views",
             nativeQuery = true)
     List<MenuItemViewAggregation> aggregateByWeek(@Param("menuId") Long menuId,
@@ -70,8 +82,12 @@ public interface MenuItemViewEventRepository extends JpaRepository<MenuItemViewE
 
     @Query(value =
             "SELECT "
-                    + "  t.default_translation AS defaultTranslation, "
-                    + "  t.translation_en AS translationEn, "
+                    + "  t.pl AS pl, "
+                    + "  t.en AS en, "
+                    + "  t.fr AS fr, "
+                    + "  t.de AS de, "
+                    + "  t.es AS es, "
+                    + "  t.uk AS uk, "
                     + "  mi.id AS id, "
                     + "  COUNT(*) AS views "
                     + "FROM menu_item_view_events mive "
@@ -79,7 +95,7 @@ public interface MenuItemViewEventRepository extends JpaRepository<MenuItemViewE
                     + "JOIN translatable t ON mi.translatable_name_id = t.id "
                     + "WHERE mive.menu_id = :menuId "
                     + "AND CAST(mive.viewed_at AS DATE) = :date "
-                    + "GROUP BY mi.id, t.default_translation, t.translation_en "
+                    + "GROUP BY mi.id, t.en, t.fr, t.de, t.es, t.uk, t.pl "
                     + "ORDER BY views",
             nativeQuery = true)
     List<MenuItemViewAggregation> aggregateByDay(@Param("menuId") Long menuId,
