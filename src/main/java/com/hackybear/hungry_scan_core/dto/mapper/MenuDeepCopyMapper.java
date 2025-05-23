@@ -73,10 +73,13 @@ public interface MenuDeepCopyMapper {
 
     @Named("deepCopyTranslatable")
     default Translatable deepCopyTranslatable(Translatable src) {
-        Translatable copy = new Translatable();
-        copy.setDefaultTranslation(src.getDefaultTranslation());
-        copy.setTranslationEn(src.getTranslationEn());
-        return copy;
+        return new Translatable()
+                .withPl(src.getPl())
+                .withEn(src.getEn())
+                .withFr(src.getFr())
+                .withDe(src.getDe())
+                .withEs(src.getEs())
+                .withUk(src.getUk());
     }
 
 }

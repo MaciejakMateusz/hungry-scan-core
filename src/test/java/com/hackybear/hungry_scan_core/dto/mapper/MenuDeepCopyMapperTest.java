@@ -20,25 +20,83 @@ class MenuDeepCopyMapperTest {
     }
 
     @Test
-    void duplicateMenu_shouldDeepCopyAllLevels() {
-        Translatable menuMsg = new Translatable();
-        menuMsg.setDefaultTranslation("menu-default");
-        menuMsg.setTranslationEn("menu-en");
+    void deepCopyTranslatable_shouldProduceIndependentCopy_forAllLanguages() {
+        Translatable orig = new Translatable()
+                .withPl("foo-pl")
+                .withEn("foo-en")
+                .withFr("foo-fr")
+                .withDe("foo-de")
+                .withEs("foo-es")
+                .withUk("foo-uk");
 
-        Translatable catName = new Translatable();
-        catName.setDefaultTranslation("cat-default");
-        catName.setTranslationEn("cat-en");
+        Translatable dup = mapper.deepCopyTranslatable(orig);
 
-        Translatable itemName = new Translatable();
-        itemName.setDefaultTranslation("item-default");
-        itemName.setTranslationEn("item-en");
-        Translatable itemDesc = new Translatable();
-        itemDesc.setDefaultTranslation("desc-default");
-        itemDesc.setTranslationEn("desc-en");
+        assertNotNull(dup);
+        assertNotSame(orig, dup);
 
-        Translatable varName = new Translatable();
-        varName.setDefaultTranslation("var-default");
-        varName.setTranslationEn("var-en");
+        assertEquals("foo-pl", dup.getPl());
+        assertEquals("foo-en", dup.getEn());
+        assertEquals("foo-fr", dup.getFr());
+        assertEquals("foo-de", dup.getDe());
+        assertEquals("foo-es", dup.getEs());
+        assertEquals("foo-uk", dup.getUk());
+
+        orig.setPl("changed-pl");
+        orig.setEn("changed-en");
+        orig.setFr("changed-fr");
+        orig.setDe("changed-de");
+        orig.setEs("changed-es");
+        orig.setUk("changed-uk");
+
+        assertEquals("foo-pl", dup.getPl());
+        assertEquals("foo-en", dup.getEn());
+        assertEquals("foo-fr", dup.getFr());
+        assertEquals("foo-de", dup.getDe());
+        assertEquals("foo-es", dup.getEs());
+        assertEquals("foo-uk", dup.getUk());
+    }
+
+    @Test
+    void duplicateMenu_shouldDeepCopyAllLevels_forAllLanguages() {
+        Translatable menuMsg = new Translatable()
+                .withPl("menu-pl")
+                .withEn("menu-en")
+                .withFr("menu-fr")
+                .withDe("menu-de")
+                .withEs("menu-es")
+                .withUk("menu-uk");
+
+        Translatable catName = new Translatable()
+                .withPl("cat-pl")
+                .withEn("cat-en")
+                .withFr("cat-fr")
+                .withDe("cat-de")
+                .withEs("cat-es")
+                .withUk("cat-uk");
+
+        Translatable itemName = new Translatable()
+                .withPl("item-pl")
+                .withEn("item-en")
+                .withFr("item-fr")
+                .withDe("item-de")
+                .withEs("item-es")
+                .withUk("item-uk");
+
+        Translatable itemDesc = new Translatable()
+                .withPl("desc-pl")
+                .withEn("desc-en")
+                .withFr("desc-fr")
+                .withDe("desc-de")
+                .withEs("desc-es")
+                .withUk("desc-uk");
+
+        Translatable varName = new Translatable()
+                .withPl("var-pl")
+                .withEn("var-en")
+                .withFr("var-fr")
+                .withDe("var-de")
+                .withEs("var-es")
+                .withUk("var-uk");
 
         Variant srcVar = new Variant();
         srcVar.setId(99L);
@@ -71,20 +129,28 @@ class MenuDeepCopyMapperTest {
         assertNull(copy.getName(), "name should be ignored");
 
         assertNotNull(copy.getMessage());
-        assertNotSame(srcMenu.getMessage(), copy.getMessage(), "should be a new Translatable");
-        assertEquals("menu-default", copy.getMessage().getDefaultTranslation());
-        assertEquals("menu-en", copy.getMessage().getTranslationEn());
+        assertNotSame(srcMenu.getMessage(), copy.getMessage());
+        assertEquals("menu-pl", copy.getMessage().getPl());
+        assertEquals("menu-en", copy.getMessage().getEn());
+        assertEquals("menu-fr", copy.getMessage().getFr());
+        assertEquals("menu-de", copy.getMessage().getDe());
+        assertEquals("menu-es", copy.getMessage().getEs());
+        assertEquals("menu-uk", copy.getMessage().getUk());
 
         assertNotSame(srcMenu.getCategories(), copy.getCategories());
         assertEquals(1, copy.getCategories().size());
-
         Category copyCat = copy.getCategories().iterator().next();
         assertNull(copyCat.getId());
-        assertNull(copyCat.getMenu(), "back‐reference should be ignored");
+        assertNull(copyCat.getMenu());
         assertNotSame(srcCat, copyCat);
+
         assertNotSame(srcCat.getName(), copyCat.getName());
-        assertEquals("cat-default", copyCat.getName().getDefaultTranslation());
-        assertEquals("cat-en", copyCat.getName().getTranslationEn());
+        assertEquals("cat-pl", copyCat.getName().getPl());
+        assertEquals("cat-en", copyCat.getName().getEn());
+        assertEquals("cat-fr", copyCat.getName().getFr());
+        assertEquals("cat-de", copyCat.getName().getDe());
+        assertEquals("cat-es", copyCat.getName().getEs());
+        assertEquals("cat-uk", copyCat.getName().getUk());
 
         assertNotNull(copyCat.getMenuItems());
         assertEquals(1, copyCat.getMenuItems().size());
@@ -94,12 +160,20 @@ class MenuDeepCopyMapperTest {
         assertNotSame(srcItem, copyItem);
 
         assertNotSame(srcItem.getName(), copyItem.getName());
-        assertEquals("item-default", copyItem.getName().getDefaultTranslation());
-        assertEquals("item-en", copyItem.getName().getTranslationEn());
+        assertEquals("item-pl", copyItem.getName().getPl());
+        assertEquals("item-en", copyItem.getName().getEn());
+        assertEquals("item-fr", copyItem.getName().getFr());
+        assertEquals("item-de", copyItem.getName().getDe());
+        assertEquals("item-es", copyItem.getName().getEs());
+        assertEquals("item-uk", copyItem.getName().getUk());
 
         assertNotSame(srcItem.getDescription(), copyItem.getDescription());
-        assertEquals("desc-default", copyItem.getDescription().getDefaultTranslation());
-        assertEquals("desc-en", copyItem.getDescription().getTranslationEn());
+        assertEquals("desc-pl", copyItem.getDescription().getPl());
+        assertEquals("desc-en", copyItem.getDescription().getEn());
+        assertEquals("desc-fr", copyItem.getDescription().getFr());
+        assertEquals("desc-de", copyItem.getDescription().getDe());
+        assertEquals("desc-es", copyItem.getDescription().getEs());
+        assertEquals("desc-uk", copyItem.getDescription().getUk());
 
         assertNotNull(copyItem.getVariants());
         assertEquals(1, copyItem.getVariants().size());
@@ -107,28 +181,18 @@ class MenuDeepCopyMapperTest {
         assertNull(copyVar.getId());
         assertNull(copyVar.getMenuItem());
         assertNotSame(srcVar, copyVar);
+
         assertNotSame(srcVar.getName(), copyVar.getName());
-        assertEquals("var-default", copyVar.getName().getDefaultTranslation());
-        assertEquals("var-en", copyVar.getName().getTranslationEn());
+        assertEquals("var-pl", copyVar.getName().getPl());
+        assertEquals("var-en", copyVar.getName().getEn());
+        assertEquals("var-fr", copyVar.getName().getFr());
+        assertEquals("var-de", copyVar.getName().getDe());
+        assertEquals("var-es", copyVar.getName().getEs());
+        assertEquals("var-uk", copyVar.getName().getUk());
 
-        srcVar.getName().setDefaultTranslation("hacked");
-        assertEquals("var-default", copyVar.getName().getDefaultTranslation());
-    }
-
-    @Test
-    void deepCopyTranslatable_shouldProduceIndependentCopy() {
-        Translatable orig = new Translatable();
-        orig.setDefaultTranslation("foo");
-        orig.setTranslationEn("bar");
-
-        Translatable dup = mapper.deepCopyTranslatable(orig);
-
-        assertNotNull(dup);
-        assertNotSame(orig, dup);
-        assertEquals("foo", dup.getDefaultTranslation());
-        assertEquals("bar", dup.getTranslationEn());
-
-        orig.setDefaultTranslation("changed");
-        assertEquals("foo", dup.getDefaultTranslation());
+        srcVar.getName().setPl("hacked-pl");
+        srcVar.getName().setUk("hacked-uk");
+        assertEquals("var-pl", copyVar.getName().getPl());
+        assertEquals("var-uk", copyVar.getName().getUk());
     }
 }
