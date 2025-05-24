@@ -21,13 +21,8 @@ public record IngredientDTO(Long id,
                             LocalDateTime created,
                             LocalDateTime updated,
                             String modifiedBy,
-                            String createdBy) implements Comparable<IngredientDTO>, Serializable {
+                            String createdBy) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public int compareTo(IngredientDTO other) {
-        return this.name.defaultTranslation().compareTo(other.name().defaultTranslation());
-    }
 }

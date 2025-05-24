@@ -60,7 +60,7 @@ public class IngredientServiceImp implements IngredientService {
     public List<IngredientDTO> findAll() throws LocalizedException {
         Long restaurantId = userService.getActiveRestaurantId();
         List<Ingredient> ingredients = ingredientRepository.findAllOrderByDefaultTranslation(restaurantId);
-        return ingredients.stream().map(ingredientMapper::toDTO).sorted().toList();
+        return ingredients.stream().map(ingredientMapper::toDTO).toList();
     }
 
     @Override

@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 @Table(name = "ingredients")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class Ingredient implements Comparable<Ingredient>, Serializable {
+public class Ingredient implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,11 +76,6 @@ public class Ingredient implements Comparable<Ingredient>, Serializable {
 
     public void setPrice(BigDecimal price) {
         this.price = Money.of(price);
-    }
-
-    @Override
-    public int compareTo(Ingredient other) {
-        return this.name.getDefaultTranslation().compareTo(other.getName().getDefaultTranslation());
     }
 
 }
