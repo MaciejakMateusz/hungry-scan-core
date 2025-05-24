@@ -10,16 +10,12 @@ import java.util.Objects;
 public class DefaultTranslationNotBlankDTOValidator implements ConstraintValidator<DefaultTranslationNotBlankDTO, TranslatableDTO> {
 
     @Override
-    public void initialize(DefaultTranslationNotBlankDTO constraintAnnotation) {
-    }
-
-    @Override
     public boolean isValid(TranslatableDTO value, ConstraintValidatorContext context) {
         if (Objects.isNull(value)) {
             return true;
         }
 
-        String defaultTranslation = value.defaultTranslation();
+        String defaultTranslation = value.pl();
         return defaultTranslation != null && !defaultTranslation.trim().isEmpty();
     }
 }

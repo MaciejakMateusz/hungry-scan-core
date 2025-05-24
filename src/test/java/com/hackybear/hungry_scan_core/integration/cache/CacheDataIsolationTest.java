@@ -97,7 +97,7 @@ public class CacheDataIsolationTest {
     }
 
     private CategoryFormDTO createCategoryFormDTO() {
-        TranslatableDTO translatableDTO = new TranslatableDTO(null, "Food", null);
+        TranslatableDTO translatableDTO = new TranslatableDTO(null, "Food", null, null, null, null, null);
         return new CategoryFormDTO(null, translatableDTO, true, null);
     }
 

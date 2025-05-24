@@ -71,8 +71,8 @@ class CategoryControllerTest {
 
         List<MenuItemSimpleDTO> menuItems = categories.get(3).menuItems();
         assertEquals(9, categories.size());
-        assertEquals("Przystawki", categories.getFirst().name().defaultTranslation());
-        assertEquals("Napoje", categories.get(7).name().defaultTranslation());
+        assertEquals("Przystawki", categories.getFirst().name().pl());
+        assertEquals("Napoje", categories.get(7).name().pl());
         assertEquals(5, menuItems.size());
         assertEquals(4, menuItems.getFirst().category().id());
     }
@@ -102,25 +102,25 @@ class CategoryControllerTest {
         List<Category> categories = categoryDTOs.stream().map(categoryMapper::toCategory).toList();
 
         assertEquals(1, categories.getFirst().getDisplayOrder());
-        assertEquals("Przystawki", categories.getFirst().getName().getDefaultTranslation());
+        assertEquals("Przystawki", categories.getFirst().getName().getPl());
 
         assertEquals(2, categories.get(1).getDisplayOrder());
 
         assertEquals(3, categories.get(2).getDisplayOrder());
-        assertEquals("Sałatki", categories.get(2).getName().getDefaultTranslation());
+        assertEquals("Sałatki", categories.get(2).getName().getPl());
 
         assertEquals(4, categories.get(3).getDisplayOrder());
         assertEquals(5, categories.get(4).getDisplayOrder());
 
         assertEquals(6, categories.get(5).getDisplayOrder());
-        assertEquals("Wegetariańskie", categories.get(5).getName().getDefaultTranslation());
+        assertEquals("Wegetariańskie", categories.get(5).getName().getPl());
 
         assertEquals(7, categories.get(6).getDisplayOrder());
 
         assertEquals(8, categories.get(7).getDisplayOrder());
 
         assertEquals(9, categories.get(8).getDisplayOrder());
-        assertEquals("Pusta", categories.get(8).getName().getDefaultTranslation());
+        assertEquals("Pusta", categories.get(8).getName().getPl());
 
         categories.getFirst().setDisplayOrder(9);
         categories.get(8).setDisplayOrder(1);
@@ -138,16 +138,16 @@ class CategoryControllerTest {
                         .sorted()
                         .toList();
 
-        assertEquals("Pusta", updatedCategoryDTOs.getFirst().name().defaultTranslation());
+        assertEquals("Pusta", updatedCategoryDTOs.getFirst().name().pl());
         assertEquals(1, updatedCategoryDTOs.getFirst().displayOrder());
 
-        assertEquals("Przystawki", updatedCategoryDTOs.get(8).name().defaultTranslation());
+        assertEquals("Przystawki", updatedCategoryDTOs.get(8).name().pl());
         assertEquals(9, updatedCategoryDTOs.get(8).displayOrder());
 
-        assertEquals("Sałatki", updatedCategoryDTOs.get(5).name().defaultTranslation());
+        assertEquals("Sałatki", updatedCategoryDTOs.get(5).name().pl());
         assertEquals(6, updatedCategoryDTOs.get(5).displayOrder());
 
-        assertEquals("Wegetariańskie", updatedCategoryDTOs.get(2).name().defaultTranslation());
+        assertEquals("Wegetariańskie", updatedCategoryDTOs.get(2).name().pl());
         assertEquals(3, updatedCategoryDTOs.get(2).displayOrder());
     }
 
@@ -200,7 +200,7 @@ class CategoryControllerTest {
     void shouldShowCategoryById() throws Exception {
         CategoryFormDTO category = apiRequestUtils.postObjectExpect200(
                 "/api/cms/categories/show", 4, CategoryFormDTO.class);
-        assertEquals("Zupy", category.name().defaultTranslation());
+        assertEquals("Zupy", category.name().pl());
     }
 
     @Test
@@ -232,8 +232,8 @@ class CategoryControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/categories", CategoryDTO.class);
         CategoryDTO persistedCategory = categories.getLast();
-        assertEquals("Food", persistedCategory.name().defaultTranslation());
-        assertNull(persistedCategory.name().translationEn());
+        assertEquals("Food", persistedCategory.name().pl());
+        assertNull(persistedCategory.name().en());
         assertEquals(10, persistedCategory.displayOrder());
     }
 
@@ -315,7 +315,7 @@ class CategoryControllerTest {
     @Rollback
     void shouldRemoveCategory() throws Exception {
         Category existingCategory = getCategory(7L);
-        assertEquals("Dla dzieci", existingCategory.getName().getDefaultTranslation());
+        assertEquals("Dla dzieci", existingCategory.getName().getPl());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 7);
 
@@ -332,13 +332,13 @@ class CategoryControllerTest {
     void shouldUpdateDisplayOrderAfterRemoval() throws Exception {
         CategoryFormDTO existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 7, CategoryFormDTO.class);
-        assertEquals("Dla dzieci", existingCategory.name().defaultTranslation());
+        assertEquals("Dla dzieci", existingCategory.name().pl());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 7);
 
         List<CategoryDTO> categories = apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
         assertEquals(8, categories.size());
-        assertEquals("Napoje", categories.get(6).name().defaultTranslation());
+        assertEquals("Napoje", categories.get(6).name().pl());
         assertEquals(5, categories.get(4).displayOrder());
         assertEquals(6, categories.get(5).displayOrder());
         assertEquals(7, categories.get(6).displayOrder());
@@ -352,13 +352,13 @@ class CategoryControllerTest {
     void shouldRemoveLast() throws Exception {
         CategoryFormDTO existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 9, CategoryFormDTO.class);
-        assertEquals("Pusta", existingCategory.name().defaultTranslation());
+        assertEquals("Pusta", existingCategory.name().pl());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/categories/delete", 9);
 
         List<CategoryDTO> categories = apiRequestUtils.fetchAsList("/api/cms/categories", CategoryDTO.class);
         assertEquals(8, categories.size());
-        assertEquals("Napoje", categories.get(7).name().defaultTranslation());
+        assertEquals("Napoje", categories.get(7).name().pl());
         assertEquals(1, categories.getFirst().displayOrder());
         assertEquals(2, categories.get(1).displayOrder());
         assertEquals(3, categories.get(2).displayOrder());
@@ -376,7 +376,7 @@ class CategoryControllerTest {
     void shouldRemoveFirst() throws Exception {
         CategoryFormDTO existingCategory =
                 apiRequestUtils.postObjectExpect200("/api/cms/categories/show", 1, CategoryFormDTO.class);
-        assertEquals("Przystawki", existingCategory.name().defaultTranslation());
+        assertEquals("Przystawki", existingCategory.name().pl());
 
         Category category = categoryMapper.toCategory(existingCategory);
         category.setMenu(menuRepository.findById(1L).orElseThrow());
@@ -388,12 +388,12 @@ class CategoryControllerTest {
 
         assertEquals(8, categories.size());
 
-        assertEquals("Makarony", categories.getFirst().name().defaultTranslation());
+        assertEquals("Makarony", categories.getFirst().name().pl());
         assertEquals(1, categories.getFirst().displayOrder());
 
         assertEquals(2, categories.get(1).displayOrder());
 
-        assertEquals("Zupy", categories.get(2).name().defaultTranslation());
+        assertEquals("Zupy", categories.get(2).name().pl());
         assertEquals(3, categories.get(2).displayOrder());
 
         assertEquals(4, categories.get(3).displayOrder());
@@ -415,13 +415,13 @@ class CategoryControllerTest {
     }
 
     private CategoryFormDTO createCategoryFormDTO(String name) {
-        TranslatableDTO translatableDTO = new TranslatableDTO(null, name, null);
+        TranslatableDTO translatableDTO = new TranslatableDTO(null, name, null, null, null, null, null);
         return new CategoryFormDTO(null, translatableDTO, true, null);
     }
 
     private Translatable getDefaultTranslation(String value) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(value);
+        translatable.setPl(value);
         return translatable;
     }
 

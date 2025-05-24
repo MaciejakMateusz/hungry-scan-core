@@ -80,7 +80,7 @@ public class Category implements Comparable<Category>, Serializable {
 
     @Override
     public String toString() {
-        return name.getDefaultTranslation();
+        return name.getPl();
     }
 
     public void addMenuItem(MenuItem menuItem) {

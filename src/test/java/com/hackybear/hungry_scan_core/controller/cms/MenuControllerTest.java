@@ -125,8 +125,8 @@ class MenuControllerTest {
                 "/api/cms/menus/customer", MenuCustomerDTO.class);
         assertEquals("Rarytas", menu.restaurant().name());
         assertEquals("#318E41", menu.theme());
-        assertEquals("Smacznego!", menu.message().defaultTranslation());
-        assertEquals("Enjoy your meal!", menu.message().translationEn());
+        assertEquals("Smacznego!", menu.message().pl());
+        assertEquals("Enjoy your meal!", menu.message().en());
         assertEquals(9, menu.categories().size());
         assertEquals(5, menu.categories().getFirst().menuItems().size());
     }

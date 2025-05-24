@@ -12,7 +12,7 @@ INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, l
                              employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
 VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true, 1);
 
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+INSERT IGNORE INTO translatable(id, pl, en)
 VALUES (163, 'Smacznego!', 'Enjoy your meal!'),
        (164, 'Smacznego!', 'Enjoy your meal!'),
        (165, 'Smacznego!', 'Enjoy your meal!');
@@ -22,7 +22,7 @@ VALUES (1, true, 'Całodniowe', 1, 'COLOR_318E41', 163),
        (2, false, 'Śniadaniowe', 1, 'COLOR_318E41', 164),
        (3, true, 'Menu', 2, 'COLOR_318E41', 165);
 
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+INSERT IGNORE INTO translatable (id, pl, en)
 VALUES (1, 'Kelner', 'Waiter'),
        (2, 'Administrator', 'Admin'),
        (3, 'Menadżer', 'Manager'),
@@ -55,7 +55,7 @@ INSERT IGNORE INTO user_role (user_id, role_id)
 VALUES (1, 2),
        (2, 2);
 
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+INSERT IGNORE INTO translatable (id, pl, en)
 VALUES (7, 'Gluten', 'Gluten'),
        (8,
         'Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.',
@@ -107,7 +107,7 @@ VALUES (1, 8, 'gluten.svg', 7),
        (13, 32, 'lupine.svg', 31),
        (14, 34, 'molluscs.svg', 33);
 
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+INSERT IGNORE INTO translatable (id, pl, en)
 VALUES (35, 'Bez glutenu', 'Gluten free'),
        (36, 'Wegańskie', 'Vegan'),
        (37, 'Wegetariańskie', 'Vegetarian'),
@@ -128,7 +128,7 @@ INSERT IGNORE INTO restaurant_tables (is_active, token, waiter_called, bill_requ
                                       zone_id, has_qr_code, qr_name)
 VALUES (true, '19436a86-e200-400d-aa2e-da4686805d00', false, false, 999, 1, true, null, false, null);
 
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+INSERT IGNORE INTO translatable(id, pl, en)
 VALUES (41, 'Przystawki', 'Starters'),
        (42, 'Makarony', 'Pastas'),
        (43, 'Sałatki', 'Salads'),
@@ -139,7 +139,7 @@ VALUES (41, 'Przystawki', 'Starters'),
        (48, 'Napoje', 'Drinks'),
        (49, 'Pusta', null);
 
-INSERT IGNORE INTO translatable(id, default_translation)
+INSERT IGNORE INTO translatable(id, pl)
 VALUES (50, 'Krewetki marynowane w cytrynie'),
        (51, 'Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.'),
        (52, 'Carpaccio z polędwicy wołowej'),
@@ -302,7 +302,7 @@ VALUES (1, 1),
        (9, 4),
        (10, 5);
 
-INSERT IGNORE INTO translatable(id, default_translation)
+INSERT IGNORE INTO translatable(id, pl)
 VALUES (116, 'Z szpinakiem'),
        (117, 'Z konfiturą cebulową'),
        (118, 'Mała'),
@@ -342,7 +342,7 @@ VALUES (1, NOW(), true, true, 116, '0.00', null, 4, 1),
        (17, NOW(), true, false, 132, '10.00', null, 25, 3);
 
 
-INSERT IGNORE INTO translatable (id, default_translation, translation_en)
+INSERT IGNORE INTO translatable (id, pl, en)
 VALUES (133, 'Pomidory', 'Tomatoes'),
        (134, 'Cebula', 'Onion'),
        (135, 'Czosnek', 'Garlic'),
@@ -399,7 +399,7 @@ VALUES (1, 1, '2024-03-30', 1, 133, '2024-03-30', '4.00'),
        (26, 1, '2024-03-30', 1, 158, '2024-03-30', '4.00'),
        (27, 1, '2024-03-30', 1, 159, '2024-03-30', '4.00');
 
-INSERT IGNORE INTO translatable(id, default_translation, translation_en)
+INSERT IGNORE INTO translatable(id, pl, en)
 VALUES (160, 'Nowość', 'New'),
        (161, 'Bestseller', 'Bestseller'),
        (162, 'Promocja', 'Discount');

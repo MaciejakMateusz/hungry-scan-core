@@ -52,14 +52,14 @@ class TranslatableControllerTest {
     @Rollback
     void shouldSaveAll() throws Exception {
         MenuItemFormDTO menuItem = apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItemFormDTO.class);
-        assertNull(menuItem.name().translationEn());
-        assertNull(menuItem.description().translationEn());
+        assertNull(menuItem.name().en());
+        assertNull(menuItem.description().en());
 
         Translatable nameTranslation = translatableMapper.toTranslatable(menuItem.name());
-        nameTranslation.setTranslationEn("English name");
+        nameTranslation.setEn("English name");
 
         Translatable descriptionTranslation = translatableMapper.toTranslatable(menuItem.description());
-        descriptionTranslation.setTranslationEn("English description");
+        descriptionTranslation.setEn("English description");
 
         List<Translatable> translatables = List.of(nameTranslation, descriptionTranslation);
 
@@ -67,8 +67,8 @@ class TranslatableControllerTest {
 
         MenuItemFormDTO translatedMenuItem =
                 apiRequestUtils.postObjectExpect200("/api/cms/items/show", 4, MenuItemFormDTO.class);
-        assertEquals("English name", translatedMenuItem.name().translationEn());
-        assertEquals("English description", translatedMenuItem.description().translationEn());
+        assertEquals("English name", translatedMenuItem.name().en());
+        assertEquals("English description", translatedMenuItem.description().en());
     }
 
 }

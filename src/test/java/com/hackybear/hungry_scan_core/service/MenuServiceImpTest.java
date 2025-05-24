@@ -136,7 +136,7 @@ class MenuServiceImpTest {
                 new ArrayList<>(),
                 new RestaurantSimpleDTO(100L, "R"),
                 "black",
-                new TranslatableDTO(55L, "D", null));
+                new TranslatableDTO(55L, "D", null, null, null, null, null));
         when(menuMapper.toCustomerDTO(menu)).thenReturn(cust);
 
         MenuCustomerDTO out = menuService.projectPlannedMenu(7L);
@@ -409,7 +409,7 @@ class MenuServiceImpTest {
 
         assertEquals(Theme.COLOR_318E41, toSave.getTheme(), "should set default theme");
         assertNotNull(toSave.getMessage(), "should set default message");
-        assertEquals("Welcome!", toSave.getMessage().getDefaultTranslation(),
+        assertEquals("Welcome!", toSave.getMessage().getPl(),
                 "default translation should be 'Welcome!'");
     }
 

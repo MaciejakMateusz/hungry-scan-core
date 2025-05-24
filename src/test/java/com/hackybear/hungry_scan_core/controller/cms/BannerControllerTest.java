@@ -48,7 +48,7 @@ class BannerControllerTest {
                         "/api/cms/banners", BannerDTO.class);
 
         assertEquals(3, labels.size());
-        assertEquals("Nowość", labels.getFirst().name().defaultTranslation());
+        assertEquals("Nowość", labels.getFirst().name().pl());
     }
 
     @Test
@@ -61,7 +61,7 @@ class BannerControllerTest {
     void shouldShowById() throws Exception {
         BannerDTO banner =
                 apiRequestUtils.postObjectExpect200("/api/cms/banners/show", "promo", BannerDTO.class);
-        assertEquals("Promocja", banner.name().defaultTranslation());
+        assertEquals("Promocja", banner.name().pl());
     }
 
     @Test

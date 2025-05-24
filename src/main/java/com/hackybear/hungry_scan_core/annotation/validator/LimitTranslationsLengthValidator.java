@@ -15,15 +15,15 @@ public class LimitTranslationsLengthValidator implements ConstraintValidator<Lim
             return true;
         }
 
-        String defaultTranslation = value.getDefaultTranslation();
-        String translationEn = value.getTranslationEn();
+        String defaultTranslation = value.getPl();
+        String translationEn = value.getEn();
         if (Objects.nonNull(defaultTranslation) && Objects.isNull(translationEn)) {
             return defaultTranslation.length() <= 255;
-        } else if (Objects.nonNull(value.getDefaultTranslation())) {
+        } else if (Objects.nonNull(value.getPl())) {
             return defaultTranslation.length() <= 255 && translationEn.length() <= 255;
         }
 
-        if (Objects.nonNull(value.getTranslationEn())) {
+        if (Objects.nonNull(value.getEn())) {
             return translationEn.length() <= 255;
         } else {
             return true;

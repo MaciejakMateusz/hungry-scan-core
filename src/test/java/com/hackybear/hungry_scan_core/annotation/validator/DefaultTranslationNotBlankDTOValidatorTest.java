@@ -37,7 +37,7 @@ public class DefaultTranslationNotBlankDTOValidatorTest extends ValidatorTestBas
     }
 
     private IngredientDTO getIngredientDTO(String translation) {
-        TranslatableDTO translatable = new TranslatableDTO(1L, translation, null);
+        TranslatableDTO translatable = new TranslatableDTO(1L, translation, null, null, null, null, null);
         return new IngredientDTO(
                 1L,
                 translatable,

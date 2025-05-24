@@ -13,7 +13,7 @@ import java.util.Set;
 @Repository
 public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
 
-    @Query("SELECT mi from MenuItem mi WHERE mi.name.defaultTranslation LIKE LOWER(:filterValue) ORDER BY mi.name.defaultTranslation")
+    @Query("SELECT mi from MenuItem mi WHERE mi.name.pl LIKE LOWER(:filterValue) ORDER BY mi.name.pl")
     Set<MenuItem> filterByName(@Param("filterValue") String filterValue);
 
     Set<MenuItem> findAllByCategoryIdOrderByDisplayOrder(Long categoryId);

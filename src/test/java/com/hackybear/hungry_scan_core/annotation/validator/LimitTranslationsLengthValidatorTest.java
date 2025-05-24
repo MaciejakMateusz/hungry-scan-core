@@ -54,7 +54,7 @@ public class LimitTranslationsLengthValidatorTest extends ValidatorTestBase {
 
     private Category getCategoryWithDefaultTranslation(String translation) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(translation);
+        translatable.setPl(translation);
         Category category = new Category();
         category.setMenu(new Menu());
         category.setName(translatable);
@@ -64,8 +64,8 @@ public class LimitTranslationsLengthValidatorTest extends ValidatorTestBase {
 
     private Category getCategoryWithTranslationEn(String translation) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation("Default");
-        translatable.setTranslationEn(translation);
+        translatable.setPl("Default");
+        translatable.setEn(translation);
         Category category = new Category();
         category.setMenu(new Menu());
         category.setName(translatable);

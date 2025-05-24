@@ -408,7 +408,7 @@ class AdminManagementControllerTest {
 
     private Translatable getDefaultTranslation() {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation("Kelner");
+        translatable.setPl("Kelner");
         return translatable;
     }
 

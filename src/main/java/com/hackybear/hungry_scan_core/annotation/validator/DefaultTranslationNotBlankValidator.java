@@ -8,12 +8,8 @@ import jakarta.validation.ConstraintValidatorContext;
 public class DefaultTranslationNotBlankValidator implements ConstraintValidator<DefaultTranslationNotBlank, Translatable> {
 
     @Override
-    public void initialize(DefaultTranslationNotBlank constraintAnnotation) {
-    }
-
-    @Override
     public boolean isValid(Translatable value, ConstraintValidatorContext context) {
-        String defaultTranslation = value.getDefaultTranslation();
+        String defaultTranslation = value.getPl();
         return defaultTranslation != null && !defaultTranslation.trim().isEmpty();
     }
 }

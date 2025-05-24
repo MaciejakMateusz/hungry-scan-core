@@ -68,7 +68,7 @@ public class OrderedItemFactory {
         Set<Ingredient> availableIngredients = menuItem.getAdditionalIngredients();
         availableIngredients = availableIngredients.stream()
                 .filter(ingredient -> orderedIngredients.stream()
-                        .anyMatch(ingredientName -> ingredientName.equals(ingredient.getName().getDefaultTranslation())))
+                        .anyMatch(ingredientName -> ingredientName.equals(ingredient.getName().getPl())))
                 .collect(Collectors.toSet());
         orderedItem.setAdditionalIngredients(availableIngredients);
     }

@@ -72,7 +72,7 @@ class CategoryServiceImpTest {
     @Test
     void shouldFindById() throws LocalizedException {
         CategoryFormDTO category = categoryService.findById(1L);
-        assertEquals("Przystawki", category.name().defaultTranslation());
+        assertEquals("Przystawki", category.name().pl());
     }
 
     @Test
@@ -86,9 +86,9 @@ class CategoryServiceImpTest {
     public void shouldReturnAll() throws LocalizedException, AuthenticationException {
         List<CategoryDTO> allCategories = getCategories();
         assertEquals(9, allCategories.size());
-        assertEquals("Pizza", allCategories.get(4).name().defaultTranslation());
-        assertEquals("Makarony", allCategories.get(1).name().defaultTranslation());
-        assertEquals("Pastas", allCategories.get(1).name().translationEn());
+        assertEquals("Pizza", allCategories.get(4).name().pl());
+        assertEquals("Makarony", allCategories.get(1).name().pl());
+        assertEquals("Pastas", allCategories.get(1).name().en());
     }
 
     @Test
@@ -103,7 +103,7 @@ class CategoryServiceImpTest {
         categoryService.save(categoryFormDTO, activeMenuId);
 
         CategoryFormDTO persistedCategory = categoryService.findById(10L);
-        assertEquals("Tajskie", persistedCategory.name().defaultTranslation());
+        assertEquals("Tajskie", persistedCategory.name().pl());
     }
 
     @Test
@@ -112,7 +112,7 @@ class CategoryServiceImpTest {
         Category category = new Category();
 
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation("");
+        translatable.setPl("");
         category.setName(translatable);
         CategoryFormDTO categoryBlank = categoryMapper.toFormDTO(category);
         Long activeMenuId = userService.getActiveMenuId();
@@ -142,7 +142,7 @@ class CategoryServiceImpTest {
         Long activeMenuId = userService.getActiveMenuId();
         categoryService.update(categoryFormDTO, activeMenuId);
         CategoryFormDTO updatedCategory = categoryService.findById(7L);
-        assertEquals("Testowe jedzenie", updatedCategory.name().defaultTranslation());
+        assertEquals("Testowe jedzenie", updatedCategory.name().pl());
     }
 
     @Test
@@ -163,7 +163,7 @@ class CategoryServiceImpTest {
     private Category createCategory() {
         Category category = new Category();
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation("Tajskie");
+        translatable.setPl("Tajskie");
         category.setName(translatable);
         category.setDisplayOrder(10);
         return category;
@@ -171,7 +171,7 @@ class CategoryServiceImpTest {
 
     private Translatable getTranslationPl() {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation("Testowe jedzenie");
+        translatable.setPl("Testowe jedzenie");
         return translatable;
     }
 }

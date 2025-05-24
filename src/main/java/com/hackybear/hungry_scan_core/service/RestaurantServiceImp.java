@@ -267,7 +267,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     private static Translatable getMenuMessage() {
         return new Translatable()
-                .withDefaultTranslation("Welcome!")
-                .withTranslationEn("Enjoy your meal!");
+                .withPl("Welcome!")
+                .withEn("Enjoy your meal!");
     }
 }

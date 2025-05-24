@@ -61,7 +61,7 @@ class IngredientControllerTest {
 
         List<IngredientDTO> ingredientList = ingredients.getContent();
         assertEquals(27, ingredientList.size());
-        assertEquals("Bazylia", ingredientList.getFirst().name().defaultTranslation());
+        assertEquals("Bazylia", ingredientList.getFirst().name().pl());
     }
 
     @Test
@@ -75,7 +75,7 @@ class IngredientControllerTest {
     void shouldShowIngredientById() throws Exception {
         IngredientDTO ingredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
-        assertEquals("Mozzarella", ingredient.name().defaultTranslation());
+        assertEquals("Mozzarella", ingredient.name().pl());
     }
 
     @Test
@@ -105,7 +105,7 @@ class IngredientControllerTest {
 
         IngredientDTO persistedIngredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 28, IngredientDTO.class);
-        assertEquals("Majeranek", persistedIngredient.name().defaultTranslation());
+        assertEquals("Majeranek", persistedIngredient.name().pl());
         assertEquals(BigDecimal.valueOf(1.0), persistedIngredient.price());
     }
 
@@ -136,7 +136,7 @@ class IngredientControllerTest {
     void shouldUpdateExistingIngredient() throws Exception {
         IngredientDTO ingredientDTO =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
-        assertEquals("Mozzarella", ingredientDTO.name().defaultTranslation());
+        assertEquals("Mozzarella", ingredientDTO.name().pl());
 
         Ingredient existingIngredient = ingredientMapper.toIngredient(ingredientDTO);
         existingIngredient.setName(getDefaultTranslation("Updated mozzarella"));
@@ -147,7 +147,7 @@ class IngredientControllerTest {
 
         IngredientDTO updatedIngredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
-        assertEquals("Updated mozzarella", updatedIngredient.name().defaultTranslation());
+        assertEquals("Updated mozzarella", updatedIngredient.name().pl());
         assertEquals(BigDecimal.valueOf(4.0), updatedIngredient.price());
     }
 
@@ -158,7 +158,7 @@ class IngredientControllerTest {
     void shouldDeleteIngredient() throws Exception {
         IngredientDTO ingredient =
                 apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
-        assertEquals("Mozzarella", ingredient.name().defaultTranslation());
+        assertEquals("Mozzarella", ingredient.name().pl());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/ingredients/delete", 6);
 
@@ -183,7 +183,7 @@ class IngredientControllerTest {
 
     private Translatable getDefaultTranslation(String value) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(value);
+        translatable.setPl(value);
         return translatable;
     }
 

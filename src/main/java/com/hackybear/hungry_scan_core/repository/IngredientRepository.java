@@ -13,17 +13,17 @@ import java.util.List;
 @Repository
 public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
-    @Query("SELECT i FROM Ingredient i WHERE i.restaurant.id = :restaurantId ORDER BY i.name.defaultTranslation")
+    @Query("SELECT i FROM Ingredient i WHERE i.restaurant.id = :restaurantId ORDER BY i.name.pl")
     Page<Ingredient> findAllOrderByDefaultTranslation(Pageable pageable, @Param("restaurantId") Long restaurantId);
 
-    @Query("SELECT i FROM Ingredient i WHERE i.restaurant.id = :restaurantId ORDER BY i.name.defaultTranslation")
+    @Query("SELECT i FROM Ingredient i WHERE i.restaurant.id = :restaurantId ORDER BY i.name.pl")
     List<Ingredient> findAllOrderByDefaultTranslation(@Param("restaurantId") Long restaurantId);
 
     @Query("""
             SELECT i from Ingredient i
-            WHERE i.name.defaultTranslation LIKE LOWER(:filterValue)
+            WHERE i.name.pl LIKE LOWER(:filterValue)
             AND i.restaurant.id = :restaurantId
-            ORDER BY i.name.defaultTranslation
+            ORDER BY i.name.pl
             """)
     List<Ingredient> filterByName(@Param("filterValue") String filterValue, @Param("restaurantId") Long restaurantId);
 }

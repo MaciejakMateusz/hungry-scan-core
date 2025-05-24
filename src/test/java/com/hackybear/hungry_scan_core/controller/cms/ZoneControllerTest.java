@@ -62,7 +62,7 @@ class ZoneControllerTest {
                 apiRequestUtils.fetchAsList(
                         "/api/cms/zones", Zone.class);
         assertEquals(4, zones.size());
-        assertEquals("Piętro II", zones.get(3).getName().getDefaultTranslation());
+        assertEquals("Piętro II", zones.get(3).getName().getPl());
     }
 
     @Test
@@ -74,7 +74,7 @@ class ZoneControllerTest {
     @WithMockUser(roles = {"MANAGER", "ADMIN"})
     void shouldShowZoneById() throws Exception {
         Zone zone = apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 1, Zone.class);
-        assertEquals("Sekcja 1", zone.getName().getDefaultTranslation());
+        assertEquals("Sekcja 1", zone.getName().getPl());
     }
 
     @Test
@@ -116,7 +116,7 @@ class ZoneControllerTest {
 
         Zone persistedZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 5, Zone.class);
-        assertEquals("Test zone", persistedZone.getName().getDefaultTranslation());
+        assertEquals("Test zone", persistedZone.getName().getPl());
     }
 
     @Test
@@ -145,14 +145,14 @@ class ZoneControllerTest {
     void shouldUpdateExistingZone() throws Exception {
         Zone persistedZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 3, Zone.class);
-        assertEquals("Piętro II", persistedZone.getName().getDefaultTranslation());
+        assertEquals("Piętro II", persistedZone.getName().getPl());
         persistedZone.setName(getDefaultTranslation("Updated zone"));
 
         apiRequestUtils.postAndExpect200("/api/cms/zones/add", persistedZone);
 
         Zone updatedZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 3, Zone.class);
-        assertEquals("Updated zone", updatedZone.getName().getDefaultTranslation());
+        assertEquals("Updated zone", updatedZone.getName().getPl());
     }
 
     @Test
@@ -162,7 +162,7 @@ class ZoneControllerTest {
     void shouldDeleteZone() throws Exception {
         Zone exitingZone =
                 apiRequestUtils.postObjectExpect200("/api/cms/zones/show", 2, Zone.class);
-        assertEquals("Sekcja 2", exitingZone.getName().getDefaultTranslation());
+        assertEquals("Sekcja 2", exitingZone.getName().getPl());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/zones/delete", 2);
 
@@ -190,7 +190,7 @@ class ZoneControllerTest {
 
     private Translatable getDefaultTranslation(String value) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(value);
+        translatable.setPl(value);
         return translatable;
     }
 

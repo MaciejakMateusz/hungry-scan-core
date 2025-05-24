@@ -86,14 +86,14 @@ public class CacheSpeedTest {
         CategoryFormDTO firstCategoryCall = apiRequestUtils.postObjectExpect200(
                 "/api/cms/categories/show", 4, CategoryFormDTO.class);
         long firstRequestEnd = System.currentTimeMillis();
-        assertEquals("Zupy", firstCategoryCall.name().defaultTranslation());
+        assertEquals("Zupy", firstCategoryCall.name().pl());
         long firstRequestResult = firstRequestEnd - firstRequestBegin;
 
         long secondRequestBegin = System.currentTimeMillis();
         CategoryFormDTO secondCategoryCall = apiRequestUtils.postObjectExpect200(
                 "/api/cms/categories/show", 4, CategoryFormDTO.class);
         long secondRequestEnd = System.currentTimeMillis();
-        assertEquals("Zupy", secondCategoryCall.name().defaultTranslation());
+        assertEquals("Zupy", secondCategoryCall.name().pl());
         long secondRequestResult = secondRequestEnd - secondRequestBegin;
 
         String prepMsg = String.format("Cache did not improve execution time. Initial ms: %s, Repeated ms; %s",

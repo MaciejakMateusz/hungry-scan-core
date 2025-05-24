@@ -61,7 +61,7 @@ public class MenuItemFactory {
 
     private Translatable getDefaultTranslation(String translation) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(translation);
+        translatable.setPl(translation);
         return translatable;
     }
 

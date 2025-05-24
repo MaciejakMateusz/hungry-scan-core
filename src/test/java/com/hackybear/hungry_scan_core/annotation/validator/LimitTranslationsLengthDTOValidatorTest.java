@@ -53,12 +53,12 @@ public class LimitTranslationsLengthDTOValidatorTest extends ValidatorTestBase {
     }
 
     private IngredientDTO getIngredientDTOWithDefaultTranslation(String translation) {
-        TranslatableDTO translatable = new TranslatableDTO(1L, translation, null);
+        TranslatableDTO translatable = new TranslatableDTO(1L, translation, null, null, null, null, null);
         return getIngredientDTO(translatable);
     }
 
     private IngredientDTO getIngredientDTOWithTranslationEn(String translation) {
-        TranslatableDTO translatable = new TranslatableDTO(1L, "Default", translation);
+        TranslatableDTO translatable = new TranslatableDTO(1L, "Default", translation, null, null, null, null);
         return getIngredientDTO(translatable);
     }
 

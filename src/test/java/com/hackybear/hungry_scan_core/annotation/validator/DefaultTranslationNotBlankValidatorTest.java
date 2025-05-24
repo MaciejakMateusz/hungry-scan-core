@@ -38,7 +38,7 @@ public class DefaultTranslationNotBlankValidatorTest extends ValidatorTestBase {
 
     private Category getCategoryWithDefaultTranslation(String translation) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(translation);
+        translatable.setPl(translation);
         Category category = new Category();
         category.setMenu(new Menu());
         category.setName(translatable);

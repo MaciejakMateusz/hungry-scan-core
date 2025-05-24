@@ -58,8 +58,8 @@ class VariantControllerTest {
     void shouldFindById() throws Exception {
         VariantDTO variantDTO = apiRequestUtils.postObjectExpect200(
                 "/api/cms/variants/show", 2, VariantDTO.class);
-        assertEquals("Z konfiturą cebulową", variantDTO.name().defaultTranslation());
-        assertNull(variantDTO.name().translationEn());
+        assertEquals("Z konfiturą cebulową", variantDTO.name().pl());
+        assertNull(variantDTO.name().en());
     }
 
     @Test
@@ -74,7 +74,7 @@ class VariantControllerTest {
         List<VariantDTO> variants = getAllByMenuItemId(24L);
 
         assertEquals(3, variants.size());
-        assertEquals("Mała", variants.getFirst().name().defaultTranslation());
+        assertEquals("Mała", variants.getFirst().name().pl());
     }
 
     @Test
@@ -93,7 +93,7 @@ class VariantControllerTest {
 
         assertEquals(1, variants.size());
         VariantDTO persistedVariant = variants.getFirst();
-        assertEquals("Wariat", persistedVariant.name().defaultTranslation());
+        assertEquals("Wariat", persistedVariant.name().pl());
         assertFalse(persistedVariant.defaultVariant());
     }
 
@@ -148,7 +148,7 @@ class VariantControllerTest {
         assertEquals(3, variants.size());
         assertFalse(persistedVariant1.defaultVariant());
         assertEquals(Money.of(6.00), persistedVariant2.price());
-        assertEquals("Wariat3", persistedVariant3.name().defaultTranslation());
+        assertEquals("Wariat3", persistedVariant3.name().pl());
         assertEquals(3, persistedVariant3.displayOrder());
         assertTrue(persistedVariant3.defaultVariant());
     }
@@ -255,13 +255,13 @@ class VariantControllerTest {
         List<Variant> variants = initialVariants.stream().map(variantMapper::toVariant).toList();
 
         assertEquals(1, variants.getFirst().getDisplayOrder());
-        assertEquals("Mała", variants.getFirst().getName().getDefaultTranslation());
+        assertEquals("Mała", variants.getFirst().getName().getPl());
 
         assertEquals(2, variants.get(1).getDisplayOrder());
-        assertEquals("Średnia", variants.get(1).getName().getDefaultTranslation());
+        assertEquals("Średnia", variants.get(1).getName().getPl());
 
         assertEquals(3, variants.get(2).getDisplayOrder());
-        assertEquals("Duża", variants.get(2).getName().getDefaultTranslation());
+        assertEquals("Duża", variants.get(2).getName().getPl());
 
         variants.getFirst().setDisplayOrder(3);
         variants.get(2).setDisplayOrder(1);
@@ -271,10 +271,10 @@ class VariantControllerTest {
                 apiRequestUtils.patchAndGetList(
                         "/api/cms/variants/display-orders", variantDTOs, VariantDTO.class);
 
-        assertEquals("Duża", updatedVariantDTOs.getFirst().name().defaultTranslation());
+        assertEquals("Duża", updatedVariantDTOs.getFirst().name().pl());
         assertEquals(1, updatedVariantDTOs.getFirst().displayOrder());
 
-        assertEquals("Mała", updatedVariantDTOs.get(2).name().defaultTranslation());
+        assertEquals("Mała", updatedVariantDTOs.get(2).name().pl());
         assertEquals(3, updatedVariantDTOs.get(2).displayOrder());
     }
 
@@ -285,7 +285,7 @@ class VariantControllerTest {
     void shouldRemoveVariant() throws Exception {
         VariantDTO variant =
                 apiRequestUtils.postObjectExpect200("/api/cms/variants/show", 4, VariantDTO.class);
-        assertEquals("Średnia", variant.name().defaultTranslation());
+        assertEquals("Średnia", variant.name().pl());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/variants/delete", variant);
 
@@ -302,7 +302,7 @@ class VariantControllerTest {
     void shouldUpdateDisplayOrderAfterRemoval() throws Exception {
         VariantDTO variant =
                 apiRequestUtils.postObjectExpect200("/api/cms/variants/show", 4, VariantDTO.class);
-        assertEquals("Średnia", variant.name().defaultTranslation());
+        assertEquals("Średnia", variant.name().pl());
 
         apiRequestUtils.deleteAndExpect200("/api/cms/variants/delete", variant);
 
@@ -310,7 +310,7 @@ class VariantControllerTest {
                 apiRequestUtils.postAndGetList(
                         "/api/cms/variants/item", 21, VariantDTO.class);
         assertEquals(2, variants.size());
-        assertEquals("Duża", variants.get(1).name().defaultTranslation());
+        assertEquals("Duża", variants.get(1).name().pl());
     }
 
     @Test
@@ -320,17 +320,17 @@ class VariantControllerTest {
     void shouldRemoveFirst() throws Exception {
         VariantDTO variant = apiRequestUtils.postObjectExpect200(
                 "/api/cms/variants/show", 3, VariantDTO.class);
-        assertEquals("Mała", variant.name().defaultTranslation());
+        assertEquals("Mała", variant.name().pl());
 
         List<VariantDTO> variants =
                 apiRequestUtils.deleteAndGetList("/api/cms/variants/delete", variant, VariantDTO.class);
 
         assertEquals(2, variants.size());
 
-        assertEquals("Średnia", variants.getFirst().name().defaultTranslation());
+        assertEquals("Średnia", variants.getFirst().name().pl());
         assertEquals(1, variants.getFirst().displayOrder());
 
-        assertEquals("Duża", variants.get(1).name().defaultTranslation());
+        assertEquals("Duża", variants.get(1).name().pl());
         assertEquals(2, variants.get(1).displayOrder());
     }
 
@@ -347,7 +347,7 @@ class VariantControllerTest {
 
     private Translatable getDefaultTranslation(String translation) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(translation);
+        translatable.setPl(translation);
         return translatable;
     }
 

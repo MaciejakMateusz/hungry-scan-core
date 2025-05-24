@@ -21,7 +21,7 @@ INSERT INTO settings (booking_duration, opening_time, closing_time, language, ca
 VALUES (3, '07:00:00', '23:00:00', 1, 120, 3, 20, true, true, 1),
        (3, '12:00:00', '02:00:00', 1, 312, 3, 20, false, false, 2);
 
-INSERT INTO translatable(default_translation, translation_en)
+INSERT INTO translatable(pl, en)
 VALUES ('Smacznego!', 'Enjoy your meal!'),
        ('Smacznego!', 'Enjoy your meal!'),
        ('Smacznego!', 'Enjoy your meal!'),
@@ -44,7 +44,7 @@ VALUES (4, '14:00:00', '16:00:00', 1),
        (4, '11:00:00', '13:00:00', 4);
 
 /* CATEGORIES TRANSLATIONS */
-INSERT INTO translatable(default_translation, translation_en)
+INSERT INTO translatable(pl, en)
 VALUES ('Przystawki', 'Starters'),
        ('Makarony', 'Pastas'),
        ('Sałatki', 'Salads'),
@@ -57,7 +57,7 @@ VALUES ('Przystawki', 'Starters'),
 /* END OF CATEGORIES TRANSLATIONS */
 
 /* MENU ITEMS TRANSLATIONS */
-INSERT INTO translatable(default_translation)
+INSERT INTO translatable(pl)
 VALUES ('Krewetki marynowane w cytrynie'),
        ('Soczyste krewetki marynowane w aromatycznym sosie cytrynowym.'),
        ('Carpaccio z polędwicy wołowej'),
@@ -174,7 +174,7 @@ VALUES (17, 1, 18, null, null, false, true, 19.99, 0, false, 1),
        (79, 2, 80, null, null, true, true, 7.00, 0, true, 8),
        (81, 3, 82, null, null, true, true, 7.00, 0, true, 8);
 
-INSERT INTO translatable(default_translation)
+INSERT INTO translatable(pl)
 VALUES ('Z szpinakiem'),
        ('Z konfiturą cebulową'),
        ('Mała'),
@@ -213,7 +213,7 @@ VALUES (NOW(), true, true, 83, '0.00', null, 4, 1),
        (NOW(), true, false, 98, '5.00', null, 25, 2),
        (NOW(), true, false, 99, '10.00', null, 25, 3);
 
-INSERT INTO translatable (default_translation, translation_en)
+INSERT INTO translatable (pl, en)
 VALUES ('Kelner', 'Waiter'),
        ('Administrator', 'Admin'),
        ('Menadżer', 'Manager'),
@@ -229,7 +229,7 @@ VALUES ('ROLE_WAITER', 100),
        ('ROLE_CUSTOMER', 104),
        ('ROLE_CUSTOMER_READONLY', 105);
 
-INSERT INTO translatable (default_translation, translation_en)
+INSERT INTO translatable (pl, en)
 VALUES ('Gluten', 'Gluten'),
        ('Zboża zawierające gluten (tj. pszenica, żyto, jęczmień, owies, pszenica orkisz, lub ich odmiany hybrydowe) oraz produkty pochodne.',
         'Cereals containing gluten (i.e. wheat, rye, barley, oats, spelled wheat, or their hybrid varieties) and derived products.'),
@@ -278,7 +278,7 @@ VALUES (1, 107, 'icon_gluten', 106),
        (13, 131, 'icon_lupin', 130),
        (14, 133, 'icon_molluscs', 132);
 
-INSERT INTO translatable (default_translation, translation_en)
+INSERT INTO translatable (pl, en)
 VALUES ('Bez glutenu', 'Gluten free'),
        ('Wegańskie', 'Vegan'),
        ('Wegetariańskie', 'Vegetarian'),
@@ -294,7 +294,7 @@ VALUES ('icon_gluten_free', 134),
        ('icon_lactose_free', 138),
        ('icon_spicy', 139);
 
-INSERT INTO translatable (default_translation, translation_en)
+INSERT INTO translatable (pl, en)
 VALUES ('Pomidory', 'Tomatoes'),
        ('Cebula', 'Onion'),
        ('Czosnek', 'Garlic'),
@@ -352,7 +352,7 @@ VALUES ('2024-03-30', 1, 140, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 165, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 166, '2024-03-30', '4.00', 1);
 
-INSERT INTO translatable(default_translation, translation_en)
+INSERT INTO translatable(pl, en)
 VALUES ('Sekcja 1', 'Section 1'),
        ('Sekcja 2', 'Section 2'),
        ('Piętro II', 'Floor 2'),
@@ -364,7 +364,7 @@ VALUES (167, NOW(), null, 1, true),
        (169, NOW(), null, 4, true),
        (170, NOW(), null, 3, true);
 
-INSERT INTO translatable(default_translation, translation_en)
+INSERT INTO translatable(pl, en)
 VALUES ('Nowość', 'New'),
        ('Bestseller', 'Bestseller'),
        ('Promocja', 'Discount');

@@ -19,7 +19,6 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -71,7 +70,7 @@ public class MenuItemServiceImpTest {
     @Transactional
     public void shouldFindById() throws LocalizedException {
         MenuItemFormDTO menuItem = menuItemService.findById(12L);
-        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItem.name().defaultTranslation());
+        assertEquals("Sałatka z grillowanym kurczakiem i awokado", menuItem.name().pl());
     }
 
     @Test
@@ -92,7 +91,7 @@ public class MenuItemServiceImpTest {
         Long activeMenuId = userService.getActiveMenuId();
         menuItemService.save(menuItemFormDTO, activeMenuId, null);
         MenuItemFormDTO menuItem = menuItemService.findById(34L);
-        assertEquals("Z mięsem wegańskim", menuItem.description().defaultTranslation());
+        assertEquals("Z mięsem wegańskim", menuItem.description().pl());
     }
 
     @Test
@@ -119,7 +118,7 @@ public class MenuItemServiceImpTest {
                 "Z mięsem i serem wegańskim.");
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItemNull);
         Long activeMenuId = userService.getActiveMenuId();
-        assertThrows(DataIntegrityViolationException.class, () -> menuItemService.save(menuItemFormDTO, activeMenuId, null));
+        assertThrows(ConstraintViolationException.class, () -> menuItemService.save(menuItemFormDTO, activeMenuId, null));
     }
 
     @Test
@@ -159,7 +158,7 @@ public class MenuItemServiceImpTest {
     public void shouldUpdate() throws Exception {
         MenuItem existingMenuItem = menuItemRepository.findById(23L).orElseThrow();
 
-        assertEquals("Pizza Capricciosa", existingMenuItem.getName().getDefaultTranslation());
+        assertEquals("Pizza Capricciosa", existingMenuItem.getName().getPl());
 
         existingMenuItem.setName(getDefaultTranslation("Burger wege"));
         existingMenuItem.setPrice(Money.of(44.12));
@@ -168,7 +167,7 @@ public class MenuItemServiceImpTest {
         menuItemService.update(existingMenuItemDTO, activeMenuId, null);
 
         MenuItemFormDTO updatedMenuItem = menuItemService.findById(23L);
-        assertEquals("Burger wege", updatedMenuItem.name().defaultTranslation());
+        assertEquals("Burger wege", updatedMenuItem.name().pl());
         assertEquals(Money.of(44.12), updatedMenuItem.price());
     }
 
@@ -178,7 +177,7 @@ public class MenuItemServiceImpTest {
     @WithMockUser(username = "admin@example.com")
     public void shouldDelete() throws LocalizedException {
         MenuItemFormDTO menuItem = menuItemService.findById(23L);
-        assertEquals("Pizza Capricciosa", menuItem.name().defaultTranslation());
+        assertEquals("Pizza Capricciosa", menuItem.name().pl());
         Long activeMenuId = userService.getActiveMenuId();
         menuItemService.delete(23L, activeMenuId);
         assertThrows(LocalizedException.class, () -> menuItemService.findById(23L));
@@ -197,7 +196,7 @@ public class MenuItemServiceImpTest {
 
     private Translatable getDefaultTranslation(String translation) {
         Translatable translatable = new Translatable();
-        translatable.setDefaultTranslation(translation);
+        translatable.setPl(translation);
         return translatable;
     }
 

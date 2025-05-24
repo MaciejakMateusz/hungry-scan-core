@@ -48,7 +48,7 @@ class LabelControllerTest {
                         "/api/cms/labels", LabelDTO.class);
 
         assertEquals(6, labels.size());
-        assertEquals("Bez glutenu", labels.getFirst().name().defaultTranslation());
+        assertEquals("Bez glutenu", labels.getFirst().name().pl());
     }
 
     @Test
@@ -61,7 +61,7 @@ class LabelControllerTest {
     void shouldShowLabelById() throws Exception {
         LabelDTO label =
                 apiRequestUtils.postObjectExpect200("/api/cms/labels/show", 6, LabelDTO.class);
-        assertEquals("Ostre", label.name().defaultTranslation());
+        assertEquals("Ostre", label.name().pl());
     }
 
     @Test
