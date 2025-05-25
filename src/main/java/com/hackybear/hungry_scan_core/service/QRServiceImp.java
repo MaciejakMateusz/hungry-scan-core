@@ -17,6 +17,7 @@ import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.*;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class QRServiceImp implements QRService {
 
@@ -63,29 +65,6 @@ public class QRServiceImp implements QRService {
     private final JwtService jwtService;
     private final ResponseHelper responseHelper;
     private final UserService userService;
-
-    public QRServiceImp(RestaurantTableService restaurantTableService,
-                        RestaurantService restaurantService,
-                        RestaurantMapper restaurantMapper,
-                        RoleService roleService,
-                        JwtService jwtService,
-                        ResponseHelper responseHelper,
-                        UserService userService,
-                        QrScanEventRepository qrScanEventRepository,
-                        RestaurantRepository restaurantRepository,
-                        ExceptionHelper exceptionHelper, MenuRepository menuRepository) {
-        this.restaurantTableService = restaurantTableService;
-        this.restaurantService = restaurantService;
-        this.restaurantMapper = restaurantMapper;
-        this.roleService = roleService;
-        this.jwtService = jwtService;
-        this.responseHelper = responseHelper;
-        this.userService = userService;
-        this.qrScanEventRepository = qrScanEventRepository;
-        this.restaurantRepository = restaurantRepository;
-        this.exceptionHelper = exceptionHelper;
-        this.menuRepository = menuRepository;
-    }
 
     @Override
     public void generate() throws Exception {
