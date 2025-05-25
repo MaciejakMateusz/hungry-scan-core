@@ -53,6 +53,11 @@ public class Translatable implements Serializable {
     @CreatedBy
     private String createdBy;
 
+    public Translatable withId(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public Translatable withPl(String translation) {
         this.pl = translation;
         return this;
