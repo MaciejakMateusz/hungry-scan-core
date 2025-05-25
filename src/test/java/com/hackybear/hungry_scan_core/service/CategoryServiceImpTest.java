@@ -1,177 +1,257 @@
 package com.hackybear.hungry_scan_core.service;
 
+import com.hackybear.hungry_scan_core.dto.CategoryCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.CategoryDTO;
 import com.hackybear.hungry_scan_core.dto.CategoryFormDTO;
+import com.hackybear.hungry_scan_core.dto.TranslatableDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.CategoryMapper;
-import com.hackybear.hungry_scan_core.entity.Category;
-import com.hackybear.hungry_scan_core.entity.Translatable;
+import com.hackybear.hungry_scan_core.dto.mapper.TranslatableMapper;
+import com.hackybear.hungry_scan_core.entity.*;
+import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
-import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
-import com.hackybear.hungry_scan_core.service.interfaces.UserService;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ValidationException;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
+import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
+import com.hackybear.hungry_scan_core.repository.MenuRepository;
+import com.hackybear.hungry_scan_core.repository.VariantRepository;
+import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
+import com.hackybear.hungry_scan_core.utility.SortingHelper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.naming.AuthenticationException;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@Slf4j
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@TestPropertySource(locations = "classpath:application-test.properties")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ExtendWith(MockitoExtension.class)
 class CategoryServiceImpTest {
 
-    @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
+    @Mock
     private CategoryRepository categoryRepository;
-
-    @Autowired
+    @Mock
     private CategoryMapper categoryMapper;
+    @Mock
+    private TranslatableMapper translatableMapper;
+    @Mock
+    private ExceptionHelper exceptionHelper;
+    @Mock
+    private SortingHelper sortingHelper;
+    @Mock
+    private MenuItemRepository menuItemRepository;
+    @Mock
+    private VariantRepository variantRepository;
+    @Mock
+    private MenuRepository menuRepository;
+    @Mock
+    private S3Service s3Service;
+    @Captor
+    private ArgumentCaptor<Consumer<Set<Category>>> captor;
 
-    @Autowired
-    private UserService userService;
+    @InjectMocks
+    private CategoryServiceImp service;
 
-    @Order(1)
-    @Sql("/data-h2.sql")
-    @Test
-    void init() {
-        log.info("Initializing H2 database...");
-    }
-
-    @Test
-    @WithMockUser(username = "admin@example.com")
-    @Transactional
-    void shouldFindAll() throws LocalizedException, AuthenticationException {
-        Long activeMenuId = userService.getActiveMenuId();
-        List<CategoryDTO> categories = categoryService.findAll(activeMenuId);
-        assertEquals(9, categories.size());
-    }
-
-    @Test
-    void shouldFindById() throws LocalizedException {
-        CategoryFormDTO category = categoryService.findById(1L);
-        assertEquals("Przystawki", category.name().pl());
-    }
+    private final Long MENU_ID = 42L;
+    private final Long CAT_ID = 7L;
 
     @Test
-    void shouldNotFindById() {
-        assertThrows(LocalizedException.class, () -> categoryService.findById(321L));
-    }
+    void findAll_shouldReturnMappedSortedDTOs() throws LocalizedException {
+        Category c1 = new Category();
+        c1.setDisplayOrder(2);
+        Category c2 = new Category();
+        c2.setDisplayOrder(1);
+        Set<Category> set = new HashSet<>(List.of(c1, c2));
+        when(categoryRepository.findAllByMenuId(MENU_ID)).thenReturn(set);
 
-    @Test
-    @WithMockUser(username = "admin@example.com")
-    @Transactional
-    public void shouldReturnAll() throws LocalizedException, AuthenticationException {
-        List<CategoryDTO> allCategories = getCategories();
-        assertEquals(9, allCategories.size());
-        assertEquals("Pizza", allCategories.get(4).name().pl());
-        assertEquals("Makarony", allCategories.get(1).name().pl());
-        assertEquals("Pastas", allCategories.get(1).name().en());
-    }
+        CategoryDTO dto1 = new CategoryDTO(98, null, new ArrayList<>(), false, null,
+                null, null, null, null);
+        CategoryDTO dto2 = new CategoryDTO(99, null, new ArrayList<>(), false, null,
+                null, null, null, null);
+        when(categoryMapper.toDTO(c1)).thenReturn(dto1);
+        when(categoryMapper.toDTO(c2)).thenReturn(dto2);
 
-    @Test
-    @Transactional
-    @Rollback
-    @WithMockUser(username = "admin@example.com")
-    public void shouldInsertNew() throws Exception {
-        Category newCategory = createCategory();
-        CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(newCategory);
+        List<CategoryDTO> result = service.findAll(MENU_ID);
 
-        Long activeMenuId = userService.getActiveMenuId();
-        categoryService.save(categoryFormDTO, activeMenuId);
-
-        CategoryFormDTO persistedCategory = categoryService.findById(10L);
-        assertEquals("Tajskie", persistedCategory.name().pl());
+        assertEquals(2, result.size());
+        assertSame(dto2, result.get(0));
+        assertSame(dto1, result.get(1));
+        verify(categoryRepository).findAllByMenuId(MENU_ID);
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
-    public void shouldNotInsertNewWithBlankName() throws LocalizedException {
-        Category category = new Category();
+    void findAllDisplayOrders_shouldReturnList() {
+        List<Integer> orders = List.of(1, 3, 5);
+        when(categoryRepository.findAllDisplayOrdersByMenuId(MENU_ID)).thenReturn(orders);
 
-        Translatable translatable = new Translatable();
-        translatable.setPl("");
-        category.setName(translatable);
-        CategoryFormDTO categoryBlank = categoryMapper.toFormDTO(category);
-        Long activeMenuId = userService.getActiveMenuId();
-        assertThrows(ConstraintViolationException.class, () -> categoryService.save(categoryBlank, activeMenuId));
+        List<Integer> result = service.findAllDisplayOrders(MENU_ID);
+        assertEquals(orders, result);
+        verify(categoryRepository).findAllDisplayOrdersByMenuId(MENU_ID);
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
-    public void shouldNotInsertNewWithNullName() throws LocalizedException {
-        Category category = new Category();
+    void updateDisplayOrders_shouldCallRepositoryForEach() throws LocalizedException {
+        Translatable translatable1 = new Translatable().withId(111L).withEn("A");
+        Translatable translatable2 = new Translatable().withId(112L).withEn("B");
+        TranslatableDTO translatable1DTO = translatableMapper.toDTO(translatable1);
+        TranslatableDTO translatable2DTO = translatableMapper.toDTO(translatable2);
+        CategoryFormDTO f1 = new CategoryFormDTO(1L, translatable1DTO, true, 5);
+        CategoryFormDTO f2 = new CategoryFormDTO(2L, translatable2DTO, true, 6);
+        Category c1 = new Category();
+        c1.setId(1L);
+        c1.setDisplayOrder(5);
+        Category c2 = new Category();
+        c2.setId(2L);
+        c2.setDisplayOrder(6);
+        when(categoryMapper.toCategory(f1)).thenReturn(c1);
+        when(categoryMapper.toCategory(f2)).thenReturn(c2);
 
-        category.setName(null);
-        CategoryFormDTO categoryNull = categoryMapper.toFormDTO(category);
-        Long activeMenuId = userService.getActiveMenuId();
-        assertThrows(ValidationException.class, () -> categoryService.save(categoryNull, activeMenuId));
+        service.updateDisplayOrders(List.of(f1, f2), MENU_ID);
+
+        verify(categoryRepository).updateDisplayOrders(1L, 5);
+        verify(categoryRepository).updateDisplayOrders(2L, 6);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    @WithMockUser(username = "admin@example.com")
-    public void shouldUpdate() throws Exception {
-        Category existingCategory = categoryRepository.findById(7L).orElseThrow();
-        existingCategory.setName(getTranslationPl());
-        CategoryFormDTO categoryFormDTO = categoryMapper.toFormDTO(existingCategory);
-
-        Long activeMenuId = userService.getActiveMenuId();
-        categoryService.update(categoryFormDTO, activeMenuId);
-        CategoryFormDTO updatedCategory = categoryService.findById(7L);
-        assertEquals("Testowe jedzenie", updatedCategory.name().pl());
+    void countAll_shouldReturnCount() throws LocalizedException {
+        when(categoryRepository.countByMenuId(MENU_ID)).thenReturn(99L);
+        Long count = service.countAll(MENU_ID);
+        assertEquals(99L, count);
     }
 
     @Test
-    @Transactional
-    @Rollback
-    @WithMockUser(username = "admin@example.com")
-    public void shouldDelete() throws LocalizedException, AuthenticationException {
-        Long activeMenuId = userService.getActiveMenuId();
-        categoryService.delete(7L, activeMenuId);
-        assertThrows(LocalizedException.class, () -> categoryService.findById(7L));
+    void findAllAvailableAndVisible_filtersInvisibleItems() {
+        MenuItem visible = new MenuItem();
+        visible.setVisible(true);
+        MenuItem invisible = new MenuItem();
+        invisible.setVisible(false);
+        Category cat = new Category();
+        cat.setMenuItems(new HashSet<>(List.of(visible, invisible)));
+        when(categoryRepository.findAllAvailableByMenuId(MENU_ID))
+                .thenReturn(List.of(cat));
+        Translatable translatable = new Translatable().withId(111L).withEn("Category name");
+        TranslatableDTO translatableDTO = translatableMapper.toDTO(translatable);
+        CategoryCustomerDTO mapped = new CategoryCustomerDTO(1111L, translatableDTO, new ArrayList<>());
+        when(categoryMapper.toCustomerDTO(cat)).thenReturn(mapped);
+
+        List<CategoryCustomerDTO> result = service.findAllAvailableAndVisible(MENU_ID);
+
+        assertEquals(1, result.size());
+        assertSame(mapped, result.getFirst());
     }
 
-    private List<CategoryDTO> getCategories() throws LocalizedException, AuthenticationException {
-        Long activeMenuId = userService.getActiveMenuId();
-        return categoryService.findAll(activeMenuId);
+    @Test
+    void findById_existing_shouldReturnFormDTO() throws LocalizedException {
+        Category cat = new Category();
+        when(categoryRepository.findById(CAT_ID)).thenReturn(Optional.of(cat));
+        Translatable translatable = new Translatable().withId(111L).withEn("Category name");
+        TranslatableDTO translatableDTO = translatableMapper.toDTO(translatable);
+        CategoryFormDTO form = new CategoryFormDTO(CAT_ID, translatableDTO, true, 1);
+        when(categoryMapper.toFormDTO(cat)).thenReturn(form);
+
+        CategoryFormDTO dto = service.findById(CAT_ID);
+        assertSame(form, dto);
     }
 
-    private Category createCategory() {
-        Category category = new Category();
-        Translatable translatable = new Translatable();
-        translatable.setPl("Tajskie");
-        category.setName(translatable);
-        category.setDisplayOrder(10);
-        return category;
+    @Test
+    void findById_missing_shouldThrow() {
+        when(categoryRepository.findById(CAT_ID)).thenReturn(Optional.empty());
+        when(exceptionHelper.supplyLocalizedMessage("error.categoryService.categoryNotFound", CAT_ID))
+                .thenReturn(() -> new LocalizedException("not found"));
+        LocalizedException ex = assertThrows(LocalizedException.class, () -> service.findById(CAT_ID));
+        assertEquals("not found", ex.getMessage());
     }
 
-    private Translatable getTranslationPl() {
-        Translatable translatable = new Translatable();
-        translatable.setPl("Testowe jedzenie");
-        return translatable;
+    @Test
+    void save_shouldMapAndAssignDisplayOrderAndSave() throws Exception {
+        Translatable translatable = new Translatable().withId(111L).withEn("Category name");
+        TranslatableDTO translatableDTO = translatableMapper.toDTO(translatable);
+        CategoryFormDTO form = new CategoryFormDTO(null, translatableDTO, true, null);
+        Category mapped = new Category();
+        when(categoryMapper.toCategory(form)).thenReturn(mapped);
+        Menu menu = new Menu();
+        menu.setId(MENU_ID);
+        when(menuRepository.findById(MENU_ID)).thenReturn(Optional.of(menu));
+        when(categoryRepository.findMaxDisplayOrderByMenuId(MENU_ID))
+                .thenReturn(Optional.of(10));
+
+        service.save(form, MENU_ID);
+
+        assertEquals(11, mapped.getDisplayOrder());
+        assertSame(menu, mapped.getMenu());
+        verify(categoryRepository).save(mapped);
+    }
+
+    @Test
+    void update_shouldLoadModifyAndFlush() throws Exception {
+        Translatable translatable = new Translatable().withId(111L).withEn("Category name");
+        TranslatableDTO translatableDTO = translatableMapper.toDTO(translatable);
+        CategoryFormDTO form = new CategoryFormDTO(CAT_ID, translatableDTO, false, null);
+        Category existing = new Category();
+        when(categoryRepository.findById(CAT_ID)).thenReturn(Optional.of(existing));
+        when(translatableMapper.toTranslatable(form.name())).thenReturn(/* some translatable */ null);
+
+        service.update(form, MENU_ID);
+
+        verify(categoryRepository).saveAndFlush(existing);
+        assertFalse(existing.isAvailable());
+    }
+
+    @Test
+    void delete_noChildren_shouldDeleteAndReassign() throws LocalizedException {
+        Category existing = new Category();
+        existing.setId(CAT_ID);
+        existing.setMenu(new Menu());
+        existing.getMenu().setId(MENU_ID);
+        existing.setMenuItems(new HashSet<>());
+
+        when(categoryRepository.findById(CAT_ID)).thenReturn(Optional.of(existing));
+        when(categoryRepository.findAllByMenuId(MENU_ID)).thenReturn(new HashSet<>());
+
+        service.delete(CAT_ID, MENU_ID);
+
+        verify(categoryRepository).deleteById(CAT_ID);
+        verify(sortingHelper)
+                .reassignDisplayOrders(eq(Collections.emptySet()), captor.capture());
+
+        Set<Category> dummy = Collections.singleton(new Category());
+        captor.getValue().accept(dummy);
+        verify(categoryRepository).saveAllAndFlush(dummy);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void delete_withChildren_shouldCascadeAndDeleteFiles() throws LocalizedException {
+        Category existing = new Category();
+        existing.setId(CAT_ID);
+        existing.setMenu(new Menu());
+        existing.getMenu().setId(MENU_ID);
+
+        MenuItem m1 = new MenuItem();
+        m1.setId(100L);
+        Variant v1 = new Variant();
+        m1.setVariants(Set.of(v1));
+        existing.setMenuItems(new HashSet<>(List.of(m1)));
+
+        when(categoryRepository.findById(CAT_ID)).thenReturn(Optional.of(existing));
+        when(categoryRepository.findAllByMenuId(MENU_ID)).thenReturn(Collections.emptySet());
+
+        service.delete(CAT_ID, MENU_ID);
+
+        verify(variantRepository).deleteAll(Set.of(v1));
+        verify(menuItemRepository).deleteAll(Set.of(m1));
+        verify(categoryRepository).deleteById(CAT_ID);
+
+        verify(sortingHelper)
+                .reassignDisplayOrders(
+                        eq(Collections.emptySet()),
+                        any(Consumer.class)
+                );
+
+        verify(s3Service).deleteAllFiles("menuItems", List.of(100L));
     }
 }
