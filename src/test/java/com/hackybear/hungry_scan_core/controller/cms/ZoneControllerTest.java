@@ -135,7 +135,7 @@ class ZoneControllerTest {
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/zones/add", zone);
 
         assertEquals(1, errors.size());
-        assertEquals("Pole nie może być puste", errors.get("name"));
+        assertEquals("Przynajmniej jedno tłumaczenie nie powinno być puste.", errors.get("name"));
     }
 
     @Test

@@ -26,8 +26,8 @@ public class ValidatorTestBase {
 
     protected static <T> void expectNoViolations(List<String> values, Function<String, T> function) {
         values.forEach(value -> {
-            T registration = function.apply(value);
-            Set<ConstraintViolation<T>> violations = validator.validate(registration);
+            T t = function.apply(value);
+            Set<ConstraintViolation<T>> violations = validator.validate(t);
             assertTrue(violations.isEmpty());
         });
     }

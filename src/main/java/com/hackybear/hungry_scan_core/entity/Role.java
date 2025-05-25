@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.entity;
 
-import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
+import com.hackybear.hungry_scan_core.annotation.AnyTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -22,7 +22,7 @@ public class Role {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_displayed_name_id", referencedColumnName = "id")
-    @DefaultTranslationNotBlank
+    @AnyTranslationNotBlank
     @LimitTranslationsLength
     @NotNull
     private Translatable displayedName;

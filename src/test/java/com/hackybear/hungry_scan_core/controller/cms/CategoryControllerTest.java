@@ -258,7 +258,7 @@ class CategoryControllerTest {
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/categories/add", category);
 
         assertEquals(1, errors.size());
-        assertEquals("Pole nie może być puste", errors.get("name"));
+        assertEquals("Przynajmniej jedno tłumaczenie nie powinno być puste.", errors.get("name"));
     }
 
     @Test
@@ -306,7 +306,7 @@ class CategoryControllerTest {
         Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/cms/categories/update", categoryFormDTO);
 
         assertEquals(1, errors.size());
-        assertEquals("Pole nie może być puste", errors.get("name"));
+        assertEquals("Przynajmniej jedno tłumaczenie nie powinno być puste.", errors.get("name"));
     }
 
     @Test

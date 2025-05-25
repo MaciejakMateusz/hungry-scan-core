@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.entity;
 
-import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
+import com.hackybear.hungry_scan_core.annotation.AnyTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -31,7 +31,7 @@ public class Label implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
-    @DefaultTranslationNotBlank
+    @AnyTranslationNotBlank
     @LimitTranslationsLength
     @NotNull
     private Translatable name;

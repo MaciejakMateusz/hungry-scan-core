@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.dto;
 
-import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlankDTO;
+import com.hackybear.hungry_scan_core.annotation.AnyTranslationNotBlankDTO;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLengthDTO;
 import com.hackybear.hungry_scan_core.entity.Banner;
 import jakarta.validation.constraints.DecimalMin;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 public record MenuItemFormDTO(Long id,
 
-                              @DefaultTranslationNotBlankDTO
+                              @AnyTranslationNotBlankDTO
                               @LimitTranslationsLengthDTO
                               @NotNull
                               TranslatableDTO name,

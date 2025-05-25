@@ -1,7 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hackybear.hungry_scan_core.annotation.DefaultTranslationNotBlank;
+import com.hackybear.hungry_scan_core.annotation.AnyTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
@@ -34,7 +34,7 @@ public class Zone {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")
-    @DefaultTranslationNotBlank
+    @AnyTranslationNotBlank
     @LimitTranslationsLength
     @NotNull
     private Translatable name;
