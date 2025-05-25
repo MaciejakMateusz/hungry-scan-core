@@ -11,12 +11,14 @@ import com.hackybear.hungry_scan_core.repository.WaiterCallRepository;
 import com.hackybear.hungry_scan_core.repository.history.HistoryWaiterCallRepository;
 import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryOrderSummaryService;
 import com.hackybear.hungry_scan_core.service.interfaces.ArchiveDataService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ArchiveDataServiceImp implements ArchiveDataService {
 
     private final HistoryOrderSummaryService historyOrderSummaryService;
@@ -24,18 +26,6 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
     private final WaiterCallRepository waiterCallRepository;
     private final HistoryWaiterCallRepository historyWaiterCallRepository;
     private final RestaurantTableRepository restaurantTableRepository;
-
-    public ArchiveDataServiceImp(HistoryOrderSummaryService historyOrderSummaryService,
-                                 OrderSummaryRepository orderSummaryRepository,
-                                 WaiterCallRepository waiterCallRepository,
-                                 HistoryWaiterCallRepository historyWaiterCallRepository,
-                                 RestaurantTableRepository restaurantTableRepository) {
-        this.historyOrderSummaryService = historyOrderSummaryService;
-        this.orderSummaryRepository = orderSummaryRepository;
-        this.waiterCallRepository = waiterCallRepository;
-        this.historyWaiterCallRepository = historyWaiterCallRepository;
-        this.restaurantTableRepository = restaurantTableRepository;
-    }
 
     @Override
     public void archiveSummary(OrderSummary orderSummary) {
