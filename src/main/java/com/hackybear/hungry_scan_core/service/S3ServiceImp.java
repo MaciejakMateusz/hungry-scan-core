@@ -70,8 +70,8 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public void deleteFile(String path, Long menuItemId) {
-        String key = path + "/" + menuItemId;
+    public void deleteFile(String path, Long id) {
+        String key = path + "/" + id;
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
@@ -81,8 +81,8 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public void deleteAllFiles(String path, List<Long> menuItemIds) {
-        List<ObjectIdentifier> toDelete = menuItemIds.stream()
+    public void deleteAllFiles(String path, List<Long> ids) {
+        List<ObjectIdentifier> toDelete = ids.stream()
                 .map(id -> ObjectIdentifier.builder()
                         .key(path + "/" + id)
                         .build())
@@ -109,7 +109,7 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public String getPublicUrl(String path, Long menuItemId) {
-        return bucketUrl + "/" + path + "/" + menuItemId;
+    public String getPublicUrl(String path, Long id) {
+        return bucketUrl + "/" + path + "/" + id;
     }
 }
