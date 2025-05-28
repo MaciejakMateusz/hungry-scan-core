@@ -78,11 +78,6 @@ public class Category implements Comparable<Category>, Serializable {
         this.id = id;
     }
 
-    @Override
-    public String toString() {
-        return name.getPl();
-    }
-
     public void addMenuItem(MenuItem menuItem) {
         menuItems.add(menuItem);
     }
@@ -108,4 +103,11 @@ public class Category implements Comparable<Category>, Serializable {
         return (id != null ? id.hashCode() : System.identityHashCode(this));
     }
 
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name=" + name +
+                '}';
+    }
 }
