@@ -73,12 +73,11 @@ public class Restaurant implements Serializable {
     @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Statistics statistics;
 
-    @ManyToOne
-    @NotNull
-    @JoinColumn(name = "price_plan_id", nullable = false)
+    @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private PricePlan pricePlan;
 
-    private Instant pricePlanTo;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Invoice> invoices = new HashSet<>();
 
     @NotNull
     private Instant created;
