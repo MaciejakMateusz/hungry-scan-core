@@ -22,7 +22,11 @@ public class PricePlanType implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
+
+    @NotNull
+    @Column(nullable = false)
+    private String name;
 
     @Serial
     private static final long serialVersionUID = 1L;
