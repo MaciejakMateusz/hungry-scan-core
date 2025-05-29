@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Setter
 @ToString
 @EqualsAndHashCode
-@Table(name = "price_plans")
+@Table(name = "invoices")
 @Entity
 public class Invoice implements Serializable {
 
