@@ -281,13 +281,14 @@ public class RestaurantControllerTest {
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/restaurants/show", 10, status().isBadRequest());
         assertEquals("Restauracja z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
+
         User user = userRepository.findUserByUsername("freeplan@example.com");
         assertEquals(11L, user.getActiveRestaurantId());
         assertEquals(7L, user.getActiveMenuId());
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldNotRemoveWithPaidPlan() throws Exception {
@@ -297,7 +298,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     @Transactional
     @Rollback
     void shouldNotRemoveWhenOnlyOneRemains() throws Exception {

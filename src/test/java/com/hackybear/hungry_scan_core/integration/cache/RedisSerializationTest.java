@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.SettingsDTO;
 import com.hackybear.hungry_scan_core.entity.PricePlan;
+import com.hackybear.hungry_scan_core.entity.PricePlanType;
 import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.utility.Money;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +58,8 @@ public class RedisSerializationTest {
 
     private RestaurantDTO createRestaurantDTO() {
         PricePlan pricePlan = new PricePlan();
-        pricePlan.setId("full");
-        pricePlan.setPrice(Money.of(250.00));
+        pricePlan.setId(1L);
+        pricePlan.setPlanType(getPricePlanType());
         return new RestaurantDTO(
                 1L,
                 "token123",
@@ -102,5 +103,13 @@ public class RedisSerializationTest {
             return new HashSet<>((Collection<?>) deserializedObj);
         }
         return new HashSet<>();
+    }
+
+    private PricePlanType getPricePlanType() {
+        PricePlanType pricePlanType = new PricePlanType();
+        pricePlanType.setId(3L);
+        pricePlanType.setName("best");
+        pricePlanType.setPrice(Money.of(389.00));
+        return pricePlanType;
     }
 }

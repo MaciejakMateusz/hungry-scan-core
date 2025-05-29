@@ -1,20 +1,34 @@
-INSERT INTO price_plans (id, price)
-VALUES ('free', 0.0),
-       ('basic', 99.0);
-
-INSERT INTO restaurants (address, name, postal_code, city, token, created, price_plan_id)
+INSERT INTO restaurants (address, name, postal_code, city, token, created)
 VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '12-1234', 'TEST',
-        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z', 'free'),
-       ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), 'basic'),
-       ('Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW(), 'free'),
-       ('Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW(), 'free'),
-       ('Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW(), 'free'),
-       ('Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW(), 'free'),
-       ('Test address, 555', 'Test 5', '12-1234', 'TEST', null, NOW(), 'free'),
-       ('Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW(), 'free'),
-       ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW(), 'free'),
-       ('Test address, 888', 'Test 8', '12-1234', 'TEST', null, NOW(), 'free'),
-       ('Test address, 999', 'Test 9', '12-1234', 'TEST', null, NOW(), 'free');
+        '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z'),
+       ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 555', 'Test 5', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 888', 'Test 8', '12-1234', 'TEST', null, NOW()),
+       ('Test address, 999', 'Test 9', '12-1234', 'TEST', null, NOW());
+
+INSERT INTO price_plan_types (name, price)
+VALUES ('free', 0.00),
+       ('basic', 99.00);
+
+INSERT INTO price_plans (restaurant_id, plan_type_id, activation_date, renewal_date, billing_period,
+                         payment_method)
+VALUES (1, 2, '2024-01-15', '2025-01-15', 'yearly', 'card'),
+       (2, 1, null, null, null, null),
+       (3, 1, null, null, null, null),
+       (4, 1, null, null, null, null),
+       (5, 1, null, null, null, null),
+       (6, 1, null, null, null, null),
+       (7, 1, null, null, null, null),
+       (8, 1, null, null, null, null),
+       (9, 1, null, null, null, null),
+       (10, 1, null, null, null, null),
+       (11, 1, null, null, null, null);
 
 INSERT INTO settings (booking_duration, opening_time, closing_time, language, capacity, customer_session_time,
                       employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
