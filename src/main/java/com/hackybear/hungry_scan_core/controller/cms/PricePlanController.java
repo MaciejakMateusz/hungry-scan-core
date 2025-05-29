@@ -23,7 +23,7 @@ public class PricePlanController {
     }
 
     @PostMapping
-    public ResponseEntity<?> getById(@RequestBody String id) {
+    public ResponseEntity<?> getById(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, pricePlanService::findById);
     }
 

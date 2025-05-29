@@ -23,7 +23,7 @@ public class PricePlanServiceImp implements PricePlanService {
     }
 
     @Override
-    public PricePlan findById(String id) throws LocalizedException {
+    public PricePlan findById(Long id) throws LocalizedException {
         return pricePlanRepository.findById(id).orElseThrow(
                 exceptionHelper.supplyLocalizedMessage("error.pricePlanService.planNotFound"));
     }

@@ -9,5 +9,5 @@ public interface PricePlanService {
 
     List<PricePlan> findAll();
 
-    PricePlan findById(String id) throws LocalizedException;
+    PricePlan findById(Long id) throws LocalizedException;
 }
