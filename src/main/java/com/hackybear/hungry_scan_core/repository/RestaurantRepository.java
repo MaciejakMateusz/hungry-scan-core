@@ -18,7 +18,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
             "FROM Restaurant r " +
             "WHERE r.id = :restaurantId " +
-            "AND r.pricePlan.id != 'free'")
+            "AND r.pricePlan.planType.id != 1")
     boolean hasPaidPricePlan(@Param("restaurantId") Long restaurantId);
 
 }

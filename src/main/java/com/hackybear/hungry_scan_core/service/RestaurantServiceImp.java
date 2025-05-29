@@ -184,7 +184,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @NotNull
     private Restaurant setupInitial(Restaurant restaurant) {
-        restaurant.setPricePlan(pricePlanRepository.findById("free").orElseThrow());
+        restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow());
         restaurant.setToken(UUID.randomUUID().toString());
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
