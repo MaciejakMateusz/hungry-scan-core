@@ -1,11 +1,16 @@
-INSERT IGNORE INTO price_plans (id, price)
-VALUES ('free', 0.0),
-       ('basic', 99.0);
-
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, price_plan_id)
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created)
 VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
-        '2023-11-12T00:00:00Z', 'free'),
-       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', 'basic');
+        '2023-11-12T00:00:00Z'),
+       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z');
+
+INSERT INTO price_plan_types (name, price)
+VALUES ('free', 0.00),
+       ('basic', 99.00);
+
+INSERT INTO price_plans (restaurant_id, plan_type_id, activation_date, renewal_date, billing_period,
+                         payment_method)
+VALUES (1, 1, null, null, null, null),
+       (2, 1, null, null, null, null);
 
 INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
                              customer_session_time,
