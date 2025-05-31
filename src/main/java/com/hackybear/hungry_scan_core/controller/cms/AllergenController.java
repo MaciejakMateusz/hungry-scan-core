@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.AllergenDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.AllergenService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +15,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/allergens")
+@RequiredArgsConstructor
 public class AllergenController {
 
     private final AllergenService allergenService;
     private final ResponseHelper responseHelper;
-
-    public AllergenController(AllergenService allergenService, ResponseHelper responseHelper) {
-        this.allergenService = allergenService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")

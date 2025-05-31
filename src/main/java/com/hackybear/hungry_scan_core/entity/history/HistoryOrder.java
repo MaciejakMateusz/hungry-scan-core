@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -23,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "history_orders")
 @Slf4j
-public class HistoryOrder {
+public class HistoryOrder implements Serializable {
 
     public HistoryOrder(Long id,
                         Restaurant restaurant,
@@ -43,6 +45,9 @@ public class HistoryOrder {
 
     @Id
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @JoinColumn(name = "table_id", referencedColumnName = "id")
     @ManyToOne

@@ -9,4 +9,5 @@ public interface RoleService {
     Set<Role> findAll();
 
     Role findByName(String name);
+
 }

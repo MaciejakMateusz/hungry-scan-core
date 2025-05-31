@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,16 +18,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtServiceImp implements JwtService {
 
     private final Environment environment;
 
     @Value("${JWT_EXPIRATION_MILLIS}")
     private long expirationMillis;
-
-    public JwtServiceImp(Environment environment) {
-        this.environment = environment;
-    }
 
     @Override
     public String extractUsername(String token) {

@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
@@ -20,7 +22,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @Table(name = "history_bookings")
 @Entity
-public class HistoryBooking {
+public class HistoryBooking implements Serializable {
 
     public HistoryBooking(Booking booking) {
         this.id = booking.getId();
@@ -36,6 +38,9 @@ public class HistoryBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(nullable = false)
     @NotNull

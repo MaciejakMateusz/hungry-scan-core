@@ -7,17 +7,22 @@ import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Table(name = "feedback")
 @Entity
-public class Feedback {
+public class Feedback implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Integer tableId;
 

@@ -8,7 +8,9 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 
 public interface HistoryBookingRepository extends CustomRepository<HistoryBooking, Long> {
+
     Long countAllByDateBetween(LocalDate dateFrom, LocalDate dateTo);
 
     Page<HistoryBooking> findAllByDateBetween(Pageable pageable, LocalDate dateFrom, LocalDate dateTo);
+
 }

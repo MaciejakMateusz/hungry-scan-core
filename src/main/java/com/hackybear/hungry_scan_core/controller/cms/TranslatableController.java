@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.service.interfaces.TranslatableService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +14,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/translatable")
+@RequiredArgsConstructor
 public class TranslatableController {
 
     private final TranslatableService translatableService;
-
-
-    public TranslatableController(TranslatableService translatableService) {
-        this.translatableService = translatableService;
-    }
 
     @PostMapping("/save-all")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")

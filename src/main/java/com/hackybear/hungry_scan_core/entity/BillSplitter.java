@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +17,14 @@ import java.util.List;
 @EqualsAndHashCode
 @Table(name = "bill_splitters")
 @Entity
-public class BillSplitter {
+public class BillSplitter implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<BillPart> billParts = new ArrayList<>();

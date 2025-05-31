@@ -7,26 +7,18 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.AllergenRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.AllergenService;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class AllergenServiceImp implements AllergenService {
 
     private final AllergenRepository allergenRepository;
     private final ExceptionHelper exceptionHelper;
     private final AllergenMapper allergenMapper;
-
-    public AllergenServiceImp(AllergenRepository allergenRepository,
-                              ExceptionHelper exceptionHelper,
-                              AllergenMapper allergenMapper) {
-        this.allergenRepository = allergenRepository;
-        this.exceptionHelper = exceptionHelper;
-        this.allergenMapper = allergenMapper;
-    }
 
     @Override
     public void save(AllergenDTO allergenDTO) {

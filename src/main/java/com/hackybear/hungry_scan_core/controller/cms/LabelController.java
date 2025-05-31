@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.LabelDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.LabelService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +15,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/labels")
+@RequiredArgsConstructor
 public class LabelController {
 
     private final LabelService labelService;
     private final ResponseHelper responseHelper;
-
-    public LabelController(LabelService labelService, ResponseHelper responseHelper) {
-        this.labelService = labelService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")

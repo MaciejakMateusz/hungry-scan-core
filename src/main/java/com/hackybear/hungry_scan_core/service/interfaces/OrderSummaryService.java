@@ -7,4 +7,5 @@ public interface OrderSummaryService {
     OrderSummary pay(OrderSummary orderSummary);
 
     void delete(OrderSummary orderSummary);
+
 }

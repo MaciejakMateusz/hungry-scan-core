@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cms/qr")
+@RequiredArgsConstructor
 public class QrController {
 
     private final RestaurantTableService restaurantTableService;
@@ -29,16 +31,6 @@ public class QrController {
 
     @Value("${QR_NAME}")
     private String qrName;
-
-    public QrController(RestaurantTableService restaurantTableService,
-                        FileProcessingService fileProcessingService,
-                        QRService qrService,
-                        ResponseHelper responseHelper) {
-        this.restaurantTableService = restaurantTableService;
-        this.fileProcessingService = fileProcessingService;
-        this.qrService = qrService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")

@@ -16,4 +16,5 @@ public interface HistoryBookingService {
     Long countAll();
 
     Long countByDateBetween(LocalDate dateFrom, LocalDate dateTo);
+
 }

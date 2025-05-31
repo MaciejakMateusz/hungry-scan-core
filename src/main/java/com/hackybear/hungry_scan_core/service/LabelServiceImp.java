@@ -7,24 +7,18 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.LabelRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.LabelService;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class LabelServiceImp implements LabelService {
 
     private final LabelRepository labelRepository;
     private final ExceptionHelper exceptionHelper;
     private final LabelMapper labelMapper;
-
-    public LabelServiceImp(LabelRepository labelRepository, ExceptionHelper exceptionHelper, LabelMapper labelMapper) {
-        this.labelRepository = labelRepository;
-        this.exceptionHelper = exceptionHelper;
-        this.labelMapper = labelMapper;
-    }
 
     @Override
     public void save(LabelDTO labelDTO) {

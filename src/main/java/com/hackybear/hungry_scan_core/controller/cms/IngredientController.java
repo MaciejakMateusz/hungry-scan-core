@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.dto.IngredientSimpleDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.IngredientService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -18,15 +19,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/ingredients")
+@RequiredArgsConstructor
 public class IngredientController {
 
     private final IngredientService ingredientService;
     private final ResponseHelper responseHelper;
-
-    public IngredientController(IngredientService ingredientService, ResponseHelper responseHelper) {
-        this.ingredientService = ingredientService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")

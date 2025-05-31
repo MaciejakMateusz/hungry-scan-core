@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core;
 
 import com.hackybear.hungry_scan_core.filter.JwtAuthFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -29,15 +30,11 @@ import static jakarta.servlet.DispatcherType.FORWARD;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final Environment env;
     private final JwtAuthFilter jwtAuthFilter;
-
-    public SecurityConfig(Environment env, JwtAuthFilter jwtAuthFilter) {
-        this.env = env;
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {

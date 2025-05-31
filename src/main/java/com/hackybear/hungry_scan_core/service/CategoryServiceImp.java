@@ -17,7 +17,6 @@ import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -30,7 +29,6 @@ import java.util.Set;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImp implements CategoryService {

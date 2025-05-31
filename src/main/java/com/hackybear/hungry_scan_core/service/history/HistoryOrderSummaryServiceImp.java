@@ -5,7 +5,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.history.HistoryOrderSummaryRepository;
 import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryOrderSummaryService;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,17 +13,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class HistoryOrderSummaryServiceImp implements HistoryOrderSummaryService {
 
     private final HistoryOrderSummaryRepository historyOrderSummaryRepository;
     private final ExceptionHelper exceptionHelper;
-
-    public HistoryOrderSummaryServiceImp(HistoryOrderSummaryRepository historyOrderSummaryRepository,
-                                         ExceptionHelper exceptionHelper) {
-        this.historyOrderSummaryRepository = historyOrderSummaryRepository;
-        this.exceptionHelper = exceptionHelper;
-    }
 
     @Override
     public HistoryOrderSummary findById(Long id) throws LocalizedException {

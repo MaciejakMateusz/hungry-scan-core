@@ -7,27 +7,19 @@ import com.hackybear.hungry_scan_core.repository.RestaurantTableRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.OrderSummaryService;
 import com.hackybear.hungry_scan_core.utility.Money;
 import com.hackybear.hungry_scan_core.utility.PaymentProcessor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class OrderSummaryServiceImp implements OrderSummaryService {
 
     private final OrderSummaryRepository orderSummaryRepository;
     private final PaymentProcessor paymentProcessor;
     private final RestaurantTableRepository restaurantTableRepository;
-
-    public OrderSummaryServiceImp(OrderSummaryRepository orderSummaryRepository,
-                                  PaymentProcessor paymentProcessor,
-                                  RestaurantTableRepository restaurantTableRepository) {
-        this.orderSummaryRepository = orderSummaryRepository;
-        this.paymentProcessor = paymentProcessor;
-        this.restaurantTableRepository = restaurantTableRepository;
-    }
 
     @Transactional
     @Override

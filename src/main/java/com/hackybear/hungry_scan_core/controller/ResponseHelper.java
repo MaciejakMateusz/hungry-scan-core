@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.interfaces.*;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ import java.util.function.Function;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ResponseHelper {
 
     private final ExceptionHelper exceptionHelper;
@@ -40,12 +42,6 @@ public class ResponseHelper {
      */
     @Value("${CMS_APP_URL}")
     private String cmsAppUrl;
-
-    public ResponseHelper(ExceptionHelper exceptionHelper,
-                          UserRepository userRepository) {
-        this.exceptionHelper = exceptionHelper;
-        this.userRepository = userRepository;
-    }
 
     /**
      * Creates a ResponseEntity based on the provided entity and BindingResult.
@@ -108,12 +104,12 @@ public class ResponseHelper {
      * If no errors are found, the supplier is used to obtain an additional parameter,
      * and then the bi-consumer is executed using both the original and supplied parameters.
      *
-     * @param t         the primary object for processing
-     * @param br        the BindingResult to check for validation errors
-     * @param supplier  a supplier to provide an additional parameter if validation passes
-     * @param consumer  the bi-consumer to execute if no errors occur (e.g., bookingService::delete)
-     * @param <T>       the type of the first parameter
-     * @param <R>       the type supplied by the supplier
+     * @param t        the primary object for processing
+     * @param br       the BindingResult to check for validation errors
+     * @param supplier a supplier to provide an additional parameter if validation passes
+     * @param consumer the bi-consumer to execute if no errors occur (e.g., bookingService::delete)
+     * @param <T>      the type of the first parameter
+     * @param <R>      the type supplied by the supplier
      * @return a ResponseEntity with an OK status if successful, otherwise a bad request with error details
      */
     public <T, R> ResponseEntity<?> buildResponse(T t,
@@ -136,11 +132,11 @@ public class ResponseHelper {
      * Executes the given supplier and bi-consumer using the provided object.
      * If the supplier or consumer throws an exception, an error response is returned.
      *
-     * @param t         the object to process
-     * @param supplier  a supplier to provide an additional parameter
-     * @param consumer  the bi-consumer function to execute (e.g., bookingService::delete)
-     * @param <T>       the type of the first parameter
-     * @param <R>       the type supplied by the supplier
+     * @param t        the object to process
+     * @param supplier a supplier to provide an additional parameter
+     * @param consumer the bi-consumer function to execute (e.g., bookingService::delete)
+     * @param <T>      the type of the first parameter
+     * @param <R>      the type supplied by the supplier
      * @return a ResponseEntity with an OK status if successful, otherwise a bad request with error details
      */
     public <T, R> ResponseEntity<?> buildResponse(T t,

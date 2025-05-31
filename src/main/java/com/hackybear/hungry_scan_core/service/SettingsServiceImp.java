@@ -7,20 +7,16 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.SettingsService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SettingsServiceImp implements SettingsService {
 
     private final SettingsRepository settingsRepository;
     private final SettingsMapper settingsMapper;
     private final UserService userService;
-
-    public SettingsServiceImp(SettingsRepository settingsRepository, SettingsMapper settingsMapper, UserService userService) {
-        this.settingsRepository = settingsRepository;
-        this.settingsMapper = settingsMapper;
-        this.userService = userService;
-    }
 
     @Override
     public SettingsDTO getSettings() throws LocalizedException {

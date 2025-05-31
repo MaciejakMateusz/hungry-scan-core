@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.history.HistoryOrderSummary;
 import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryOrderSummaryService;
 import com.hackybear.hungry_scan_core.utility.Fields;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,16 +17,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/restaurant/history-summaries")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
+@RequiredArgsConstructor
 public class HistoryOrderSummaryController {
 
     private final HistoryOrderSummaryService historyOrderSummaryService;
     private final ResponseHelper responseHelper;
-
-    public HistoryOrderSummaryController(HistoryOrderSummaryService historyOrderSummaryService,
-                                         ResponseHelper responseHelper) {
-        this.historyOrderSummaryService = historyOrderSummaryService;
-        this.responseHelper = responseHelper;
-    }
 
     @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
     @GetMapping("/count")

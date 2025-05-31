@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -15,11 +17,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "jwt_tokens")
 @Entity
-public class JwtToken {
+public class JwtToken implements Serializable {
 
     public JwtToken(String token) {
         this.token = token;
     }
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

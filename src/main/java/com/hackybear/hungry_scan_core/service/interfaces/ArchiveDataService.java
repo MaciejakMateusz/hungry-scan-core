@@ -11,4 +11,5 @@ public interface ArchiveDataService {
     void archiveOrder(Order order);
 
     void archiveWaiterCall(RestaurantTable restaurantTable);
+
 }

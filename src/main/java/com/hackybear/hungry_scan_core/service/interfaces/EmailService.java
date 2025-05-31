@@ -9,4 +9,5 @@ public interface EmailService {
     void contactForm(String from, String subject, String text);
 
     void activateAccount(String to, String emailToken) throws MessagingException;
+
 }

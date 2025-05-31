@@ -15,4 +15,5 @@ public interface S3Service {
     void deleteAllFiles(String path, List<Long> menuItemIds);
 
     String getPublicUrl(String path, Long menuItemId);
+
 }

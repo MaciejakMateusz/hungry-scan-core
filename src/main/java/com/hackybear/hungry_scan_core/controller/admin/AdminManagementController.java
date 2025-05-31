@@ -6,7 +6,7 @@ import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Slf4j
 @RequestMapping("/api/admin/users")
 @PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class AdminManagementController {
 
     private final UserService userService;
     private final ResponseHelper responseHelper;
-
-    public AdminManagementController(UserService userService,
-                                     ResponseHelper responseHelper) {
-        this.userService = userService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     public ResponseEntity<?> users() {

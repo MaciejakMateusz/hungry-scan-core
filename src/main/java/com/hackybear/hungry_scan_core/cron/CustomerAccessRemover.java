@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.entity.JwtToken;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,17 +15,13 @@ import java.util.Objects;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CustomerAccessRemover {
 
     private final UserService userService;
 
-    public CustomerAccessRemover(UserService userService) {
-        this.userService = userService;
-    }
-
     @Transactional
     public void controlJwtAndRemoveUsers() {
-        log.info("Running controlJwtAndRemoveUsers() job...");
         List<User> users = userService.findAllCustomers();
         for (User user : users) {
             JwtToken token = getAccessToken(user);
@@ -32,7 +29,6 @@ public class CustomerAccessRemover {
                 handleDeletion(user);
             }
         }
-        log.info("Finished controlJwtAndRemoveUsers() job.");
     }
 
     private JwtToken getAccessToken(User user) {
@@ -48,7 +44,6 @@ public class CustomerAccessRemover {
     private void handleDeletion(User user) {
         try {
             userService.delete(user.getUsername());
-            log.info("CustomerAccessRemover - User {} deleted", user.getId());
         } catch (LocalizedException e) {
             log.error("CustomerAccessRemover - User {} could not be deleted", user.getId(), e);
         }

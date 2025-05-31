@@ -13,6 +13,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +27,14 @@ import java.util.Set;
 @Table(name = "restaurant_tables")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class RestaurantTable {
+public class RestaurantTable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Integer number;
 

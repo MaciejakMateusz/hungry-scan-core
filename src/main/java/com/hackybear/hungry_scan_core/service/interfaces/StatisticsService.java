@@ -24,4 +24,5 @@ public interface StatisticsService {
     Set<MenuItemViewCountDTO> getWeeklyMenuItemViewsStats(Long menuId, int year, int week);
 
     Set<MenuItemViewCountDTO> getDailyMenuItemViewsStats(Long menuId, LocalDate date);
+
 }

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 public interface JwtService {
+
     String extractUsername(String token);
 
     Date extractExpiration(String token);
@@ -19,4 +20,5 @@ public interface JwtService {
     String generateToken(String username);
 
     Boolean isTokenExpired(String token);
+
 }

@@ -5,18 +5,15 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.BillSplitterRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.BillSplitterService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BillSplitterServiceImp implements BillSplitterService {
 
     private final BillSplitterRepository billSplitterRepository;
     private final ExceptionHelper exceptionHelper;
-
-    public BillSplitterServiceImp(BillSplitterRepository billSplitterRepository, ExceptionHelper exceptionHelper) {
-        this.billSplitterRepository = billSplitterRepository;
-        this.exceptionHelper = exceptionHelper;
-    }
 
     @Override
     public void splitBill(BillSplitter billSplitter) {

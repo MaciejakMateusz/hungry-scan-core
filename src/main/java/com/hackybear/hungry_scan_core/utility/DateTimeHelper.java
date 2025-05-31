@@ -17,4 +17,5 @@ public class DateTimeHelper {
     public static boolean doTimeRangesOverlap(LocalTime candidateExpirationTime, LocalTime existingTime, LocalTime existingExpirationTime) {
         return candidateExpirationTime.isBefore(existingExpirationTime) && candidateExpirationTime.isAfter(existingTime);
     }
+
 }

@@ -10,4 +10,5 @@ public interface BillSplitterService {
     BillSplitter findById(Long id) throws LocalizedException;
 
     void delete(Long id) throws LocalizedException;
+
 }

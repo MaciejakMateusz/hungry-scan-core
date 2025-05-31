@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ import java.util.Objects;
 
 @Component
 @NonNullApi
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
 
     private final JwtService jwtService;
@@ -33,13 +35,6 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
 
     @Value("${IS_PROD}")
     private boolean isProduction;
-
-    public JwtAuthFilter(JwtService jwtService,
-                         CustomUserDetailsService customUserDetailsService) {
-        this.jwtService = jwtService;
-        this.customUserDetailsService = customUserDetailsService;
-        this.jwtInvalidateURIs = List.of("/api/user/register", "/api/user/recover");
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

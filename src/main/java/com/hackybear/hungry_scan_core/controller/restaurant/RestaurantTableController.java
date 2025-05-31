@@ -8,6 +8,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.BillSplitterService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
 import com.hackybear.hungry_scan_core.utility.Fields;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +22,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/restaurant/tables")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
+@RequiredArgsConstructor
 public class RestaurantTableController {
 
     private final RestaurantTableService restaurantTableService;
     private final BillSplitterService billSplitterService;
     private final ResponseHelper responseHelper;
-
-    public RestaurantTableController(RestaurantTableService restaurantTableService, BillSplitterService billSplitterService,
-                                     ResponseHelper responseHelper) {
-        this.restaurantTableService = restaurantTableService;
-        this.billSplitterService = billSplitterService;
-        this.responseHelper = responseHelper;
-    }
 
     @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
     @GetMapping

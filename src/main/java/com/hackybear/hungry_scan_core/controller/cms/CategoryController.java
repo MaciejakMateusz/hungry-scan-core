@@ -6,7 +6,7 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,20 +18,14 @@ import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/cms/categories")
+@RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
     private final UserService userService;
     private final ResponseHelper responseHelper;
-
-    public CategoryController(CategoryService categoryService, UserService userService, ResponseHelper responseHelper) {
-        this.categoryService = categoryService;
-        this.userService = userService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")

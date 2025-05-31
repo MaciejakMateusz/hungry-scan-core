@@ -10,4 +10,5 @@ public interface TranslatableService {
     void saveAll(List<Translatable> translatables);
 
     String translate(Map<String, Object> params);
+
 }

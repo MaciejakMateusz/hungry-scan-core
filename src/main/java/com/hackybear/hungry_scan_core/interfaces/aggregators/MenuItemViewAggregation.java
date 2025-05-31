@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.interfaces.aggregators;
 
 public interface MenuItemViewAggregation {
+
     Long getId();
 
     String getPl();
@@ -16,4 +17,5 @@ public interface MenuItemViewAggregation {
     String getUk();
 
     Integer getViews();
+
 }

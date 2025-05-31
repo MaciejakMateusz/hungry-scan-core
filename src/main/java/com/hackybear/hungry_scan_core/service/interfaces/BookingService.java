@@ -20,4 +20,5 @@ public interface BookingService {
     Long countAll();
 
     Long countByDateBetween(LocalDate dateFrom, LocalDate dateTo);
+
 }

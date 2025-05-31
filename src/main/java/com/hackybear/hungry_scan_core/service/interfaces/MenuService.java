@@ -28,4 +28,5 @@ public interface MenuService {
     void delete(User user) throws LocalizedException, AuthenticationException;
 
     void duplicate(User currentUser) throws LocalizedException;
+
 }

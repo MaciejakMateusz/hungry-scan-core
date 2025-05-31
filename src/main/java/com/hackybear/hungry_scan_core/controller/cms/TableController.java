@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,22 +21,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/tables")
+@RequiredArgsConstructor
 public class TableController {
 
     private final RestaurantTableService restaurantTableService;
     private final FileProcessingService fileProcessingService;
     private final QRService qrService;
     private final ResponseHelper responseHelper;
-
-    public TableController(RestaurantTableService restaurantTableService,
-                           FileProcessingService fileProcessingService,
-                           QRService qrService,
-                           ResponseHelper responseHelper) {
-        this.restaurantTableService = restaurantTableService;
-        this.fileProcessingService = fileProcessingService;
-        this.qrService = qrService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")

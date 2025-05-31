@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.service.helpers;
 
 import com.hackybear.hungry_scan_core.interfaces.aggregators.ScanAggregation;
 import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.YearMonth;
@@ -12,16 +13,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ScanEventAggregator {
 
-    private final QrScanEventRepository ser;
-
-    public ScanEventAggregator(QrScanEventRepository ser) {
-        this.ser = ser;
-    }
+    private final QrScanEventRepository scanEventRepository;
 
     public Map<String, Object> projectYearlyScans(Long restaurantId, Integer year) {
-        List<ScanAggregation> aggregation = ser.aggregateByMonth(restaurantId, year);
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByMonth(restaurantId, year);
         Result result = getResult(aggregation);
 
         for (int m = 1; m <= 12; m++) {
@@ -32,7 +30,7 @@ public class ScanEventAggregator {
     }
 
     public Map<String, Object> projectMonthlyScans(Long restaurantId, Integer year, Integer month) {
-        List<ScanAggregation> aggregation = ser.aggregateByDay(restaurantId, year, month);
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByDay(restaurantId, year, month);
         Result result = getResult(aggregation);
 
         int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
@@ -44,7 +42,7 @@ public class ScanEventAggregator {
     }
 
     public Map<String, Object> projectWeeklyScans(Long restaurantId, Integer year, Integer week) {
-        List<ScanAggregation> aggregation = ser.aggregateByDayOfWeek(restaurantId, year, week);
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByDayOfWeek(restaurantId, year, week);
         Result result = getResult(aggregation);
 
         for (int w = 1; w <= 7; w++) {
@@ -55,7 +53,7 @@ public class ScanEventAggregator {
     }
 
     public Map<String, Object> projectDailyScans(Long restaurantId, java.time.LocalDate date) {
-        List<ScanAggregation> aggregation = ser.aggregateByHour(restaurantId, date);
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByHour(restaurantId, date);
         Result result = getResult(aggregation);
 
         for (int h = 0; h < 24; h++) {

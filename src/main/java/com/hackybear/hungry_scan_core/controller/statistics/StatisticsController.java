@@ -5,7 +5,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.StatisticsService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,23 +17,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
 @RequestMapping("/api/stats")
+@RequiredArgsConstructor
 public class StatisticsController {
 
     private final StatisticsService statisticsService;
     private final UserService userService;
     private final ExceptionHelper exceptionHelper;
-
-    public StatisticsController(StatisticsService statisticsService,
-                                UserService userService,
-                                ExceptionHelper exceptionHelper) {
-        this.statisticsService = statisticsService;
-        this.userService = userService;
-        this.exceptionHelper = exceptionHelper;
-    }
 
     @PostMapping("/dashboard/year/scans")
     public ResponseEntity<?> getYearlyScanStats(@RequestBody Map<String, Object> params) {

@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.history.HistoryBooking;
 import com.hackybear.hungry_scan_core.service.history.interfaces.HistoryBookingService;
 import com.hackybear.hungry_scan_core.utility.Fields;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,15 +18,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/restaurant/history-bookings")
 @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
+@RequiredArgsConstructor
 public class HistoryBookingController {
 
     private final HistoryBookingService historyBookingService;
     private final ResponseHelper responseHelper;
-
-    public HistoryBookingController(HistoryBookingService historyBookingService, ResponseHelper responseHelper) {
-        this.historyBookingService = historyBookingService;
-        this.responseHelper = responseHelper;
-    }
 
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {

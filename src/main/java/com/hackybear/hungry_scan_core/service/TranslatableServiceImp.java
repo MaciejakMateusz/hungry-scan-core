@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.service;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.repository.TranslatableRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.TranslatableService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class TranslatableServiceImp implements TranslatableService {
 
     @Value("${DEEPL_API_KEY}")
@@ -22,11 +24,6 @@ public class TranslatableServiceImp implements TranslatableService {
 
     private final TranslatableRepository translatableRepository;
     private final RestTemplate restTemplate;
-
-    public TranslatableServiceImp(TranslatableRepository translatableRepository, RestTemplate restTemplate) {
-        this.translatableRepository = translatableRepository;
-        this.restTemplate = restTemplate;
-    }
 
     @Override
     public void saveAll(List<Translatable> translatables) {

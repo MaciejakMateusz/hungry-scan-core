@@ -10,7 +10,7 @@ import com.hackybear.hungry_scan_core.repository.OrderedItemRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.ArchiveDataService;
 import com.hackybear.hungry_scan_core.service.interfaces.OrderService;
 import com.hackybear.hungry_scan_core.utility.OrderServiceHelper;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class OrderServiceImp implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -30,22 +30,6 @@ public class OrderServiceImp implements OrderService {
     private final OrderServiceHelper orderHelper;
     private final ExceptionHelper exceptionHelper;
     private final OrderedItemRepository orderedItemRepository;
-
-    public OrderServiceImp(OrderRepository orderRepository,
-                           OrderSummaryRepository orderSummaryRepository,
-                           MenuItemRepository menuItemRepository,
-                           ArchiveDataService dataTransferService,
-                           OrderServiceHelper orderHelper,
-                           ExceptionHelper exceptionHelper,
-                           OrderedItemRepository orderedItemRepository) {
-        this.orderRepository = orderRepository;
-        this.orderSummaryRepository = orderSummaryRepository;
-        this.menuItemRepository = menuItemRepository;
-        this.dataTransferService = dataTransferService;
-        this.orderHelper = orderHelper;
-        this.exceptionHelper = exceptionHelper;
-        this.orderedItemRepository = orderedItemRepository;
-    }
 
     @Override
     public List<Order> findAll() {

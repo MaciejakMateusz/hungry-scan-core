@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.hackybear.hungry_scan_core.enums.PaymentMethod;
-import com.hackybear.hungry_scan_core.listener.OrderSummaryListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
@@ -10,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,14 +20,16 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@EntityListeners(value = OrderSummaryListener.class)
 @Table(name = "order_summaries")
 @Entity
-public class OrderSummary {
+public class OrderSummary implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)

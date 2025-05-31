@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.entity.Zone;
 import com.hackybear.hungry_scan_core.service.interfaces.ZoneService;
 import com.hackybear.hungry_scan_core.utility.Fields;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +18,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/zones")
+@RequiredArgsConstructor
 public class ZoneController {
 
     private final ZoneService zoneService;
     private final ResponseHelper responseHelper;
-
-    public ZoneController(ZoneService zoneService, ResponseHelper responseHelper) {
-        this.zoneService = zoneService;
-        this.responseHelper = responseHelper;
-    }
 
     @GetMapping
     @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)

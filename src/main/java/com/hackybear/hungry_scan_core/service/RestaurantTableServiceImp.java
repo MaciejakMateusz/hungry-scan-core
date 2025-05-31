@@ -10,32 +10,21 @@ import com.hackybear.hungry_scan_core.repository.RestaurantTableRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
 import com.hackybear.hungry_scan_core.utility.Money;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class RestaurantTableServiceImp implements RestaurantTableService {
 
     private final RestaurantTableRepository restaurantTableRepository;
     private final UserRepository userRepository;
     protected final OrderSummaryRepository orderSummaryRepository;
     protected final ExceptionHelper exceptionHelper;
-
-    public RestaurantTableServiceImp(RestaurantTableRepository restaurantTableRepository,
-                                     UserRepository userRepository,
-                                     OrderSummaryRepository orderSummaryRepository,
-                                     ExceptionHelper exceptionHelper) {
-        this.restaurantTableRepository = restaurantTableRepository;
-        this.userRepository = userRepository;
-        this.orderSummaryRepository = orderSummaryRepository;
-        this.exceptionHelper = exceptionHelper;
-    }
-
 
     @Override
     public List<RestaurantTable> findAll() {

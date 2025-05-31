@@ -26,4 +26,5 @@ public interface RestaurantService {
     void delete(User currentUser) throws LocalizedException;
 
     RestaurantDTO findByToken(String token) throws LocalizedException;
+
 }

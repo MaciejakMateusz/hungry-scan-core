@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -44,6 +45,9 @@ public class HistoryOrderedItem implements Serializable {
 
     @Id
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @ManyToOne
     @JoinColumn(name = "menu_item_id", referencedColumnName = "id")

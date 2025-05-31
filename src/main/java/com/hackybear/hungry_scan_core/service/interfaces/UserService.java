@@ -66,4 +66,5 @@ public interface UserService {
     MenuDTO getCurrentMenu() throws LocalizedException;
 
     int isEnabled(String username) throws LocalizedException;
+
 }

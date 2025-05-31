@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.Order;
 import com.hackybear.hungry_scan_core.service.interfaces.OrderService;
 import com.hackybear.hungry_scan_core.utility.Fields;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +16,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/restaurant/orders")
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:3000"})
+@RequiredArgsConstructor
 public class OrderController {
-
 
     private final OrderService orderService;
     private final ResponseHelper responseHelper;
 
-    public OrderController(OrderService orderService, ResponseHelper responseHelper) {
-        this.orderService = orderService;
-        this.responseHelper = responseHelper;
-    }
 
     @PreAuthorize(Fields.ROLES_EXCEPT_READONLY_CUSTOMER)
     @PostMapping("/show")

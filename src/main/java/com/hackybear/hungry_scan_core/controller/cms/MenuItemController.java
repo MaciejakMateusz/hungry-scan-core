@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,18 +21,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/items")
+@RequiredArgsConstructor
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
     private final UserService userService;
     private final ResponseHelper responseHelper;
-
-    public MenuItemController(MenuItemService menuItemService, UserService userService,
-                              ResponseHelper responseHelper) {
-        this.menuItemService = menuItemService;
-        this.userService = userService;
-        this.responseHelper = responseHelper;
-    }
 
     @PostMapping("/show")
     @PreAuthorize("isAuthenticated()")

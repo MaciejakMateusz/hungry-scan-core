@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.auth;
 
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,10 @@ import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOME
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final UserService userService;
-
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping("/restaurant")
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)

@@ -5,24 +5,18 @@ import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import com.hackybear.hungry_scan_core.repository.OrderSummaryRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.ArchiveDataService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class PaymentProcessor {
 
     private final RestaurantTableService restaurantTableService;
     private final OrderSummaryRepository summaryRepository;
     private final ArchiveDataService archiveDataService;
-
-    public PaymentProcessor(RestaurantTableService restaurantTableService,
-                            OrderSummaryRepository summaryRepository,
-                            ArchiveDataService archiveDataService) {
-        this.restaurantTableService = restaurantTableService;
-        this.summaryRepository = summaryRepository;
-        this.archiveDataService = archiveDataService;
-    }
 
     public OrderSummary pay(OrderSummary orderSummary) {
         OrderSummary summary;

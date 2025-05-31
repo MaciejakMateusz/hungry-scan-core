@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import java.util.List;
 
 public interface LabelService {
+
     void save(LabelDTO labelDTO);
 
     List<LabelDTO> findAll();
@@ -13,4 +14,5 @@ public interface LabelService {
     LabelDTO findById(Long id) throws LocalizedException;
 
     void delete(Long id) throws LocalizedException;
+
 }

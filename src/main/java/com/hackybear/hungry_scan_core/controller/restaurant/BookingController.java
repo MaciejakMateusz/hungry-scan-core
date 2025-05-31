@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.entity.Booking;
 import com.hackybear.hungry_scan_core.service.interfaces.BookingService;
 import com.hackybear.hungry_scan_core.utility.Fields;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,15 +20,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/restaurant/bookings")
 @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
+@RequiredArgsConstructor
 public class BookingController {
 
     private final BookingService bookingService;
     private final ResponseHelper responseHelper;
-
-    public BookingController(BookingService bookingService, ResponseHelper responseHelper) {
-        this.bookingService = bookingService;
-        this.responseHelper = responseHelper;
-    }
 
     @PostMapping("/show")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {

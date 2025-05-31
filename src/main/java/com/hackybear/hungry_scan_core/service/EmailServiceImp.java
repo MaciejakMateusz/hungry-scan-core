@@ -5,6 +5,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Setter
+@RequiredArgsConstructor
 public class EmailServiceImp implements EmailService {
 
     private final JavaMailSender emailSender;
@@ -31,12 +33,6 @@ public class EmailServiceImp implements EmailService {
 
     @Value("${CMS_APP_URL}")
     private String cmsUrl;
-
-    public EmailServiceImp(JavaMailSender emailSender,
-                           UserMapper userMapper) {
-        this.emailSender = emailSender;
-        this.userMapper = userMapper;
-    }
 
     @Override
     public void contactForm(String from, String subject, String text) {

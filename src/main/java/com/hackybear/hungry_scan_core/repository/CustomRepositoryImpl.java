@@ -7,7 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 
-public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
+public class CustomRepositoryImpl<T, ID extends Serializable>
+        extends SimpleJpaRepository<T, ID>
         implements CustomRepository<T, ID> {
 
     private final EntityManager entityManager;

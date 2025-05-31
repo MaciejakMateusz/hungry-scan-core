@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.listener;
 
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,10 +12,12 @@ import java.util.Objects;
 @Slf4j
 public class GeneralListener {
 
+    private static final String CREATED = "created";
+
     @PrePersist
     public void prePersist(final Object entity) {
         try {
-            if (Objects.isNull(getFieldValue(entity, "created"))) {
+            if (Objects.isNull(getCreatedDate(entity))) {
                 setDateField(entity, "setCreated");
             } else {
                 log.error("Creation time already exists, cannot overwrite.");
@@ -31,16 +32,6 @@ public class GeneralListener {
         setDateField(entity, "setUpdated");
     }
 
-    @PreRemove
-    public void preRemove(Object entity) {
-        try {
-            Object idValue = getFieldValue(entity, "id");
-            log.info("Entity {} removed with ID: {}", entity.getClass().getSimpleName(), idValue);
-        } catch (Exception e) {
-            log.error("Error during preRemove", e);
-        }
-    }
-
     private void setDateField(Object entity, String methodName) {
         LocalDateTime now = LocalDateTime.now();
         try {
@@ -51,9 +42,9 @@ public class GeneralListener {
         }
     }
 
-    private Object getFieldValue(Object entity, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+    private Object getCreatedDate(Object entity) throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz = entity.getClass();
-        Field field = clazz.getDeclaredField(fieldName);
+        Field field = clazz.getDeclaredField(CREATED);
         field.setAccessible(true);
         return field.get(entity);
     }

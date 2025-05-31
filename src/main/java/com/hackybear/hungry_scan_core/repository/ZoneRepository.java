@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ZoneRepository extends JpaRepository<Zone, Long> {
+
     List<Zone> findAllByOrderByDisplayOrder();
+
 }

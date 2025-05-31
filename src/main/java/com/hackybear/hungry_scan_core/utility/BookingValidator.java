@@ -6,21 +6,18 @@ import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.BookingRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.SettingsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class BookingValidator {
 
     private final BookingRepository bookingRepository;
     private final SettingsService settingsService;
-
-    public BookingValidator(BookingRepository bookingRepository, SettingsService settingsService) {
-        this.bookingRepository = bookingRepository;
-        this.settingsService = settingsService;
-    }
 
     public boolean isValidBooking(Booking booking) throws LocalizedException {
         return DateTimeHelper.isNotInPast(LocalDateTime.of(booking.getDate(), booking.getTime())) &&

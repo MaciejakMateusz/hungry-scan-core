@@ -17,4 +17,5 @@ public class MessageSourceConfig {
         ms.setDefaultLocale(Locale.forLanguageTag("pl"));
         return ms;
     }
+
 }

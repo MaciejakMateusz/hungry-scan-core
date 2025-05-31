@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Table(name = "history_waiter_calls")
-public class HistoryWaiterCall {
+public class HistoryWaiterCall implements Serializable {
 
     public HistoryWaiterCall(Long id,
                              Long tableId,
@@ -33,6 +35,9 @@ public class HistoryWaiterCall {
 
     @Id
     private Long id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Long tableId;
 

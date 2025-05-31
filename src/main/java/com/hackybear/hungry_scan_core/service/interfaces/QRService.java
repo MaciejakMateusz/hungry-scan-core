@@ -15,4 +15,5 @@ public interface QRService {
     ResponseEntity<?> scanQRCode(HttpServletResponse response, String restaurantToken) throws IOException;
 
     ResponseEntity<?> persistScanEvent(String footprint);
+
 }

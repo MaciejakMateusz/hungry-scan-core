@@ -8,6 +8,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.JwtService;
 import com.hackybear.hungry_scan_core.service.interfaces.LoginService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class LoginServiceImp implements LoginService {
 
     private final AuthenticationManager authenticationManager;
@@ -33,16 +35,6 @@ public class LoginServiceImp implements LoginService {
 
     @Value("${JWT_EXPIRATION_MILLIS}")
     private long expirationMillis;
-
-    public LoginServiceImp(AuthenticationManager authenticationManager,
-                           UserService userService,
-                           JwtService jwtService,
-                           ExceptionHelper exceptionHelper) {
-        this.authenticationManager = authenticationManager;
-        this.userService = userService;
-        this.jwtService = jwtService;
-        this.exceptionHelper = exceptionHelper;
-    }
 
     @Override
     public ResponseEntity<?> handleLogin(AuthRequestDTO authRequestDTO, HttpServletResponse response) throws LocalizedException {

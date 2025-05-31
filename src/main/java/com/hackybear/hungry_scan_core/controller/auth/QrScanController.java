@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.controller.auth;
 import com.hackybear.hungry_scan_core.annotation.WithRateLimitProtection;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +13,10 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/qr")
+@RequiredArgsConstructor
 public class QrScanController {
 
     private final QRService qrService;
-
-    public QrScanController(QRService qrService) {
-        this.qrService = qrService;
-    }
 
     @WithRateLimitProtection
     @GetMapping("/scan/{restaurantToken}")

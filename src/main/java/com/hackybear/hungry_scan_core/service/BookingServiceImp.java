@@ -6,7 +6,7 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.BookingRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.BookingService;
 import com.hackybear.hungry_scan_core.utility.BookingValidator;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,21 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class BookingServiceImp implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final BookingValidator bookingValidator;
     private final ExceptionHelper exceptionHelper;
-
-    public BookingServiceImp(BookingRepository bookingRepository,
-                             BookingValidator bookingValidator,
-                             ExceptionHelper exceptionHelper) {
-        this.bookingRepository = bookingRepository;
-        this.bookingValidator = bookingValidator;
-        this.exceptionHelper = exceptionHelper;
-    }
 
     @Override
     public Booking findById(Long id) throws LocalizedException {

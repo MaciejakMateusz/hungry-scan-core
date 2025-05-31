@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.service.helpers;
 import com.hackybear.hungry_scan_core.dto.MenuItemViewCountDTO;
 import com.hackybear.hungry_scan_core.interfaces.aggregators.MenuItemViewAggregation;
 import com.hackybear.hungry_scan_core.repository.MenuItemViewEventRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -15,13 +16,10 @@ import java.util.stream.Collectors;
 
 
 @Component
+@RequiredArgsConstructor
 public class MenuItemViewEventAggregator {
 
     private final MenuItemViewEventRepository viewEventRepository;
-
-    public MenuItemViewEventAggregator(MenuItemViewEventRepository viewEventRepository) {
-        this.viewEventRepository = viewEventRepository;
-    }
 
     public Set<MenuItemViewCountDTO> projectYearlyMenuItemViews(Long menuId, int year) {
         List<MenuItemViewAggregation> menuItemViews = viewEventRepository.aggregateByYear(menuId, year);

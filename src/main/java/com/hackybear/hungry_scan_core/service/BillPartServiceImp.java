@@ -5,18 +5,15 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.BillPartRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.BillPartService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BillPartServiceImp implements BillPartService {
 
     private final BillPartRepository billPartRepository;
     private final ExceptionHelper exceptionHelper;
-
-    public BillPartServiceImp(BillPartRepository billPartRepository, ExceptionHelper exceptionHelper) {
-        this.billPartRepository = billPartRepository;
-        this.exceptionHelper = exceptionHelper;
-    }
 
     @Override
     public void save(BillPart billPart) {

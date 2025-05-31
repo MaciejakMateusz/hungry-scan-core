@@ -20,7 +20,6 @@ import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -40,7 +39,6 @@ import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;

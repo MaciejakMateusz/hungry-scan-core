@@ -7,6 +7,7 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import java.util.List;
 
 public interface OrderService {
+
     List<Order> findAll();
 
     List<Order> findAllTakeAway();
@@ -24,4 +25,5 @@ public interface OrderService {
     void finishTakeAway(Long id) throws LocalizedException;
 
     void delete(Order order);
+
 }

@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.Feedback;
 import com.hackybear.hungry_scan_core.service.interfaces.FeedbackService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,15 +19,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/restaurant/feedback")
+@RequiredArgsConstructor
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
     private final ResponseHelper responseHelper;
-
-    public FeedbackController(FeedbackService feedbackService, ResponseHelper responseHelper) {
-        this.feedbackService = feedbackService;
-        this.responseHelper = responseHelper;
-    }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @PostMapping("/show")

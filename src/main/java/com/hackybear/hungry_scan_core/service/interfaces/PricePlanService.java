@@ -10,4 +10,5 @@ public interface PricePlanService {
     List<PricePlan> findAll();
 
     PricePlan findById(Long id) throws LocalizedException;
+
 }

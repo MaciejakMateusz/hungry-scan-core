@@ -16,6 +16,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -26,11 +28,14 @@ import java.time.LocalDateTime;
 @Table(name = "zones")
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-public class Zone {
+public class Zone implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_name_id", referencedColumnName = "id")

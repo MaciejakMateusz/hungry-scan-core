@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.VariantDTO;
 import com.hackybear.hungry_scan_core.service.interfaces.VariantService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +17,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cms/variants")
+@RequiredArgsConstructor
 public class VariantController {
 
     private final VariantService variantService;
     private final ResponseHelper responseHelper;
-
-    public VariantController(VariantService variantService, ResponseHelper responseHelper) {
-        this.variantService = variantService;
-        this.responseHelper = responseHelper;
-    }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @PostMapping("/show")

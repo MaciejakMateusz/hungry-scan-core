@@ -13,7 +13,7 @@ import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.VariantService;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import jakarta.persistence.EntityManager;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -27,8 +27,8 @@ import java.util.Optional;
 import static com.hackybear.hungry_scan_core.utility.Fields.VARIANTS_ALL;
 import static com.hackybear.hungry_scan_core.utility.Fields.VARIANT_ID;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class VariantServiceImp implements VariantService {
 
     private final VariantRepository variantRepository;
@@ -38,22 +38,6 @@ public class VariantServiceImp implements VariantService {
     private final TranslatableMapper translatableMapper;
     private final EntityManager entityManager;
     private final MenuItemRepository menuItemRepository;
-
-    public VariantServiceImp(VariantRepository variantRepository,
-                             ExceptionHelper exceptionHelper,
-                             SortingHelper sortingHelper,
-                             VariantMapper variantMapper,
-                             TranslatableMapper translatableMapper,
-                             EntityManager entityManager,
-                             MenuItemRepository menuItemRepository) {
-        this.variantRepository = variantRepository;
-        this.exceptionHelper = exceptionHelper;
-        this.sortingHelper = sortingHelper;
-        this.variantMapper = variantMapper;
-        this.translatableMapper = translatableMapper;
-        this.entityManager = entityManager;
-        this.menuItemRepository = menuItemRepository;
-    }
 
     @Override
     @Transactional
