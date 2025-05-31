@@ -3,33 +3,28 @@ package com.hackybear.hungry_scan_core.service;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class FileProcessingServiceImp implements FileProcessingService {
 
     @Value("${QR_PATH}")
     private String qrPath;
 
-    @Value("${IMAGE_PATH}")
-    private String imagePath;
-
     private final ExceptionHelper exceptionHelper;
-
-    public FileProcessingServiceImp(ExceptionHelper exceptionHelper) {
-        this.exceptionHelper = exceptionHelper;
-    }
 
     @Override
     public List<File> fileList() {
@@ -43,18 +38,6 @@ public class FileProcessingServiceImp implements FileProcessingService {
     }
 
     @Override
-    public void uploadFile(MultipartFile file) throws IOException {
-        String fileName = file.getOriginalFilename();
-
-        if (fileName == null || fileName.isEmpty()) {
-            return;
-        }
-        File destFile = new File(imagePath, fileName);
-        destFile.getParentFile().mkdirs();
-        file.transferTo(destFile);
-    }
-
-    @Override
     public Resource downloadFile(String path) throws LocalizedException {
         String fullPath = qrPath + path;
         File dir = new File(fullPath);
@@ -62,6 +45,21 @@ public class FileProcessingServiceImp implements FileProcessingService {
             exceptionHelper.throwLocalizedMessage("error.fileProcessingService.fileNotFound", fullPath);
         }
 
+        return executeDownload(dir);
+    }
+
+    @Override
+    public boolean removeFile(String path) throws LocalizedException {
+        String fullPath = qrPath + path;
+        File dir = new File(fullPath);
+        if (!dir.exists()) {
+            exceptionHelper.throwLocalizedMessage("error.fileProcessingService.fileNotFound", fullPath);
+        }
+
+        return executeDeletion(dir);
+    }
+
+    private UrlResource executeDownload(File dir) throws LocalizedException {
         try {
             UrlResource resource = new UrlResource(dir.toURI());
             if (!resource.exists() || !resource.isReadable()) {
@@ -73,14 +71,7 @@ public class FileProcessingServiceImp implements FileProcessingService {
         }
     }
 
-    @Override
-    public boolean removeFile(String path) throws LocalizedException {
-        String fullPath = qrPath + path;
-        File dir = new File(fullPath);
-        if (!dir.exists()) {
-            exceptionHelper.throwLocalizedMessage("error.fileProcessingService.fileNotFound", fullPath);
-        }
-
+    private boolean executeDeletion(File dir) throws LocalizedException {
         boolean isDeleted;
         try {
             isDeleted = dir.delete();
