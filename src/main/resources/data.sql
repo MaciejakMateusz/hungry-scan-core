@@ -3,11 +3,11 @@ VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f97
         '2023-11-12T00:00:00Z'),
        (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z');
 
-INSERT INTO price_plan_types (name, price)
+INSERT IGNORE INTO price_plan_types (name, price)
 VALUES ('free', 0.00),
        ('basic', 99.00);
 
-INSERT INTO price_plans (restaurant_id, plan_type_id, activation_date, renewal_date, billing_period,
+INSERT IGNORE INTO price_plans (restaurant_id, plan_type_id, activation_date, renewal_date, billing_period,
                          payment_method)
 VALUES (1, 1, null, null, null, null),
        (2, 1, null, null, null, null);
