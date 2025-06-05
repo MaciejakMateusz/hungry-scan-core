@@ -6,7 +6,6 @@ import com.hackybear.hungry_scan_core.annotation.AnyTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
-import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,9 +18,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -58,9 +59,8 @@ public class Menu implements Serializable, Comparable<Menu> {
     @OrderBy("displayOrder ASC")
     private Set<Category> categories = new HashSet<>();
 
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    private Map<DayOfWeek, TimeRange> plan = new HashMap<>();
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MenuPlan> plan = new HashSet<>();
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StandardDayPlan> standardDayPlan = new ArrayList<>();
