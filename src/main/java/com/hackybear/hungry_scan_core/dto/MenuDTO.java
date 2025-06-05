@@ -1,18 +1,17 @@
 package com.hackybear.hungry_scan_core.dto;
 
-import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public record MenuDTO(Long id,
                       @NotBlank String name,
                       List<CategoryDTO> categories,
-                      Map<DayOfWeek, TimeRange> plan,
+                      Set<MenuPlanDTO> plan,
+                      List<StandardDayPlanDTO> standardDayPlan,
                       boolean standard,
                       LocalDateTime created,
                       LocalDateTime updated,
