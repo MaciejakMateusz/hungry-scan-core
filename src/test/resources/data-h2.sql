@@ -53,10 +53,6 @@ VALUES (true, 'Całodniowe', 1, 'COLOR_318E41', 1),
        (false, 'Ziemniaczane', 5, 'COLOR_318E41', 6),
        (false, 'Menu', 11, 'COLOR_318E41', 7);
 
-INSERT INTO menu_plan (menu_id, end_time, start_time, plan_key)
-VALUES (4, '14:00:00', '16:00:00', 1),
-       (4, '11:00:00', '13:00:00', 4);
-
 /* CATEGORIES TRANSLATIONS */
 INSERT INTO translatable(pl, en)
 VALUES ('Przystawki', 'Starters'),

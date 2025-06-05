@@ -22,7 +22,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -113,23 +112,6 @@ public class MenuServiceImp implements MenuService {
     public void updatePlans(List<MenuSimpleDTO> menuDTOs, Long activeRestaurantId) throws LocalizedException {
         validateMenusPlans(menuDTOs);
 
-        Map<Long, Map<DayOfWeek, TimeRange>> dtoPlanMap = menuDTOs.stream()
-                .collect(Collectors.toMap(MenuSimpleDTO::id, MenuSimpleDTO::plan));
-
-        Set<Menu> existingMenus = menuRepository.findAllByRestaurantId(activeRestaurantId);
-
-        List<Menu> toSave = existingMenus.stream()
-                .filter(menu -> {
-                    Map<DayOfWeek, TimeRange> newPlan = dtoPlanMap.get(menu.getId());
-                    return newPlan != null && !Objects.equals(menu.getPlan(), newPlan);
-                })
-                .peek(menu -> menu.setPlan(dtoPlanMap.get(menu.getId())))
-                .collect(Collectors.toList());
-
-        if (!toSave.isEmpty()) {
-            menuRepository.saveAll(toSave);
-        }
-        standardDayPlanScheduler.mapStandardPlan(menuDTOs);
     }
 
     @Transactional
@@ -143,11 +125,11 @@ public class MenuServiceImp implements MenuService {
         menuRepository.resetStandardMenus(currentUser.getActiveRestaurantId());
         menuRepository.switchStandard(currentUser.getActiveMenuId());
         Menu menu = menuRepository.findById(currentUser.getActiveMenuId()).orElseThrow();
-        menu.setPlan(new HashMap<>());
+        menu.setPlan(new HashSet<>());
         menuRepository.saveAndFlush(menu);
         List<Menu> menus = menuRepository.findAllByRestaurantId(currentUser.getActiveRestaurantId()).stream().toList();
         List<MenuSimpleDTO> menuDTOs = menus.stream().map(menuMapper::toSimpleDTO).toList();
-        standardDayPlanScheduler.mapStandardPlan(menuDTOs);
+//        standardDayPlanScheduler.mapStandardPlan(menuDTOs);
     }
 
     @Transactional
@@ -207,28 +189,7 @@ public class MenuServiceImp implements MenuService {
     }
 
     private void validateMenusPlans(List<MenuSimpleDTO> menuDTOs) throws LocalizedException {
-        Map<DayOfWeek, List<TimeRange>> scheduleMap = new HashMap<>();
 
-        for (MenuSimpleDTO menuDTO : menuDTOs) {
-            if (menuDTO.standard() || menuDTO.plan() == null) continue;
-
-            for (Map.Entry<DayOfWeek, TimeRange> entry : menuDTO.plan().entrySet()) {
-                DayOfWeek day = entry.getKey();
-                TimeRange newRange = entry.getValue();
-
-                if (newRange == null) continue;
-
-                List<TimeRange> existingRanges = scheduleMap.getOrDefault(day, new ArrayList<>());
-                for (TimeRange existing : existingRanges) {
-                    if (isOverlapping(existing, newRange)) {
-                        exceptionHelper.throwLocalizedMessage("error.menuService.schedulesCollide");
-                    }
-                }
-
-                existingRanges.add(newRange);
-                scheduleMap.put(day, existingRanges);
-            }
-        }
     }
 
     private boolean isOverlapping(TimeRange a, TimeRange b) {

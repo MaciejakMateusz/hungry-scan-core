@@ -4,13 +4,13 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.MenuPlan;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -33,7 +33,7 @@ public class MenuPlanUpdater {
         adjustPlansForNonStandard(allMenus, openingTimes);
 
         List<MenuSimpleDTO> menuDTOs = toSimpleDTOs(allMenus);
-        standardDayPlanScheduler.mapStandardPlan(menuDTOs, openingTimes);
+//        standardDayPlanScheduler.mapStandardPlan(menuDTOs, openingTimes);
     }
 
     private boolean openingHoursUnchanged(Restaurant restaurant, RestaurantDTO dto) {
@@ -63,27 +63,11 @@ public class MenuPlanUpdater {
     }
 
     private void adjustPlansForNonStandard(Set<Menu> menus, TimeRange openingTimes) {
-        for (Menu menu : menus) {
-            if (menu.isStandard()) {
-                continue;
-            }
-            Map<DayOfWeek, TimeRange> oldPlan = nonNullPlan(menu.getPlan());
-            Map<DayOfWeek, TimeRange> newPlan = new EnumMap<>(DayOfWeek.class);
 
-            oldPlan.forEach((day, slot) -> {
-                TimeRange slice = openingTimes.intersect(slot);
-                if (slice != null) {
-                    newPlan.put(day, slice);
-                }
-            });
-
-            menu.setPlan(newPlan);
-        }
-        menuRepository.saveAll(menus);
     }
 
-    private Map<DayOfWeek, TimeRange> nonNullPlan(Map<DayOfWeek, TimeRange> plan) {
-        return plan != null ? plan : Collections.emptyMap();
+    private Set<MenuPlan> nonNullPlan(Set<MenuPlan> plan) {
+        return plan != null ? plan : Collections.emptySet();
     }
 
 }

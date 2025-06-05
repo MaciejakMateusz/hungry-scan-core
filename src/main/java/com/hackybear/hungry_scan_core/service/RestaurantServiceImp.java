@@ -93,7 +93,7 @@ public class RestaurantServiceImp implements RestaurantService {
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
         List<MenuSimpleDTO> menuDTOs = restaurant.getMenus().stream().map(menuMapper::toSimpleDTO).toList();
-        standardDayPlanScheduler.mapStandardPlan(menuDTOs, getOperatingHours(restaurant));
+//        standardDayPlanScheduler.mapStandardPlan(menuDTOs, getOperatingHours(restaurant));
     }
 
     @Override
@@ -179,7 +179,7 @@ public class RestaurantServiceImp implements RestaurantService {
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
         List<MenuSimpleDTO> menuDTOs = restaurant.getMenus().stream().map(menuMapper::toSimpleDTO).toList();
-        standardDayPlanScheduler.mapStandardPlan(menuDTOs, getOperatingHours(restaurant));
+//        standardDayPlanScheduler.mapStandardPlan(menuDTOs, getOperatingHours(restaurant));
     }
 
     @NotNull
