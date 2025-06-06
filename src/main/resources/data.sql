@@ -8,7 +8,7 @@ VALUES ('free', 0.00),
        ('basic', 99.00);
 
 INSERT IGNORE INTO price_plans (restaurant_id, plan_type_id, activation_date, renewal_date, billing_period,
-                         payment_method)
+                                payment_method)
 VALUES (1, 1, null, null, null, null),
        (2, 1, null, null, null, null);
 
@@ -413,6 +413,29 @@ INSERT IGNORE INTO banners (id, translatable_name_id)
 VALUES ('new', 160),
        ('bestseller', 161),
        ('promo', 162);
+
+-- MENU PLANS
+INSERT IGNORE INTO menu_plans (id, day_of_week, menu_id)
+VALUES (1, 'MONDAY', 1),
+       (2, 'TUESDAY', 1),
+       (3, 'WEDNESDAY', 1),
+       (4, 'THURSDAY', 1),
+       (5, 'FRIDAY', 1),
+       (6, 'SATURDAY', 1),
+       (7, 'SUNDAY', 1),
+       (8, 'SUNDAY', 2);
+
+INSERT IGNORE INTO menu_plan_time_ranges (menu_plan_id, start_time, end_time)
+VALUES (1, '10:00:00', '22:00:00'),
+       (2, '10:00:00', '22:00:00'),
+       (3, '10:00:00', '22:00:00'),
+       (4, '10:00:00', '22:00:00'),
+       (5, '10:00:00', '22:00:00'),
+       (6, '10:00:00', '22:00:00'),
+       (7, '10:00:00', '18:00:00'),
+       (8, '18:00:00', '22:00:00');
+
+-- END OF MENU PLANS
 
 -- QR SCAN EVENTS:
 -- January 2024 Data
