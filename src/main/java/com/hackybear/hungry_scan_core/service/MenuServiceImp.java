@@ -13,8 +13,7 @@ import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
-import com.hackybear.hungry_scan_core.utility.StandardDayPlanScheduler;
-import com.hackybear.hungry_scan_core.utility.TimeRange;
+import com.hackybear.hungry_scan_core.utility.MenuPlanValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.hackybear.hungry_scan_core.utility.DeepCopyUtils.constructDuplicateName;
@@ -34,11 +34,11 @@ public class MenuServiceImp implements MenuService {
 
     private final ExceptionHelper exceptionHelper;
     private final MenuRepository menuRepository;
+    private final MenuPlanValidator menuPlanValidator;
     private final MenuMapper menuMapper;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuDeepCopyMapper menuDeepCopyMapper;
-    private final StandardDayPlanScheduler standardDayPlanScheduler;
     private final S3Service s3Service;
 
     static final String S3_PATH = "menuItems";
@@ -110,8 +110,17 @@ public class MenuServiceImp implements MenuService {
             @CacheEvict(value = USER_RESTAURANT, key = "#activeRestaurantId")
     })
     public void updatePlans(List<MenuSimpleDTO> menuDTOs, Long activeRestaurantId) throws LocalizedException {
-        validateMenusPlans(menuDTOs);
-
+        menuPlanValidator.validateMenusPlans(menuDTOs, activeRestaurantId);
+        Set<Menu> existingMenus = menuRepository.findAllByRestaurantId(activeRestaurantId);
+        Map<Long, Menu> menuById = existingMenus.stream()
+                .collect(Collectors.toMap(Menu::getId, Function.identity()));
+        List<Menu> toSave = new ArrayList<>(menuDTOs.size());
+        for (MenuSimpleDTO dto : menuDTOs) {
+            Menu target = menuById.get(dto.id());
+            menuMapper.updateFromSimpleDTO(dto, target);
+            toSave.add(target);
+        }
+        menuRepository.saveAll(toSave);
     }
 
     @Transactional
@@ -121,15 +130,12 @@ public class MenuServiceImp implements MenuService {
             @CacheEvict(value = MENU_ID, key = "#currentUser.getActiveMenuId()"),
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
-    public void switchStandard(User currentUser) throws LocalizedException {
+    public void switchStandard(User currentUser) {
         menuRepository.resetStandardMenus(currentUser.getActiveRestaurantId());
         menuRepository.switchStandard(currentUser.getActiveMenuId());
         Menu menu = menuRepository.findById(currentUser.getActiveMenuId()).orElseThrow();
         menu.setPlan(new HashSet<>());
         menuRepository.saveAndFlush(menu);
-        List<Menu> menus = menuRepository.findAllByRestaurantId(currentUser.getActiveRestaurantId()).stream().toList();
-        List<MenuSimpleDTO> menuDTOs = menus.stream().map(menuMapper::toSimpleDTO).toList();
-//        standardDayPlanScheduler.mapStandardPlan(menuDTOs);
     }
 
     @Transactional
@@ -186,14 +192,6 @@ public class MenuServiceImp implements MenuService {
         copy = menuRepository.save(copy);
         currentUser.setActiveMenuId(copy.getId());
         userRepository.save(currentUser);
-    }
-
-    private void validateMenusPlans(List<MenuSimpleDTO> menuDTOs) throws LocalizedException {
-
-    }
-
-    private boolean isOverlapping(TimeRange a, TimeRange b) {
-        return a.getStartTime().isBefore(b.getEndTime()) && b.getStartTime().isBefore(a.getEndTime());
     }
 
     private Menu getById(Long id) throws LocalizedException {
