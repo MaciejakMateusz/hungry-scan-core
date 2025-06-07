@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.util.Set;
 
 public record MenuPlanDTO(Long id,
+                          Long menuId,
                           DayOfWeek dayOfWeek,
                           Set<TimeRange> timeRanges) implements Serializable {
 
