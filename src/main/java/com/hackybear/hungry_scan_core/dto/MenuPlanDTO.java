@@ -6,8 +6,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.Set;
+import java.util.UUID;
 
-public record MenuPlanDTO(Long id,
+public record MenuPlanDTO(UUID id,
                           Long menuId,
                           DayOfWeek dayOfWeek,
                           Set<TimeRange> timeRanges) implements Serializable {

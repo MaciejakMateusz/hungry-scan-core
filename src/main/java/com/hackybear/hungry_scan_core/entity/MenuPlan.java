@@ -14,25 +14,19 @@ import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
-@Table(
-        name = "menu_plans",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_menu_day",
-                columnNames = {"menu_id", "day_of_week"}
-        )
-)
+@Table(name = "menu_plans")
 public class MenuPlan implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Serial
     private static final long serialVersionUID = 1L;
