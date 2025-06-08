@@ -17,7 +17,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Entity
 @Table(
