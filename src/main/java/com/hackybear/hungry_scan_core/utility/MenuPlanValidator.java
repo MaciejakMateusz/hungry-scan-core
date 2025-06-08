@@ -17,8 +17,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MenuPlanValidator {
 
-    SettingsRepository settingsRepository;
-    ExceptionHelper exceptionHelper;
+    private final SettingsRepository settingsRepository;
+    private final ExceptionHelper exceptionHelper;
 
     public void validateMenusPlans(List<MenuSimpleDTO> menuDTOs, Long restaurantId) throws LocalizedException {
         validateScheduleEmptiness(menuDTOs);
