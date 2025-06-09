@@ -79,7 +79,7 @@ public class RedisSerializationTest {
 
     private Set<MenuSimpleDTO> getMenuSimpleDTOs() {
         return Set.of(
-                new MenuSimpleDTO(1L, 1L, "Menu1", null, null, true)
+                new MenuSimpleDTO(1L, 1L, "Menu1", null, true)
         );
     }
 

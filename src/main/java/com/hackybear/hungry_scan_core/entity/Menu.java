@@ -19,9 +19,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -62,9 +60,6 @@ public class Menu implements Serializable, Comparable<Menu> {
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MenuPlan> plan = new HashSet<>();
 
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StandardDayPlan> standardDayPlan = new ArrayList<>();
-
     @Column(name = "standard")
     private boolean standard;
 
@@ -95,18 +90,6 @@ public class Menu implements Serializable, Comparable<Menu> {
 
     public Menu(Long id) {
         this.id = id;
-    }
-
-    public void setStandardDayPlan(List<StandardDayPlan> newPlans) {
-        this.standardDayPlan.clear();
-        if (newPlans != null) {
-            newPlans.forEach(this::addStandardDayPlan);
-        }
-    }
-
-    public void addStandardDayPlan(StandardDayPlan plan) {
-        plan.setMenu(this);
-        this.standardDayPlan.add(plan);
     }
 
     @Override

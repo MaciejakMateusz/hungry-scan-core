@@ -20,7 +20,6 @@ public class MenuPlanUpdater {
 
     private final MenuRepository menuRepository;
     private final MenuMapper menuMapper;
-    private final StandardDayPlanScheduler standardDayPlanScheduler;
 
     public void updateMenusPlans(Restaurant restaurant, RestaurantDTO restaurantDTO) throws LocalizedException {
         if (openingHoursUnchanged(restaurant, restaurantDTO)) {
@@ -32,8 +31,6 @@ public class MenuPlanUpdater {
 
         adjustPlansForNonStandard(allMenus, openingTimes);
 
-        List<MenuSimpleDTO> menuDTOs = toSimpleDTOs(allMenus);
-//        standardDayPlanScheduler.mapStandardPlan(menuDTOs, openingTimes);
     }
 
     private boolean openingHoursUnchanged(Restaurant restaurant, RestaurantDTO dto) {

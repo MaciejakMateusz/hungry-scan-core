@@ -1,10 +1,8 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
-import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.enums.Language;
@@ -18,8 +16,6 @@ import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.utility.MenuPlanUpdater;
-import com.hackybear.hungry_scan_core.utility.StandardDayPlanScheduler;
-import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -44,11 +40,9 @@ public class RestaurantServiceImp implements RestaurantService {
     private final UserService userService;
     private final ExceptionHelper exceptionHelper;
     private final RestaurantMapper restaurantMapper;
-    private final MenuMapper menuMapper;
     private final UserRepository userRepository;
     private final PricePlanRepository pricePlanRepository;
     private final MenuPlanUpdater menuPlanUpdater;
-    private final StandardDayPlanScheduler standardDayPlanScheduler;
     private final S3Service s3Service;
 
     private static final String S3_PATH = "menuItems";
@@ -92,8 +86,6 @@ public class RestaurantServiceImp implements RestaurantService {
         restaurant = setupInitial(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
-        List<MenuSimpleDTO> menuDTOs = restaurant.getMenus().stream().map(menuMapper::toSimpleDTO).toList();
-//        standardDayPlanScheduler.mapStandardPlan(menuDTOs, getOperatingHours(restaurant));
     }
 
     @Override
@@ -172,14 +164,12 @@ public class RestaurantServiceImp implements RestaurantService {
         return restaurantMapper.toDTO(restaurant);
     }
 
-    private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
+    private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         restaurant = setupInitial(restaurant);
         setupRestaurantSettings(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
-        List<MenuSimpleDTO> menuDTOs = restaurant.getMenus().stream().map(menuMapper::toSimpleDTO).toList();
-//        standardDayPlanScheduler.mapStandardPlan(menuDTOs, getOperatingHours(restaurant));
     }
 
     @NotNull
@@ -246,12 +236,6 @@ public class RestaurantServiceImp implements RestaurantService {
                 .findFirst()
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.menuService.menuNotFound"));
-    }
-
-    private TimeRange getOperatingHours(Restaurant restaurant) {
-        LocalTime openingTime = restaurant.getSettings().getOpeningTime();
-        LocalTime closingTime = restaurant.getSettings().getClosingTime();
-        return new TimeRange(openingTime, closingTime);
     }
 
     private void removeMenuItemsFiles(Restaurant restaurant) {

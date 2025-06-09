@@ -17,7 +17,7 @@ import java.util.Set;
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     @NonNull
-    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.plan LEFT JOIN FETCH m.standardDayPlan WHERE m.id = :id")
+    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.plan LEFT JOIN FETCH m.plan WHERE m.id = :id")
     Optional<Menu> findById(@NonNull @Param("id") Long id);
 
     @Query("""
@@ -31,19 +31,21 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     Set<Menu> findAllByRestaurantId(Long restaurantId);
 
-    @Query(value = """
-            SELECT m.id
-            FROM menus m
-            LEFT JOIN menu_plan sp ON m.id = sp.menu_id
-            WHERE m.restaurant_id = :restaurantId
-            AND (
-                m.standard = TRUE
-                OR (sp.plan_key = :dayOfWeekOrdinal
-                    AND sp.start_time <= :currentTime
-                    AND sp.end_time >= :currentTime)
-                )
-            """, nativeQuery = true)
-    Optional<Long> findActiveMenuId(@Param("dayOfWeekOrdinal") int dayOfWeekOrdinal,
+    @Query("""
+              SELECT DISTINCT m.id
+              FROM Menu m
+                JOIN m.plan p
+                JOIN p.timeRanges tr
+              WHERE m.restaurant.id    = :restaurantId
+                AND p.dayOfWeek         = :dayOfWeek
+                AND (
+                     (tr.startTime <= :currentTime AND tr.endTime >= :currentTime)
+                     OR
+                     (tr.startTime >  tr.endTime
+                      AND (:currentTime >= tr.startTime OR :currentTime <= tr.endTime))
+                    )
+            """)
+    Optional<Long> findActiveMenuId(@Param("dayOfWeek") String dayOfWeekOrdinal,
                                     @Param("currentTime") LocalTime currentTime,
                                     @Param("restaurantId") Long restaurantId);
 

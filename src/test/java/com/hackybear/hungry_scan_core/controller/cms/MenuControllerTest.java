@@ -9,7 +9,6 @@ import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
-import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -25,9 +24,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -455,14 +455,7 @@ class MenuControllerTest {
     }
 
     private MenuSimpleDTO createMenuDTO(String name, Long restaurantId) {
-        return new MenuSimpleDTO(null, restaurantId, name, null, null, false);
-    }
-
-    private Map<DayOfWeek, TimeRange> getPlan(LocalTime startTime, LocalTime endTime, List<DayOfWeek> daysOfWeek) {
-        Map<DayOfWeek, TimeRange> plan = new HashMap<>();
-        TimeRange timeRange = new TimeRange(startTime, endTime);
-        daysOfWeek.forEach(day -> plan.put(day, timeRange));
-        return plan;
+        return new MenuSimpleDTO(null, restaurantId, name, null, false);
     }
 
     private Menu getMenu(Long id) {

@@ -1,6 +1,9 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
-import com.hackybear.hungry_scan_core.dto.*;
+import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.SettingsDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Settings;
@@ -144,12 +147,6 @@ public class RestaurantControllerTest {
         MenuSimpleDTO menuDTO = persistedRestaurant.menus().stream().findFirst().orElseThrow();
         assertNotNull(menuDTO);
         assertTrue(menuDTO.standard());
-        assertEquals(7, menuDTO.standardDayPlan().size());
-
-        StandardDayPlanDTO standardDayPlanDTO = menuDTO.standardDayPlan().stream().findFirst().orElse(null);
-        assert standardDayPlanDTO != null;
-        assertEquals(LocalTime.of(12, 0), standardDayPlanDTO.timeRanges().getFirst().startTime());
-        assertEquals(LocalTime.of(19, 0), standardDayPlanDTO.timeRanges().getLast().endTime());
     }
 
     @Test
@@ -190,12 +187,6 @@ public class RestaurantControllerTest {
         MenuSimpleDTO menuDTO = persistedRestaurant.menus().stream().findFirst().orElseThrow();
         assertNotNull(menuDTO);
         assertTrue(menuDTO.standard());
-        assertEquals(7, menuDTO.standardDayPlan().size());
-
-        StandardDayPlanDTO standardDayPlanDTO = menuDTO.standardDayPlan().stream().findFirst().orElse(null);
-        assert standardDayPlanDTO != null;
-        assertEquals(LocalTime.of(10, 0), standardDayPlanDTO.timeRanges().getFirst().startTime());
-        assertEquals(LocalTime.of(22, 0), standardDayPlanDTO.timeRanges().getLast().endTime());
 
         currentUser = userService.findByUsername("fresh@user.it");
         assertNotNull(currentUser.getActiveRestaurantId());

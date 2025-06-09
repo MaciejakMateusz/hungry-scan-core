@@ -6,12 +6,7 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring",
-        uses = {
-                StandardDayPlanMapper.class,
-                TranslatableMapper.class,
-                MenuPlanMapper.class
-        })
+@Mapper(componentModel = "spring", uses = {TranslatableMapper.class, MenuPlanMapper.class})
 public interface MenuMapper {
 
     @Mapping(expression = "java(menu.getRestaurant().getId())",

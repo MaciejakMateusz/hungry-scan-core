@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 public record MenuSimpleDTO(Long id,
@@ -14,7 +13,6 @@ public record MenuSimpleDTO(Long id,
                             String name,
 
                             Set<MenuPlanDTO> plan,
-                            List<StandardDayPlanDTO> standardDayPlan,
                             boolean standard) implements Serializable, Comparable<MenuSimpleDTO> {
 
     @Serial
