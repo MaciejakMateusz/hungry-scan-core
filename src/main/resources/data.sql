@@ -17,6 +17,16 @@ INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, l
                              employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
 VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true, 1);
 
+INSERT IGNORE INTO settings_operating_hours
+    (settings_id, day_of_week, start_time, end_time, available)
+VALUES (1, 'MONDAY', '12:00:00', '22:00:00', false),
+       (1, 'TUESDAY', '12:00:00', '22:00:00', true),
+       (1, 'WEDNESDAY', '12:00:00', '22:00:00', true),
+       (1, 'THURSDAY', '12:00:00', '22:00:00', true),
+       (1, 'FRIDAY', '12:00:00', '22:00:00', true),
+       (1, 'SATURDAY', '12:00:00', '03:00:00', true),
+       (1, 'SUNDAY', '12:00:00', '03:00:00', true);
+
 INSERT IGNORE INTO translatable(id, pl, en)
 VALUES (163, 'Smacznego!', 'Enjoy your meal!'),
        (164, 'Smacznego!', 'Enjoy your meal!'),
@@ -416,24 +426,24 @@ VALUES ('new', 160),
 
 -- MENU PLANS
 INSERT IGNORE INTO menu_plans (id, day_of_week, menu_id)
-VALUES ('fcb2e647-dc7a-4610-baa6-286663599f4c', 'MONDAY', 1),
-       ('7e72cab0-8e07-4cc1-b537-e22a6f01ab2c', 'TUESDAY', 1),
+VALUES ('7e72cab0-8e07-4cc1-b537-e22a6f01ab2c', 'TUESDAY', 1),
        ('f214c7df-e8b1-4c95-b017-295a291b7741', 'WEDNESDAY', 1),
        ('e87cf171-8a83-448c-9415-a9bf82fc3f7b', 'THURSDAY', 1),
        ('f2e8ea5d-5663-49b8-bbfa-7629b79f6395', 'FRIDAY', 1),
        ('07908c0f-45b5-4e84-96c6-2bbc9090b561', 'SATURDAY', 1),
        ('d692f96c-1fe8-4c07-9f24-79bb3dc736d0', 'SUNDAY', 1),
-       ('413bf80c-fedf-4481-a1a9-a28dd2b075e3', 'SUNDAY', 2);
+       ('fcb2e647-dc7a-4610-baa6-286663599f4c', 'MONDAY', 1);
 
-INSERT IGNORE INTO menu_plan_time_ranges (menu_plan_id, start_time, end_time)
-VALUES ('fcb2e647-dc7a-4610-baa6-286663599f4c', '10:00:00', '22:00:00'),
-       ('7e72cab0-8e07-4cc1-b537-e22a6f01ab2c', '10:00:00', '22:00:00'),
-       ('f214c7df-e8b1-4c95-b017-295a291b7741', '10:00:00', '22:00:00'),
-       ('e87cf171-8a83-448c-9415-a9bf82fc3f7b', '10:00:00', '22:00:00'),
-       ('f2e8ea5d-5663-49b8-bbfa-7629b79f6395', '10:00:00', '22:00:00'),
-       ('07908c0f-45b5-4e84-96c6-2bbc9090b561', '10:00:00', '22:00:00'),
-       ('d692f96c-1fe8-4c07-9f24-79bb3dc736d0', '10:00:00', '18:00:00'),
-       ('413bf80c-fedf-4481-a1a9-a28dd2b075e3', '18:00:00', '22:00:00');
+INSERT IGNORE INTO menu_plan_time_ranges (menu_plan_id, start_time, end_time, available)
+VALUES ('7e72cab0-8e07-4cc1-b537-e22a6f01ab2c', '12:00:00', '22:00:00', true),
+       ('f214c7df-e8b1-4c95-b017-295a291b7741', '12:00:00', '22:00:00', true),
+       ('e87cf171-8a83-448c-9415-a9bf82fc3f7b', '12:00:00', '22:00:00', true),
+       ('f2e8ea5d-5663-49b8-bbfa-7629b79f6395', '12:00:00', '22:00:00', true),
+       ('07908c0f-45b5-4e84-96c6-2bbc9090b561', '12:00:00', '00:00:00', true),
+       ('d692f96c-1fe8-4c07-9f24-79bb3dc736d0', '12:00:00', '00:00:00', true),
+       ('d692f96c-1fe8-4c07-9f24-79bb3dc736d0', '00:00:00', '03:00:00', true),
+       ('413bf80c-fedf-4481-a1a9-a28dd2b075e3', '12:00:00', '00:00:00', true),
+       ('fcb2e647-dc7a-4610-baa6-286663599f4c', '00:00:00', '03:00:00', true);
 
 -- END OF MENU PLANS
 
