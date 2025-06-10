@@ -133,9 +133,6 @@ public class MenuServiceImp implements MenuService {
     public void switchStandard(User currentUser) {
         menuRepository.resetStandardMenus(currentUser.getActiveRestaurantId());
         menuRepository.switchStandard(currentUser.getActiveMenuId());
-        Menu menu = menuRepository.findById(currentUser.getActiveMenuId()).orElseThrow();
-        menu.setPlan(new HashSet<>());
-        menuRepository.saveAndFlush(menu);
     }
 
     @Transactional
