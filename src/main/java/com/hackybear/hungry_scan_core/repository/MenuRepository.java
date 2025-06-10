@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.Set;
@@ -45,7 +46,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                       AND (:currentTime >= tr.startTime OR :currentTime <= tr.endTime))
                     )
             """)
-    Optional<Long> findActiveMenuId(@Param("dayOfWeek") String dayOfWeekOrdinal,
+    Optional<Long> findActiveMenuId(@Param("dayOfWeek") DayOfWeek dayOfWeek,
                                     @Param("currentTime") LocalTime currentTime,
                                     @Param("restaurantId") Long restaurantId);
 

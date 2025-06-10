@@ -29,7 +29,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +160,7 @@ class QRServiceImpTest {
         when(restaurantMapper.toRestaurant(dto)).thenReturn(r);
 
         when(menuRepository.findActiveMenuId(
-                DayOfWeek.MONDAY.name(),
+                eq(LocalDate.now().getDayOfWeek()),
                 any(LocalTime.class),
                 eq(10L)
         )).thenReturn(Optional.of(99L));
@@ -205,7 +205,7 @@ class QRServiceImpTest {
         when(restaurantMapper.toRestaurant(dto)).thenReturn(r);
 
         when(menuRepository.findActiveMenuId(
-                DayOfWeek.THURSDAY.name(),
+                eq(LocalDate.now().getDayOfWeek()),
                 any(LocalTime.class),
                 eq(20L)
         )).thenReturn(Optional.of(55L));

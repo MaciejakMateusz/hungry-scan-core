@@ -200,7 +200,7 @@ public class QRServiceImp implements QRService {
         LocalDateTime current = LocalDateTime.now();
         DayOfWeek today = current.toLocalDate().getDayOfWeek();
         Optional<Long> activeMenuIdOptional =
-                menuRepository.findActiveMenuId(today.name(), current.toLocalTime(), restaurantId);
+                menuRepository.findActiveMenuId(today, current.toLocalTime(), restaurantId);
         return activeMenuIdOptional.orElseThrow(
                 exceptionHelper.supplyLocalizedMessage("error.qrService.menuNotFound"));
     }
