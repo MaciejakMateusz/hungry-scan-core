@@ -2,14 +2,16 @@ package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.enums.Language;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalTime;
+import java.time.DayOfWeek;
+import java.util.EnumMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -29,13 +31,14 @@ public class Settings implements Serializable {
     @JsonIgnore
     private Restaurant restaurant;
 
-    @NotNull
-    @Column(nullable = false)
-    private LocalTime openingTime;
-
-    @NotNull
-    @Column(nullable = false)
-    private LocalTime closingTime;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "settings_operating_hours",
+            joinColumns = @JoinColumn(name = "settings_id")
+    )
+    @MapKeyColumn(name = "day_of_week")
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<DayOfWeek, TimeRange> operatingHours = new EnumMap<>(DayOfWeek.class);
 
     private Long bookingDuration;
 
