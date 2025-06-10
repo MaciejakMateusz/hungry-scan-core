@@ -4,11 +4,13 @@ import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.MenuPlan;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -24,10 +26,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -237,18 +238,101 @@ class MenuControllerTest {
     @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
     @Transactional
     @Rollback
-    @Disabled
     void shouldUpdatePlans() throws Exception {
+        Menu standardMenu = getMenu(2L);
+        Menu menu1 = getMenu(3L);
+        menu1.setPlan(getPlan(menu1, Set.of(new TimeRange(LocalTime.of(12, 0), LocalTime.of(14, 0)))));
+        Menu menu2 = getMenu(4L);
+        menu2.setPlan(getPlan(menu2, Set.of(new TimeRange(LocalTime.of(14, 0), LocalTime.of(20, 0)))));
+        Menu menu3 = getMenu(5L);
+        menu3.setPlan(getPlan(menu3, Set.of(new TimeRange(LocalTime.of(20, 0), LocalTime.of(22, 0)))));
 
+        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(standardMenu);
+        MenuSimpleDTO dto2 = menuMapper.toSimpleDTO(menu1);
+        MenuSimpleDTO dto3 = menuMapper.toSimpleDTO(menu2);
+        MenuSimpleDTO dto4 = menuMapper.toSimpleDTO(menu3);
+        List<MenuSimpleDTO> menuSimpleDTOs = List.of(dto1, dto2, dto3, dto4);
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/update-plans", menuSimpleDTOs);
+
+        List<MenuSimpleDTO> updatedMenus = apiRequestUtils.fetchAsList("/api/cms/menus", MenuSimpleDTO.class);
+        assertFalse(updatedMenus.isEmpty());
     }
 
     @Test
     @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
     @Transactional
     @Rollback
-    @Disabled
-    void shouldNotUpdatePlans() throws Exception {
+    void shouldNotUpdatePlans_overlappingSchedules() throws Exception {
+        Menu menu1 = getMenu(3L);
+        menu1.setPlan(getPlan(menu1, Set.of(new TimeRange(LocalTime.of(12, 0), LocalTime.of(14, 0)))));
+        Menu menu2 = getMenu(4L);
+        menu2.setPlan(getPlan(menu2, Set.of(new TimeRange(LocalTime.of(13, 0), LocalTime.of(22, 0)))));
 
+        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(menu1);
+        MenuSimpleDTO dto2 = menuMapper.toSimpleDTO(menu2);
+        List<MenuSimpleDTO> menuSimpleDTOs = List.of(dto1, dto2);
+
+        Map<?, ?> error = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/update-plans", menuSimpleDTOs);
+        assertEquals(1, error.size());
+        assertEquals("Harmonogramy nie mogą na siebie nachodzić.", error.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
+    @Transactional
+    @Rollback
+    void shouldNotUpdatePlans_pastOperatingHours() throws Exception {
+        Menu menu1 = getMenu(3L);
+        menu1.setPlan(getPlan(menu1, Set.of(new TimeRange(LocalTime.of(12, 0), LocalTime.of(14, 0)))));
+        Menu menu2 = getMenu(4L);
+        menu2.setPlan(getPlan(menu2, Set.of(new TimeRange(LocalTime.of(14, 0), LocalTime.of(23, 0)))));
+
+        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(menu1);
+        MenuSimpleDTO dto2 = menuMapper.toSimpleDTO(menu2);
+        List<MenuSimpleDTO> menuSimpleDTOs = List.of(dto1, dto2);
+
+        Map<?, ?> error = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/update-plans", menuSimpleDTOs);
+        assertEquals(1, error.size());
+        assertEquals("Harmonogram nie mieści się w godzinach otwarcia restauracji.", error.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
+    @Transactional
+    @Rollback
+    void shouldNotUpdatePlans_beforeOperatingHours() throws Exception {
+        Menu menu1 = getMenu(3L);
+        menu1.setPlan(getPlan(menu1, Set.of(new TimeRange(LocalTime.of(10, 0), LocalTime.of(14, 0)))));
+        Menu menu2 = getMenu(4L);
+        menu2.setPlan(getPlan(menu2, Set.of(new TimeRange(LocalTime.of(14, 0), LocalTime.of(22, 0)))));
+
+        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(menu1);
+        MenuSimpleDTO dto2 = menuMapper.toSimpleDTO(menu2);
+        List<MenuSimpleDTO> menuSimpleDTOs = List.of(dto1, dto2);
+
+        Map<?, ?> error = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/update-plans", menuSimpleDTOs);
+        assertEquals(1, error.size());
+        assertEquals("Harmonogram nie mieści się w godzinach otwarcia restauracji.", error.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
+    @Transactional
+    @Rollback
+    void shouldNotUpdatePlans_incompletePlan() throws Exception {
+        Menu menu1 = getMenu(3L);
+        menu1.setPlan(getPlan(menu1, Set.of(new TimeRange(LocalTime.of(12, 0), LocalTime.of(13, 0)))));
+        Menu menu2 = getMenu(4L);
+        menu2.setPlan(getPlan(menu2, Set.of(new TimeRange(LocalTime.of(14, 0), LocalTime.of(20, 0)))));
+
+        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(menu1);
+        MenuSimpleDTO dto2 = menuMapper.toSimpleDTO(menu2);
+        List<MenuSimpleDTO> menuSimpleDTOs = List.of(dto1, dto2);
+
+        Map<?, ?> error = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/update-plans", menuSimpleDTOs);
+        assertEquals(1, error.size());
+        assertEquals("Harmonogram jest niekompletny, wypełnij wszystkie luki.", error.get("exceptionMsg"));
     }
 
     @Test
@@ -458,10 +542,26 @@ class MenuControllerTest {
         return new MenuSimpleDTO(null, restaurantId, name, null, false);
     }
 
+    private Set<MenuPlan> getPlan(Menu menu, Set<TimeRange> timeRanges) {
+        Set<MenuPlan> plans = new HashSet<>();
+        Arrays.asList(DayOfWeek.values()).forEach(dayOfWeek -> {
+            MenuPlan plan = getMenuPlan(menu, timeRanges, dayOfWeek);
+            plans.add(plan);
+        });
+        return plans;
+    }
+
+    private MenuPlan getMenuPlan(Menu menu, Set<TimeRange> timeRanges, DayOfWeek dayOfWeek) {
+        MenuPlan menuPlan = new MenuPlan();
+        menuPlan.setMenu(menu);
+        menuPlan.setTimeRanges(timeRanges);
+        menuPlan.setDayOfWeek(dayOfWeek);
+        return menuPlan;
+    }
+
     private Menu getMenu(Long id) {
         Menu menu = menuRepository.findById(id).orElseThrow();
         entityManager.detach(menu);
         return menu;
     }
-
 }
