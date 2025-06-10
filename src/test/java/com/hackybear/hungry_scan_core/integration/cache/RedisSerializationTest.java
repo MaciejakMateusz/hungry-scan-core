@@ -9,6 +9,7 @@ import com.hackybear.hungry_scan_core.entity.PricePlan;
 import com.hackybear.hungry_scan_core.entity.PricePlanType;
 import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.utility.Money;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -22,11 +23,13 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,9 +87,10 @@ public class RedisSerializationTest {
     }
 
     private SettingsDTO getSettingsDTO() {
-        return new SettingsDTO(1L, 1L,
-                LocalTime.of(10, 0),
-                LocalTime.of(22, 0),
+        return new SettingsDTO(
+                1L,
+                1L,
+                getOperatingHours(),
                 2L,
                 Language.PL,
                 1200L,
@@ -111,5 +115,20 @@ public class RedisSerializationTest {
         pricePlanType.setName("best");
         pricePlanType.setPrice(Money.of(389.00));
         return pricePlanType;
+    }
+
+    private Map<DayOfWeek, TimeRange> getOperatingHours() {
+        return Map.of(
+                DayOfWeek.MONDAY, getDefaultTimeRange(),
+                DayOfWeek.TUESDAY, getDefaultTimeRange(),
+                DayOfWeek.WEDNESDAY, getDefaultTimeRange(),
+                DayOfWeek.THURSDAY, getDefaultTimeRange(),
+                DayOfWeek.FRIDAY, getDefaultTimeRange(),
+                DayOfWeek.SATURDAY, getDefaultTimeRange(),
+                DayOfWeek.SUNDAY, new TimeRange().withAvailable(false));
+    }
+
+    private TimeRange getDefaultTimeRange() {
+        return new TimeRange(LocalTime.of(10, 0), LocalTime.of(22, 0));
     }
 }
