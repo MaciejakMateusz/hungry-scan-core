@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Component
@@ -22,7 +23,7 @@ public class BookingValidator {
     public boolean isValidBooking(Booking booking) throws LocalizedException {
         return DateTimeHelper.isNotInPast(LocalDateTime.of(booking.getDate(), booking.getTime())) &&
                 !hasBookingCollision(booking) &&
-                isWithinOpeningHours(booking);
+                isWithinOperatingHours(booking);
     }
 
     private boolean hasBookingCollision(Booking booking) {
@@ -61,9 +62,19 @@ public class BookingValidator {
                 existingBooking.getExpirationTime());
     }
 
-    private boolean isWithinOpeningHours(Booking booking) throws LocalizedException {
-        return booking.getTime().isAfter(getSettings().openingTime()) &&
-                booking.getTime().isBefore(getSettings().closingTime());
+    private boolean isWithinOperatingHours(Booking booking) throws LocalizedException {
+        LocalTime bookingTime = booking.getTime();
+
+        return getSettings().operatingHours().values().stream().allMatch(timeRange -> {
+            LocalTime start = timeRange.getStartTime();
+            LocalTime end = timeRange.getEndTime();
+
+            if (end.isAfter(start)) {
+                return !bookingTime.isBefore(start) && bookingTime.isBefore(end);
+            } else {
+                return !bookingTime.isBefore(start) || bookingTime.isBefore(end);
+            }
+        });
     }
 
     private SettingsDTO getSettings() throws LocalizedException {
