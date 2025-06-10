@@ -20,6 +20,7 @@ public class TimeRange implements Serializable {
 
     private LocalTime startTime;
     private LocalTime endTime;
+    private boolean available = true;
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -27,6 +28,11 @@ public class TimeRange implements Serializable {
     public TimeRange(LocalTime startTime, LocalTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public TimeRange withAvailable(boolean available) {
+        this.available = available;
+        return this;
     }
 
     public TimeRange intersect(TimeRange other) {
