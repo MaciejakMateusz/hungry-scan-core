@@ -15,9 +15,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
 @SpringBootTest
@@ -47,8 +49,10 @@ class SettingsControllerTest {
                         "/api/admin/settings", SettingsDTO.class);
 
         assertEquals(3, settings.bookingDuration());
-        assertEquals(LocalTime.of(7, 0), settings.openingTime());
-        assertEquals(LocalTime.of(23, 0), settings.closingTime());
+        assertEquals(7, settings.operatingHours().size());
+        assertFalse(settings.operatingHours().get(DayOfWeek.MONDAY).isAvailable());
+        assertEquals(LocalTime.of(12, 0), settings.operatingHours().get(DayOfWeek.SUNDAY).getStartTime());
+        assertEquals(LocalTime.of(3, 0), settings.operatingHours().get(DayOfWeek.SUNDAY).getEndTime());
         assertEquals(Language.ENG, settings.language());
     }
 
