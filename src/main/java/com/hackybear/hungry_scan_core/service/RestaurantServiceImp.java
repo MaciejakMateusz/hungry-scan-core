@@ -16,6 +16,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.utility.MenuPlanUpdater;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -80,9 +82,7 @@ public class RestaurantServiceImp implements RestaurantService {
     })
     public void save(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
-        Settings s = restaurant.getSettings();
-        s.setRestaurant(restaurant);
-        restaurant.setSettings(s);
+        setupRestaurantSettings(restaurant);
         restaurant = setupInitial(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
@@ -182,17 +182,25 @@ public class RestaurantServiceImp implements RestaurantService {
         return restaurant;
     }
 
-    private static void setupRestaurantSettings(Restaurant restaurant) {
+    private void setupRestaurantSettings(Restaurant restaurant) {
         Settings s = new Settings();
         s.setRestaurant(restaurant);
         s.setCapacity((short) 100);
-        s.setOpeningTime(LocalTime.of(10, 0));
-        s.setClosingTime(LocalTime.of(22, 0));
+        s.setOperatingHours(createDefaultOperatingHours());
         s.setBookingDuration(2L);
         s.setLanguage(Language.PL);
         s.setOrderCommentAllowed(false);
         s.setWaiterCommentAllowed(false);
         restaurant.setSettings(s);
+    }
+
+    private static Map<DayOfWeek, TimeRange> createDefaultOperatingHours() {
+        Map<DayOfWeek, TimeRange> operatingHours = new HashMap<>();
+        Arrays.asList(DayOfWeek.values()).forEach(day -> {
+            TimeRange timeRange = createDefaultTimeRange();
+            operatingHours.put(day, timeRange);
+        });
+        return operatingHours;
     }
 
     private static void createInitialMenu(Restaurant restaurant) {
@@ -202,7 +210,24 @@ public class RestaurantServiceImp implements RestaurantService {
         menu.setRestaurant(restaurant);
         menu.setTheme(Theme.COLOR_318E41);
         menu.setMessage(getMenuMessage());
+        menu.setPlan(createDefaultPlan(menu));
         restaurant.addMenu(menu);
+    }
+
+    private static Set<MenuPlan> createDefaultPlan(Menu menu) {
+        Set<MenuPlan> plans = new HashSet<>();
+        Arrays.asList(DayOfWeek.values()).forEach(dayOfWeek -> {
+            MenuPlan plan = new MenuPlan();
+            plan.setDayOfWeek(dayOfWeek);
+            plan.setTimeRanges(Set.of(createDefaultTimeRange()));
+            plan.setMenu(menu);
+            plans.add(plan);
+        });
+        return plans;
+    }
+
+    private static TimeRange createDefaultTimeRange() {
+        return new TimeRange(LocalTime.of(10, 0), LocalTime.of(22, 0));
     }
 
     private static void setupUser(Restaurant restaurant, User currentUser, UserService userService) {
