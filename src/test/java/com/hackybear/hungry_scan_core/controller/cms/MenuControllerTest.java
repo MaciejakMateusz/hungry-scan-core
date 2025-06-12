@@ -240,18 +240,17 @@ class MenuControllerTest {
     @Rollback
     void shouldUpdatePlans() throws Exception {
         Menu standardMenu = getMenu(2L);
+        standardMenu.setPlan(getPlan(standardMenu, Set.of(new TimeRange(
+                LocalTime.of(12, 0),
+                LocalTime.of(14, 0)))));
         Menu menu1 = getMenu(3L);
-        menu1.setPlan(getPlan(menu1, Set.of(new TimeRange(LocalTime.of(12, 0), LocalTime.of(14, 0)))));
-        Menu menu2 = getMenu(4L);
-        menu2.setPlan(getPlan(menu2, Set.of(new TimeRange(LocalTime.of(14, 0), LocalTime.of(20, 0)))));
-        Menu menu3 = getMenu(5L);
-        menu3.setPlan(getPlan(menu3, Set.of(new TimeRange(LocalTime.of(20, 0), LocalTime.of(22, 0)))));
+        menu1.setPlan(getPlan(menu1, Set.of(new TimeRange(
+                LocalTime.of(14, 0),
+                LocalTime.of(22, 0)))));
 
-        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(standardMenu);
-        MenuSimpleDTO dto2 = menuMapper.toSimpleDTO(menu1);
-        MenuSimpleDTO dto3 = menuMapper.toSimpleDTO(menu2);
-        MenuSimpleDTO dto4 = menuMapper.toSimpleDTO(menu3);
-        List<MenuSimpleDTO> menuSimpleDTOs = List.of(dto1, dto2, dto3, dto4);
+        MenuSimpleDTO standardDTO = menuMapper.toSimpleDTO(standardMenu);
+        MenuSimpleDTO dto1 = menuMapper.toSimpleDTO(menu1);
+        List<MenuSimpleDTO> menuSimpleDTOs = List.of(standardDTO, dto1);
 
         apiRequestUtils.patchAndExpect200("/api/cms/menus/update-plans", menuSimpleDTOs);
 
