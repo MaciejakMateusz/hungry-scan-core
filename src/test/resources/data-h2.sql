@@ -532,22 +532,37 @@ VALUES (1, 1),
 
 -- MENU PLANS
 INSERT INTO menu_plans (id, day_of_week, menu_id)
-VALUES ('7e72cab0-8e07-4cc1-b537-e22a6f01ab2c', 'TUESDAY', 1),
+VALUES ('fcb2e647-dc7a-4610-baa6-286663599f4c', 'MONDAY', 1),
+       ('7e72cab0-8e07-4cc1-b537-e22a6f01ab2c', 'TUESDAY', 1),
        ('f214c7df-e8b1-4c95-b017-295a291b7741', 'WEDNESDAY', 1),
        ('e87cf171-8a83-448c-9415-a9bf82fc3f7b', 'THURSDAY', 1),
        ('f2e8ea5d-5663-49b8-bbfa-7629b79f6395', 'FRIDAY', 1),
        ('07908c0f-45b5-4e84-96c6-2bbc9090b561', 'SATURDAY', 1),
        ('d692f96c-1fe8-4c07-9f24-79bb3dc736d0', 'SUNDAY', 1),
-       ('fcb2e647-dc7a-4610-baa6-286663599f4c', 'MONDAY', 1);
+       ('eef8a7e4-3227-4631-a799-40f15f76d19a', 'MONDAY', 2),
+       ('4c7167ec-0d14-470b-a94d-47c66d0617c0', 'TUESDAY', 2),
+       ('f64244fe-f90d-4964-b82c-5b514443639b', 'WEDNESDAY', 2),
+       ('dd2d0091-b2fd-4758-9335-3dd842aecf84', 'THURSDAY', 2),
+       ('aa00f80a-31e8-4bdf-8901-2eef9ce7aba3', 'FRIDAY', 2),
+       ('dbb40f77-dd6c-40c5-9a0f-41724595a353', 'SATURDAY', 2),
+       ('68beec79-0152-46a0-be2f-cfe360c4b6df', 'SUNDAY', 2);
 
 INSERT INTO menu_plan_time_ranges (menu_plan_id, start_time, end_time, available)
-VALUES ('7e72cab0-8e07-4cc1-b537-e22a6f01ab2c', '12:00:00', '22:00:00', true),
+VALUES ('fcb2e647-dc7a-4610-baa6-286663599f4c', '00:00:00', '03:00:00', true),
+       ('7e72cab0-8e07-4cc1-b537-e22a6f01ab2c', '12:00:00', '22:00:00', true),
        ('f214c7df-e8b1-4c95-b017-295a291b7741', '12:00:00', '22:00:00', true),
        ('e87cf171-8a83-448c-9415-a9bf82fc3f7b', '12:00:00', '22:00:00', true),
        ('f2e8ea5d-5663-49b8-bbfa-7629b79f6395', '12:00:00', '22:00:00', true),
        ('07908c0f-45b5-4e84-96c6-2bbc9090b561', '12:00:00', '00:00:00', true),
        ('d692f96c-1fe8-4c07-9f24-79bb3dc736d0', '12:00:00', '00:00:00', true),
        ('d692f96c-1fe8-4c07-9f24-79bb3dc736d0', '00:00:00', '03:00:00', true),
-       ('fcb2e647-dc7a-4610-baa6-286663599f4c', '00:00:00', '03:00:00', true);
+
+       ('eef8a7e4-3227-4631-a799-40f15f76d19a', '12:00:00', '22:00:00', true),
+       ('4c7167ec-0d14-470b-a94d-47c66d0617c0', '12:00:00', '22:00:00', true),
+       ('f64244fe-f90d-4964-b82c-5b514443639b', '12:00:00', '22:00:00', true),
+       ('dd2d0091-b2fd-4758-9335-3dd842aecf84', '12:00:00', '22:00:00', true),
+       ('aa00f80a-31e8-4bdf-8901-2eef9ce7aba3', '12:00:00', '22:00:00', true),
+       ('dbb40f77-dd6c-40c5-9a0f-41724595a353', '12:00:00', '22:00:00', true),
+       ('68beec79-0152-46a0-be2f-cfe360c4b6df', '12:00:00', '22:00:00', true);
 
 -- END OF MENU PLANS
