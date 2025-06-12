@@ -1,9 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
-import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
-import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
-import com.hackybear.hungry_scan_core.dto.SettingsDTO;
+import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Settings;
@@ -11,6 +8,7 @@ import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +25,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.RESTAURANTS_ALL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -126,7 +123,7 @@ public class RestaurantControllerTest {
     @Transactional
     @Rollback
     void shouldAddNewRestaurant() throws Exception {
-        RestaurantDTO restaurantDTO = createRestaurantDTO(true);
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
 
         apiRequestUtils.postAndExpect200("/api/cms/restaurants/add", restaurantDTO);
 
@@ -135,24 +132,38 @@ public class RestaurantControllerTest {
         assertEquals("Real Greek Carbonara", persistedRestaurant.name());
         assertEquals("Korfantego 123", persistedRestaurant.address());
         assertNotNull(persistedRestaurant.settings());
-        assertEquals(LocalTime.of(12, 0), persistedRestaurant.settings().openingTime());
-        assertEquals(LocalTime.of(19, 0), persistedRestaurant.settings().closingTime());
         assertEquals(1, persistedRestaurant.menus().size());
         assertNotNull(persistedRestaurant.token());
 
         SettingsDTO settingsDTO = persistedRestaurant.settings();
-        assertEquals(LocalTime.of(12, 0), settingsDTO.openingTime());
-        assertEquals(LocalTime.of(19, 0), settingsDTO.closingTime());
+        assertEquals(7, settingsDTO.operatingHours().size());
+        assertEquals(LocalTime.of(10, 0), settingsDTO.operatingHours().get(DayOfWeek.MONDAY).getStartTime());
+        assertEquals(LocalTime.of(22, 0), settingsDTO.operatingHours().get(DayOfWeek.MONDAY).getEndTime());
+        assertEquals(LocalTime.of(10, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getStartTime());
+        assertEquals(LocalTime.of(22, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getEndTime());
 
         MenuSimpleDTO menuDTO = persistedRestaurant.menus().stream().findFirst().orElseThrow();
         assertNotNull(menuDTO);
         assertTrue(menuDTO.standard());
+        assertEquals(7, menuDTO.plan().size());
+
+        MenuPlanDTO menuPlanDTO = menuDTO.plan()
+                .stream()
+                .filter(p -> p.dayOfWeek() == DayOfWeek.THURSDAY)
+                .findFirst()
+                .orElseThrow();
+        assertEquals(36, menuPlanDTO.id().toString().length());
+        assertNotNull(menuPlanDTO.menuId());
+
+        TimeRange timeRange = menuPlanDTO.timeRanges().stream().findFirst().orElseThrow();
+        assertEquals(LocalTime.of(10, 0), timeRange.getStartTime());
+        assertEquals(LocalTime.of(22, 0), timeRange.getEndTime());
     }
 
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
-        RestaurantDTO restaurantDTO = createRestaurantDTO(false);
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
         apiRequestUtils.postAndExpect("/api/cms/restaurants/add", restaurantDTO, status().isForbidden());
     }
 
@@ -163,7 +174,7 @@ public class RestaurantControllerTest {
     void shouldCreateFirstRestaurant() throws Exception {
         User currentUser = userService.findByUsername("fresh@user.it");
         assertNull(currentUser.getActiveRestaurantId());
-        RestaurantDTO restaurantDTO = createRestaurantDTO(false);
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
 
         MockHttpServletResponse response = apiRequestUtils.executePost(
                 "/api/cms/restaurants/create-first", restaurantDTO);
@@ -181,12 +192,27 @@ public class RestaurantControllerTest {
         assertNotNull(persistedRestaurant.token());
 
         SettingsDTO settingsDTO = persistedRestaurant.settings();
-        assertEquals(LocalTime.of(10, 0), settingsDTO.openingTime());
-        assertEquals(LocalTime.of(22, 0), settingsDTO.closingTime());
+        assertEquals(7, settingsDTO.operatingHours().size());
+        assertEquals(LocalTime.of(10, 0), settingsDTO.operatingHours().get(DayOfWeek.MONDAY).getStartTime());
+        assertEquals(LocalTime.of(22, 0), settingsDTO.operatingHours().get(DayOfWeek.MONDAY).getEndTime());
+        assertEquals(LocalTime.of(10, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getStartTime());
+        assertEquals(LocalTime.of(22, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getEndTime());
 
         MenuSimpleDTO menuDTO = persistedRestaurant.menus().stream().findFirst().orElseThrow();
         assertNotNull(menuDTO);
         assertTrue(menuDTO.standard());
+
+        MenuPlanDTO menuPlanDTO = menuDTO.plan()
+                .stream()
+                .filter(p -> p.dayOfWeek() == DayOfWeek.THURSDAY)
+                .findFirst()
+                .orElseThrow();
+        assertEquals(36, menuPlanDTO.id().toString().length());
+        assertNotNull(menuPlanDTO.menuId());
+
+        TimeRange timeRange = menuPlanDTO.timeRanges().stream().findFirst().orElseThrow();
+        assertEquals(LocalTime.of(10, 0), timeRange.getStartTime());
+        assertEquals(LocalTime.of(22, 0), timeRange.getEndTime());
 
         currentUser = userService.findByUsername("fresh@user.it");
         assertNotNull(currentUser.getActiveRestaurantId());
@@ -198,7 +224,7 @@ public class RestaurantControllerTest {
     @Transactional
     @Rollback
     void shouldNotAllowToCreateFirstRestaurant() throws Exception {
-        RestaurantDTO restaurantDTO = createRestaurantDTO(false);
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/create-first", restaurantDTO);
         assertEquals("Użytkownik utworzył już restaurację.", errors.get("error"));
@@ -227,7 +253,7 @@ public class RestaurantControllerTest {
         Restaurant restaurant = restaurantMapper.toRestaurant(existingRestaurantDTO);
         restaurant.setName("Salty Foots");
         Settings settings = restaurant.getSettings();
-        settings.setClosingTime(LocalTime.of(17, 0));
+        settings.setOperatingHours(createOperatingHours());
         restaurant.setSettings(settings);
         existingRestaurantDTO = restaurantMapper.toDTO(restaurant);
 
@@ -236,13 +262,43 @@ public class RestaurantControllerTest {
         RestaurantDTO updatedRestaurant =
                 apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 2, RestaurantDTO.class);
         assertEquals("Salty Foots", updatedRestaurant.name());
-        assertEquals(LocalTime.of(17, 0), updatedRestaurant.settings().closingTime());
+
+        Set<MenuPlanDTO> menuPlanDTOs = updatedRestaurant.menus()
+                .stream()
+                .filter(menu -> menu.id().equals(2L))
+                .findFirst()
+                .orElseThrow()
+                .plan();
+
+        TimeRange timeRange = menuPlanDTOs.stream()
+                .findFirst()
+                .orElseThrow()
+                .timeRanges()
+                .stream()
+                .findFirst()
+                .orElseThrow();
+
+        assertEquals(LocalTime.of(11, 0), timeRange.getStartTime());
+        assertEquals(LocalTime.of(19, 0), timeRange.getEndTime());
+
+        SettingsDTO settingsDTO = updatedRestaurant.settings();
+        assertEquals(7, settingsDTO.operatingHours().size());
+        assertFalse(settingsDTO.operatingHours().get(DayOfWeek.MONDAY).isAvailable());
+        assertEquals(LocalTime.of(11, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getStartTime());
+        assertEquals(LocalTime.of(19, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getEndTime());
     }
+
+    //todo cover cases:
+    // - unavailable day - should remove MenuPlan for this day
+    // - extreme operating hours shrink, should remove related TimeRanges
+    // - extreme operating hours shrink, should remove related MenuPlan if only one TimeRange existed
+    // - operating hours tail extension - should extend closest time range to the left
+    // - operating hours head extension - should extend closest time range to the right
 
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowUnauthorizedAccessToUpdateRestaurant() throws Exception {
-        RestaurantDTO restaurantDTO = createRestaurantDTO(false);
+        RestaurantDTO restaurantDTO = createRestaurantDTO();
         apiRequestUtils.patchAndExpectForbidden("/api/cms/restaurants/update", restaurantDTO);
     }
 
@@ -314,23 +370,31 @@ public class RestaurantControllerTest {
         return restaurant;
     }
 
-    private RestaurantDTO createRestaurantDTO(boolean withSettings) {
+    private RestaurantDTO createRestaurantDTO() {
         Restaurant restaurant = new Restaurant();
         restaurant.setName("Real Greek Carbonara");
         restaurant.setAddress("Korfantego 123");
         restaurant.setCity("Katowice");
         restaurant.setPostalCode("40-404");
-        if (withSettings) {
-            restaurant.setSettings(createSettings());
-        }
         return restaurantMapper.toDTO(restaurant);
     }
 
-    private Settings createSettings() {
-        Settings settings = new Settings();
-        settings.setOpeningTime(LocalTime.of(12, 0));
-        settings.setClosingTime(LocalTime.of(19, 0));
-        return settings;
+    private static Map<DayOfWeek, TimeRange> createOperatingHours() {
+        Map<DayOfWeek, TimeRange> operatingHours = new HashMap<>();
+        Arrays.asList(DayOfWeek.values()).forEach(day -> {
+            TimeRange timeRange;
+            if (DayOfWeek.MONDAY.equals(day)) {
+                timeRange = createTimeRange(false);
+            } else {
+                timeRange = createTimeRange(true);
+            }
+            operatingHours.put(day, timeRange);
+        });
+        return operatingHours;
+    }
+
+    private static TimeRange createTimeRange(boolean available) {
+        return new TimeRange(LocalTime.of(11, 0), LocalTime.of(19, 0)).withAvailable(available);
     }
 
 }
