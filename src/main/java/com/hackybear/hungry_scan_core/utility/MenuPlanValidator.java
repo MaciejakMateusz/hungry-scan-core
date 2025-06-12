@@ -62,17 +62,13 @@ public class MenuPlanValidator {
                                Map<DayOfWeek, TimeRange> operatingHours)
             throws LocalizedException {
 
-        // Precompute “required” minute-ranges for every day (including overnight wraps)
         Map<DayOfWeek, List<NormRange>> required = buildRequiredSegments(operatingHours);
 
-        // Turn each ScheduleEntry into one or two normalized ranges (for wraps) per day
         Map<DayOfWeek, List<NormRange>> planned = buildPlannedSegments(scheduleByDay);
 
-        // For each day, either skip (no required ranges) or check:
         for (DayOfWeek day : DayOfWeek.values()) {
             List<NormRange> reqs = required.get(day);
             if (reqs == null || reqs.isEmpty()) {
-                // fully closed and no wrap-in from yesterday
                 continue;
             }
 
@@ -80,8 +76,6 @@ public class MenuPlanValidator {
             if (Objects.isNull(plans) || plans.isEmpty()) {
                 exceptionHelper.throwLocalizedMessage("error.menuService.scheduleIncomplete");
             }
-
-            // 1) Every plan-segment must lie entirely within SOME required window
 
             for (NormRange p : plans) {
                 boolean ok = reqs.stream()
@@ -92,12 +86,10 @@ public class MenuPlanValidator {
                 }
             }
 
-            // 2) For each required window, check full coverage + no overlaps
             reqs.sort(Comparator.comparingInt(r -> r.start));
             plans.sort(Comparator.comparingInt(r -> r.start));
 
             for (NormRange r : reqs) {
-                // collect everything that intersects this window
                 List<NormRange> slice = new ArrayList<>();
                 for (NormRange p : plans) {
                     if (p.end > r.start && p.start < r.end) {
@@ -136,17 +128,14 @@ public class MenuPlanValidator {
         for (DayOfWeek day : DayOfWeek.values()) {
             TimeRange op = operatingHours.get(day);
             if (op == null || !op.isAvailable()) {
-                // fully closed—unless a wrap from the previous day
                 continue;
             }
             LocalTime start = op.getStartTime();
             LocalTime end = op.getEndTime();
 
             if (!start.isAfter(end)) {
-                // e.g. 08:00–18:00
                 addReq(map, day, toMinutes(start), toMinutes(end));
             } else {
-                // e.g. 20:00–02:00 wraps overnight
                 addReq(map, day, toMinutes(start), MINUTES_PER_DAY);
                 DayOfWeek next = day.plus(1);
                 addReq(map, next, 0, toMinutes(end));
@@ -169,10 +158,8 @@ public class MenuPlanValidator {
                 LocalTime start = se.range.getStartTime();
                 LocalTime end = se.range.getEndTime();
                 if (!start.isAfter(end)) {
-                    // normal
                     addPlan(map, day, toMinutes(start), toMinutes(end));
                 } else {
-                    // wrap
                     addPlan(map, day, toMinutes(start), MINUTES_PER_DAY);
                     DayOfWeek next = day.plus(1);
                     addPlan(map, next, 0, toMinutes(end));
@@ -190,8 +177,6 @@ public class MenuPlanValidator {
     private int toMinutes(LocalTime t) {
         return t.getHour() * 60 + t.getMinute();
     }
-
-    // --- helper classes ---
 
     private static final class NormRange {
         final int start, end;
