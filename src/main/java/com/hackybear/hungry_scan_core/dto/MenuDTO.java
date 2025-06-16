@@ -9,6 +9,7 @@ import java.util.Set;
 
 public record MenuDTO(Long id,
                       @NotBlank String name,
+                      @NotBlank String colorHex,
                       List<CategoryDTO> categories,
                       Set<MenuPlanDTO> plan,
                       boolean standard,

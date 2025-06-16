@@ -66,6 +66,10 @@ public class Menu implements Serializable, Comparable<Menu> {
     @Enumerated(EnumType.STRING)
     private Theme theme;
 
+    @Column(name = "color_hex", nullable = false)
+    @NotBlank
+    private String colorHex = "#9746FF";
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "translatable_message_id", referencedColumnName = "id")
     @AnyTranslationNotBlank

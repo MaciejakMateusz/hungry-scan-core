@@ -12,6 +12,9 @@ public record MenuSimpleDTO(Long id,
                             @NotBlank
                             String name,
 
+                            @NotBlank
+                            String colorHex,
+
                             Set<MenuPlanDTO> plan,
                             boolean standard) implements Serializable, Comparable<MenuSimpleDTO> {
 
