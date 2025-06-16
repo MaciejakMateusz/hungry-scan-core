@@ -12,10 +12,10 @@ INSERT IGNORE INTO price_plans (restaurant_id, plan_type_id, activation_date, re
 VALUES (1, 1, null, null, null, null),
        (2, 1, null, null, null, null);
 
-INSERT IGNORE INTO settings (id, booking_duration, opening_time, closing_time, language, capacity,
+INSERT IGNORE INTO settings (id, booking_duration, language, capacity,
                              customer_session_time,
                              employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
-VALUES (1, 3, '10:00:00', '23:00:00', 1, 120, 20, 20, true, true, 1);
+VALUES (1, 3, 1, 120, 20, 20, true, true, 1);
 
 INSERT IGNORE INTO settings_operating_hours
     (settings_id, day_of_week, start_time, end_time, available)
@@ -32,10 +32,10 @@ VALUES (163, 'Smacznego!', 'Enjoy your meal!'),
        (164, 'Smacznego!', 'Enjoy your meal!'),
        (165, 'Smacznego!', 'Enjoy your meal!');
 
-INSERT IGNORE INTO menus (id, standard, name, restaurant_id, theme, translatable_message_id)
-VALUES (1, true, 'Całodniowe', 1, 'COLOR_318E41', 163),
-       (2, false, 'Śniadaniowe', 1, 'COLOR_318E41', 164),
-       (3, true, 'Menu', 2, 'COLOR_318E41', 165);
+INSERT IGNORE INTO menus (id, standard, name, restaurant_id, theme, color_hex, translatable_message_id)
+VALUES (1, true, 'Całodniowe', 1, 'COLOR_318E41', '#9746FF', 163),
+       (2, false, 'Śniadaniowe', 1, 'COLOR_318E41', '#016DFF', 164),
+       (3, true, 'Menu', 2, 'COLOR_318E41', '#9746FF', 165);
 
 INSERT IGNORE INTO translatable (id, pl, en)
 VALUES (1, 'Kelner', 'Waiter'),
