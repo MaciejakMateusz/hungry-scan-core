@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,8 +13,8 @@ public record MenuSimpleDTO(Long id,
                             @NotBlank
                             String name,
 
-                            @NotBlank
-                            String colorHex,
+                            @NotNull
+                            MenuColorDTO color,
 
                             Set<MenuPlanDTO> plan,
                             boolean standard) implements Serializable, Comparable<MenuSimpleDTO> {

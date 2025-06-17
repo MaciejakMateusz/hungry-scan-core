@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.util.Set;
 
 public record MenuDTO(Long id,
                       @NotBlank String name,
-                      @NotBlank String colorHex,
+                      @NotNull MenuColorDTO color,
                       List<CategoryDTO> categories,
                       Set<MenuPlanDTO> plan,
                       boolean standard,
