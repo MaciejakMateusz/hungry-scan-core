@@ -32,10 +32,22 @@ VALUES (163, 'Smacznego!', 'Enjoy your meal!'),
        (164, 'Smacznego!', 'Enjoy your meal!'),
        (165, 'Smacznego!', 'Enjoy your meal!');
 
-INSERT IGNORE INTO menus (id, standard, name, restaurant_id, theme, color_hex, translatable_message_id)
-VALUES (1, true, 'Całodniowe', 1, 'COLOR_318E41', '#9746FF', 163),
-       (2, false, 'Śniadaniowe', 1, 'COLOR_318E41', '#016DFF', 164),
-       (3, true, 'Menu', 2, 'COLOR_318E41', '#9746FF', 165);
+INSERT IGNORE INTO menu_colors (id, hex)
+VALUES (1, '#1A1A1A'),
+       (2, '#003366'),
+       (3, '#4B0082'),
+       (4, '#800000'),
+       (5, '#2F4F4F'),
+       (6, '#8B0000'),
+       (7, '#006400'),
+       (8, '#2C3E50'),
+       (9, '#9746FF'),
+       (10, '#016DFF');
+
+INSERT IGNORE INTO menus (id, standard, name, color_id, restaurant_id, theme, translatable_message_id)
+VALUES (1, true, 'Całodniowe', 9, 1, 'COLOR_318E41', 163),
+       (2, false, 'Śniadaniowe', 10, 1, 'COLOR_318E41', 164),
+       (3, true, 'Menu', 9, 2, 'COLOR_318E41', 165);
 
 INSERT IGNORE INTO translatable (id, pl, en)
 VALUES (1, 'Kelner', 'Waiter'),
