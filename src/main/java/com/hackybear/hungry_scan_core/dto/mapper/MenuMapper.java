@@ -14,6 +14,7 @@ public interface MenuMapper {
     MenuSimpleDTO toSimpleDTO(Menu menu);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "color", ignore = true)
     void updateFromSimpleDTO(MenuSimpleDTO menuSimpleDTO, @MappingTarget Menu menu);
 
     @Mapping(expression = "java(new com.hackybear.hungry_scan_core.entity.Restaurant(menuSimpleDTO.restaurantId()))",

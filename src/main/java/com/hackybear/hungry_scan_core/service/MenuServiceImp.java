@@ -8,6 +8,7 @@ import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.MenuColorRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
@@ -42,6 +43,7 @@ public class MenuServiceImp implements MenuService {
     private final S3Service s3Service;
 
     static final String S3_PATH = "menuItems";
+    private final MenuColorRepository menuColorRepository;
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -99,7 +101,9 @@ public class MenuServiceImp implements MenuService {
             validateUniqueness(menuDTO.name(), activeRestaurantId);
         }
         validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
-        menu.setName(menuDTO.name());
+        Menu fromDTO = menuMapper.toMenu(menuDTO);
+        menu.setName(fromDTO.getName());
+        menu.setColor(fromDTO.getColor());
         menuRepository.saveAndFlush(menu);
     }
 
@@ -118,6 +122,9 @@ public class MenuServiceImp implements MenuService {
         for (MenuSimpleDTO dto : menuDTOs) {
             Menu target = menuById.get(dto.id());
             menuMapper.updateFromSimpleDTO(dto, target);
+            target.setColor(menuColorRepository.findById(dto.color().id())
+                    .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                            "error.menuColorService.menuColorNotFound")));
             toSave.add(target);
         }
         menuRepository.saveAll(toSave);
