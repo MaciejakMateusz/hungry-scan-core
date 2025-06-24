@@ -22,13 +22,13 @@ public class MenuColorController {
     private final ResponseHelper responseHelper;
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<List<MenuColorDTO>> list() {
         return ResponseEntity.ok(menuColorService.findAll());
     }
 
     @PostMapping("/show")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, menuColorService::findById);
     }
