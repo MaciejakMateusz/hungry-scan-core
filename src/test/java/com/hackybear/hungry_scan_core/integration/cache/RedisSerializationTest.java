@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.integration.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hackybear.hungry_scan_core.dto.MenuColorDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.SettingsDTO;
@@ -82,7 +83,7 @@ public class RedisSerializationTest {
 
     private Set<MenuSimpleDTO> getMenuSimpleDTOs() {
         return Set.of(
-                new MenuSimpleDTO(1L, 1L, "Menu1", null, true)
+                new MenuSimpleDTO(1L, 1L, "Menu1", getMenuColorDTO(), null, true)
         );
     }
 
@@ -130,5 +131,9 @@ public class RedisSerializationTest {
 
     private TimeRange getDefaultTimeRange() {
         return new TimeRange(LocalTime.of(10, 0), LocalTime.of(22, 0));
+    }
+
+    private MenuColorDTO getMenuColorDTO() {
+        return new MenuColorDTO(99L, "#000000");
     }
 }
