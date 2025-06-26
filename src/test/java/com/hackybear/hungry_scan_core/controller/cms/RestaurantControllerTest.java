@@ -288,13 +288,6 @@ public class RestaurantControllerTest {
         assertEquals(LocalTime.of(19, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getEndTime());
     }
 
-    //todo cover cases:
-    // - unavailable day - should remove MenuPlan for this day
-    // - extreme operating hours shrink, should remove related TimeRanges
-    // - extreme operating hours shrink, should remove related MenuPlan if only one TimeRange existed
-    // - operating hours tail extension - should extend closest time range to the left
-    // - operating hours head extension - should extend closest time range to the right
-
     @Test
     @WithMockUser(roles = "WAITER")
     void shouldNotAllowUnauthorizedAccessToUpdateRestaurant() throws Exception {

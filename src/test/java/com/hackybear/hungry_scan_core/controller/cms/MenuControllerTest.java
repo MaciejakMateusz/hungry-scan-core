@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.dto.MenuColorDTO;
 import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
@@ -538,7 +539,7 @@ class MenuControllerTest {
     }
 
     private MenuSimpleDTO createMenuDTO(String name, Long restaurantId) {
-        return new MenuSimpleDTO(null, restaurantId, name, null, false);
+        return new MenuSimpleDTO(null, restaurantId, name, getMenuColorDTO(), null, false);
     }
 
     private Set<MenuPlan> getPlan(Menu menu, Set<TimeRange> timeRanges) {
@@ -562,5 +563,9 @@ class MenuControllerTest {
         Menu menu = menuRepository.findById(id).orElseThrow();
         entityManager.detach(menu);
         return menu;
+    }
+
+    private MenuColorDTO getMenuColorDTO() {
+        return new MenuColorDTO(22L, "#2F4F4F");
     }
 }
