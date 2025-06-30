@@ -345,12 +345,14 @@ public class MenuPlanUpdater {
     }
 
     private void cleanLeftoverTimeRanges(Restaurant restaurant) {
-        Set<Menu> menus = restaurant.getMenus();
-        for (DayOfWeek day : newOperatingHours.keySet()) {
-            for (Menu menu : menus) {
-                for (MenuPlan plan : menu.getPlan()) {
-                    if (!plan.getDayOfWeek().equals(day)) continue;
-                    removeTimeRanges(plan, day);
+        for (Menu menu : restaurant.getMenus()) {
+            Iterator<MenuPlan> plansIterator = menu.getPlan().iterator();
+            while (plansIterator.hasNext()) {
+                MenuPlan plan = plansIterator.next();
+                DayOfWeek day = plan.getDayOfWeek();
+                removeTimeRanges(plan, day);
+                if (plan.getTimeRanges().isEmpty()) {
+                    plansIterator.remove();
                 }
             }
         }
@@ -359,12 +361,12 @@ public class MenuPlanUpdater {
     private void removeTimeRanges(MenuPlan plan, DayOfWeek day) {
         TimeRange todayHours = newOperatingHours.get(day);
         TimeRange prevDayHours = newOperatingHours.get(day.minus(1));
-        boolean prevDayOvernight = isOvernight(prevDayHours);
-        plan.getTimeRanges().removeIf(timeRange -> {
-            boolean intersectsToday = Objects.nonNull(timeRange.intersect(todayHours));
-            boolean intersectsFromYesterday = prevDayOvernight
-                    && Objects.nonNull(timeRange.intersect(overnightPortionFrom(prevDayHours)));
-
+        boolean prevOvernight = isOvernight(prevDayHours);
+        plan.getTimeRanges().removeIf(tr -> {
+            boolean intersectsToday = todayHours.isAvailable() &&
+                    Objects.nonNull(tr.intersect(todayHours));
+            boolean intersectsFromYesterday = prevOvernight &&
+                    Objects.nonNull(tr.intersect(overnightPortionFrom(prevDayHours)));
             return !(intersectsToday || intersectsFromYesterday);
         });
     }
