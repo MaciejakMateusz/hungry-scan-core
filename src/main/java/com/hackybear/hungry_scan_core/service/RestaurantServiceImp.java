@@ -9,6 +9,7 @@ import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.MenuColorRepository;
 import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
@@ -39,11 +40,12 @@ import static com.hackybear.hungry_scan_core.utility.Fields.*;
 public class RestaurantServiceImp implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final PricePlanRepository pricePlanRepository;
+    private final MenuColorRepository menuColorRepository;
     private final UserService userService;
     private final ExceptionHelper exceptionHelper;
     private final RestaurantMapper restaurantMapper;
     private final UserRepository userRepository;
-    private final PricePlanRepository pricePlanRepository;
     private final MenuPlanUpdater menuPlanUpdater;
     private final S3Service s3Service;
 
@@ -164,7 +166,7 @@ public class RestaurantServiceImp implements RestaurantService {
         return restaurantMapper.toDTO(restaurant);
     }
 
-    private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) {
+    private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         restaurant = setupInitial(restaurant);
         setupRestaurantSettings(restaurant);
@@ -173,7 +175,7 @@ public class RestaurantServiceImp implements RestaurantService {
     }
 
     @NotNull
-    private Restaurant setupInitial(Restaurant restaurant) {
+    private Restaurant setupInitial(Restaurant restaurant) throws LocalizedException {
         restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow());
         restaurant.setToken(UUID.randomUUID().toString());
         restaurant = restaurantRepository.save(restaurant);
@@ -203,7 +205,7 @@ public class RestaurantServiceImp implements RestaurantService {
         return operatingHours;
     }
 
-    private static void createInitialMenu(Restaurant restaurant) {
+    private void createInitialMenu(Restaurant restaurant) throws LocalizedException {
         Menu menu = new Menu();
         menu.setStandard(true);
         menu.setName("Menu");
@@ -211,6 +213,10 @@ public class RestaurantServiceImp implements RestaurantService {
         menu.setTheme(Theme.COLOR_318E41);
         menu.setMessage(getMenuMessage());
         menu.setPlan(createDefaultPlan(menu));
+        MenuColor menuColor = menuColorRepository.findById(9L)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuColorService.menuColorNotFound"));
+        menu.setColor(menuColor);
         restaurant.addMenu(menu);
     }
 
