@@ -3,11 +3,14 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.MenuColorDTO;
 import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.mapper.MenuColorMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.MenuColor;
 import com.hackybear.hungry_scan_core.entity.MenuPlan;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
+import com.hackybear.hungry_scan_core.repository.MenuColorRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
@@ -51,6 +54,9 @@ class MenuControllerTest {
     private MenuMapper menuMapper;
 
     @Autowired
+    private MenuColorMapper menuColorMapper;
+
+    @Autowired
     private EntityManager entityManager;
 
     @Autowired
@@ -61,6 +67,9 @@ class MenuControllerTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private MenuColorRepository menuColorRepository;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -566,6 +575,7 @@ class MenuControllerTest {
     }
 
     private MenuColorDTO getMenuColorDTO() {
-        return new MenuColorDTO(22L, "#2F4F4F");
+        MenuColor menuColor = menuColorRepository.findById(9L).orElseThrow();
+        return menuColorMapper.toDTO(menuColor);
     }
 }

@@ -58,7 +58,7 @@ class MenuColorControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER_READONLY"})
+    @WithMockUser(roles = {"MANAGER"})
     void shouldShowMenuColorById() throws Exception {
         MenuColorDTO menuColor =
                 apiRequestUtils.postObjectExpect200("/api/cms/menu-colors/show", 2, MenuColorDTO.class);
