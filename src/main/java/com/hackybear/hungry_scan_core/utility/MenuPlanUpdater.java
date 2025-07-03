@@ -26,8 +26,8 @@ public class MenuPlanUpdater {
         Settings settings = restaurant.getSettings();
         SettingsDTO settingsDTO = restaurantDTO.settings();
 
-        this.newOperatingHours = settings.getOperatingHours();
-        this.oldOperatingHours = settingsDTO.operatingHours();
+        this.oldOperatingHours = settings.getOperatingHours();
+        this.newOperatingHours = settingsDTO.operatingHours();
 
         if (Objects.equals(oldOperatingHours, newOperatingHours)) {
             return;
