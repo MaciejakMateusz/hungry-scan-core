@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.utility;
+package com.hackybear.hungry_scan_core.record;
 
 import java.time.LocalTime;
 
@@ -26,10 +26,6 @@ public record ClockPoint(int minutes) implements Comparable<ClockPoint> {
 
     public boolean isBefore(ClockPoint other) {
         return this.minutes < other.minutes;
-    }
-
-    public int distanceTo(ClockPoint other) {
-        return other.minutes - this.minutes;
     }
 
     @Override
