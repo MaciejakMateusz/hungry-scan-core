@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FileProcessingServiceImp implements FileProcessingService {
 
-    @Value("${QR_PATH}")
+    @Value("${qr.path}")
     private String qrPath;
 
     private final ExceptionHelper exceptionHelper;

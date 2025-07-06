@@ -1,6 +1,8 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.List;
 
 public interface S3Service {
 
-    void uploadFile(String path, Long menuItemId, MultipartFile file) throws LocalizedException;
+    void uploadFile(String path, Long id, MultipartFile file) throws LocalizedException;
 
     void deleteFile(String path, Long menuItemId);
 
@@ -16,4 +18,5 @@ public interface S3Service {
 
     String getPublicUrl(String path, Long menuItemId);
 
+    ResponseEntity<Resource> downloadFile(String path, Long id);
 }

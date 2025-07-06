@@ -6,10 +6,16 @@ import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -53,8 +59,8 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public void uploadFile(String path, Long menuItemId, MultipartFile file) throws LocalizedException {
-        String key = path + "/" + menuItemId;
+    public void uploadFile(String path, Long id, MultipartFile file) throws LocalizedException {
+        String key = path + "/" + id;
 
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -111,5 +117,24 @@ public class S3ServiceImp implements S3Service {
     @Override
     public String getPublicUrl(String path, Long id) {
         return bucketUrl + "/" + path + "/" + id;
+    }
+
+    @Override
+    public ResponseEntity<Resource> downloadFile(String path, Long id) {
+        GetObjectRequest req = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(path + "/" + id)
+                .build();
+        ResponseInputStream<GetObjectResponse> s3Stream = s3.getObject(req);
+        GetObjectResponse metadata = s3Stream.response();
+
+        InputStreamResource resource = new InputStreamResource(s3Stream);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(metadata.contentType()))
+                .contentLength(metadata.contentLength())
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + id + "\"")
+                .body(resource);
     }
 }
