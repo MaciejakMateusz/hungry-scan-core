@@ -12,6 +12,7 @@ import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.record.InMemoryMultipartFile;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
@@ -20,17 +21,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -41,8 +42,23 @@ import java.util.*;
 public class QRServiceImp implements QRService {
 
     private final MenuRepository menuRepository;
-    @Value("${QR_PATH}")
-    private String directory;
+    private final QrScanEventRepository qrScanEventRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final S3Service s3Service;
+    private final ExceptionHelper exceptionHelper;
+    private final RestaurantTableService restaurantTableService;
+    private final RestaurantService restaurantService;
+    private final RestaurantMapper restaurantMapper;
+    private final RoleService roleService;
+    private final JwtService jwtService;
+    private final ResponseHelper responseHelper;
+    private final UserService userService;
+
+    @Value("${qr.path}")
+    private String qrPath;
+
+    @Value("${qr.name}")
+    private String qrName;
 
     @Value("${CUSTOMER_APP_URL}")
     private String customerAppUrl;
@@ -53,24 +69,12 @@ public class QRServiceImp implements QRService {
     @Value("${IS_PROD}")
     private boolean isProduction;
 
-    private static final String GENERAL_QR_NAME = "QR code - HungryScan";
-
-    private final QrScanEventRepository qrScanEventRepository;
-    private final RestaurantRepository restaurantRepository;
-    private final ExceptionHelper exceptionHelper;
-    private final RestaurantTableService restaurantTableService;
-    private final RestaurantService restaurantService;
-    private final RestaurantMapper restaurantMapper;
-    private final RoleService roleService;
-    private final JwtService jwtService;
-    private final ResponseHelper responseHelper;
-    private final UserService userService;
-
     @Override
-    public void generate() throws Exception {
+    public void generate(Long restaurantId) throws Exception {
         String format = "png";
         String url = appUrl + "/api/scan";
-        createQrFile(format, GENERAL_QR_NAME, url);
+        MultipartFile qrFile = createQrFile(format, qrName, url);
+        s3Service.uploadFile(qrPath, restaurantId, qrFile);
     }
 
     @Override
@@ -133,17 +137,32 @@ public class QRServiceImp implements QRService {
         }
     }
 
-    private void createQrFile(String format, String fileName, String url) throws WriterException, IOException {
+    @Override
+    public ResponseEntity<Resource> downloadQr(Long restaurantId) {
+        return s3Service.downloadFile(qrPath, restaurantId);
+    }
+
+    private MultipartFile createQrFile(String format,
+                                       String fileName,
+                                       String url) throws WriterException, IOException {
         int width = 1000;
         int height = 1000;
 
-        Map<EncodeHintType, Object> hints = new HashMap<>();
-        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        Map<EncodeHintType, Object> hints = Map.of(EncodeHintType.CHARACTER_SET, "UTF-8");
+        QRCodeWriter qrWriter = new QRCodeWriter();
+        BitMatrix matrix = qrWriter.encode(url, BarcodeFormat.QR_CODE, width, height, hints);
 
-        BitMatrix bitMatrix = new QRCodeWriter().encode(url, BarcodeFormat.QR_CODE, width, height, hints);
-        Files.createDirectories(Paths.get(directory));
-        Path qrFilePath = Paths.get(directory, fileName + "." + format);
-        MatrixToImageWriter.writeToPath(bitMatrix, format, qrFilePath);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(matrix, format, outputStream);
+        byte[] imageBytes = outputStream.toByteArray();
+
+        String contentType = "image/" + format.toLowerCase();
+        return new InMemoryMultipartFile(
+                "file",
+                fileName + "." + format,
+                contentType,
+                imageBytes
+        );
     }
 
     private String prepareJwtCookie(String jwt) {

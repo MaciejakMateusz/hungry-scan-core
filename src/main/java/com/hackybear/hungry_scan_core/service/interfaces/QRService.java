@@ -2,13 +2,14 @@ package com.hackybear.hungry_scan_core.service.interfaces;
 
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 
 public interface QRService {
 
-    void generate() throws Exception;
+    void generate(Long restaurantId) throws Exception;
 
     void generate(RestaurantTable table, String name) throws Exception;
 
@@ -16,4 +17,5 @@ public interface QRService {
 
     ResponseEntity<?> persistScanEvent(String footprint);
 
+    ResponseEntity<Resource> downloadQr(Long restaurantId);
 }
