@@ -6,12 +6,10 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +24,9 @@ public class QrController {
 
     private final RestaurantTableService restaurantTableService;
     private final FileProcessingService fileProcessingService;
+    private final UserService userService;
     private final QRService qrService;
     private final ResponseHelper responseHelper;
-
-    @Value("${QR_NAME}")
-    private String qrName;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
@@ -55,7 +51,8 @@ public class QrController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> generateBasicQr() {
         try {
-            qrService.generate();
+            Long restaurantId = userService.getActiveRestaurantId();
+            qrService.generate(restaurantId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
@@ -66,16 +63,8 @@ public class QrController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> downloadBasicQr() {
         try {
-            Resource file = fileProcessingService.downloadFile(qrName);
-
-            String filename = file.getFilename();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_PNG);
-
-            headers.setContentDispositionFormData("attachment", filename);
-
-            return ResponseEntity.ok().headers(headers).body(file);
+            Long restaurantId = userService.getActiveRestaurantId();
+            return qrService.downloadQr(restaurantId);
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
