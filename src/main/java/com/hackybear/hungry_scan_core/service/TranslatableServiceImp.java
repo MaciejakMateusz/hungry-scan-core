@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TranslatableServiceImp implements TranslatableService {
 
-    @Value("${DEEPL_API_KEY}")
+    @Value("${deepl.api.key}")
     private String AUTH_KEY;
 
     private final TranslatableRepository translatableRepository;

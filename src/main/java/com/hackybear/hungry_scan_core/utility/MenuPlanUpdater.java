@@ -6,6 +6,7 @@ import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.MenuPlan;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Settings;
+import com.hackybear.hungry_scan_core.record.ClockPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
