@@ -13,6 +13,7 @@ import com.hackybear.hungry_scan_core.repository.MenuColorRepository;
 import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
+import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
@@ -43,6 +44,7 @@ public class RestaurantServiceImp implements RestaurantService {
     private final PricePlanRepository pricePlanRepository;
     private final MenuColorRepository menuColorRepository;
     private final UserService userService;
+    private final QRService qrService;
     private final ExceptionHelper exceptionHelper;
     private final RestaurantMapper restaurantMapper;
     private final UserRepository userRepository;
@@ -82,7 +84,7 @@ public class RestaurantServiceImp implements RestaurantService {
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()"),
             @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()")
     })
-    public void save(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
+    public void save(RestaurantDTO restaurantDTO, User currentUser) throws Exception {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         setupRestaurantSettings(restaurant);
         restaurant = setupInitial(restaurant);
@@ -93,7 +95,7 @@ public class RestaurantServiceImp implements RestaurantService {
     @Override
     @Transactional
     @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()")
-    public ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) throws LocalizedException {
+    public ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) throws Exception {
         BindingResult br = (BindingResult) params.get("bindingResult");
         ResponseHelper responseHelper = (ResponseHelper) params.get("responseHelper");
         RestaurantDTO restaurantDTO = (RestaurantDTO) params.get("restaurantDTO");
@@ -166,7 +168,7 @@ public class RestaurantServiceImp implements RestaurantService {
         return restaurantMapper.toDTO(restaurant);
     }
 
-    private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException {
+    private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) throws Exception {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         restaurant = setupInitial(restaurant);
         setupRestaurantSettings(restaurant);
@@ -175,12 +177,13 @@ public class RestaurantServiceImp implements RestaurantService {
     }
 
     @NotNull
-    private Restaurant setupInitial(Restaurant restaurant) throws LocalizedException {
+    private Restaurant setupInitial(Restaurant restaurant) throws Exception {
         restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow());
         restaurant.setToken(UUID.randomUUID().toString());
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
         createInitialMenu(restaurant);
+        qrService.generate(restaurant.getId());
         return restaurant;
     }
 

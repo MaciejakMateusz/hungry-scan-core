@@ -4,7 +4,6 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
@@ -64,7 +63,7 @@ public class RestaurantController {
         try {
             currentUser = userService.getCurrentUser();
             return restaurantService.persistInitialRestaurant(params, currentUser);
-        } catch (LocalizedException e) {
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error",
                     exceptionHelper.getLocalizedMsg("error.createRestaurant.currentUser")));
         }

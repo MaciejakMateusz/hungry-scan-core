@@ -17,9 +17,9 @@ public interface RestaurantService {
 
     RestaurantDTO findById(Long id) throws LocalizedException;
 
-    void save(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException;
+    void save(RestaurantDTO restaurantDTO, User currentUser) throws Exception;
 
-    ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) throws LocalizedException;
+    ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) throws Exception;
 
     void update(RestaurantDTO restaurantDTO, User currentUser) throws LocalizedException;
 
