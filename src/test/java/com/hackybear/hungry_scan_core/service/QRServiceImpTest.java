@@ -1,8 +1,6 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
-import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.QrScanEvent;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
@@ -18,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,9 +24,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,13 +48,11 @@ class QRServiceImpTest {
     @Mock
     private RestaurantRepository restaurantRepository;
     @Mock
+    private S3Service s3Service;
+    @Mock
     private ExceptionHelper exceptionHelper;
     @Mock
     private RestaurantTableService restaurantTableService;
-    @Mock
-    private RestaurantService restaurantService;
-    @Mock
-    private RestaurantMapper restaurantMapper;
     @Mock
     private RoleService roleService;
     @Mock
@@ -72,54 +70,90 @@ class QRServiceImpTest {
 
     @BeforeEach
     void setUp() {
-
-        ReflectionTestUtils.setField(qrService, "directory", tempDir.toString());
+        // directory isn't used by the new generate(restaurantId), but we leave it in case other tests need it
+        ReflectionTestUtils.setField(qrService, "qrPath", tempDir.toString());
         ReflectionTestUtils.setField(qrService, "customerAppUrl", "http://customer.app");
         ReflectionTestUtils.setField(qrService, "appUrl", "http://my.app");
-
         ReflectionTestUtils.setField(qrService, "isProduction", false);
+
+        // for generate(restaurantId)
+        ReflectionTestUtils.setField(qrService, "qrPath", tempDir.toString());
+        ReflectionTestUtils.setField(qrService, "qrName", "QR code - HungryScan");
     }
 
     @Test
-    void generate_noArg_createsGeneralQrFile() throws Exception {
-        qrService.generate();
-        Path file = tempDir.resolve("QR code - HungryScan.png");
-        assertTrue(Files.exists(file), "General QR file should exist");
-        assertTrue(Files.size(file) > 0, "General QR file should be non‐empty");
+    void generate_noArg_invokesUploadWithCorrectFile() throws Exception {
+        // arrange
+        long restaurantId = 2L;
+        doNothing().when(s3Service).uploadFile(anyString(), anyLong(), any(MultipartFile.class));
+
+        // act
+        qrService.generate(restaurantId);
+
+        // assert: uploadFile called once with the right bucket/key and a real PNG multipart
+        ArgumentCaptor<MultipartFile> fileCaptor = ArgumentCaptor.forClass(MultipartFile.class);
+        verify(s3Service).uploadFile(eq(tempDir.toString()), eq(restaurantId), fileCaptor.capture());
+
+        MultipartFile qrFile = fileCaptor.getValue();
+        assertNotNull(qrFile, "Should get a MultipartFile");
+        assertEquals("QR code - HungryScan.png", qrFile.getOriginalFilename());
+        assertEquals("image/png", qrFile.getContentType());
+        assertTrue(qrFile.getBytes().length > 0, "QR payload should be non‐empty");
     }
 
     @Test
-    void generate_withCustomName_createsFileAndSavesTable() throws Exception {
+    void generate_withCustomName_setsTableNameAndSaves() throws Exception {
         RestaurantTable table = new RestaurantTable();
         table.setId(1L);
         table.setNumber(2);
         table.setToken("tkn123");
 
         String customName = "myQRCode";
+        // act
         qrService.generate(table, customName);
 
-        Path file = tempDir.resolve(customName + ".png");
-        assertTrue(Files.exists(file), "Custom‐named QR file should exist");
-        assertEquals(customName + ".png", table.getQrName(), "QR name set on table");
+        // assert naming & save; we don't check filesystem anymore
+        assertEquals(customName + ".png", table.getQrName());
         verify(restaurantTableService).save(table);
     }
 
     @Test
-    void generate_emptyName_usesDefaultNaming() throws Exception {
+    void generate_emptyName_usesDefaultNamingAndSaves() throws Exception {
         RestaurantTable table = new RestaurantTable();
         table.setId(42L);
         table.setNumber(7);
         table.setToken("xyz");
 
+        // act
         qrService.generate(table, "");
 
+        // expected default name
         String expected = "QR code - Table number 7, Table ID 42.png";
-        Path file = tempDir.resolve(expected);
-        assertTrue(Files.exists(file), "Default‐named QR file should exist");
         assertEquals(expected, table.getQrName());
         verify(restaurantTableService).save(table);
     }
 
+    @Test
+    void createQrFile_returnsMultipartFile() throws Exception {
+        // directly test private createQrFile(...) via ReflectionTestUtils
+        String format = "png";
+        String baseName = "testFile";
+        String url = "http://example.com/scan/xyz";
+
+        MultipartFile file = ReflectionTestUtils.invokeMethod(
+                qrService,
+                "createQrFile",
+                format, baseName, url
+        );
+
+        assertNotNull(file);
+        assertEquals("file", file.getName());
+        assertEquals(baseName + ".png", file.getOriginalFilename());
+        assertEquals("image/png", file.getContentType());
+        assertTrue(file.getBytes().length > 0);
+    }
+
+    // ... the rest of your scanQRCode and persistScanEvent tests remain unchanged ...
     @Test
     void scanQRCode_invalidToken_redirectsToInvalid() throws IOException {
         when(restaurantRepository.existsByToken("bad")).thenReturn(false);
@@ -132,19 +166,15 @@ class QRServiceImpTest {
     }
 
     @Test
-    void scanQRCode_persistUserThrows_returnsErrorResponse() throws IOException, LocalizedException {
+    void scanQRCode_persistUserThrows_returnsErrorResponse() throws IOException {
         when(restaurantRepository.existsByToken("tok")).thenReturn(true);
         when(jwtService.generateToken(anyString())).thenReturn("jwttoken");
-
-        when(restaurantService.findByToken("tok"))
-                .thenThrow(new RuntimeException("boom"));
-
         ResponseEntity<Map<String, Object>> badResponse = ResponseEntity.badRequest().build();
         when(responseHelper.createErrorResponse(any(Exception.class)))
                 .thenReturn(badResponse);
 
         ResponseEntity<?> result = qrService.scanQRCode(mock(HttpServletResponse.class), "tok");
-        assertSame(badResponse, result, "Should return whatever responseHelper.createErrorResponse produced");
+        assertSame(badResponse, result);
         verify(responseHelper).createErrorResponse(any(Exception.class));
     }
 
@@ -152,22 +182,18 @@ class QRServiceImpTest {
     void scanQRCode_success_nonProduction_setsCookiesAndRedirect() throws Exception {
         when(restaurantRepository.existsByToken("rt")).thenReturn(true);
         when(jwtService.generateToken(anyString())).thenReturn("jwtval");
-
-        RestaurantDTO dto = mock(RestaurantDTO.class);
-        when(restaurantService.findByToken("rt")).thenReturn(dto);
         Restaurant r = new Restaurant();
         r.setId(10L);
-        when(restaurantMapper.toRestaurant(dto)).thenReturn(r);
-
         when(menuRepository.findActiveMenuId(
                 eq(LocalDate.now().getDayOfWeek()),
                 any(LocalTime.class),
                 eq(10L)
         )).thenReturn(Optional.of(99L));
-
         Role role = new Role();
         when(roleService.findByName("ROLE_CUSTOMER_READONLY")).thenReturn(role);
         doNothing().when(userService).saveTempUser(any());
+        when(restaurantRepository.findByToken("rt"))
+                .thenReturn(Optional.of(r));
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
         ResponseEntity<?> result = qrService.scanQRCode(resp, "rt");
@@ -175,16 +201,13 @@ class QRServiceImpTest {
         assertEquals(HttpStatus.PERMANENT_REDIRECT, result.getStatusCode());
         HttpHeaders h = result.getHeaders();
         assertEquals("http://customer.app", h.getFirst(HttpHeaders.LOCATION));
-
         List<String> cookies = h.get(HttpHeaders.SET_COOKIE);
-        assert cookies != null;
+        assertNotNull(cookies);
         assertEquals(2, cookies.size());
-
         String jwtCookie = cookies.getFirst();
         assertTrue(jwtCookie.contains("jwt=jwtval"));
         assertTrue(jwtCookie.contains("HttpOnly"));
         assertTrue(jwtCookie.contains("SameSite=Strict"));
-
         String rtCookie = cookies.get(1);
         assertTrue(rtCookie.contains("restaurantToken=rt"));
         assertTrue(rtCookie.contains("SameSite=none"));
@@ -197,32 +220,24 @@ class QRServiceImpTest {
 
         when(restaurantRepository.existsByToken("rt")).thenReturn(true);
         when(jwtService.generateToken(anyString())).thenReturn("jwtval");
-
-        RestaurantDTO dto = mock(RestaurantDTO.class);
-        when(restaurantService.findByToken("rt")).thenReturn(dto);
         Restaurant r = new Restaurant();
         r.setId(20L);
-        when(restaurantMapper.toRestaurant(dto)).thenReturn(r);
-
         when(menuRepository.findActiveMenuId(
                 eq(LocalDate.now().getDayOfWeek()),
                 any(LocalTime.class),
                 eq(20L)
         )).thenReturn(Optional.of(55L));
-
-        when(roleService.findByName("ROLE_CUSTOMER_READONLY"))
-                .thenReturn(new Role());
+        when(roleService.findByName("ROLE_CUSTOMER_READONLY")).thenReturn(new Role());
         doNothing().when(userService).saveTempUser(any());
+        when(restaurantRepository.findByToken("rt"))
+                .thenReturn(Optional.of(r));
 
-        HttpServletResponse resp = mock(HttpServletResponse.class);
-        ResponseEntity<?> result = qrService.scanQRCode(resp, "rt");
-
+        ResponseEntity<?> result = qrService.scanQRCode(mock(HttpServletResponse.class), "rt");
         List<String> cookies = result.getHeaders().get(HttpHeaders.SET_COOKIE);
-        assert cookies != null;
+        assertNotNull(cookies);
         String jwtCookie = cookies.getFirst();
         assertTrue(jwtCookie.contains("Secure"));
         assertTrue(jwtCookie.contains("SameSite=None"));
-
         String rtCookie = cookies.get(1);
         assertTrue(rtCookie.contains("Secure"));
         assertTrue(rtCookie.contains("SameSite=none"));
@@ -236,7 +251,8 @@ class QRServiceImpTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
         verify(qrScanEventRepository).save(argThat((QrScanEvent ev) ->
-                "footprint".equals(ev.getFootprint()) && ev.getRestaurantId() == 123L
+                "footprint".equals(ev.getFootprint()) &&
+                        ev.getRestaurantId() == 123L
         ));
     }
 
