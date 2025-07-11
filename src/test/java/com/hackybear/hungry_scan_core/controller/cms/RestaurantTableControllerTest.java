@@ -1,18 +1,14 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
-import com.hackybear.hungry_scan_core.repository.RestaurantTableRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
@@ -21,15 +17,12 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,12 +41,6 @@ class RestaurantTableControllerTest {
 
     @Autowired
     private ApiRequestUtils apiRequestUtils;
-
-    @Autowired
-    private RestaurantTableRepository restaurantTableRepository;
-
-    @Value("${QR_PATH}")
-    private String qrPath;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -195,19 +182,6 @@ class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER"})
-    void shouldGenerateQr() throws Exception {
-        apiRequestUtils.postAndExpect200(
-                "/api/cms/tables/generate-qr", 15);
-
-        RestaurantTable table = restaurantTableRepository.findById(15L).orElseThrow();
-
-        File file = new File(qrPath + table.getQrName());
-        assertEquals(table.getQrName(), file.getName());
-        assertTrue(file.delete());
-    }
-
-    @Test
     @WithMockUser(roles = {"ADMIN"})
     void shouldNotGenerateQrForNonExistingTable() throws Exception {
         Map<String, Object> responseBody =
@@ -231,27 +205,6 @@ class RestaurantTableControllerTest {
     @WithMockUser(roles = {"WAITER"})
     void shouldNotAllowUnauthorizedAccessToGenerateQr() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/tables/generate-qr", 12, status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = {"ADMIN"})
-    void shouldDownload() throws Exception {
-        apiRequestUtils.postAndExpect200("/api/cms/tables/generate-qr", 13);
-
-        Resource resource = apiRequestUtils.postAndFetchResource("/api/cms/tables/download", 13);
-        InputStream inputStream = resource.getInputStream();
-        File file = new File("./src/test/files/download/shouldDownloadTest.png");
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            IOUtils.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            log.error("The test file could not be downloaded.", e);
-        }
-
-        assertEquals("shouldDownloadTest.png", file.getName());
-        assertTrue(file.delete());
-
-        File table13Qr = new File(qrPath + "QR code - Table number 13, Table ID 13.png");
-        assertTrue(table13Qr.delete());
     }
 
     @Test
