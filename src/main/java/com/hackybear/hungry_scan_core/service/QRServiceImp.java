@@ -7,8 +7,6 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
-import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
@@ -47,8 +45,6 @@ public class QRServiceImp implements QRService {
     private final S3Service s3Service;
     private final ExceptionHelper exceptionHelper;
     private final RestaurantTableService restaurantTableService;
-    private final RestaurantService restaurantService;
-    private final RestaurantMapper restaurantMapper;
     private final RoleService roleService;
     private final JwtService jwtService;
     private final ResponseHelper responseHelper;
@@ -196,8 +192,9 @@ public class QRServiceImp implements QRService {
                                     String username,
                                     String restaurantToken) throws LocalizedException {
         User temp = new User();
-        RestaurantDTO restaurantDTO = restaurantService.findByToken(restaurantToken);
-        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        Restaurant restaurant = restaurantRepository.findByToken(restaurantToken)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.restaurantService.restaurantNotFoundByToken"));
         Long restaurantId = restaurant.getId();
         Long activeMenuId = getActiveMenuId(restaurantId);
         temp.setRestaurants(Set.of(restaurant));
