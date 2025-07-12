@@ -5,12 +5,12 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.record.ClockPoint;
 import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
-import java.time.LocalTime;
 import java.util.*;
 
 @Component
@@ -30,7 +30,6 @@ public class MenuPlanValidator {
         Map<DayOfWeek, TimeRange> operatingHours = settings.getOperatingHours();
 
         Map<DayOfWeek, List<ScheduleEntry>> scheduleByDay = buildScheduleEntries(menuDTOs);
-
         validatePlans(scheduleByDay, operatingHours);
     }
 
@@ -63,7 +62,6 @@ public class MenuPlanValidator {
             throws LocalizedException {
 
         Map<DayOfWeek, List<NormRange>> required = buildRequiredSegments(operatingHours);
-
         Map<DayOfWeek, List<NormRange>> planned = buildPlannedSegments(scheduleByDay);
 
         for (DayOfWeek day : DayOfWeek.values()) {
@@ -102,21 +100,19 @@ public class MenuPlanValidator {
                     exceptionHelper.throwLocalizedMessage("error.menuService.scheduleIncomplete");
                 }
                 slice.sort(Comparator.comparingInt(x -> x.start));
+
                 int cursor = r.start;
                 for (NormRange seg : slice) {
                     if (seg.start > cursor) {
-                        exceptionHelper.throwLocalizedMessage(
-                                "error.menuService.scheduleIncomplete");
+                        exceptionHelper.throwLocalizedMessage("error.menuService.scheduleIncomplete");
                     }
                     if (seg.start < cursor) {
-                        exceptionHelper.throwLocalizedMessage(
-                                "error.menuService.schedulesCollide");
+                        exceptionHelper.throwLocalizedMessage("error.menuService.schedulesCollide");
                     }
                     cursor = seg.end;
                 }
                 if (cursor < r.end) {
-                    exceptionHelper.throwLocalizedMessage(
-                            "error.menuService.scheduleIncomplete");
+                    exceptionHelper.throwLocalizedMessage("error.menuService.scheduleIncomplete");
                 }
             }
         }
@@ -125,20 +121,40 @@ public class MenuPlanValidator {
     private Map<DayOfWeek, List<NormRange>> buildRequiredSegments(
             Map<DayOfWeek, TimeRange> operatingHours) {
         var map = new EnumMap<DayOfWeek, List<NormRange>>(DayOfWeek.class);
+
         for (DayOfWeek day : DayOfWeek.values()) {
             TimeRange op = operatingHours.get(day);
-            if (op == null || !op.isAvailable()) {
-                continue;
-            }
-            LocalTime start = op.getStartTime();
-            LocalTime end = op.getEndTime();
+            if (op == null || !op.isAvailable()) continue;
 
-            if (!start.isAfter(end)) {
-                addReq(map, day, toMinutes(start), toMinutes(end));
+            ClockPoint cs = ClockPoint.start(op.getStartTime());
+            ClockPoint ce = ClockPoint.end(op.getEndTime());
+
+            if (cs.compareTo(ce) <= 0) {
+                addReq(map, day, cs.asMinutes(), ce.asMinutes());
             } else {
-                addReq(map, day, toMinutes(start), MINUTES_PER_DAY);
-                DayOfWeek next = day.plus(1);
-                addReq(map, next, 0, toMinutes(end));
+                addReq(map, day, cs.asMinutes(), MINUTES_PER_DAY);
+                addReq(map, day.plus(1), 0, ce.asMinutes());
+            }
+        }
+        return map;
+    }
+
+    private Map<DayOfWeek, List<NormRange>> buildPlannedSegments(
+            Map<DayOfWeek, List<ScheduleEntry>> scheduleByDay) {
+        var map = new EnumMap<DayOfWeek, List<NormRange>>(DayOfWeek.class);
+
+        for (var ent : scheduleByDay.entrySet()) {
+            DayOfWeek day = ent.getKey();
+            for (ScheduleEntry se : ent.getValue()) {
+                ClockPoint cs = ClockPoint.start(se.range.getStartTime());
+                ClockPoint ce = ClockPoint.end(se.range.getEndTime());
+
+                if (cs.compareTo(ce) <= 0) {
+                    addPlan(map, day, cs.asMinutes(), ce.asMinutes());
+                } else {
+                    addPlan(map, day, cs.asMinutes(), MINUTES_PER_DAY);
+                    addPlan(map, day.plus(1), 0, ce.asMinutes());
+                }
             }
         }
         return map;
@@ -146,44 +162,22 @@ public class MenuPlanValidator {
 
     private void addReq(Map<DayOfWeek, List<NormRange>> m,
                         DayOfWeek d, int s, int e) {
+        if (e <= s) return;
         m.computeIfAbsent(d, x -> new ArrayList<>()).add(new NormRange(s, e));
-    }
-
-    private Map<DayOfWeek, List<NormRange>> buildPlannedSegments(
-            Map<DayOfWeek, List<ScheduleEntry>> scheduleByDay) {
-        var map = new EnumMap<DayOfWeek, List<NormRange>>(DayOfWeek.class);
-        for (var ent : scheduleByDay.entrySet()) {
-            DayOfWeek day = ent.getKey();
-            for (ScheduleEntry se : ent.getValue()) {
-                LocalTime start = se.range.getStartTime();
-                LocalTime end = se.range.getEndTime();
-                if (!start.isAfter(end)) {
-                    addPlan(map, day, toMinutes(start), toMinutes(end));
-                } else {
-                    addPlan(map, day, toMinutes(start), MINUTES_PER_DAY);
-                    DayOfWeek next = day.plus(1);
-                    addPlan(map, next, 0, toMinutes(end));
-                }
-            }
-        }
-        return map;
     }
 
     private void addPlan(Map<DayOfWeek, List<NormRange>> m,
                          DayOfWeek d, int s, int e) {
+        if (e <= s) return;
         m.computeIfAbsent(d, x -> new ArrayList<>()).add(new NormRange(s, e));
-    }
-
-    private int toMinutes(LocalTime t) {
-        return t.getHour() * 60 + t.getMinute();
     }
 
     private static final class NormRange {
         final int start, end;
 
         NormRange(int s, int e) {
-            start = s;
-            end = e;
+            this.start = s;
+            this.end = e;
         }
     }
 
