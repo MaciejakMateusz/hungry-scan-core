@@ -3,11 +3,13 @@ package com.hackybear.hungry_scan_core.controller.auth;
 import com.hackybear.hungry_scan_core.entity.QrScanEvent;
 import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.test_utils.ApiJwtRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -19,13 +21,16 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @Slf4j
 @SpringBootTest
@@ -49,6 +54,10 @@ class QrScanControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @MockitoBean
+    @Autowired
+    private MenuRepository menuRepository;
+
     @Order(1)
     @Sql({"/data-h2.sql", "/test-packs/qr-scans.sql"})
     @Test
@@ -61,7 +70,11 @@ class QrScanControllerTest {
     @Rollback
     void shouldScanQr_expectSpecificResponse() throws Exception {
         String restaurantToken = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed";
+
+        Mockito.when(menuRepository.findActiveMenuId(any(), any(), any()))
+                .thenReturn(Optional.of(1L));
         MockHttpServletResponse response = apiRequestUtils.executeGet("/api/qr/scan/" + restaurantToken);
+
         assertEquals(2, response.getCookies().length);
         assertEquals("jwt", response.getCookies()[0].getName());
         assertEquals("restaurantToken", response.getCookies()[1].getName());
@@ -81,6 +94,8 @@ class QrScanControllerTest {
         assertEquals(5, currentRestaurantUsers.size());
         String existingRestaurantToken = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed";
 
+        Mockito.when(menuRepository.findActiveMenuId(any(), any(), any()))
+                .thenReturn(Optional.of(1L));
         apiRequestUtils.executeGet("/api/qr/scan/" + existingRestaurantToken);
 
         List<User> updatedRestaurantUsers = userRepository.findAllByActiveRestaurantId(1L);
