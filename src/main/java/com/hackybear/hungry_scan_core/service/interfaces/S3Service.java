@@ -19,4 +19,6 @@ public interface S3Service {
     String getPublicUrl(String path, Long menuItemId);
 
     ResponseEntity<Resource> downloadFile(String path, Long id);
+
+    ResponseEntity<Resource> downloadFile(String path, Long restaurantId, Long tableId);
 }

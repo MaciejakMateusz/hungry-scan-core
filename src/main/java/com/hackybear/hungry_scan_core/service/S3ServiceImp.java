@@ -125,6 +125,21 @@ public class S3ServiceImp implements S3Service {
                 .bucket(bucketName)
                 .key(path + "/" + id)
                 .build();
+        String headerValue = "attachment; filename=\"" + id + "\"";
+        return getResourceResponseEntity(headerValue, req);
+    }
+
+    @Override
+    public ResponseEntity<Resource> downloadFile(String path, Long restaurantId, Long tableId) {
+        GetObjectRequest req = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(path + "/" + restaurantId + "/" + tableId)
+                .build();
+        String headerValue = "attachment; filename=\"" + restaurantId + "\"" + tableId;
+        return getResourceResponseEntity(headerValue, req);
+    }
+
+    private ResponseEntity<Resource> getResourceResponseEntity(String headerValue, GetObjectRequest req) {
         ResponseInputStream<GetObjectResponse> s3Stream = s3.getObject(req);
         GetObjectResponse metadata = s3Stream.response();
 
@@ -133,8 +148,7 @@ public class S3ServiceImp implements S3Service {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(metadata.contentType()))
                 .contentLength(metadata.contentLength())
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + id + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
                 .body(resource);
     }
 }
