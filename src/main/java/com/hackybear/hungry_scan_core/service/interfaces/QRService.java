@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -17,5 +18,7 @@ public interface QRService {
 
     ResponseEntity<?> persistScanEvent(String footprint);
 
-    ResponseEntity<Resource> downloadQr(Long restaurantId);
+    ResponseEntity<Resource> downloadQr(Long restaurantId) throws LocalizedException;
+
+    ResponseEntity<Resource> downloadQr(Long restaurantId, Long tableId) throws LocalizedException;
 }

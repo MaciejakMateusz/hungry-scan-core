@@ -14,6 +14,7 @@ import com.hackybear.hungry_scan_core.record.InMemoryMultipartFile;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.QrScanEventRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
+import com.hackybear.hungry_scan_core.repository.RestaurantTableRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.*;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ public class QRServiceImp implements QRService {
     private final S3Service s3Service;
     private final ExceptionHelper exceptionHelper;
     private final RestaurantTableService restaurantTableService;
+    private final RestaurantTableRepository restaurantTableRepository;
     private final RoleService roleService;
     private final JwtService jwtService;
     private final ResponseHelper responseHelper;
@@ -134,8 +136,21 @@ public class QRServiceImp implements QRService {
     }
 
     @Override
-    public ResponseEntity<Resource> downloadQr(Long restaurantId) {
+    public ResponseEntity<Resource> downloadQr(Long restaurantId) throws LocalizedException {
+        if (!restaurantRepository.existsById(restaurantId)) {
+            exceptionHelper.throwLocalizedMessage("error.restaurantService.restaurantNotFound");
+        }
         return s3Service.downloadFile(qrPath, restaurantId);
+    }
+
+    @Override
+    public ResponseEntity<Resource> downloadQr(Long restaurantId, Long tableId) throws LocalizedException {
+        if (!restaurantRepository.existsById(restaurantId)) {
+            exceptionHelper.throwLocalizedMessage("error.restaurantService.restaurantNotFound");
+        } else if (!restaurantTableRepository.existsById(tableId)) {
+            exceptionHelper.throwLocalizedMessage("error.restaurantTableService.tableNotFound");
+        }
+        return s3Service.downloadFile(qrPath, restaurantId, tableId);
     }
 
     private MultipartFile createQrFile(String format,
