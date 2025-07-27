@@ -2,15 +2,13 @@ package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
-import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -25,7 +23,7 @@ import java.util.Map;
 public class TableController {
 
     private final RestaurantTableService restaurantTableService;
-    private final FileProcessingService fileProcessingService;
+    private final UserService userService;
     private final QRService qrService;
     private final ResponseHelper responseHelper;
 
@@ -74,19 +72,10 @@ public class TableController {
 
     @PostMapping(value = "/download")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> downloadFile(@RequestBody Long id) {
+    public ResponseEntity<?> downloadFile(@RequestBody Long tableId) {
         try {
-            RestaurantTable restaurantTable = restaurantTableService.findById(id);
-            Resource file = fileProcessingService.downloadFile(restaurantTable.getQrName());
-
-            String filename = file.getFilename();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_PNG);
-
-            headers.setContentDispositionFormData("attachment", filename);
-
-            return ResponseEntity.ok().headers(headers).body(file);
+            Long restaurantId = userService.getActiveRestaurantId();
+            return qrService.downloadQr(restaurantId, tableId);
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
