@@ -2,8 +2,6 @@ package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.RestaurantTable;
-import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.service.interfaces.FileProcessingService;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantTableService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
@@ -14,26 +12,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/cms/qr")
 @RequiredArgsConstructor
 public class QrController {
 
     private final RestaurantTableService restaurantTableService;
-    private final FileProcessingService fileProcessingService;
     private final UserService userService;
     private final QRService qrService;
     private final ResponseHelper responseHelper;
-
-    @GetMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> list() {
-        List<File> qrCodes = fileProcessingService.fileList();
-        return ResponseEntity.ok(qrCodes);
-    }
 
     @PostMapping("/tables/generate-qr")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
@@ -68,13 +55,6 @@ public class QrController {
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
-    }
-
-    @DeleteMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    public ResponseEntity<?> delete(@RequestBody String qrName) throws LocalizedException {
-        boolean isDeleted = fileProcessingService.removeFile(qrName);
-        return ResponseEntity.ok(isDeleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
