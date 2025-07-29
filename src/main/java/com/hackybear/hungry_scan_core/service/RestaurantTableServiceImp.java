@@ -35,7 +35,7 @@ public class RestaurantTableServiceImp implements RestaurantTableService {
     public RestaurantTable findById(Long id) throws LocalizedException {
         return restaurantTableRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.restaurantTableService.tableNotFound", id));
+                        "error.restaurantTableService.tableNotFound"));
     }
 
     @Override
