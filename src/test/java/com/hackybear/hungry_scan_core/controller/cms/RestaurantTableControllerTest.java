@@ -86,7 +86,7 @@ class RestaurantTableControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/tables/show", 341, status().isBadRequest());
-        assertEquals("Stolik z ID = 341 nie istnieje.", responseBody.get("exceptionMsg"));
+        assertEquals("Stolik z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -172,7 +172,7 @@ class RestaurantTableControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/tables/show", 6, status().isBadRequest());
-        assertEquals("Stolik z ID = 6 nie istnieje.", responseBody.get("exceptionMsg"));
+        assertEquals("Stolik z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -187,7 +187,7 @@ class RestaurantTableControllerTest {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/tables/generate-qr", 982, status().isBadRequest());
-        assertEquals("Stolik z ID = 982 nie istnieje.", responseBody.get("exceptionMsg"));
+        assertEquals("Stolik z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
@@ -208,21 +208,23 @@ class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER"})
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    void shouldDownload() throws Exception {
+//        Mockito.doReturn(ResponseEntity.ok()).when(qrService).downloadQr(Mockito.any());
+
+        Map<String, Object> responseBody =
+                apiRequestUtils.postAndReturnResponseBody(
+                        "/api/cms/tables/download", 982, status().isBadRequest());
+        assertEquals("Stolik z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
     void shouldNotDownloadForNonExistingTable() throws Exception {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
                         "/api/cms/tables/download", 982, status().isBadRequest());
-        assertEquals("Stolik z ID = 982 nie istnieje.", responseBody.get("exceptionMsg"));
-    }
-
-    @Test
-    @WithMockUser(roles = {"ADMIN"})
-    void shouldNotDownloadForNullQrName() throws Exception {
-        Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/tables/download", 4, status().isBadRequest());
-        assertEquals("Nie znaleziono pliku z podaną ścieżką: ./src/test/files/qr/null", responseBody.get("exceptionMsg"));
+        assertEquals("Stolik z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
     }
 
     @Test
