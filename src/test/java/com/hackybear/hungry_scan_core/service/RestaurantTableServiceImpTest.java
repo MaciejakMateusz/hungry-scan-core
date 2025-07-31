@@ -58,7 +58,7 @@ public class RestaurantTableServiceImpTest {
     @Test
     void shouldNotFindById() {
         LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.findById(98L));
-        assertEquals("Stolik z ID = 98 nie istnieje.", exception.getLocalizedMessage());
+        assertEquals("Stolik z podanym ID nie istnieje.", exception.getLocalizedMessage());
     }
 
     @Test
@@ -138,13 +138,13 @@ public class RestaurantTableServiceImpTest {
         restaurantTableService.delete(4L);
 
         LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.findById(4L));
-        assertEquals("Stolik z ID = 4 nie istnieje.", exception.getLocalizedMessage());
+        assertEquals("Stolik z podanym ID nie istnieje.", exception.getLocalizedMessage());
     }
 
     @Test
     void shouldNotDeleteWithIncorrectId() {
         LocalizedException exception = assertThrows(LocalizedException.class, () -> restaurantTableService.delete(69L));
-        assertEquals("Stolik z ID = 69 nie istnieje.", exception.getLocalizedMessage());
+        assertEquals("Stolik z podanym ID nie istnieje.", exception.getLocalizedMessage());
     }
 
     @Test
@@ -209,7 +209,7 @@ public class RestaurantTableServiceImpTest {
     void shouldNotToggleWithIncorrectId() {
         LocalizedException exception = assertThrows(LocalizedException.class, () ->
                 restaurantTableService.toggleActivation(55L));
-        assertEquals("Stolik z ID = 55 nie istnieje.", exception.getLocalizedMessage());
+        assertEquals("Stolik z podanym ID nie istnieje.", exception.getLocalizedMessage());
     }
 
     @Test
@@ -270,7 +270,7 @@ public class RestaurantTableServiceImpTest {
     void shouldNotResolveWaiterCallWithIncorrectTableId() {
         LocalizedException exception = assertThrows(LocalizedException.class, () ->
                 restaurantTableService.resolveWaiterCall(69L));
-        assertEquals("Stolik z ID = 69 nie istnieje.", exception.getLocalizedMessage());
+        assertEquals("Stolik z podanym ID nie istnieje.", exception.getLocalizedMessage());
     }
 
     //TODO shouldNotResolveWaiterCallWithIncorrectTableId()
