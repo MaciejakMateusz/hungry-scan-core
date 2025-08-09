@@ -33,7 +33,7 @@ public interface UserService {
 
     ResponseEntity<?> recoverPassword(RecoveryDTO recovery, BindingResult br);
 
-    void addToOrganization(RegistrationDTO registrationDTO) throws LocalizedException;
+    ResponseEntity<?> addToOrganization(RegistrationDTO registrationDTO, BindingResult br);
 
     void update(RegistrationDTO registrationDTO) throws LocalizedException;
 

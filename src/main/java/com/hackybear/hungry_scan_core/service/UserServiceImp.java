@@ -145,13 +145,25 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public void addToOrganization(RegistrationDTO registrationDTO) throws LocalizedException {
-        User currentUser = getCurrentUser();
-        User user = userMapper.toUser(registrationDTO);
-        user.setOrganizationId(currentUser.getOrganizationId());
-        user.setEmail(user.getUsername());
-        user.setEnabled(1);
-        userRepository.save(user);
+    public ResponseEntity<?> addToOrganization(RegistrationDTO registrationDTO, BindingResult br) {
+        if (br.hasErrors()) {
+            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
+        }
+        Map<String, Object> errorParams = responseHelper.getErrorParams(registrationDTO);
+        if (!errorParams.isEmpty()) {
+            return ResponseEntity.badRequest().body(errorParams);
+        }
+        try {
+            User currentUser = getCurrentUser();
+            User user = userMapper.toUser(registrationDTO);
+            user.setOrganizationId(currentUser.getOrganizationId());
+            user.setEmail(user.getUsername());
+            user.setEnabled(1);
+            userRepository.save(user);
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @Override
