@@ -73,19 +73,7 @@ public class AdminManagementController {
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@Valid @RequestBody RegistrationDTO registrationDTO, BindingResult br) {
-        if (br.hasErrors()) {
-            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
-        }
-        Map<String, Object> errorParams = responseHelper.getErrorParams(registrationDTO);
-        if (!errorParams.isEmpty()) {
-            return ResponseEntity.badRequest().body(errorParams);
-        }
-        try {
-            userService.addToOrganization(registrationDTO);
-        } catch (LocalizedException e) {
-            return responseHelper.createErrorResponse(e);
-        }
-        return ResponseEntity.ok().build();
+        return userService.addToOrganization(registrationDTO, br);
     }
 
     @PatchMapping("/update")
