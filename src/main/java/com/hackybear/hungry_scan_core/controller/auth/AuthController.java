@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.auth;
 
-import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import com.hackybear.hungry_scan_core.service.interfaces.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
 
 @RestController
@@ -20,7 +18,7 @@ import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOME
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/restaurant")
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
@@ -31,25 +29,19 @@ public class AuthController {
     @GetMapping("/app")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> appAuth() {
-        return userService.hasCreatedRestaurant() ?
-                ResponseEntity.ok().build() :
-                ResponseEntity.status(HttpStatus.FOUND).body(Map.of("redirectUrl", "/create-restaurant"));
+        return authService.authorizeApp();
     }
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> adminAuth() {
-        return userService.hasCreatedRestaurant() ?
-                ResponseEntity.ok().build() :
-                ResponseEntity.status(HttpStatus.FOUND).body(Map.of("redirectUrl", "/create-restaurant"));
+        return authService.authorizeApp();
     }
 
     @GetMapping("/create-restaurant")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createRestaurantAuth() {
-        return userService.hasCreatedRestaurant() ?
-                ResponseEntity.status(HttpStatus.FOUND).body(Map.of("redirectUrl", "/app")) :
-                ResponseEntity.ok().build();
+        return authService.authorizeCreateRestaurant();
     }
 
     @GetMapping("/anonymous")
