@@ -27,7 +27,7 @@ public class AuthServiceImp implements AuthService {
     @Override
     public ResponseEntity<?> authorizeCreateRestaurant() {
         if (userService.hasCreatedRestaurant()) {
-            ResponseEntity.status(HttpStatus.FOUND)
+            return ResponseEntity.status(HttpStatus.FOUND)
                     .body(Map.of("redirectUrl", "/app"));
         }
         return ResponseEntity.ok().build();
