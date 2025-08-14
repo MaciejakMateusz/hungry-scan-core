@@ -28,22 +28,19 @@ public class CustomerAccessRemover {
     @Scheduled(cron = "0 0 1 * * *")
     public void controlJwtAndRemoveUsers() {
         List<User> users = userService.findAllCustomers();
-        List<User> expiredUsers = users.stream()
-                .filter(this::isTokenExpired)
-                .toList();
-        List<Long> expiredJwtTokens = expiredUsers
-                .stream()
-                .map(user -> {
-                    JwtToken token = user.getJwtToken();
-                    Integer tokenId = token.getId();
-                    return Long.valueOf(tokenId);
-                })
-                .toList();
+        List<User> expiredUsers = getExpiredUsers(users);
+        List<Long> expiredJwtTokens = getExpiredJwtTokens(expiredUsers);
         userRepository.deleteAllInBatch(expiredUsers);
         jwtTokenRepository.deleteAllByIdInBatch(expiredJwtTokens);
     }
 
-    private boolean isTokenExpired(User user) {
+    private static List<User> getExpiredUsers(List<User> users) {
+        return users.stream()
+                .filter(CustomerAccessRemover::isTokenExpired)
+                .toList();
+    }
+
+    private static boolean isTokenExpired(User user) {
         Optional<JwtToken> tokenTemplate = getAccessToken(user);
         if (tokenTemplate.isEmpty()) {
             return false;
@@ -53,8 +50,19 @@ public class CustomerAccessRemover {
         return token.getCreated().isBefore(expirationTime);
     }
 
-    private Optional<JwtToken> getAccessToken(User user) {
+    private static Optional<JwtToken> getAccessToken(User user) {
         JwtToken token = user.getJwtToken();
         return Optional.ofNullable(token);
+    }
+
+    private static List<Long> getExpiredJwtTokens(List<User> expiredUsers) {
+        return expiredUsers
+                .stream()
+                .map(user -> {
+                    JwtToken token = user.getJwtToken();
+                    Integer tokenId = token.getId();
+                    return Long.valueOf(tokenId);
+                })
+                .toList();
     }
 }
