@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -84,28 +85,18 @@ public class ScanEventAggregator {
                 "repeatedScans", data.repeated));
     }
 
-    private Map<String, Object> getDataProjection(List<ScanAggregation> aggregation, Result result) {
+    private static Map<String, Object> getDataProjection(List<ScanAggregation> aggregation, Result result) {
+        Map<String, Object> projection = constructInitialProjection(result);
         int totalScans = aggregation.stream().mapToInt(ScanAggregation::getTotal).sum();
         int totalUnique = aggregation.stream().mapToInt(ScanAggregation::getUniqueCount).sum();
         int totalRepeated = totalScans - totalUnique;
-
-        return Map.of(
-                "lineChart", List.of(
-                        Map.of(
-                                "id", "uniqueScans",
-                                "data", result.uniqueLineData),
-                        Map.of(
-                                "id", "repeatedScans",
-                                "data", result.repeatedLineData)
-                ),
-                "barChart", result.barChartData,
-                "total", totalScans,
-                "totalUnique", totalUnique,
-                "totalRepeated", totalRepeated
-        );
+        projection.put("total", totalScans);
+        projection.put("totalUnique", totalUnique);
+        projection.put("totalRepeated", totalRepeated);
+        return projection;
     }
 
-    private Result getResult(List<ScanAggregation> aggregation) {
+    private static Result getResult(List<ScanAggregation> aggregation) {
         Map<Integer, ScanAggregation> aggregationByHour = aggregation.stream()
                 .collect(Collectors.toMap(ScanAggregation::getPeriod, Function.identity()));
 
@@ -113,6 +104,20 @@ public class ScanEventAggregator {
         List<Map<String, Object>> repeatedLineData = new ArrayList<>();
         List<Map<String, Object>> barChartData = new ArrayList<>();
         return new Result(aggregationByHour, uniqueLineData, repeatedLineData, barChartData);
+    }
+
+    private static Map<String, Object> constructInitialProjection(Result result) {
+        Map<String, Object> projection = new HashMap<>();
+        projection.put("lineChart", List.of(
+                Map.of(
+                        "id", "uniqueScans",
+                        "data", result.uniqueLineData),
+                Map.of(
+                        "id", "repeatedScans",
+                        "data", result.repeatedLineData)
+        ));
+        projection.put("barChart", result.barChartData);
+        return projection;
     }
 
     private record Result(Map<Integer, ScanAggregation> aggregation,
