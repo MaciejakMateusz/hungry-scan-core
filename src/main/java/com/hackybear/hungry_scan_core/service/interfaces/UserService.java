@@ -19,7 +19,7 @@ public interface UserService {
 
     Set<User> findAll() throws LocalizedException;
 
-    void save(RegistrationDTO registrationDTO) throws MessagingException;
+    ResponseEntity<?> save(RegistrationDTO registrationDTO, BindingResult br);
 
     void saveTempUser(User tempUser);
 

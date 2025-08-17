@@ -66,13 +66,26 @@ public class UserServiceImp implements UserService {
 
     @Transactional
     @Override
-    public void save(RegistrationDTO registrationDTO) throws MessagingException {
-        User user = userMapper.toUser(registrationDTO);
-        setUserRoleAsAdmin(user);
-        Optional<Long> maxOrganizationId = userRepository.findMaxOrganizationId();
-        user.setOrganizationId(maxOrganizationId.orElse(0L) + 1);
-        user.setEmail(user.getUsername());
-        prepareAndSendActivation(user);
+    public ResponseEntity<?> save(RegistrationDTO registrationDTO, BindingResult br) {
+        if (br.hasErrors()) {
+            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
+        }
+        Map<String, Object> errorParams = responseHelper.getErrorParams(registrationDTO);
+        if (!errorParams.isEmpty()) {
+            return ResponseEntity.badRequest().body(errorParams);
+        }
+        try {
+            User user = userMapper.toUser(registrationDTO);
+            setUserRoleAsAdmin(user);
+            Optional<Long> maxOrganizationId = userRepository.findMaxOrganizationId();
+            user.setOrganizationId(maxOrganizationId.orElse(0L) + 1);
+            user.setEmail(user.getUsername());
+            prepareAndSendActivation(user);
+        } catch (MessagingException e) {
+            errorParams.put("error", exceptionHelper.getLocalizedMsg("error.register.activationFailed"));
+            return ResponseEntity.badRequest().body(errorParams);
+        }
+        return ResponseEntity.ok(Map.of("redirectUrl", "/activation/?target=" + registrationDTO.username()));
     }
 
     @Transactional
