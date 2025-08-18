@@ -7,7 +7,6 @@ import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
 import com.hackybear.hungry_scan_core.dto.RecoveryInitDTO;
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
 import com.hackybear.hungry_scan_core.entity.User;
-import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.LoginService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
@@ -34,7 +33,6 @@ public class UserController {
 
     private final UserService userService;
     private final LoginService loginService;
-    private final ExceptionHelper exceptionHelper;
     private final ResponseHelper responseHelper;
 
     @Value("${IS_PROD}")
@@ -43,20 +41,7 @@ public class UserController {
     @PostMapping("/register")
     @WithRateLimitProtection
     public ResponseEntity<?> register(@Valid @RequestBody RegistrationDTO registrationDTO, BindingResult br) {
-        if (br.hasErrors()) {
-            return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
-        }
-        Map<String, Object> errorParams = responseHelper.getErrorParams(registrationDTO);
-        if (!errorParams.isEmpty()) {
-            return ResponseEntity.badRequest().body(errorParams);
-        }
-        try {
-            userService.save(registrationDTO);
-        } catch (MessagingException e) {
-            errorParams.put("error", exceptionHelper.getLocalizedMsg("error.register.activationFailed"));
-            return ResponseEntity.badRequest().body(errorParams);
-        }
-        return ResponseEntity.ok(Map.of("redirectUrl", "/activation/?target=" + registrationDTO.username()));
+        return userService.save(registrationDTO, br);
     }
 
     @GetMapping("/resend-activation/{email}")
