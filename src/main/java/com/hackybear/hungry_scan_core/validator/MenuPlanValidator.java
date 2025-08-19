@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.utility;
+package com.hackybear.hungry_scan_core.validator;
 
 import com.hackybear.hungry_scan_core.dto.MenuPlanDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
@@ -7,6 +7,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.record.ClockPoint;
 import com.hackybear.hungry_scan_core.repository.SettingsRepository;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
