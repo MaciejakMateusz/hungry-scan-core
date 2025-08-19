@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.utility;
+package com.hackybear.hungry_scan_core.aspect;
 
 import com.hackybear.hungry_scan_core.annotation.WithRateLimitProtection;
 import com.hackybear.hungry_scan_core.exception.RateLimitException;
@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Component
 public class RateLimitAspect {
 
+    //todo pull dynamic translation
     public static final String ERROR_MESSAGE = "Too many request at endpoint %s from IP %s! Please try again after %d milliseconds!";
     private final ConcurrentHashMap<String, ConcurrentLinkedQueue<Long>> requestCounts = new ConcurrentHashMap<>();
 
