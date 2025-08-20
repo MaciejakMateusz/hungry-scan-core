@@ -1,4 +1,4 @@
-package com.hackybear.hungry_scan_core.utility;
+package com.hackybear.hungry_scan_core;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
