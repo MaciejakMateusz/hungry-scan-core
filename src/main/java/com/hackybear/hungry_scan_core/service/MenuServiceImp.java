@@ -14,7 +14,7 @@ import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
-import com.hackybear.hungry_scan_core.utility.MenuPlanValidator;
+import com.hackybear.hungry_scan_core.validator.MenuPlanValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;

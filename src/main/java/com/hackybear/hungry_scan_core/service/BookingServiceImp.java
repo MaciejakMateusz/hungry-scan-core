@@ -5,7 +5,7 @@ import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.BookingRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.BookingService;
-import com.hackybear.hungry_scan_core.utility.BookingValidator;
+import com.hackybear.hungry_scan_core.validator.BookingValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

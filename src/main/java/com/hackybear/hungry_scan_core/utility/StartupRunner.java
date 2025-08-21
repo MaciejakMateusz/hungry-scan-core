@@ -12,6 +12,7 @@ public class StartupRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         log.info("Executing start up actions...");
+        //todo for future startup actions
         log.info("Start up actions completed");
     }
 }
