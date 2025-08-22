@@ -48,8 +48,18 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
     }
 
 
-    private HistoryOrderSummary mapSummaryToHistorySummary(OrderSummary orderSummary) {
-        HistoryOrderSummary historyOrderSummary = new HistoryOrderSummary(
+    private static HistoryOrderSummary mapSummaryToHistorySummary(OrderSummary orderSummary) {
+        HistoryOrderSummary historyOrderSummary = getHistoryOrderSummary(orderSummary);
+
+        List<HistoryOrder> historyOrders = orderSummary.getOrders()
+                .stream().map(ArchiveDataServiceImp::mapOrderToHistoryOrder).toList();
+        historyOrderSummary.setHistoryOrders(historyOrders);
+
+        return historyOrderSummary;
+    }
+
+    private static HistoryOrderSummary getHistoryOrderSummary(OrderSummary orderSummary) {
+        return new HistoryOrderSummary(
                 orderSummary.getId(),
                 orderSummary.getRestaurant(),
                 orderSummary.getRestaurantTable(),
@@ -61,18 +71,9 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
                 orderSummary.isBillSplitRequested(),
                 orderSummary.getPaymentMethod()
         );
-
-        List<HistoryOrder> historyOrders = new ArrayList<>();
-        for (Order order : orderSummary.getOrders()) {
-            HistoryOrder historyOrder = mapOrderToHistoryOrder(order);
-            historyOrders.add(historyOrder);
-        }
-        historyOrderSummary.setHistoryOrders(historyOrders);
-
-        return historyOrderSummary;
     }
 
-    private HistoryOrder mapOrderToHistoryOrder(Order order) {
+    private static HistoryOrder mapOrderToHistoryOrder(Order order) {
         HistoryOrder historyOrder = new HistoryOrder(
                 order.getId(),
                 order.getRestaurant(),
@@ -82,18 +83,15 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
                 order.getTotalAmount(),
                 order.isResolved());
 
-        List<HistoryOrderedItem> transferredItems = new ArrayList<>();
-        order.getOrderedItems().forEach(orderedItem -> {
-            HistoryOrderedItem historyOrderedItem = mapOrderedItemToHistoryOrderedItem(orderedItem);
-            transferredItems.add(historyOrderedItem);
-        });
-
+        List<HistoryOrderedItem> transferredItems = order.getOrderedItems()
+                .stream().map(ArchiveDataServiceImp::getHistoryOrderedItem)
+                .toList();
         historyOrder.setHistoryOrderedItems(transferredItems);
 
         return historyOrder;
     }
 
-    private HistoryOrderedItem mapOrderedItemToHistoryOrderedItem(OrderedItem orderedItem) {
+    private static HistoryOrderedItem getHistoryOrderedItem(OrderedItem orderedItem) {
         return new HistoryOrderedItem(
                 orderedItem.getId(),
                 orderedItem.getMenuItem(),
@@ -105,18 +103,21 @@ public class ArchiveDataServiceImp implements ArchiveDataService {
         );
     }
 
-    private List<HistoryWaiterCall> mapWaiterCallsToHistoryWaiterCalls(RestaurantTable restaurantTable) {
-        List<HistoryWaiterCall> historyWaiterCalls = new ArrayList<>();
-        for (WaiterCall waiterCall : restaurantTable.getWaiterCalls()) {
-            historyWaiterCalls.add(new HistoryWaiterCall(
-                    waiterCall.getId(),
-                    restaurantTable.getId(),
-                    restaurantTable.getNumber(),
-                    waiterCall.getCallTime(),
-                    waiterCall.getResolvedTime(),
-                    waiterCall.isResolved()));
-        }
-        return historyWaiterCalls;
+    private static List<HistoryWaiterCall> mapWaiterCallsToHistoryWaiterCalls(RestaurantTable restaurantTable) {
+        return restaurantTable.getWaiterCalls()
+                .stream()
+                .map(waiterCall -> getHistoryWaiterCall(restaurantTable, waiterCall))
+                .toList();
+    }
+
+    private static HistoryWaiterCall getHistoryWaiterCall(RestaurantTable restaurantTable, WaiterCall waiterCall) {
+        return new HistoryWaiterCall(
+                waiterCall.getId(),
+                restaurantTable.getId(),
+                restaurantTable.getNumber(),
+                waiterCall.getCallTime(),
+                waiterCall.getResolvedTime(),
+                waiterCall.isResolved());
     }
 
 }
