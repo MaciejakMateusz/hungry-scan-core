@@ -184,15 +184,7 @@ public class MenuServiceImp implements MenuService {
 
         validateUniqueness(copy.getName(), currentUser.getActiveRestaurantId());
 
-        for (Category cat : copy.getCategories()) {
-            cat.setMenu(copy);
-            for (MenuItem item : cat.getMenuItems()) {
-                item.setCategory(cat);
-                for (Variant v : item.getVariants()) {
-                    v.setMenuItem(item);
-                }
-            }
-        }
+        cascadeDuplicateCategory(copy);
         copy = menuRepository.save(copy);
         currentUser.setActiveMenuId(copy.getId());
         userRepository.save(currentUser);
@@ -223,6 +215,16 @@ public class MenuServiceImp implements MenuService {
         }
         List<Long> menuItemIds = menuPositions.stream().map(MenuItem::getId).toList();
         s3Service.deleteAllFiles(S3_PATH, menuItemIds);
+    }
+
+    private void cascadeDuplicateCategory(Menu copy) {
+        copy.getCategories().forEach(category -> {
+            category.setMenu(copy);
+            category.getMenuItems().forEach(item -> {
+                item.setCategory(category);
+                item.getVariants().forEach(variant -> variant.setMenuItem(item));
+            });
+        });
     }
 
     private static Translatable getMenuMessage() {
