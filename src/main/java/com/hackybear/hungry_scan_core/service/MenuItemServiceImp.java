@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -207,8 +208,9 @@ public class MenuItemServiceImp implements MenuItemService {
         menuItemRepository.deleteById(menuItem.getId());
     }
 
-    private boolean isPromoPriceInvalid(MenuItemFormDTO dto) {
+    private static boolean isPromoPriceInvalid(MenuItemFormDTO dto) {
         List<Banner> promo = dto.banners().stream().filter(banner -> banner.getId().equals("promo")).toList();
-        return !promo.isEmpty() && (Objects.isNull(dto.promoPrice()) || dto.promoPrice().signum() == 0);
+        return !promo.isEmpty() && (Objects.isNull(dto.promoPrice())
+                || dto.promoPrice().compareTo(BigDecimal.ZERO) <= 0);
     }
 }
