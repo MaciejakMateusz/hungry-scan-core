@@ -51,10 +51,10 @@ public class LoginServiceImp implements LoginService {
             prepareJwtCookie(authRequestDTO, response);
             return ResponseEntity.ok(Map.of("redirectUrl", "/create-restaurant"));
         }
-        return prepareInitialResponse(authRequestDTO, response);
+        return prepareLoginResponse(authRequestDTO, response);
     }
 
-    private ResponseEntity<?> prepareInitialResponse(AuthRequestDTO authRequestDTO, HttpServletResponse response) {
+    private ResponseEntity<?> prepareLoginResponse(AuthRequestDTO authRequestDTO, HttpServletResponse response) {
         Map<String, Object> initialParams;
         try {
             initialParams = getPostLoginParams(authRequestDTO);
