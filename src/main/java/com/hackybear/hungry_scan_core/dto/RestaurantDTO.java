@@ -16,6 +16,8 @@ public record RestaurantDTO(
         @Length(max = 36)
         String token,
 
+        Integer qrVersion,
+
         @NotBlank
         String name,
 
