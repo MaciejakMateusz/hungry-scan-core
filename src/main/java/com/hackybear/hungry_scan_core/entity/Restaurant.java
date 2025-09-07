@@ -39,7 +39,7 @@ public class Restaurant implements Serializable {
     @Length(max = 36)
     private String token;
 
-    private Integer qrVersion;
+    private Integer qrVersion = 1;
 
     @Column(length = 100, nullable = false)
     @NotBlank
