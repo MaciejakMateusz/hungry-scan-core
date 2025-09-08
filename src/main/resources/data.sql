@@ -1,7 +1,7 @@
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created)
+INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, updated, qr_version)
 VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
-        '2023-11-12T00:00:00Z'),
-       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z');
+        '2023-11-12T00:00:00Z', NOW(), 1),
+       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', NOW(), 1);
 
 INSERT IGNORE INTO price_plan_types (name, price)
 VALUES ('free', 0.00),
