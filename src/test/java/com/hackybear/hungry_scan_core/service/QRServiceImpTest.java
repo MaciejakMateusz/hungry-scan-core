@@ -70,29 +70,38 @@ class QRServiceImpTest {
 
     @BeforeEach
     void setUp() {
-        // directory isn't used by the new generate(restaurantId), but we leave it in case other tests need it
         ReflectionTestUtils.setField(qrService, "qrPath", tempDir.toString());
         ReflectionTestUtils.setField(qrService, "customerAppUrl", "http://customer.app");
         ReflectionTestUtils.setField(qrService, "appUrl", "http://my.app");
         ReflectionTestUtils.setField(qrService, "isProduction", false);
 
-        // for generate(restaurantId)
         ReflectionTestUtils.setField(qrService, "qrPath", tempDir.toString());
         ReflectionTestUtils.setField(qrService, "qrName", "QR code - HungryScan");
     }
 
     @Test
     void generate_noArg_invokesUploadWithCorrectFile() throws Exception {
-        // arrange
         long restaurantId = 2L;
-        doNothing().when(s3Service).uploadFile(anyString(), anyLong(), any(MultipartFile.class));
+        doNothing().when(s3Service).uploadFile(anyString(), any(MultipartFile.class));
 
-        // act
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId(restaurantId);
+        restaurant.setQrVersion(1);
+        restaurant.setToken("fakeToken");
+        doReturn(Optional.of(restaurant)).when(restaurantRepository).findById(restaurantId);
+
+        int expectedNewVersion = restaurant.getQrVersion() + 1;
+
         qrService.generate(restaurantId);
 
-        // assert: uploadFile called once with the right bucket/key and a real PNG multipart
+        String expectedKey = tempDir.toString().replace('\\', '/')
+                + "/" + restaurantId + "/" + expectedNewVersion + ".png";
+
         ArgumentCaptor<MultipartFile> fileCaptor = ArgumentCaptor.forClass(MultipartFile.class);
-        verify(s3Service).uploadFile(eq(tempDir.toString()), eq(restaurantId), fileCaptor.capture());
+
+        verify(s3Service).uploadFile(argThat(actual ->
+                actual.replace('\\', '/').equals(expectedKey)
+        ), fileCaptor.capture());
 
         MultipartFile qrFile = fileCaptor.getValue();
         assertNotNull(qrFile, "Should get a MultipartFile");
@@ -109,10 +118,8 @@ class QRServiceImpTest {
         table.setToken("tkn123");
 
         String customName = "myQRCode";
-        // act
         qrService.generate(table, customName);
 
-        // assert naming & save; we don't check filesystem anymore
         assertEquals(customName + ".png", table.getQrName());
         verify(restaurantTableService).save(table);
     }
@@ -124,10 +131,8 @@ class QRServiceImpTest {
         table.setNumber(7);
         table.setToken("xyz");
 
-        // act
         qrService.generate(table, "");
 
-        // expected default name
         String expected = "QR code - Table number 7, Table ID 42.png";
         assertEquals(expected, table.getQrName());
         verify(restaurantTableService).save(table);
@@ -135,7 +140,6 @@ class QRServiceImpTest {
 
     @Test
     void createQrFile_returnsMultipartFile() throws Exception {
-        // directly test private createQrFile(...) via ReflectionTestUtils
         String format = "png";
         String baseName = "testFile";
         String url = "http://example.com/scan/xyz";
@@ -153,7 +157,6 @@ class QRServiceImpTest {
         assertTrue(file.getBytes().length > 0);
     }
 
-    // ... the rest of your scanQRCode and persistScanEvent tests remain unchanged ...
     @Test
     void scanQRCode_invalidToken_redirectsToInvalid() throws IOException {
         when(restaurantRepository.existsByToken("bad")).thenReturn(false);
