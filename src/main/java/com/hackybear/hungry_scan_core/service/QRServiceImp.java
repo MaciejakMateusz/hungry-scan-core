@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,9 +32,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT;
 
 @Service
 @RequiredArgsConstructor
@@ -68,11 +72,18 @@ public class QRServiceImp implements QRService {
     private boolean isProduction;
 
     @Override
+    @Transactional
+    @CacheEvict(value = USER_RESTAURANT, key = "#restaurantId")
     public void generate(Long restaurantId) throws Exception {
         String format = "png";
-        String url = appUrl + "/api/scan";
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+        Integer newQrVersion = restaurant.getQrVersion() + 1;
+        String keyPath = qrPath + "/" + restaurantId + "/" + newQrVersion + ".png";
+        String url = appUrl + "/api/scan/" + restaurant.getToken();
         MultipartFile qrFile = createQrFile(format, qrName, url);
-        s3Service.uploadFile(qrPath, restaurantId, qrFile);
+        s3Service.uploadFile(keyPath, qrFile);
+        restaurant.setQrVersion(newQrVersion);
+        restaurantRepository.save(restaurant);
     }
 
     @Override
@@ -91,8 +102,6 @@ public class QRServiceImp implements QRService {
 
         table.setQrName(fileName + "." + format);
         restaurantTableService.save(table);
-
-        log.info("QR code for table {} generated successfully.", table.getNumber());
     }
 
     @Override
@@ -140,7 +149,9 @@ public class QRServiceImp implements QRService {
         if (!restaurantRepository.existsById(restaurantId)) {
             exceptionHelper.throwLocalizedMessage("error.restaurantService.restaurantNotFound");
         }
-        return s3Service.downloadFile(qrPath, restaurantId);
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+        String keyPath = qrPath + "/" + restaurantId + "/" + restaurant.getQrVersion() + ".png";
+        return s3Service.downloadFile(keyPath);
     }
 
     @Override
@@ -161,19 +172,28 @@ public class QRServiceImp implements QRService {
 
         Map<EncodeHintType, Object> hints = Map.of(EncodeHintType.CHARACTER_SET, "UTF-8");
         QRCodeWriter qrWriter = new QRCodeWriter();
-        BitMatrix matrix = qrWriter.encode(url, BarcodeFormat.QR_CODE, width, height, hints);
+        String variantUrl = getVariantUrl(url);
+        BitMatrix matrix = qrWriter.encode(variantUrl, BarcodeFormat.QR_CODE, width, height, hints);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(matrix, format, outputStream);
         byte[] imageBytes = outputStream.toByteArray();
 
+        String originalFileName = fileName + "." + format;
         String contentType = "image/" + format.toLowerCase();
         return new InMemoryMultipartFile(
                 "file",
-                fileName + "." + format,
+                originalFileName,
                 contentType,
                 imageBytes
         );
+    }
+
+
+    private String getVariantUrl(String baseUrl) {
+        SecureRandom rng = new SecureRandom();
+        String rid = Long.toString(Math.abs(rng.nextLong()), 36); // base36
+        return baseUrl + (baseUrl.contains("?") ? "&" : "?") + "rid=" + rid;
     }
 
     private String prepareJwtCookie(String jwt) {
