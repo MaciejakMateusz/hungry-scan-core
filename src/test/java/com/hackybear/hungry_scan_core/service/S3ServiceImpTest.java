@@ -89,7 +89,7 @@ class S3ServiceImpTest {
 
         PutObjectRequest req = reqCap.getValue();
         assertEquals("test-bucket", req.bucket());
-        assertEquals("menuItems/7", req.key());
+        assertEquals("menuItems/7.png", req.key());
         assertEquals("image/png", req.contentType());
     }
 
