@@ -12,11 +12,15 @@ public interface S3Service {
 
     void uploadFile(String path, Long id, MultipartFile file) throws LocalizedException;
 
+    void uploadFile(String keyPath, MultipartFile file) throws LocalizedException;
+
     void deleteFile(String path, Long menuItemId);
 
     void deleteAllFiles(String path, List<Long> menuItemIds);
 
     String getPublicUrl(String path, Long menuItemId);
+
+    ResponseEntity<Resource> downloadFile(String path);
 
     ResponseEntity<Resource> downloadFile(String path, Long id);
 

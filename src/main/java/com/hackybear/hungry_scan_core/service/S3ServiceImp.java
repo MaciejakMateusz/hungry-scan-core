@@ -5,8 +5,10 @@ import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class S3ServiceImp implements S3Service {
 
+    private static final Logger log = LoggerFactory.getLogger(S3ServiceImp.class);
     private final ExceptionHelper exceptionHelper;
 
     private S3Client s3;
@@ -60,11 +63,26 @@ public class S3ServiceImp implements S3Service {
 
     @Override
     public void uploadFile(String path, Long id, MultipartFile file) throws LocalizedException {
-        String key = path + "/" + id;
+        String key = path + "/" + id + ".png";
 
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
+                .contentType(file.getContentType())
+                .build();
+
+        try {
+            s3.putObject(putRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+        } catch (IOException e) {
+            exceptionHelper.throwLocalizedMessage("error.s3Service.uploadingFailed");
+        }
+    }
+
+    @Override
+    public void uploadFile(String keyPath, MultipartFile file) throws LocalizedException {
+        PutObjectRequest putRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(keyPath)
                 .contentType(file.getContentType())
                 .build();
 
@@ -120,35 +138,55 @@ public class S3ServiceImp implements S3Service {
     }
 
     @Override
-    public ResponseEntity<Resource> downloadFile(String path, Long id) {
-        GetObjectRequest req = GetObjectRequest.builder()
+    public ResponseEntity<Resource> downloadFile(String keyPath) {
+        GetObjectRequest request = GetObjectRequest.builder()
                 .bucket(bucketName)
-                .key(path + "/" + id)
+                .key(keyPath)
                 .build();
-        String headerValue = "attachment; filename=\"" + id + "\"";
-        return getResourceResponseEntity(headerValue, req);
+
+        String headerValue = "attachment; filename=\"HungryScan - QR Code.png\"; " +
+                "filename*=UTF-8''HungryScan%20-%20QR%20Code.png";
+        return getResourceResponseEntity(headerValue, request);
+    }
+
+    @Override
+    public ResponseEntity<Resource> downloadFile(String path, Long id) {
+        String key = path + "/" + id + ".png";
+
+        GetObjectRequest request = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+        String headerValue = "attachment; filename=\"HungryScan - QR Code.png\"; " +
+                "filename*=UTF-8''HungryScan%20-%20QR%20Code.png";
+        return getResourceResponseEntity(headerValue, request);
     }
 
     @Override
     public ResponseEntity<Resource> downloadFile(String path, Long restaurantId, Long tableId) {
-        GetObjectRequest req = GetObjectRequest.builder()
+        String key = path + "/" + restaurantId + "/" + tableId + ".png";
+        GetObjectRequest request = GetObjectRequest.builder()
                 .bucket(bucketName)
-                .key(path + "/" + restaurantId + "/" + tableId)
+                .key(key)
                 .build();
-        String headerValue = "attachment; filename=\"" + restaurantId + "\"" + tableId;
-        return getResourceResponseEntity(headerValue, req);
+        String headerValue = "attachment; filename=\"HungryScan - QR Code - " + tableId + ".png\"; " +
+                "filename*=UTF-8''HungryScan%20-%20QR%20Code - " + tableId + ".png";
+        return getResourceResponseEntity(headerValue, request);
     }
 
-    private ResponseEntity<Resource> getResourceResponseEntity(String headerValue, GetObjectRequest req) {
-        ResponseInputStream<GetObjectResponse> s3Stream = s3.getObject(req);
-        GetObjectResponse metadata = s3Stream.response();
-
-        InputStreamResource resource = new InputStreamResource(s3Stream);
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(metadata.contentType()))
-                .contentLength(metadata.contentLength())
-                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-                .body(resource);
+    private ResponseEntity<Resource> getResourceResponseEntity(String headerValue, GetObjectRequest request) {
+        ResponseInputStream<GetObjectResponse> in = s3.getObject(request);
+        try {
+            byte[] bytes = in.readAllBytes();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                    .contentType(MediaType.IMAGE_PNG)
+                    .contentLength(in.response().contentLength())
+                    .body(new ByteArrayResource(bytes));
+        } catch (IOException e) {
+            log.error(e.getCause().getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
