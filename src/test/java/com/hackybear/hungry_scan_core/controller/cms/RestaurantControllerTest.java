@@ -197,6 +197,7 @@ public class RestaurantControllerTest {
         assertNotNull(menuSimpleDTO);
         assertEquals("Menu", menuSimpleDTO.name());
         assertNotNull(persistedRestaurant.token());
+        assertEquals(1, persistedRestaurant.qrVersion());
 
         SettingsDTO settingsDTO = persistedRestaurant.settings();
         assertEquals(7, settingsDTO.operatingHours().size());
