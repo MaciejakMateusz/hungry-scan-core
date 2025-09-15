@@ -13,11 +13,16 @@ public record MenuSimpleDTO(Long id,
                             @NotBlank
                             String name,
 
+                            TranslatableDTO message,
+
                             @NotNull
                             MenuColorDTO color,
 
+                            String theme,
+
                             Set<MenuPlanDTO> plan,
-                            boolean standard) implements Serializable, Comparable<MenuSimpleDTO> {
+                            boolean standard,
+                            boolean bannerIconVisible) implements Serializable, Comparable<MenuSimpleDTO> {
 
     @Serial
     private static final long serialVersionUID = 1L;

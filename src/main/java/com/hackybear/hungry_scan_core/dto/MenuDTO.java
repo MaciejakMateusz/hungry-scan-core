@@ -10,10 +10,13 @@ import java.util.Set;
 
 public record MenuDTO(Long id,
                       @NotBlank String name,
+                      TranslatableDTO message,
                       @NotNull MenuColorDTO color,
+                      String theme,
                       List<CategoryDTO> categories,
                       Set<MenuPlanDTO> plan,
                       boolean standard,
+                      boolean bannerIconVisible,
                       LocalDateTime created,
                       LocalDateTime updated,
                       String modifiedBy,

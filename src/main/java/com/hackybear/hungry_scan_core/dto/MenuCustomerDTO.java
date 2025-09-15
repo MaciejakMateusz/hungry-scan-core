@@ -7,7 +7,8 @@ import java.util.List;
 public record MenuCustomerDTO(List<CategoryCustomerDTO> categories,
                               RestaurantSimpleDTO restaurant,
                               String theme,
-                              TranslatableDTO message) implements Serializable {
+                              TranslatableDTO message,
+                              boolean bannerIconVisible) implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
