@@ -74,14 +74,14 @@ VALUES ('#1A1A1A'),
        ('#9746FF'),
        ('#016DFF');
 
-INSERT INTO menus (standard, name, restaurant_id, theme, color_id, translatable_message_id)
-VALUES (true, 'Całodniowe', 1, 'COLOR_318E41', 9, 1),
-       (true, 'Menu', 2, 'COLOR_318E41', 9, 2),
-       (false, 'Śniadaniowe', 2, 'COLOR_318E41', 10, 3),
-       (false, 'Obiadowe', 2, 'COLOR_318E41', 10, 4),
-       (false, 'Kolacyjne', 2, 'COLOR_318E41', 10, 5),
-       (false, 'Ziemniaczane', 5, 'COLOR_318E41', 10, 6),
-       (false, 'Menu', 11, 'COLOR_318E41', 10, 7);
+INSERT INTO menus (standard, banner_icon_visible, name, restaurant_id, theme, color_id, translatable_message_id)
+VALUES (true, true, 'Całodniowe', 1, 'COLOR_318E41', 9, 1),
+       (true, true, 'Menu', 2, 'COLOR_318E41', 9, 2),
+       (false, true, 'Śniadaniowe', 2, 'COLOR_318E41', 10, 3),
+       (false, true, 'Obiadowe', 2, 'COLOR_318E41', 10, 4),
+       (false, false, 'Kolacyjne', 2, 'COLOR_318E41', 10, 5),
+       (false, false, 'Ziemniaczane', 5, 'COLOR_318E41', 10, 6),
+       (false, false, 'Menu', 11, 'COLOR_318E41', 10, 7);
 
 /* CATEGORIES TRANSLATIONS */
 INSERT INTO translatable(pl, en)
