@@ -63,6 +63,9 @@ public class Menu implements Serializable, Comparable<Menu> {
     @Column(name = "standard")
     private boolean standard;
 
+    @Column(name = "banner_icon_visible")
+    private boolean bannerIconVisible = true;
+
     @Enumerated(EnumType.STRING)
     private Theme theme;
 
