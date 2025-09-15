@@ -2,6 +2,10 @@ package com.hackybear.hungry_scan_core.enums;
 
 import lombok.Getter;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Getter
 public enum Theme {
 
@@ -34,5 +38,11 @@ public enum Theme {
     Theme(String hex) {
         this.hex = hex;
     }
+
+    public static final Map<String, Theme> HEX_MAP =
+            Stream.of(values()).collect(Collectors.toUnmodifiableMap(
+                    t -> t.hex.toUpperCase(),
+                    t -> t
+            ));
 
 }
