@@ -2,13 +2,11 @@ package com.hackybear.hungry_scan_core.integration.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.hackybear.hungry_scan_core.dto.MenuColorDTO;
-import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
-import com.hackybear.hungry_scan_core.dto.SettingsDTO;
+import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.entity.PricePlan;
 import com.hackybear.hungry_scan_core.entity.PricePlanType;
 import com.hackybear.hungry_scan_core.enums.Language;
+import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.utility.Money;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +82,16 @@ public class RedisSerializationTest {
 
     private Set<MenuSimpleDTO> getMenuSimpleDTOs() {
         return Set.of(
-                new MenuSimpleDTO(1L, 1L, "Menu1", getMenuColorDTO(), null, true)
+                new MenuSimpleDTO(
+                        1L,
+                        1L,
+                        "Menu1",
+                        getMessageDTO(),
+                        getMenuColorDTO(),
+                        Theme.COLOR_090909.getHex(),
+                        null,
+                        true,
+                        false)
         );
     }
 
@@ -136,5 +143,9 @@ public class RedisSerializationTest {
 
     private MenuColorDTO getMenuColorDTO() {
         return new MenuColorDTO(99L, "#000000");
+    }
+
+    private TranslatableDTO getMessageDTO() {
+        return new TranslatableDTO(245L, "Witaj!", "Welcome!", null, null, null, null);
     }
 }
