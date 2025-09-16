@@ -3,12 +3,14 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.MenuColorDTO;
 import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.TranslatableDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuColorMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.entity.MenuColor;
 import com.hackybear.hungry_scan_core.entity.MenuPlan;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuColorRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
@@ -95,6 +97,14 @@ class MenuControllerTest {
     @WithMockUser(roles = {"WAITER"}, username = "matimemek@test.com")
     void shouldForbidToGetAll() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/cms/menus");
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    void shouldGetAllThemes() throws Exception {
+        List<String> themeHexes = apiRequestUtils.fetchAsList("/api/cms/menus/themes", String.class);
+        assertEquals(23, themeHexes.size());
+        assertTrue(themeHexes.contains("#152966"));
     }
 
     @Test
@@ -548,7 +558,7 @@ class MenuControllerTest {
     }
 
     private MenuSimpleDTO createMenuDTO(String name, Long restaurantId) {
-        return new MenuSimpleDTO(null, restaurantId, name, getMenuColorDTO(), null, false);
+        return new MenuSimpleDTO(null, restaurantId, name, getMessageDTO(), getMenuColorDTO(), Theme.COLOR_0A4CB5.getHex(), null, false, true);
     }
 
     private Set<MenuPlan> getPlan(Menu menu, Set<TimeRange> timeRanges) {
@@ -577,5 +587,9 @@ class MenuControllerTest {
     private MenuColorDTO getMenuColorDTO() {
         MenuColor menuColor = menuColorRepository.findById(9L).orElseThrow();
         return menuColorMapper.toDTO(menuColor);
+    }
+
+    private TranslatableDTO getMessageDTO() {
+        return new TranslatableDTO(245L, "Witaj!", "Welcome!", null, null, null, null);
     }
 }
