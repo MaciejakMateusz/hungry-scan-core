@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.service;
 import com.hackybear.hungry_scan_core.dto.MenuColorDTO;
 import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.TranslatableDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuDeepCopyMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.*;
@@ -80,9 +81,12 @@ class MenuServiceImpTest implements WithAssertions {
                 menu.getId(),
                 restaurant.getId(),
                 menu.getName(),
+                getMessageDTO(),
                 color,
+                Theme.COLOR_F7C911.getHex(),
                 Collections.emptySet(),
-                false);
+                false,
+                true);
 
         lenient().when(menuRepository.findById(menu.getId()))
                 .thenReturn(Optional.of(menu));
@@ -116,9 +120,12 @@ class MenuServiceImpTest implements WithAssertions {
                 null,
                 restaurant.getId(),
                 "Lunch",
+                getMessageDTO(),
                 color,
+                Theme.COLOR_AD175A.getHex(),
                 Collections.emptySet(),
-                false);
+                false,
+                true);
 
         when(menuRepository.existsByRestaurantIdAndName(restaurant.getId(), "Lunch"))
                 .thenReturn(false);
@@ -146,9 +153,12 @@ class MenuServiceImpTest implements WithAssertions {
                 null,
                 restaurant.getId(),
                 "Breakfast",
+                getMessageDTO(),
                 color,
+                Theme.COLOR_DA8414.getHex(),
                 Collections.emptySet(),
-                false);
+                false,
+                true);
 
         when(menuRepository.existsByRestaurantIdAndName(restaurant.getId(), "Breakfast"))
                 .thenReturn(true);
@@ -167,15 +177,19 @@ class MenuServiceImpTest implements WithAssertions {
                 menu.getId(),
                 restaurant.getId(),
                 "Brunch-Renamed",
+                getMessageDTO(),
                 color,
+                Theme.COLOR_090909.getHex(),
                 Collections.emptySet(),
+                false,
                 false);
 
-        when(menuMapper.toMenu(req)).thenAnswer(inv -> {
-            Menu m = new Menu();
-            m.setName("Brunch-Renamed");
-            return m;
-        });
+        doAnswer(inv -> {
+            MenuSimpleDTO dto = inv.getArgument(0);
+            Menu target = inv.getArgument(1);
+            target.setName(dto.name());
+            return null;
+        }).when(menuMapper).updateFromSimpleDTO(any(MenuSimpleDTO.class), any(Menu.class));
 
         when(menuRepository.existsByRestaurantIdAndName(restaurant.getId(), "Brunch-Renamed"))
                 .thenReturn(false);
@@ -348,5 +362,9 @@ class MenuServiceImpTest implements WithAssertions {
         menuItems.add(item1);
         menuItems.add(item2);
         return menuItems;
+    }
+
+    private TranslatableDTO getMessageDTO() {
+        return new TranslatableDTO(245L, "Witaj!", "Welcome!", null, null, null, null);
     }
 }
