@@ -101,9 +101,7 @@ public class MenuServiceImp implements MenuService {
             validateUniqueness(menuDTO.name(), activeRestaurantId);
         }
         validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
-        Menu fromDTO = menuMapper.toMenu(menuDTO);
-        menu.setName(fromDTO.getName());
-        menu.setColor(fromDTO.getColor());
+        menuMapper.updateFromSimpleDTO(menuDTO, menu);
         menuRepository.saveAndFlush(menu);
     }
 

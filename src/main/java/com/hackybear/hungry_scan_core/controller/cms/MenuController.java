@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
@@ -16,6 +17,7 @@ import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -36,6 +38,15 @@ public class MenuController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getStackTrace());
         }
+    }
+
+    @GetMapping("/themes")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<?> getAllThemes() {
+        List<String> themes = Arrays.stream(Theme.values())
+                .map(Theme::getHex)
+                .toList();
+        return ResponseEntity.ok(themes);
     }
 
     @PostMapping("/show")
