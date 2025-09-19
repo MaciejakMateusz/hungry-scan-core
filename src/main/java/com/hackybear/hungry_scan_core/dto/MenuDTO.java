@@ -11,6 +11,7 @@ import java.util.Set;
 public record MenuDTO(Long id,
                       @NotBlank String name,
                       TranslatableDTO message,
+                      RestaurantSimpleDTO restaurant,
                       @NotNull MenuColorDTO color,
                       String theme,
                       List<CategoryDTO> categories,
