@@ -268,6 +268,23 @@ public class ApiRequestUtils {
         return result.getResponse();
     }
 
+    /**
+     * Executes GET HTTP request and returns response.
+     *
+     * @param endpointUrl The URL endpoint to execute the request to.
+     * @return MockHttpServletResponse.
+     * @throws Exception If an error occurs during the request.
+     */
+    public MockHttpServletResponse executeGet(String endpointUrl, ResultMatcher matcher) throws Exception {
+        MvcResult result = mockMvc.perform(get(endpointUrl)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(matcher)
+                .andDo(print())
+                .andReturn();
+
+        return result.getResponse();
+    }
+
 
     /**
      * Executes POST HTTP request and returns response.
