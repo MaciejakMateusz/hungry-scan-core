@@ -10,6 +10,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 public record MenuItemFormDTO(Long id,
@@ -33,7 +34,7 @@ public record MenuItemFormDTO(Long id,
                               Set<LabelDTO> labels,
                               Set<AllergenDTO> allergens,
                               Set<IngredientSimpleDTO> additionalIngredients,
-                              Set<VariantDTO> variants,
+                              List<VariantDTO> variants,
                               Set<Banner> banners,
                               Integer displayOrder,
                               boolean available,

@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.dto.mapper;
 
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
+import com.hackybear.hungry_scan_core.dto.MenuItemVariantsDTO;
 import com.hackybear.hungry_scan_core.entity.MenuItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -31,5 +32,7 @@ public interface MenuItemMapper {
     @Mapping(expression = "java(new Category(menuItemFormDTO.categoryId()))",
             target = "category")
     MenuItem toMenuItem(MenuItemFormDTO menuItemFormDTO);
+
+    MenuItemVariantsDTO toVariantsDTO(MenuItem menuItem);
 
 }

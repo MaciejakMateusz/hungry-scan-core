@@ -6,6 +6,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,10 +57,8 @@ public interface MenuDeepCopyMapper {
     MenuItem deepCopyItem(MenuItem src);
 
     @Named("deepCopyVariants")
-    default Set<Variant> deepCopyVariants(Set<Variant> srcVars) {
-        return srcVars.stream()
-                .map(this::deepCopyVariant)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+    default List<Variant> deepCopyVariants(List<Variant> srcVars) {
+        return srcVars.stream().map(this::deepCopyVariant).toList();
     }
 
     @Mapping(target = "id", ignore = true)
