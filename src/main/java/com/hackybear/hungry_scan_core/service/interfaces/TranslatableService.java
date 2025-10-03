@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface TranslatableService {
 
-    void saveAll(List<Translatable> translatables);
+    void saveAll(List<Translatable> translatables, Long activeMenuId, Long activeRestaurantId);
 
     String translate(Map<String, Object> params);
 
