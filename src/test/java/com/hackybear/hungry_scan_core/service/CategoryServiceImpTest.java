@@ -234,7 +234,7 @@ class CategoryServiceImpTest {
         MenuItem m1 = new MenuItem();
         m1.setId(100L);
         Variant v1 = new Variant();
-        m1.setVariants(Set.of(v1));
+        m1.setVariants(List.of(v1));
         existing.setMenuItems(new HashSet<>(List.of(m1)));
 
         when(categoryRepository.findById(CAT_ID)).thenReturn(Optional.of(existing));
@@ -242,7 +242,7 @@ class CategoryServiceImpTest {
 
         service.delete(CAT_ID, MENU_ID);
 
-        verify(variantRepository).deleteAll(Set.of(v1));
+        verify(variantRepository).deleteAll(List.of(v1));
         verify(menuItemRepository).deleteAll(Set.of(m1));
         verify(categoryRepository).deleteById(CAT_ID);
 

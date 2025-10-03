@@ -5,7 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,7 +108,7 @@ class MenuDeepCopyMapperTest {
         srcItem.setId(77L);
         srcItem.setName(itemName);
         srcItem.setDescription(itemDesc);
-        srcItem.setVariants(new LinkedHashSet<>(Set.of(srcVar)));
+        srcItem.setVariants(new ArrayList<>(List.of(srcVar)));
 
         Category srcCat = new Category();
         srcCat.setId(55L);
@@ -177,7 +179,7 @@ class MenuDeepCopyMapperTest {
 
         assertNotNull(copyItem.getVariants());
         assertEquals(1, copyItem.getVariants().size());
-        Variant copyVar = copyItem.getVariants().iterator().next();
+        Variant copyVar = copyItem.getVariants().getFirst();
         assertNull(copyVar.getId());
         assertNull(copyVar.getMenuItem());
         assertNotSame(srcVar, copyVar);

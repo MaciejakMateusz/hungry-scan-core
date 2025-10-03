@@ -47,7 +47,7 @@ class TranslatableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER", "ADMIN"})
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldSaveAll() throws Exception {

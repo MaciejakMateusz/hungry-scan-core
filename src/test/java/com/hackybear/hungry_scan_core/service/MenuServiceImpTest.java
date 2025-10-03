@@ -271,7 +271,7 @@ class MenuServiceImpTest implements WithAssertions {
 
         Variant v = new Variant();
         MenuItem mi = new MenuItem();
-        mi.setVariants(Set.of(v));
+        mi.setVariants(List.of(v));
         Category cat = new Category();
         cat.setMenuItems(Set.of(mi));
         copied.setCategories(Set.of(cat));
