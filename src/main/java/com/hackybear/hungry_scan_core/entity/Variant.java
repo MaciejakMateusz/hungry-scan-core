@@ -80,16 +80,4 @@ public class Variant implements Comparable<Variant>, Serializable {
         return this.displayOrder.compareTo(other.displayOrder);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Variant that)) return false;
-        if (this.id == null || that.id == null) return false;
-        return this.id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return (id != null ? id.hashCode() : System.identityHashCode(this));
-    }
 }
