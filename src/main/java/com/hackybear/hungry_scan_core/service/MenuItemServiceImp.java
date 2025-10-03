@@ -3,13 +3,15 @@ package com.hackybear.hungry_scan_core.service;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.*;
-import com.hackybear.hungry_scan_core.entity.*;
+import com.hackybear.hungry_scan_core.entity.Banner;
+import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.entity.MenuItem;
+import com.hackybear.hungry_scan_core.entity.MenuItemViewEvent;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemRepository;
 import com.hackybear.hungry_scan_core.repository.MenuItemViewEventRepository;
-import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
@@ -38,12 +40,12 @@ public class MenuItemServiceImp implements MenuItemService {
     private final CategoryRepository categoryRepository;
     private final ExceptionHelper exceptionHelper;
     private final SortingHelper sortingHelper;
-    private final VariantRepository variantRepository;
     private final MenuItemMapper menuItemMapper;
     private final TranslatableMapper translatableMapper;
     private final AllergenMapper allergenMapper;
     private final LabelMapper labelMapper;
     private final IngredientMapper ingredientMapper;
+    private final VariantMapper variantMapper;
     private final EntityManager entityManager;
     private final MenuItemViewEventRepository menuItemViewEventRepository;
     private final S3Service s3Service;
@@ -119,7 +121,6 @@ public class MenuItemServiceImp implements MenuItemService {
     })
     public void delete(Long id, Long menuId) throws LocalizedException {
         MenuItem existingMenuItem = getMenuItem(id);
-        removeVariants(existingMenuItem);
         Category category = existingMenuItem.getCategory();
         removeMenuItem(category, existingMenuItem);
         Set<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
@@ -186,6 +187,12 @@ public class MenuItemServiceImp implements MenuItemService {
                 .map(allergenMapper::toAllergen).collect(Collectors.toSet()));
         existing.setAdditionalIngredients(dto.additionalIngredients().stream()
                 .map(ingredientMapper::toIngredient).collect(Collectors.toSet()));
+
+        existing.getVariants().clear();
+        dto.variants().stream()
+                .map(variantMapper::toVariant)
+                .forEach(existing::addVariant);
+
         existing.setAvailable(dto.available());
 
         if (isPromoPriceInvalid(dto)) {
@@ -193,13 +200,6 @@ public class MenuItemServiceImp implements MenuItemService {
         }
         existing.setPromoPrice(dto.promoPrice());
         existing.setBanners(dto.banners());
-    }
-
-    private void removeVariants(MenuItem menuItem) {
-        if (!menuItem.getVariants().isEmpty()) {
-            List<Variant> variants = variantRepository.findAllByMenuItemIdOrderByDisplayOrder(menuItem.getId());
-            variantRepository.deleteAll(variants);
-        }
     }
 
     private void removeMenuItem(Category category, MenuItem menuItem) {
