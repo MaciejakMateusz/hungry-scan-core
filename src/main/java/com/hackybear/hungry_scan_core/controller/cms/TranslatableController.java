@@ -1,7 +1,10 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.Translatable;
+import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.TranslatableService;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,12 +21,20 @@ import java.util.Map;
 public class TranslatableController {
 
     private final TranslatableService translatableService;
+    private final UserService userService;
+    private final ResponseHelper responseHelper;
 
     @PostMapping("/save-all")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<?> saveAll(@RequestBody List<Translatable> translatables) {
-        translatableService.saveAll(translatables);
-        return ResponseEntity.ok().build();
+        try {
+            Long activeMenuId = userService.getActiveMenuId();
+            Long activeRestaurantId = userService.getActiveRestaurantId();
+            translatableService.saveAll(translatables, activeMenuId, activeRestaurantId);
+            return ResponseEntity.ok().build();
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @PostMapping("/translate")
