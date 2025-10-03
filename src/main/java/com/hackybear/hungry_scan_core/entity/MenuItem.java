@@ -22,7 +22,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -87,7 +89,8 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     private Set<Ingredient> additionalIngredients = new HashSet<>();
 
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Variant> variants = new HashSet<>();
+    @OrderBy("displayOrder")
+    private List<Variant> variants = new ArrayList<>();
 
     @NotNull
     private Integer displayOrder;
@@ -128,8 +131,15 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
         this.additionalIngredients.add(additionalIngredient);
     }
 
-    public void removeVariant(Variant variant) {
-        this.variants.remove(variant);
+
+    public void addVariant(Variant v) {
+        variants.add(v);
+        v.setMenuItem(this);
+    }
+
+    public void removeVariant(Variant v) {
+        variants.remove(v);
+        v.setMenuItem(null);
     }
 
     public int compareTo(MenuItem other) {
