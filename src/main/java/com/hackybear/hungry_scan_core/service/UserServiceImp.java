@@ -1,10 +1,7 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.dto.MenuDTO;
-import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
-import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
@@ -22,11 +19,14 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -34,14 +34,14 @@ import org.springframework.validation.BindingResult;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.USER_MENU_ID;
-import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT;
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
     private final ResponseHelper responseHelper;
     private final UserMapper userMapper;
     private final RestaurantMapper restaurantMapper;
@@ -62,6 +62,28 @@ public class UserServiceImp implements UserService {
     public TreeSet<User> findAll() throws LocalizedException {
         User currentUser = getCurrentUser();
         return new TreeSet<>(userRepository.findAllByOrganizationId(currentUser.getOrganizationId(), currentUser.getId()));
+    }
+
+    @Override
+    @Cacheable(value = USER_ID, key = "#user.id")
+    public UserProfileDTO getCurrentUserProfileData(User user) {
+        return userMapper.toUserProfileDTO(user);
+    }
+
+    @Override
+    @CacheEvict(value = USER_ID, key = "#user.id")
+    @Transactional
+    public ResponseEntity<?> updateUserProfile(User user, UserProfileUpdateDTO dto, BindingResult br) {
+        if (br.hasErrors()) {
+            return responseHelper.createErrorResponse(br);
+        }
+
+        ResponseEntity<?> errorResponse = validatePasswords(dto, user);
+        if (errorResponse != null) return errorResponse;
+
+        userMapper.updateFromProfileUpdateDTO(dto, user);
+        userRepository.save(user);
+        return ResponseEntity.ok().build();
     }
 
     @Transactional
@@ -150,7 +172,7 @@ public class UserServiceImp implements UserService {
             errorParams.put("error", exceptionHelper.getLocalizedMsg("validation.recovery.tokenExpired"));
             return ResponseEntity.badRequest().body(errorParams);
         }
-        user.setPassword(BCrypt.hashpw(recovery.password(), BCrypt.gensalt()));
+        user.setPassword(recovery.password());
         user.setEmailToken(null);
         user.setEmailTokenExpiry(null);
         userRepository.save(user);
@@ -315,6 +337,41 @@ public class UserServiceImp implements UserService {
         user.setEmailToken(emailToken);
         userRepository.save(user);
         emailService.activateAccount(user.getEmail(), emailToken);
+    }
+
+    private ResponseEntity<?> validatePasswords(UserProfileUpdateDTO dto, User user) {
+        if (Objects.isNull(dto.password())) {
+            return null;
+        }
+        if (!isAuthenticated(dto, user)) {
+            return createResponse(HttpStatus.UNAUTHORIZED,
+                    "password", "validation.wrongPassword");
+        } else if (Objects.isNull(dto.newPassword())) {
+            return createResponse(HttpStatus.BAD_REQUEST,
+                    "newPassword", "validation.newPassword.notBlank");
+        } else if (!dto.newPassword().equals(dto.repeatedPassword())) {
+            return createResponse(HttpStatus.BAD_REQUEST,
+                    "repeatedPassword", "validation.repeatedPassword.notMatch");
+        }
+        user.setPassword(dto.newPassword());
+        return null;
+    }
+
+    private ResponseEntity<?> createResponse(HttpStatus status, String key, String messageCode) {
+        return ResponseEntity.status(status).body(Map.of(key, exceptionHelper.getLocalizedMsg(messageCode)));
+    }
+
+    private boolean isAuthenticated(UserProfileUpdateDTO dto, User user) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(user.getUsername(), dto.password());
+        boolean isAuthenticated;
+        try {
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            isAuthenticated = authentication.isAuthenticated();
+        } catch (Exception e) {
+            isAuthenticated = false;
+        }
+        return isAuthenticated;
     }
 
 }

@@ -1,9 +1,6 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
-import com.hackybear.hungry_scan_core.dto.MenuDTO;
-import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
-import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import jakarta.mail.MessagingException;
@@ -18,6 +15,10 @@ public interface UserService {
     User findByUsername(String email) throws LocalizedException;
 
     Set<User> findAll() throws LocalizedException;
+
+    UserProfileDTO getCurrentUserProfileData(User user);
+
+    ResponseEntity<?> updateUserProfile(User user, UserProfileUpdateDTO dto, BindingResult br);
 
     ResponseEntity<?> save(RegistrationDTO registrationDTO, BindingResult br);
 
