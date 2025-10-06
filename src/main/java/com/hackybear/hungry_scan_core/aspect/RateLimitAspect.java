@@ -1,7 +1,9 @@
 package com.hackybear.hungry_scan_core.aspect;
 
 import com.hackybear.hungry_scan_core.annotation.WithRateLimitProtection;
+import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.RateLimitException;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,22 +16,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class RateLimitAspect {
 
-    //todo pull dynamic translation
-    public static final String ERROR_MESSAGE = "Too many request at endpoint %s from IP %s! Please try again after %d milliseconds!";
+    private final ExceptionHelper exceptionHelper;
     private final ConcurrentHashMap<String, ConcurrentLinkedQueue<Long>> requestCounts = new ConcurrentHashMap<>();
 
     @Value("${app.rate.limit}")
     private int rateLimit;
 
     @Value("${app.rate.duration-in-ms}")
-    private long rateDuration;
+    private long rateDurationInMs;
 
     /**
      * Executed by each call of a method annotated with {@link WithRateLimitProtection} which should be an HTTP endpoint.
-     * Counts calls per remote address. Calls older than {@link #rateDuration} milliseconds will be forgotten. If there have
-     * been more than {@link #rateLimit} calls within {@link #rateDuration} milliseconds from a remote address, a {@link RateLimitException}
+     * Counts calls per remote address. Calls older than {@link #rateDurationInMs} milliseconds will be forgotten. If there have
+     * been more than {@link #rateLimit} calls within {@link #rateDurationInMs} milliseconds from a remote address, a {@link RateLimitException}
      * will be thrown.
      *
      * @throws RateLimitException if rate limit for a given remote address has been exceeded
@@ -43,8 +45,12 @@ public class RateLimitAspect {
         requestCounts.get(key).add(currentTime);
         cleanUpRequestCounts(currentTime);
         if (requestCounts.get(key).size() > rateLimit) {
-            throw new RateLimitException(
-                    String.format(ERROR_MESSAGE, requestAttributes.getRequest().getRequestURI(), key, rateDuration)
+            long rateDurationInSeconds = rateDurationInMs / 1000;
+            throw new RateLimitException(exceptionHelper.getLocalizedMsg(
+                    "validation.rateLimit.exceeded",
+                    requestAttributes.getRequest().getRequestURI(),
+                    key,
+                    rateDurationInSeconds)
             );
         }
     }
@@ -54,6 +60,6 @@ public class RateLimitAspect {
     }
 
     private boolean timeIsTooOld(final long currentTime, final long timeToCheck) {
-        return currentTime - timeToCheck > rateDuration;
+        return currentTime - timeToCheck > rateDurationInMs;
     }
 }
