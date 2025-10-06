@@ -119,7 +119,7 @@ class S3ServiceImpTest {
 
         DeleteObjectRequest req = cap.getValue();
         assertEquals("test-bucket", req.bucket());
-        assertEquals("menuItems/99", req.key());
+        assertEquals("menuItems/99.png", req.key());
     }
 
     @Test

@@ -95,7 +95,7 @@ public class S3ServiceImp implements S3Service {
 
     @Override
     public void deleteFile(String path, Long id) {
-        String key = path + "/" + id;
+        String key = path + "/" + id + ".png";
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
