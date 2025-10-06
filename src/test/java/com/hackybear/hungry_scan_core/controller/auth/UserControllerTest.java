@@ -1,9 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.auth;
 
-import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
-import com.hackybear.hungry_scan_core.dto.MenuDTO;
-import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
-import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
@@ -65,6 +62,134 @@ class UserControllerTest {
     @Test
     void init() {
         log.info("Initializing H2 database...");
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com")
+    void shouldGetUserProfileData() throws Exception {
+        UserProfileDTO userProfileDTO = apiRequestUtils.fetchObject("/api/user/profile", UserProfileDTO.class);
+        assertNotNull(userProfileDTO);
+        assertEquals("admin@example.com", userProfileDTO.username());
+        assertEquals("edmin", userProfileDTO.forename());
+        assertEquals("edminowsky", userProfileDTO.surname());
+    }
+
+    @Test
+    void shouldNotGetUserProfileData_expectForbidden() throws Exception {
+        apiRequestUtils.executeGet("/api/user/profile", status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com")
+    void shouldNotUpdateUserProfile_wrongPassword() throws Exception {
+        UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
+                "Admin",
+                "Super",
+                "WrongPass923.",
+                "Karagor500?",
+                "Karagor500?"
+        );
+
+        Map<?, ?> response = apiRequestUtils.patchAndReturnResponseBody(
+                "/api/user/profile", dto, status().isUnauthorized());
+        assertEquals("Błędne hasło", response.get("password"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com")
+    void shouldNotUpdateUserProfile_newPasswordsEmpty() throws Exception {
+        UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
+                "Admin",
+                "Super",
+                "TestPass923.",
+                null,
+                null
+        );
+
+        Map<?, ?> response = apiRequestUtils.patchAndReturnResponseBody(
+                "/api/user/profile", dto, status().isBadRequest());
+        assertEquals("Hasło nie powinno być puste", response.get("newPassword"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com")
+    void shouldNotUpdateUserProfile_wrongPasswordFormat() throws Exception {
+        UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
+                "Admin",
+                "Super",
+                "TestPass923.",
+                "Karagor500",
+                null
+        );
+
+        Map<?, ?> response = apiRequestUtils.patchAndReturnResponseBody(
+                "/api/user/profile", dto, status().isBadRequest());
+        assertEquals("Hasło musi posiadać przynajmniej  jedną dużą literę, jedną małą literę, jedną cyfrę i jeden znak specjalny",
+                response.get("newPassword"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com")
+    void shouldNotUpdateUserProfile_passwordsNotTheSame() throws Exception {
+        UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
+                "Admin",
+                "Super",
+                "TestPass923.",
+                "Karagor500!",
+                "Karagor600!"
+        );
+
+        Map<?, ?> response = apiRequestUtils.patchAndReturnResponseBody(
+                "/api/user/profile", dto, status().isBadRequest());
+        assertEquals("Hasła nie są identyczne", response.get("repeatedPassword"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateUserProfile_onlyBasicData() throws Exception {
+        UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
+                "Admin",
+                "Super",
+                null,
+                null,
+                null
+        );
+
+        apiRequestUtils.patchAndExpect200("/api/user/profile", dto);
+        UserProfileDTO userProfileDTO = apiRequestUtils.fetchObject("/api/user/profile", UserProfileDTO.class);
+        User user = userMapper.toUser(userProfileDTO);
+        user.setUsername("shouldNotApply@example.com");
+        user.setForename("Admin");
+        user.setSurname("Super");
+    }
+
+    @Test
+    @WithMockUser(username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldUpdateUserProfile_withPasswords() throws Exception {
+        UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
+                "Admin",
+                "Super",
+                "TestPass923.",
+                "Karagor500?",
+                "Karagor500?"
+        );
+
+        apiRequestUtils.patchAndExpect200("/api/user/profile", dto);
+        UserProfileDTO userProfileDTO = apiRequestUtils.fetchObject("/api/user/profile", UserProfileDTO.class);
+        User user = userMapper.toUser(userProfileDTO);
+        user.setUsername("shouldNotApply@example.com");
+        user.setForename("Admin");
+        user.setSurname("Super");
+
+        AuthRequestDTO authRequestDTO = new AuthRequestDTO("admin@example.com", "Karagor500?");
+        Map<?, ?> response =
+                apiRequestUtils.postAndFetchObject("/api/user/login", authRequestDTO, Map.class);
+        assertEquals("/app", response.get("redirectUrl"));
+        assertEquals("Admin", response.get("forename"));
     }
 
     @Test
