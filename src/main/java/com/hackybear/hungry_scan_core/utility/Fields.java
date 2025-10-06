@@ -16,6 +16,8 @@ public class Fields {
             "hasAnyRole('" + WAITER + "', '" + COOK + "', '" + MANAGER + "', '" + ADMIN + "', '" + CUSTOMER + "')";
 
     //REDIS CACHE
+    public static final String USER_ID = "user.id";
+
     public static final String USER_MENU_ID = "user.activeMenuId";
     public static final String USER_MENU = "user.activeMenu";
     public static final String USER_RESTAURANT_ID = "user.activeRestaurantId";
