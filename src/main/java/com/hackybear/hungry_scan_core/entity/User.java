@@ -20,6 +20,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
@@ -116,12 +117,23 @@ public class User implements Serializable, Comparable<User> {
 
     @PrePersist
     private void prePersist() {
-        this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());
+        hashPasswordIfPlain();
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        hashPasswordIfPlain();
+    }
+
+    private void hashPasswordIfPlain() {
+        if (Objects.nonNull(this.password) && !this.password.startsWith("$2a$")) {
+            this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());
+        }
     }
 
     @Override
     public int compareTo(User other) {
-        return this.getSurname().compareTo(other.getSurname());
+        return this.getUsername().compareTo(other.getUsername());
     }
 
 }
