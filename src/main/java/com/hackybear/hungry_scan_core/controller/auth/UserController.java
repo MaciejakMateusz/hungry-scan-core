@@ -2,10 +2,7 @@ package com.hackybear.hungry_scan_core.controller.auth;
 
 import com.hackybear.hungry_scan_core.annotation.WithRateLimitProtection;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.dto.AuthRequestDTO;
-import com.hackybear.hungry_scan_core.dto.RecoveryDTO;
-import com.hackybear.hungry_scan_core.dto.RecoveryInitDTO;
-import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.LoginService;
@@ -37,6 +34,29 @@ public class UserController {
 
     @Value("${IS_PROD}")
     private boolean isProduction;
+
+    @GetMapping("/profile")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getUserProfileData() {
+        try {
+            User user = userService.getCurrentUser();
+            return ResponseEntity.ok(userService.getCurrentUserProfileData(user));
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
+    @PatchMapping("/profile")
+    @PreAuthorize("isAuthenticated()")
+    @WithRateLimitProtection
+    public ResponseEntity<?> updateUserProfile(@Valid @RequestBody final UserProfileUpdateDTO dto, BindingResult br) {
+        try {
+            User user = userService.getCurrentUser();
+            return userService.updateUserProfile(user, dto, br);
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
 
     @PostMapping("/register")
     @WithRateLimitProtection
@@ -109,7 +129,7 @@ public class UserController {
     public ResponseEntity<?> logout(HttpServletResponse response) {
         String invalidatedJwtCookie = invalidateJwtCookie();
         response.setHeader("Set-Cookie", invalidatedJwtCookie);
-        return ResponseEntity.ok().body(Map.of("redirectUrl", "/"));
+        return ResponseEntity.ok().body(Map.of("redirectUrl", "/sign-in"));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -152,7 +172,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> options() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Allow", "GET, POST, OPTIONS");
+        headers.add("Allow", "GET, POST, PATCH, OPTIONS");
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 }
