@@ -40,7 +40,7 @@ public class UserController {
     public ResponseEntity<?> getUserProfileData() {
         try {
             User user = userService.getCurrentUser();
-            return ResponseEntity.ok(userService.getCurrentUserProfileData(user));
+            return ResponseEntity.ok(userService.getUserProfileData(user));
         } catch (LocalizedException e) {
             return responseHelper.createErrorResponse(e);
         }
