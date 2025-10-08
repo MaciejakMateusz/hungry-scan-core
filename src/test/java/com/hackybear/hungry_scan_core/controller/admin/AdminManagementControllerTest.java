@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.UserProfileDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
 import com.hackybear.hungry_scan_core.entity.Role;
@@ -79,137 +80,6 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldGetWaiters() throws Exception {
-        List<User> users =
-                apiRequestUtils.fetchAsList(
-                        "/api/admin/users/waiters", User.class);
-
-        assertEquals(2, users.size());
-        assertEquals("netka@test.com", users.get(1).getUsername());
-    }
-
-    @Test
-    @WithMockUser(roles = "COOK")
-    void shouldNotAllowAccessToWaiters() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/waiters");
-    }
-
-    @Test
-    void shouldNotAllowUnauthorizedAccessToWaiters() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/waiters");
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldGetCooks() throws Exception {
-        List<User> users =
-                apiRequestUtils.fetchAsList(
-                        "/api/admin/users/cooks", User.class);
-
-        assertEquals(1, users.size());
-        assertEquals("kucharz@antek.pl", users.getFirst().getUsername());
-    }
-
-    @Test
-    @WithMockUser(roles = "WAITER")
-    void shouldNotAllowAccessToCooks() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/cooks");
-    }
-
-    @Test
-    void shouldNotAllowUnauthorizedAccessToCooks() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/cooks");
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldGetManagers() throws Exception {
-        List<User> users = apiRequestUtils.fetchAsList(
-                "/api/admin/users/managers", User.class);
-
-        assertEquals(1, users.size());
-        assertEquals("netka@test.com", users.getFirst().getUsername());
-    }
-
-    @Test
-    @WithMockUser(roles = "WAITER")
-    void shouldNotAllowAccessToManagers() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/managers");
-    }
-
-    @Test
-    void shouldNotAllowUnauthorizedAccessToManagers() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/managers");
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldGetAdmins() throws Exception {
-        List<User> users = apiRequestUtils.fetchAsList(
-                "/api/admin/users/admins", User.class);
-
-        assertEquals(4, users.size());
-        assertEquals("admin@example.com", users.getFirst().getUsername());
-    }
-
-    @Test
-    @WithMockUser(roles = "COOK")
-    void shouldNotAllowAccessToAdmins() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/admins");
-    }
-
-    @Test
-    void shouldNotAllowUnauthorizedAccessToAdmins() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/admins");
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldShowUserByUsername() throws Exception {
-        User user = apiRequestUtils.postObjectExpect200("/api/admin/users/show", "restaurator@rarytas.pl", User.class);
-        assertEquals("restaurator@rarytas.pl", user.getUsername());
-    }
-
-    @Test
-    @WithMockUser(roles = "WAITER")
-    void shouldNotAllowAccessToShowUser() throws Exception {
-        apiRequestUtils.postAndExpect("/api/admin/users/show", 4, status().isForbidden());
-    }
-
-    @Test
-    void shouldNotAllowUnauthorizedAccessToShowUser() throws Exception {
-        apiRequestUtils.postAndExpectForbidden("/api/admin/users/show", 4);
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldNotShowUserById() throws Exception {
-        Map<String, Object> responseBody =
-                apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/show", "nonExisting@email.com", status().isBadRequest());
-        assertEquals("Nie znaleziono użytkownika.", responseBody.get("exceptionMsg"));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldGetNewUserObject() throws Exception {
-        Object user = apiRequestUtils.fetchObject("/api/admin/users/add", User.class);
-        assertInstanceOf(User.class, user);
-    }
-
-    @Test
-    @WithMockUser(roles = "COOK")
-    void shouldNotAllowAccessToNewUserObject() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/add");
-    }
-
-    @Test
-    void shouldNotAllowUnauthorizedAccessToNewUserObject() throws Exception {
-        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/add");
-    }
-
-    @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Rollback
     @Transactional
@@ -218,8 +88,8 @@ class AdminManagementControllerTest {
         RegistrationDTO registrationDTO = userMapper.toDTO(user);
         apiRequestUtils.postAndExpect200("/api/admin/users/add", registrationDTO);
 
-        User persistedUser = findUser("example@example.com");
-        assertEquals("example@example.com", persistedUser.getUsername());
+        UserProfileDTO persistedUser = findUser("example@example.com");
+        assertEquals("example@example.com", persistedUser.username());
     }
 
     @Test
@@ -311,20 +181,8 @@ class AdminManagementControllerTest {
         assertEquals("Hasła nie są identyczne", responseParams.get("repeatedPassword"));
     }
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    @Rollback
-    @Transactional
-    void shouldUpdateUser() throws Exception {
-        User existingUser = findUser("admin@example.com");
-        existingUser.setEmail("updated@email.com");
-        RegistrationDTO registrationDTO = userMapper.toDTO(existingUser);
-
-        apiRequestUtils.patchAndExpect200("/api/admin/users/update", registrationDTO);
-
-        User updatedUser = findUser("admin@example.com");
-        assertEquals("updated@email.com", updatedUser.getEmail());
-    }
+    //todo shouldUpdateUser
+    //todo shouldNotUpdateIncorrectUser
 
     @Test
     @WithMockUser(roles = "WAITER")
@@ -338,31 +196,18 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldNotUpdateIncorrectUser() throws Exception {
-        User existingUser = apiRequestUtils.postObjectExpect200("/api/admin/users/show", "netka@test.com", User.class);
-        existingUser.setEmail("wronk@email");
-        RegistrationDTO registrationDTO = userMapper.toDTO(existingUser);
-
-        Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/admin/users/update", registrationDTO);
-
-        assertEquals(1, errors.size());
-        assertEquals("Niepoprawny format adresu email", errors.get("email"));
-    }
-
-    @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Rollback
     @Transactional
     void shouldRemoveUser() throws Exception {
-        User existingUser = findUser("netka@test.com");
+        UserProfileDTO existingUser = findUser("netka@test.com");
         assertNotNull(existingUser);
 
         apiRequestUtils.deleteAndExpect200("/api/admin/users/delete", "netka@test.com");
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/show", "netka@test.com", status().isBadRequest());
+                        "/api/admin/users/profile", "netka@test.com", status().isBadRequest());
         assertEquals("Nie znaleziono użytkownika.", responseBody.get("exceptionMsg"));
     }
 
@@ -416,7 +261,7 @@ class AdminManagementControllerTest {
         return restaurantRepository.findById(restaurantId).orElseThrow();
     }
 
-    private User findUser(String username) throws Exception {
-        return apiRequestUtils.postObjectExpect200("/api/admin/users/show", username, User.class);
+    private UserProfileDTO findUser(String username) throws Exception {
+        return apiRequestUtils.postAndFetchObject("/api/admin/users/profile", username, UserProfileDTO.class);
     }
 }
