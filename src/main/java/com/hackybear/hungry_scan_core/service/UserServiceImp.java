@@ -66,7 +66,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Cacheable(value = USER_ID, key = "#user.id")
-    public UserProfileDTO getCurrentUserProfileData(User user) {
+    public UserProfileDTO getUserProfileData(User user) {
         return userMapper.toUserProfileDTO(user);
     }
 

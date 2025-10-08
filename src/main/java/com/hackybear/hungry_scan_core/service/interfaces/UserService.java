@@ -16,7 +16,7 @@ public interface UserService {
 
     Set<User> findAll() throws LocalizedException;
 
-    UserProfileDTO getCurrentUserProfileData(User user);
+    UserProfileDTO getUserProfileData(User user);
 
     ResponseEntity<?> updateUserProfile(User user, UserProfileUpdateDTO dto, BindingResult br);
 
