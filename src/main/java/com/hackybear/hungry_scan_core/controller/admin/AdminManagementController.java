@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,38 +36,14 @@ public class AdminManagementController {
         }
     }
 
-    @GetMapping("/waiters")
-    public ResponseEntity<List<User>> waiters() {
-        List<User> users = userService.findAllByRole("ROLE_WAITER");
-        return ResponseEntity.ok(users);
-    }
-
-    @GetMapping("/cooks")
-    public ResponseEntity<List<User>> cooks() {
-        List<User> users = userService.findAllByRole("ROLE_COOK");
-        return ResponseEntity.ok(users);
-    }
-
-    @GetMapping("/managers")
-    public ResponseEntity<List<User>> managers() {
-        List<User> users = userService.findAllByRole("ROLE_MANAGER");
-        return ResponseEntity.ok(users);
-    }
-
-    @GetMapping("/admins")
-    public ResponseEntity<List<User>> admins() {
-        List<User> users = userService.findAllByRole("ROLE_ADMIN");
-        return ResponseEntity.ok(users);
-    }
-
-    @PostMapping("/show")
-    public ResponseEntity<Map<String, Object>> show(@RequestBody String username) {
-        return responseHelper.getResponseEntity(username, userService::findByUsername);
-    }
-
-    @GetMapping("/add")
-    public ResponseEntity<User> add() {
-        return ResponseEntity.ok(new User());
+    @PostMapping("/profile")
+    public ResponseEntity<?> findUser(@RequestBody String username) {
+        try {
+            User user = userService.findByUsername(username);
+            return ResponseEntity.ok(userService.getUserProfileData(user));
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @PostMapping("/add")
