@@ -316,7 +316,12 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the fetching or parsing of the object.
      */
     public <T, R> R postAndFetchObject(String endpointUrl, T object, Class<R> itemType) throws Exception {
-        String jsonRequest = objectMapper.writeValueAsString(object);
+        String jsonRequest;
+        if (!(object instanceof String)) {
+            jsonRequest = objectMapper.writeValueAsString(object);
+        } else {
+            jsonRequest = (String) object;
+        }
 
         MvcResult result = mockMvc.perform(post(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
