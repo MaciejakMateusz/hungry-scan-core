@@ -7,11 +7,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     Optional<Restaurant> findByToken(String token);
+
+    Set<Restaurant> findAllByOrganizationId(Long organizationId);
 
     boolean existsByToken(String token);
 
