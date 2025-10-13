@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("""
             SELECT u FROM User u
+            JOIN FETCH u.restaurants r
+            JOIN FETCH u.roles ro
             WHERE u.organizationId = :organizationId
             AND u.id != :currentUserId
             AND u.forename != 'temp'
@@ -60,6 +62,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.enabled FROM User u WHERE u.username = :username")
     Optional<Integer> isUserEnabledByUsername(@Param("username") String username);
+
+    @Query("SELECT u.active FROM User u WHERE u.username = :username")
+    Optional<Boolean> isUserActiveByUsername(@Param("username") String username);
 
     Optional<User> findByEmailToken(String emailToken);
 }
