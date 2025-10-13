@@ -10,4 +10,6 @@ public interface EmailService {
 
     void activateAccount(String to, String emailToken) throws MessagingException;
 
+    void accountCreated(String to, String tempPassword) throws MessagingException;
+
 }
