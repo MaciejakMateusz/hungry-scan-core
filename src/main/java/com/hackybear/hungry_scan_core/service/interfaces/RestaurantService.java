@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
+import com.hackybear.hungry_scan_core.dto.OrganizationRestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.User;
@@ -8,10 +9,13 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public interface RestaurantService {
 
     Set<RestaurantSimpleDTO> findAll(User currentUser);
+
+    TreeSet<OrganizationRestaurantDTO> findAllByOrganizationId(User currentUser);
 
     RestaurantDTO findCurrent(User currentUser) throws LocalizedException;
 

@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
+import com.hackybear.hungry_scan_core.dto.OrganizationRestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.RestaurantMapper;
@@ -63,6 +64,14 @@ public class RestaurantServiceImp implements RestaurantService {
     }
 
     @Override
+    public TreeSet<OrganizationRestaurantDTO> findAllByOrganizationId(User currentUser) {
+        Set<Restaurant> restaurants = restaurantRepository.findAllByOrganizationId(currentUser.getOrganizationId());
+        return restaurants.stream()
+                .map(restaurantMapper::toOrganizationDTO)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    @Override
     @Cacheable(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     public RestaurantDTO findCurrent(User currentUser) throws LocalizedException {
         Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId())
@@ -86,7 +95,9 @@ public class RestaurantServiceImp implements RestaurantService {
     })
     public void save(RestaurantDTO restaurantDTO, User currentUser) throws Exception {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        restaurant.setOrganizationId(currentUser.getOrganizationId());
         setupRestaurantSettings(restaurant);
+        restaurant.getSettings().setOperatingHours(restaurantDTO.settings().operatingHours());
         restaurant = setupInitial(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
@@ -170,6 +181,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) throws Exception {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        restaurant.setOrganizationId(currentUser.getOrganizationId());
         restaurant = setupInitial(restaurant);
         setupRestaurantSettings(restaurant);
         restaurant = restaurantRepository.save(restaurant);
@@ -180,6 +192,7 @@ public class RestaurantServiceImp implements RestaurantService {
     private Restaurant setupInitial(Restaurant restaurant) throws Exception {
         restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow());
         restaurant.setToken(UUID.randomUUID().toString());
+        restaurant.setQrVersion(1);
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
         createInitialMenu(restaurant);
@@ -285,7 +298,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     private static Translatable getMenuMessage() {
         return new Translatable()
-                .withPl("Welcome!")
-                .withEn("Enjoy your meal!");
+                .withPl("Witaj!")
+                .withEn("Welcome!");
     }
 }
