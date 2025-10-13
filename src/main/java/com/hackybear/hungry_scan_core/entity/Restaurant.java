@@ -41,6 +41,10 @@ public class Restaurant implements Serializable {
 
     private Integer qrVersion = 1;
 
+    @NotNull
+    @Column(nullable = false)
+    private Long organizationId;
+
     @Column(length = 100, nullable = false)
     @NotBlank
     @Length(max = 100)
