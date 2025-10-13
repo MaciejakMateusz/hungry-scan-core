@@ -1,7 +1,8 @@
-INSERT IGNORE INTO restaurants (id, address, name, postal_code, city, token, created, updated, qr_version)
-VALUES (1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
+INSERT IGNORE INTO restaurants (id, organization_id, address, name, postal_code, city, token, created, updated,
+                                qr_version)
+VALUES (1, 1, 'Turystyczna 12/12', 'Rarytas', '44-335', 'Jastrzębie-Zdrój', '3f979e48-e7eb-4669-8084-72543c8538f0',
         '2023-11-12T00:00:00Z', NOW(), 1),
-       (2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', NOW(), 1);
+       (2, 2, 'Katowicka 12', 'Tajska', '40-004', 'Katowice', null, '2024-05-01T00:00:00Z', NOW(), 1);
 
 INSERT IGNORE INTO price_plan_types (name, price)
 VALUES ('free', 0.00),
@@ -51,37 +52,57 @@ VALUES (1, true, true, 'Całodniowe', 9, 1, 'COLOR_318E41', 163),
        (3, true, false, 'Menu', 9, 2, 'COLOR_318E41', 165);
 
 INSERT IGNORE INTO translatable (id, pl, en)
-VALUES (1, 'Kelner', 'Waiter'),
+VALUES (1, 'Personel', 'Staff'),
        (2, 'Administrator', 'Admin'),
        (3, 'Menadżer', 'Manager'),
-       (4, 'Kucharz', 'Cook'),
-       (5, 'Klient', 'Customer'),
-       (6, 'Klient (tylko odczyt)', 'Customer (read only)');
+       (4, 'Klient', 'Customer'),
+       (5, 'Klient (tylko odczyt)', 'Customer (read only)');
 
 INSERT IGNORE INTO role (id, name, translatable_displayed_name_id)
-VALUES (1, 'ROLE_WAITER', 1),
+VALUES (1, 'ROLE_STAFF', 1),
        (2, 'ROLE_ADMIN', 2),
        (3, 'ROLE_MANAGER', 3),
-       (4, 'ROLE_COOK', 4),
-       (5, 'ROLE_CUSTOMER', 5),
-       (6, 'ROLE_CUSTOMER_READONLY', 6);
+       (4, 'ROLE_CUSTOMER', 5),
+       (5, 'ROLE_CUSTOMER_READONLY', 6);
 
-INSERT IGNORE INTO users (id, organization_id, created, email, enabled, password, updated, username, email_token,
+INSERT IGNORE INTO users (id, organization_id, active, created, email, enabled, password, updated, username,
+                          email_token,
                           jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
-VALUES (1, 1, NOW(), 'admin@example.com', 1,
+VALUES (1, 1, true, NOW(), 'admin@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, 'Admin',
         '',
         'Admin', 1, 1),
-       (2, 2, NOW(), 'mati@test.com', 1,
+       (2, 1, true, NOW(), 'admin2@example.com', 1,
+        '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin2@example.com', null, null,
+        'Admina',
+        '',
+        'Admina', 1, 1),
+       (3, 1, true, NOW(), 'manager@example.com', 1,
+        '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'manager@example.com', null, null,
+        'Manager',
+        '',
+        'Manager', 1, 1),
+       (4, 1, true, NOW(), 'staff@example.com', 1,
+        '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'staff@example.com', null, null,
+        'Staff',
+        '',
+        'Staff', 1, 1),
+       (5, 2, true, NOW(), 'mati@test.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'mati@test.com', null, null, '', '',
         '', null, null);
 
 INSERT IGNORE INTO users_restaurants (user_id, restaurant_id)
-VALUES (1, 1);
+VALUES (1, 1),
+       (2, 1),
+       (3, 1),
+       (4, 1);
 
 INSERT IGNORE INTO user_role (user_id, role_id)
 VALUES (1, 2),
-       (2, 2);
+       (2, 2),
+       (3, 3),
+       (4, 1),
+       (5, 2);
 
 INSERT IGNORE INTO translatable (id, pl, en)
 VALUES (7, 'Gluten', 'Gluten'),

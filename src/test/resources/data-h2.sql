@@ -1,16 +1,16 @@
-INSERT INTO restaurants (address, name, postal_code, city, token, created, updated, qr_version)
-VALUES ('ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '12-1234', 'TEST',
+INSERT INTO restaurants (organization_id, address, name, postal_code, city, token, created, updated, qr_version)
+VALUES (1, 'ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '12-1234', 'TEST',
         '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z', NOW(), 1),
-       ('ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 555', 'Test 5', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 888', 'Test 8', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       ('Test address, 999', 'Test 9', '12-1234', 'TEST', null, NOW(), NOW(), 1);
+       (2, 'ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (2, 'Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (1, 'Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (1, 'Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (2, 'Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (2, 'Test address, 555', 'Test 5', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (2, 'Test address, 666', 'Test 6', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (2, 'Test address, 777', 'Test 7', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (3, 'Test address, 888', 'Test 8', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (3, 'Test address, 999', 'Test 9', '12-1234', 'TEST', null, NOW(), NOW(), 1);
 
 INSERT INTO price_plan_types (name, price)
 VALUES ('free', 0.00),
@@ -254,20 +254,18 @@ VALUES (NOW(), true, true, 83, '0.00', null, 4, 1),
        (NOW(), true, false, 99, '10.00', null, 25, 3);
 
 INSERT INTO translatable (pl, en)
-VALUES ('Kelner', 'Waiter'),
+VALUES ('Personel', 'Staff'),
        ('Administrator', 'Admin'),
        ('Menadżer', 'Manager'),
-       ('Kucharz', 'Cook'),
        ('Klient', 'Customer'),
        ('Klient (tylko odczyt)', 'Customer (read only)');
 
 INSERT INTO role (name, translatable_displayed_name_id)
-VALUES ('ROLE_WAITER', 100),
+VALUES ('ROLE_STAFF', 100),
        ('ROLE_ADMIN', 101),
        ('ROLE_MANAGER', 102),
-       ('ROLE_COOK', 103),
-       ('ROLE_CUSTOMER', 104),
-       ('ROLE_CUSTOMER_READONLY', 105);
+       ('ROLE_CUSTOMER', 103),
+       ('ROLE_CUSTOMER_READONLY', 104);
 
 INSERT INTO translatable (pl, en)
 VALUES ('Gluten', 'Gluten'),
@@ -303,20 +301,20 @@ VALUES ('Gluten', 'Gluten'),
        ('Mięczaki i produkty pochodne.', 'Molluscs and derived products.');
 
 INSERT INTO allergens(id, translatable_description_id, icon_name, translatable_name_id)
-VALUES (1, 107, 'icon_gluten', 106),
-       (2, 109, 'icon_crustaceans', 108),
-       (3, 111, 'icon_eggs', 110),
-       (4, 113, 'icon_fish', 112),
-       (5, 115, 'icon_peanuts', 114),
-       (6, 117, 'icon_soybeans', 116),
-       (7, 119, 'icon_milk', 118),
-       (8, 121, 'icon_nuts', 120),
-       (9, 123, 'icon_celery', 122),
-       (10, 125, 'icon_mustard', 124),
-       (11, 127, 'icon_sesame', 126),
-       (12, 129, 'icon_sulfur_dioxide', 128),
-       (13, 131, 'icon_lupin', 130),
-       (14, 133, 'icon_molluscs', 132);
+VALUES (1, 106, 'icon_gluten', 105),
+       (2, 108, 'icon_crustaceans', 107),
+       (3, 110, 'icon_eggs', 109),
+       (4, 112, 'icon_fish', 111),
+       (5, 114, 'icon_peanuts', 113),
+       (6, 116, 'icon_soybeans', 115),
+       (7, 118, 'icon_milk', 117),
+       (8, 120, 'icon_nuts', 119),
+       (9, 122, 'icon_celery', 121),
+       (10, 124, 'icon_mustard', 123),
+       (11, 126, 'icon_sesame', 125),
+       (12, 128, 'icon_sulfur_dioxide', 127),
+       (13, 130, 'icon_lupin', 129),
+       (14, 132, 'icon_molluscs', 131);
 
 INSERT INTO translatable (pl, en)
 VALUES ('Bez glutenu', 'Gluten free'),
@@ -327,12 +325,12 @@ VALUES ('Bez glutenu', 'Gluten free'),
        ('Ostre', 'Spicy');
 
 INSERT INTO labels (icon_name, translatable_name_id)
-VALUES ('icon_gluten_free', 134),
-       ('icon_vegan', 135),
-       ('icon_vegetarian', 136),
-       ('icon_coriander', 137),
-       ('icon_lactose_free', 138),
-       ('icon_spicy', 139);
+VALUES ('icon_gluten_free', 133),
+       ('icon_vegan', 134),
+       ('icon_vegetarian', 135),
+       ('icon_coriander', 136),
+       ('icon_lactose_free', 137),
+       ('icon_spicy', 138);
 
 INSERT INTO translatable (pl, en)
 VALUES ('Pomidory', 'Tomatoes'),
@@ -364,7 +362,8 @@ VALUES ('Pomidory', 'Tomatoes'),
        ('Ser biały', 'White cheese');
 
 INSERT INTO ingredients(created, available, translatable_name_id, updated, price, restaurant_id)
-VALUES ('2024-03-30', 1, 140, '2024-03-30', '4.00', 1),
+VALUES ('2024-03-30', 1, 139, '2024-03-30', '4.00', 1),
+       ('2024-03-30', 1, 140, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 141, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 142, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 143, '2024-03-30', '4.00', 1),
@@ -389,8 +388,7 @@ VALUES ('2024-03-30', 1, 140, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 162, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 163, '2024-03-30', '4.00', 1),
        ('2024-03-30', 1, 164, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 165, '2024-03-30', '4.00', 1),
-       ('2024-03-30', 1, 166, '2024-03-30', '4.00', 1);
+       ('2024-03-30', 1, 165, '2024-03-30', '4.00', 1);
 
 INSERT INTO translatable(pl, en)
 VALUES ('Sekcja 1', 'Section 1'),
@@ -399,10 +397,10 @@ VALUES ('Sekcja 1', 'Section 1'),
        ('Loża VIP', 'VIP Lounge');
 
 INSERT INTO zones(translatable_name_id, created, updated, display_order, is_visible)
-VALUES (167, NOW(), null, 1, true),
-       (168, NOW(), null, 2, true),
-       (169, NOW(), null, 4, true),
-       (170, NOW(), null, 3, true);
+VALUES (166, NOW(), null, 1, true),
+       (167, NOW(), null, 2, true),
+       (168, NOW(), null, 4, true),
+       (169, NOW(), null, 3, true);
 
 INSERT INTO translatable(pl, en)
 VALUES ('Nowość', 'New'),
@@ -410,9 +408,9 @@ VALUES ('Nowość', 'New'),
        ('Promocja', 'Discount');
 
 INSERT INTO banners (id, translatable_name_id)
-VALUES ('new', 171),
-       ('bestseller', 172),
-       ('promo', 173);
+VALUES ('new', 170),
+       ('bestseller', 171),
+       ('promo', 172);
 
 INSERT INTO restaurant_tables (is_active, token, waiter_called, bill_requested, max_num_of_ppl, number, is_visible,
                                zone_id, has_qr_code, qr_name)
@@ -477,39 +475,41 @@ VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZjNhYmY4LTliNmEiLCJpYXQiOjE3MTM4MTAzNT
        ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwYzllNjgzLTg1NzYiLCJpYXQiOjE3MTM4ODA5MjMsImV4cCI6MTcxMzk1MjkyM30.M28dOa0W5FApG8p2sgfUhLHylHO4hM5bAgOOgF2k5oU',
         NOW());
 
-INSERT INTO users (organization_id, created, email, enabled, password, updated, username, email_token, jwt_token_id,
+INSERT INTO users (organization_id, active, created, email, enabled, password, updated, username, email_token,
+                   jwt_token_id,
                    forename, phone_number, surname, active_menu_id, active_restaurant_id)
-VALUES (1, '2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
+VALUES (1, true, '2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
         '$2a$10$z/0edEimosa3QjYYxjiHuO8bNZHfI3jxDVwqDNd5bc2vCr5TERDz6', '2024-02-02 20:54:41.531670',
         'matimemek@test.com', null, null, 'mati', '+48 123 123 123', 'Memek', 1, 1),
-       (1, '2024-01-20 19:09:00.000000', 'admin@example.com', 1,
+       (1, true, '2024-01-20 19:09:00.000000', 'admin@example.com', 1,
         '$2y$10$0jWCcLQydTOa5vY60YhmPelYeWobYb5i/cJ9ezYtB1nUHOwnoOPny', '2024-02-04 07:50:29.047589',
         'admin@example.com', null, null, 'edmin', '', 'edminowsky', 1, 1),
-       (1, '2024-01-24 19:06:36.680304', 'netka@test.com', 0,
+       (1, true, '2024-01-24 19:06:36.680304', 'netka@test.com', 0,
         '$2a$12$SnVI60OEgQMpEA./cc4Sl.G9whg6O2szOnM4BG3ZOYuNpRE3RenpG', null, 'netka@test.com', null, null, 'Neta',
         null, 'Menagera', 1, 1),
-       (1, '2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', 1,
+       (1, true, '2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', 1,
         '$2a$10$fb4q1jBqnMLDkUBi2YXQ4eHZ0M17bP5gxzwU84UwCkEUbyekGRDlC', null, 'ff3abf8-9b6a@temp.it', null, 1, 'temp',
         null, 'user', 1, 1),
-       (1, '2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', 1,
+       (1, true, '2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, '2c73bfc-16fc@temp.it', null, 2, 'temp',
         null, 'user', 1, 1);
 
 
-INSERT INTO users (organization_id, created, email, enabled, password, updated, username, email_token, jwt_token_id,
+INSERT INTO users (organization_id, active, created, email, enabled, password, updated, username, email_token,
+                   jwt_token_id,
                    forename, phone_number, surname, active_menu_id, active_restaurant_id)
-VALUES (2, '2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1,
+VALUES (2, true, '2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1,
         '$2a$10$.HWarZkysOgBF0/tOXmmtONdRkZHGZCsRFs27Q7FcNrDc4bSzE0fW', '2024-02-03 10:33:07.307903',
         'kucharz@antek.pl', null, null, 'ada', '', 'asdqwe', 2, 2),
-       (2, '2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
+       (2, true, '2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
         '$2a$10$tykyevzP4v1WV/FyuYWNOO6wspbmAHnzI.deEAZQU6SA8NSxod3Vy', null, 'restaurator@rarytas.pl', null, null,
         'Właściciel', '', 'Biznesmen', 3, 2),
-       (2, NOW(), '0c9e683-8576@temp.it', 1, '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW', null,
+       (2, true, NOW(), '0c9e683-8576@temp.it', 1, '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW', null,
         '0c9e683-8576@temp.it', null, 3, 'temp', null, 'surname', 2, 2),
-       (3, '2024-04-23 12:50:41.531670', 'fresh@user.it', 1,
+       (3, true, '2024-04-23 12:50:41.531670', 'fresh@user.it', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, 'fresh@user.it', null, null, 'Fresh',
         null, 'User', null, null),
-       (3, '2024-04-23 12:50:41.531670', 'fresh@user.it', 1,
+       (3, true, '2024-04-23 12:50:41.531670', 'fresh@user.it', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, 'freeplan@example.com', null, null,
         'Free', null, 'User', null, 10);
 
@@ -519,11 +519,11 @@ VALUES (1, 1),
        (2, 2),
        (3, 1),
        (3, 3),
-       (4, 6),
-       (5, 6),
-       (6, 4),
+       (4, 5),
+       (5, 5),
+       (6, 1),
        (7, 2),
-       (8, 5),
+       (8, 4),
        (9, 2),
        (10, 2);
 
@@ -539,7 +539,7 @@ VALUES (1, 1),
        (6, 3),
        (7, 2),
        (8, 2),
-       (10, 10),
+       (9, 10),
        (10, 11);
 
 -- MENU PLANS
