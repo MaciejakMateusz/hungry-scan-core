@@ -14,7 +14,7 @@ public interface UserService {
 
     User findByUsername(String email) throws LocalizedException;
 
-    Set<User> findAll() throws LocalizedException;
+    Set<UserDTO> findAll(String username) throws LocalizedException;
 
     UserProfileDTO getUserProfileData(User user);
 
@@ -34,11 +34,11 @@ public interface UserService {
 
     ResponseEntity<?> recoverPassword(RecoveryDTO recovery, BindingResult br);
 
-    ResponseEntity<?> addToOrganization(RegistrationDTO registrationDTO, BindingResult br);
+    ResponseEntity<?> addToOrganization(UserDTO userDTO, BindingResult br, String callerUsername);
 
-    void update(RegistrationDTO registrationDTO) throws LocalizedException;
+    ResponseEntity<?> update(UserDTO userDTO, String callerUsername);
 
-    void delete(String username) throws LocalizedException;
+    ResponseEntity<?> delete(String username, String callerUsername);
 
     void switchRestaurant(Long restaurantId, User user) throws LocalizedException;
 
@@ -68,4 +68,5 @@ public interface UserService {
 
     int isEnabled(String username) throws LocalizedException;
 
+    boolean isActive(String username);
 }

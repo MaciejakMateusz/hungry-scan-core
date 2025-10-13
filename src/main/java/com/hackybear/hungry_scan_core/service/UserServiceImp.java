@@ -15,6 +15,7 @@ import com.hackybear.hungry_scan_core.repository.RoleRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
+import com.hackybear.hungry_scan_core.utility.RandomPasswordGenerator;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,7 @@ import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
@@ -59,9 +61,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public TreeSet<User> findAll() throws LocalizedException {
-        User currentUser = getCurrentUser();
-        return new TreeSet<>(userRepository.findAllByOrganizationId(currentUser.getOrganizationId(), currentUser.getId()));
+    @Cacheable(value = USERS_ALL, key = "#username")
+    public TreeSet<UserDTO> findAll(String username) throws LocalizedException {
+        User currentUser = findByUsername(username);
+        Set<User> users = userRepository.findAllByOrganizationId(currentUser.getOrganizationId(), currentUser.getId());
+        return users.stream().map(userMapper::toDTO).collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Override
@@ -180,41 +184,62 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> addToOrganization(RegistrationDTO registrationDTO, BindingResult br) {
+    @CacheEvict(value = USERS_ALL, key = "#callerUsername")
+    public ResponseEntity<?> addToOrganization(UserDTO userDTO, BindingResult br, String callerUsername) {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
-        Map<String, Object> errorParams = responseHelper.getErrorParams(registrationDTO);
-        if (!errorParams.isEmpty()) {
-            return ResponseEntity.badRequest().body(errorParams);
-        }
         try {
-            User currentUser = getCurrentUser();
-            User user = userMapper.toUser(registrationDTO);
+            User currentUser = findByUsername(callerUsername);
+            User user = userMapper.toUser(userDTO);
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+            if (!currentUser.getRoles().contains(adminRole) && user.getRoles().contains(adminRole)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message",
+                                exceptionHelper.getLocalizedMsg("validation.user.accessToActionDenied")));
+            }
             user.setOrganizationId(currentUser.getOrganizationId());
-            user.setEmail(user.getUsername());
+            String tempPassword = RandomPasswordGenerator.generatePassword();
+            user.setPassword(tempPassword);
             user.setEnabled(1);
+            Restaurant firstRestaurant = user.getRestaurants().iterator().next();
+            Long menuId = userRepository.findFirstMenuIdByRestaurantId(firstRestaurant.getId())
+                    .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                            "error.restaurantService.restaurantNotFound"));
+            user.setActiveRestaurantId(firstRestaurant.getId());
+            user.setActiveMenuId(menuId);
             userRepository.save(user);
+            emailService.accountCreated(user.getUsername(), tempPassword);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
+    @Override
+    @CacheEvict(value = USERS_ALL, key = "#callerUsername")
+    public ResponseEntity<?> update(UserDTO userDTO, String callerUsername) {
+        try {
+            User currentUser = findByUsername(callerUsername);
+            User user = userMapper.toUser(userDTO);
+            User existing = findByUsername(userDTO.username());
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+            if (!currentUser.getRoles().contains(adminRole) && user.getRoles().contains(adminRole) ||
+                    existing.getRoles().contains(adminRole) && !currentUser.getRoles().contains(adminRole)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message",
+                                exceptionHelper.getLocalizedMsg("validation.user.accessToActionDenied")));
+            }
+            userMapper.updateFromDTO(userDTO, user);
+            userRepository.save(user);
+            return ResponseEntity.ok().build();
         } catch (LocalizedException e) {
             return responseHelper.createErrorResponse(e);
         }
-        return ResponseEntity.ok().build();
     }
 
     @Override
-    public void update(RegistrationDTO registrationDTO) throws LocalizedException {
-        User user = findByUsername(registrationDTO.username());
-        user.setUsername(registrationDTO.username());
-        user.setForename(registrationDTO.forename());
-        user.setSurname(registrationDTO.surname());
-        user.setEmail(registrationDTO.email());
-        userRepository.save(user);
-    }
-
-    @Override
-    @Caching(evict = {
-            @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
-    })
+    @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     public void switchRestaurant(Long restaurantId, User currentUser) throws LocalizedException {
         Long menuId = userRepository.findFirstMenuIdByRestaurantId(restaurantId)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
@@ -234,8 +259,27 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public void delete(String username) throws LocalizedException {
-        userRepository.deleteByUsername(username);
+    @Transactional
+    @CacheEvict(value = USERS_ALL, key = "#callerUsername")
+    public ResponseEntity<?> delete(String username, String callerUsername) {
+        try {
+            Map<String, Object> params = new HashMap<>();
+            User user = findByUsername(username);
+            User currentUser = findByUsername(callerUsername);
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+            if (callerUsername.equals(username)) {
+                params.put("illegalRemoval", true);
+                return ResponseEntity.badRequest().body(params);
+            } else if (!currentUser.getRoles().contains(adminRole) && user.getRoles().contains(adminRole)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message",
+                                exceptionHelper.getLocalizedMsg("validation.user.accessToActionDenied")));
+            }
+            userRepository.deleteByUsername(username);
+            return ResponseEntity.ok().build();
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @Override
@@ -311,6 +355,11 @@ public class UserServiceImp implements UserService {
     @Override
     public int isEnabled(String username) {
         return userRepository.isUserEnabledByUsername(username).orElse(0);
+    }
+
+    @Override
+    public boolean isActive(String username) {
+        return userRepository.isUserActiveByUsername(username).orElse(false);
     }
 
     private boolean existsByUsername(String username) {
