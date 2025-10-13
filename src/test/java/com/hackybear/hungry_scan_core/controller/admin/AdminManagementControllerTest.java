@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -69,7 +70,7 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = "STAFF")
     void shouldNotAllowAccessToUsers() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/admin/users");
     }
@@ -85,7 +86,7 @@ class AdminManagementControllerTest {
     @Transactional
     void shouldAddNewUser() throws Exception {
         User user = createUser(1L);
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
         apiRequestUtils.postAndExpect200("/api/admin/users/add", registrationDTO);
 
         UserProfileDTO persistedUser = findUser("example@example.com");
@@ -93,17 +94,17 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = "STAFF")
     void shouldNotAllowToAddUser() throws Exception {
         User user = createUser(1L);
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
         apiRequestUtils.postAndExpect("/api/admin/users/add", registrationDTO, status().isForbidden());
     }
 
     @Test
     void shouldNotAllowUnauthorizedAccessToAddUser() throws Exception {
         User user = createUser(1L);
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
         apiRequestUtils.postAndExpectForbidden("/api/admin/users/add", registrationDTO);
     }
 
@@ -112,7 +113,7 @@ class AdminManagementControllerTest {
     void shouldNotAddWithIncorrectEmail() throws Exception {
         User user = createUser(1L);
         user.setEmail("mordo@gmailcom");
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
 
@@ -125,7 +126,7 @@ class AdminManagementControllerTest {
     void shouldNotAddWithIncorrectUsername() throws Exception {
         User user = createUser(2L);
         user.setUsername("ex");
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
 
@@ -141,7 +142,7 @@ class AdminManagementControllerTest {
         User user = createUser(1L);
         user.setPassword("example123");
         user.setRepeatedPassword("example123");
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
 
         Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
 
@@ -157,7 +158,7 @@ class AdminManagementControllerTest {
         User user = createUser(2L);
         user.setUsername("netka@test.com");
         user.setEmail("netka@test.com");
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
 
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -172,7 +173,7 @@ class AdminManagementControllerTest {
     void shouldNotAddWithNotMatchingPasswords() throws Exception {
         User user = createUser(1L);
         user.setRepeatedPassword("Examplepass123");
-        RegistrationDTO registrationDTO = userMapper.toDTO(user);
+        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
 
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -185,7 +186,7 @@ class AdminManagementControllerTest {
     //todo shouldNotUpdateIncorrectUser
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     void shouldNotAllowAccessToUpdateUser() throws Exception {
         apiRequestUtils.patchAndExpect("/api/admin/users/update", new User(), status().isForbidden());
     }
@@ -212,7 +213,7 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = "STAFF")
     void shouldNotAllowAccessToRemoveUser() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/admin/users/delete", new User(), status().isForbidden());
     }
@@ -246,14 +247,15 @@ class AdminManagementControllerTest {
     private Role createRole() {
         Role role = new Role();
         role.setId(1);
-        role.setName("ROLE_WAITER");
+        role.setName("ROLE_STAFF");
         role.setDisplayedName(getDefaultTranslation());
         return role;
     }
 
     private Translatable getDefaultTranslation() {
         Translatable translatable = new Translatable();
-        translatable.setPl("Kelner");
+        translatable.setPl("Personel");
+        translatable.setEn("Staff");
         return translatable;
     }
 
