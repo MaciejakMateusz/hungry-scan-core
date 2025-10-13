@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -38,20 +39,31 @@ public class LoginServiceImp implements LoginService {
 
     @Override
     public ResponseEntity<?> handleLogin(AuthRequestDTO authRequestDTO, HttpServletResponse response) throws LocalizedException {
+        ResponseEntity<?> invalidResponse = validateLogin(authRequestDTO, response);
+        if (Objects.nonNull(invalidResponse)) return invalidResponse;
+        return prepareLoginResponse(authRequestDTO, response);
+    }
+
+    private ResponseEntity<?> validateLogin(AuthRequestDTO authRequestDTO, HttpServletResponse response) throws LocalizedException {
+        ResponseEntity<?> invalidResponse = null;
+        String username = authRequestDTO.getUsername().trim();
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword());
+                new UsernamePasswordAuthenticationToken(username, authRequestDTO.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         if (!authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            invalidResponse = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "unauthorized"));
-        } else if (userService.isEnabled(authRequestDTO.getUsername()) == 0) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        } else if (userService.isEnabled(username) == 0) {
+            invalidResponse = ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("message", "notActivated"));
-        } else if (!userService.hasCreatedRestaurant(authRequestDTO.getUsername())) {
+        } else if (!userService.isActive(username)) {
+            invalidResponse = ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "accountInactive"));
+        } else if (!userService.hasCreatedRestaurant(username)) {
             prepareJwtCookie(authRequestDTO, response);
-            return ResponseEntity.ok(Map.of("redirectUrl", "/create-restaurant"));
+            invalidResponse = ResponseEntity.ok(Map.of("redirectUrl", "/create-restaurant"));
         }
-        return prepareLoginResponse(authRequestDTO, response);
+        return invalidResponse;
     }
 
     private ResponseEntity<?> prepareLoginResponse(AuthRequestDTO authRequestDTO, HttpServletResponse response) {
@@ -75,7 +87,7 @@ public class LoginServiceImp implements LoginService {
     }
 
     private void prepareJwtCookie(AuthRequestDTO authRequestDTO, HttpServletResponse response) {
-        String jwt = jwtService.generateToken(authRequestDTO.getUsername());
+        String jwt = jwtService.generateToken(authRequestDTO.getUsername().trim());
         String jwtCookie = getJwtCookie(jwt);
         response.addHeader("Set-Cookie", jwtCookie);
     }
