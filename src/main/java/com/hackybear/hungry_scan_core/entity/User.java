@@ -7,6 +7,7 @@ import com.hackybear.hungry_scan_core.annotation.Password;
 import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,6 +42,7 @@ public class User implements Serializable, Comparable<User> {
     private static final long serialVersionUID = 1L;
 
     @Column(nullable = false)
+    @NotNull
     private Long organizationId;
 
     @Column(length = 100, nullable = false, unique = true)
@@ -76,6 +78,8 @@ public class User implements Serializable, Comparable<User> {
 
     @OneToOne(cascade = CascadeType.ALL)
     private JwtToken jwtToken;
+
+    private boolean active = true;
 
     private int enabled = 0;
 
