@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
+
 @RestController
 @RequestMapping("/api/cms/menus")
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class MenuController {
     private final ResponseHelper responseHelper;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> getAll() {
         try {
             Long activeRestaurantId = userService.getActiveRestaurantId();
@@ -41,7 +43,7 @@ public class MenuController {
     }
 
     @GetMapping("/themes")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> getAllThemes() {
         List<String> themes = Arrays.stream(Theme.values())
                 .map(Theme::getHex)
@@ -50,7 +52,7 @@ public class MenuController {
     }
 
     @PostMapping("/show")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> show(@RequestBody Long id) {
         ThrowingSupplier<Long> activeRestaurantIdProvider = userService::getActiveRestaurantId;
         return responseHelper.buildResponse(id, activeRestaurantIdProvider, menuService::findById);
@@ -68,25 +70,25 @@ public class MenuController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> add(@Valid @RequestBody MenuSimpleDTO menuDTO, BindingResult br) {
         return responseHelper.buildResponse(menuDTO, br, userService::getCurrentUser, menuService::save);
     }
 
     @PatchMapping("/update")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> update(@Valid @RequestBody MenuSimpleDTO menuDTO, BindingResult br) {
         return responseHelper.buildResponse(menuDTO, br, userService::getActiveRestaurantId, menuService::update);
     }
 
     @PatchMapping("/update-plans")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> updatePlans(@Valid @RequestBody List<MenuSimpleDTO> menus, BindingResult br) {
         return responseHelper.buildResponse(menus, br, userService::getActiveRestaurantId, menuService::updatePlans);
     }
 
     @PatchMapping("/switch-standard")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> switchStandard() {
         try {
             User currentUser = userService.getCurrentUser();
@@ -98,7 +100,7 @@ public class MenuController {
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> delete() {
         try {
             User currentUser = userService.getCurrentUser();
@@ -109,7 +111,7 @@ public class MenuController {
     }
 
     @PatchMapping("/duplicate")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> duplicate() {
         try {
             User currentUser = userService.getCurrentUser();
