@@ -18,6 +18,8 @@ import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
+
 @RestController
 @RequestMapping("/api/cms/categories")
 @RequiredArgsConstructor
@@ -39,7 +41,7 @@ public class CategoryController {
     }
 
     @GetMapping("/display-orders")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> getDisplayOrders() {
         try {
             Long activeMenuId = userService.getActiveMenuId();
@@ -50,7 +52,7 @@ public class CategoryController {
     }
 
     @PatchMapping("/display-orders")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> updateDisplayOrders(@RequestBody List<CategoryFormDTO> categories) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
@@ -62,7 +64,7 @@ public class CategoryController {
     }
 
     @GetMapping("/count")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> count() {
         try {
             Long activeMenuId = userService.getActiveMenuId();
@@ -90,19 +92,19 @@ public class CategoryController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> add(@Valid @RequestBody CategoryFormDTO category, BindingResult br) {
         return responseHelper.buildResponse(category, br, userService::getActiveMenuId, categoryService::save);
     }
 
     @PatchMapping("/update")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> update(@Valid @RequestBody CategoryFormDTO category, BindingResult br) {
         return responseHelper.buildResponse(category, br, userService::getActiveMenuId, categoryService::update);
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> delete(@RequestBody Long id) {
         try {
             Long activeMenuId = userService.getActiveMenuId();

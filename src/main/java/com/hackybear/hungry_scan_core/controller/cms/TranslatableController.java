@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
+
 @RestController
 @RequestMapping("/api/cms/translatable")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class TranslatableController {
     private final ResponseHelper responseHelper;
 
     @PostMapping("/save-all")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> saveAll(@RequestBody List<Translatable> translatables) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
@@ -38,7 +40,7 @@ public class TranslatableController {
     }
 
     @PostMapping("/translate")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<String> translate(@RequestBody Map<String, Object> requestData) {
         String response = translatableService.translate(requestData);
         return ResponseEntity.ok().body(response);

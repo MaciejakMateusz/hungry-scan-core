@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
+
 @RestController
 @RequestMapping("/api/cms/ingredients")
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class IngredientController {
     private final ResponseHelper responseHelper;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> findAll() {
         try {
             return ResponseEntity.ok(ingredientService.findAll());
@@ -36,7 +38,7 @@ public class IngredientController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> pages(@RequestBody Map<String, Object> params) {
         Integer pageSize = (Integer) params.get("pageSize");
         Integer pageNumber = (Integer) params.get("pageNumber");
@@ -50,33 +52,33 @@ public class IngredientController {
     }
 
     @PostMapping("/show")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, ingredientService::findById);
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> add(@RequestBody @Valid IngredientSimpleDTO ingredient,
                                  BindingResult br) {
         return responseHelper.buildResponse(ingredient, br, ingredientService::save);
     }
 
     @PatchMapping("/update")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> update(@RequestBody @Valid IngredientSimpleDTO ingredient,
                                     BindingResult br) {
         return responseHelper.buildResponse(ingredient, br, ingredientService::update);
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<Map<String, Object>> delete(@RequestBody Long id) {
         return responseHelper.buildResponse(id, ingredientService::delete);
     }
 
     @PostMapping("/filter")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> filterByName(@RequestBody String value) {
         try {
             return ResponseEntity.ok(ingredientService.filterByName(value));

@@ -27,7 +27,7 @@ public class AuthController {
     }
 
     @GetMapping("/app")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> appAuth() {
         return authService.authorizeApp();
     }

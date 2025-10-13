@@ -3,7 +3,6 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.entity.Zone;
 import com.hackybear.hungry_scan_core.service.interfaces.ZoneService;
-import com.hackybear.hungry_scan_core.utility.Fields;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
+
 @RestController
 @RequestMapping("/api/cms/zones")
 @RequiredArgsConstructor
@@ -25,32 +26,32 @@ public class ZoneController {
     private final ResponseHelper responseHelper;
 
     @GetMapping
-    @PreAuthorize(Fields.ROLES_EXCEPT_CUSTOMER)
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<List<Zone>> list() {
         return ResponseEntity.ok(zoneService.findAll());
     }
 
     @PostMapping("/show")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<Map<String, Object>> show(@RequestBody Long id) {
         return responseHelper.getResponseEntity(id, zoneService::findById);
     }
 
     @GetMapping("/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<Zone> add() {
         return ResponseEntity.ok(new Zone());
     }
 
     @PostMapping(value = "/add")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> add(@RequestBody @Valid Zone zone,
                                  BindingResult br) {
         return responseHelper.buildResponse(zone, br, zoneService::save);
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<Map<String, Object>> delete(@RequestBody Long id) {
         return responseHelper.buildResponse(id, zoneService::delete);
     }
