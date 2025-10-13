@@ -1,22 +1,15 @@
 package com.hackybear.hungry_scan_core.dto;
 
-import com.hackybear.hungry_scan_core.annotation.Email;
-import com.hackybear.hungry_scan_core.annotation.ForenameSurname;
-import jakarta.validation.constraints.NotBlank;
+import com.hackybear.hungry_scan_core.entity.Role;
 
 import java.io.Serializable;
+import java.util.Set;
 
-public record UserProfileDTO(@NotBlank
-                             @ForenameSurname
-                             String forename,
-
-                             @NotBlank
-                             @ForenameSurname
+public record UserProfileDTO(String forename,
                              String surname,
-
-                             @Email
-                             @NotBlank
-                             String username) implements Serializable, Comparable<UserProfileDTO> {
+                             String username,
+                             Set<Role> roles,
+                             Long organizationId) implements Serializable, Comparable<UserProfileDTO> {
 
     @Override
     public int compareTo(UserProfileDTO other) {
