@@ -335,7 +335,7 @@ class UserControllerTest {
         user.setUsername("juan.bomboclat@test.com");
         user.setPassword("Password123!");
         user.setRepeatedPassword("Password123!");
-        return userMapper.toDTO(user);
+        return userMapper.toRegistrationDTO(user);
     }
 
     private RegistrationDTO createIncorrectRegistrationDTO() {
@@ -345,7 +345,7 @@ class UserControllerTest {
         user.setUsername("juan.bomboclat@testcom");
         user.setPassword("Password123");
         user.setRepeatedPassword("Password123!");
-        return userMapper.toDTO(user);
+        return userMapper.toRegistrationDTO(user);
     }
 
 }
