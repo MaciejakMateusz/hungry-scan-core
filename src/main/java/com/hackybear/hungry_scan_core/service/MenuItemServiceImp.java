@@ -1,12 +1,10 @@
 package com.hackybear.hungry_scan_core.service;
 
+import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.*;
-import com.hackybear.hungry_scan_core.entity.Banner;
-import com.hackybear.hungry_scan_core.entity.Category;
-import com.hackybear.hungry_scan_core.entity.MenuItem;
-import com.hackybear.hungry_scan_core.entity.MenuItemViewEvent;
+import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
@@ -15,19 +13,16 @@ import com.hackybear.hungry_scan_core.repository.MenuItemViewEventRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.*;
@@ -46,11 +41,11 @@ public class MenuItemServiceImp implements MenuItemService {
     private final LabelMapper labelMapper;
     private final IngredientMapper ingredientMapper;
     private final VariantMapper variantMapper;
-    private final EntityManager entityManager;
     private final MenuItemViewEventRepository menuItemViewEventRepository;
     private final S3Service s3Service;
 
     private static final String S3_PATH = "menuItems";
+    private final ResponseHelper responseHelper;
 
     @Override
     public MenuItemFormDTO findById(Long id) throws LocalizedException {
@@ -69,7 +64,17 @@ public class MenuItemServiceImp implements MenuItemService {
         MenuItem menuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
         Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategory().getId());
         menuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
+
+        List<Variant> incoming = new ArrayList<>(menuItem.getVariants());
+        menuItem.getVariants().clear();
         menuItem = menuItemRepository.save(menuItem);
+
+        for (Variant v : incoming) {
+            v.setMenuItem(menuItem);
+            menuItem.addVariant(v);
+        }
+
+        menuItemRepository.save(menuItem);
         if (Objects.nonNull(image)) s3Service.uploadFile(S3_PATH, menuItem.getId(), image);
     }
 
@@ -82,11 +87,7 @@ public class MenuItemServiceImp implements MenuItemService {
     })
     public void update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId, MultipartFile image) throws Exception {
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
-        Long newCategoryId = menuItemFormDTO.categoryId();
-        Category oldCategory = findCategoryByMenuItemId(existingMenuItem.getId());
-        Category newCategory = findCategoryById(newCategoryId);
         updateMenuItem(existingMenuItem, menuItemFormDTO);
-        switchCategory(existingMenuItem, oldCategory, newCategory);
         menuItemRepository.save(existingMenuItem);
         if (Objects.isNull(image)) s3Service.deleteFile(S3_PATH, existingMenuItem.getId());
         if (Objects.nonNull(image)) s3Service.uploadFile(S3_PATH, existingMenuItem.getId(), image);
@@ -129,6 +130,30 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CATEGORIES_ALL, key = "#menuId"),
+            @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#menuId"),
+    })
+    public ResponseEntity<?> switchCategory(Long menuItemId, Long newCategoryId, Long menuId) {
+        try {
+            MenuItem existingMenuItem = getMenuItem(menuItemId);
+            Long oldCategoryId = existingMenuItem.getCategory().getId();
+            if (oldCategoryId.equals(newCategoryId)) {
+                return ResponseEntity.ok().build();
+            }
+            Category newCategory = findCategoryById(newCategoryId);
+            Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(newCategoryId);
+            existingMenuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
+            existingMenuItem.setCategory(newCategory);
+            menuItemRepository.save(existingMenuItem);
+            return ResponseEntity.ok().build();
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
+    @Override
     public void persistViewEvent(Long menuItemId, Long activeMenuId) {
         MenuItemViewEvent menuItemViewEvent = new MenuItemViewEvent();
         menuItemViewEvent.setMenuItemId(menuItemId);
@@ -146,34 +171,6 @@ public class MenuItemServiceImp implements MenuItemService {
         return categoryRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(
                         "error.categoryService.categoryNotFound", id));
-    }
-
-    private Category findCategoryByMenuItemId(Long id) throws LocalizedException {
-        return categoryRepository.findByMenuItemId(id)
-                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
-                        "error.categoryService.categoryNotFoundByMenuItem", id));
-    }
-
-    private void switchCategory(MenuItem existingMenuItem,
-                                Category oldCategory,
-                                Category newCategory) {
-        Long existingMenuItemId = existingMenuItem.getId();
-        if (Objects.isNull(existingMenuItemId)) {
-            return;
-        }
-        if (oldCategory.getId().equals(newCategory.getId())) {
-            return;
-        }
-        existingMenuItem = entityManager.merge(existingMenuItem);
-        Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(newCategory.getId());
-        existingMenuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
-        newCategory.addMenuItem(existingMenuItem);
-        categoryRepository.save(newCategory);
-
-        Set<MenuItem> oldCategoryItems = oldCategory.getMenuItems();
-        oldCategoryItems.removeIf(item -> item.getId().equals(existingMenuItemId));
-        sortingHelper.reassignDisplayOrders(oldCategoryItems, menuItemRepository::saveAll);
-        categoryRepository.save(oldCategory);
     }
 
     private void updateMenuItem(MenuItem existing, MenuItemFormDTO dto) throws LocalizedException {
