@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
@@ -42,7 +43,7 @@ class HistoryBookingControllerTest {
     private ApiRequestUtils apiRequestUtils;
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     public void shouldGetById() throws Exception {
         HistoryBooking booking =
                 apiRequestUtils.postObjectExpect200(
@@ -57,7 +58,7 @@ class HistoryBookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     public void shouldGetByDate() throws Exception {
         Map<String, Object> requestParams = getPageableAndDateRange();
         Page<HistoryBooking> bookings =
@@ -68,14 +69,14 @@ class HistoryBookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     public void shouldCountAll() throws Exception {
         Long count = apiRequestUtils.fetchObject("/api/restaurant/history-bookings/count-all", Long.class);
         assertEquals(5L, count);
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     public void shouldCountByDateBetween() throws Exception {
         Map<String, LocalDate> requestParams =
                 Map.of("dateFrom", LocalDate.of(2024, 1, 25),

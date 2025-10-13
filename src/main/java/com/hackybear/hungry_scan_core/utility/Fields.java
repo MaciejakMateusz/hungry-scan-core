@@ -3,20 +3,21 @@ package com.hackybear.hungry_scan_core.utility;
 public class Fields {
 
     //ROLES
-    public static final String WAITER = "WAITER";
-    public static final String COOK = "COOK";
+    public static final String STAFF = "STAFF";
     public static final String MANAGER = "MANAGER";
     public static final String ADMIN = "ADMIN";
     public static final String CUSTOMER = "CUSTOMER";
+    public static final String CUSTOMER_READONLY = "CUSTOMER_READONLY";
 
     public static final String ROLES_EXCEPT_CUSTOMER =
-            "hasAnyRole('" + WAITER + "', '" + COOK + "', '" + MANAGER + "', '" + ADMIN + "')";
+            "hasAnyRole('" + STAFF + "', '" + MANAGER + "', '" + ADMIN + "')";
 
     public static final String ROLES_EXCEPT_READONLY_CUSTOMER =
-            "hasAnyRole('" + WAITER + "', '" + COOK + "', '" + MANAGER + "', '" + ADMIN + "', '" + CUSTOMER + "')";
+            "hasAnyRole('" + STAFF + "', '" + MANAGER + "', '" + ADMIN + "', '" + CUSTOMER + "')";
 
     //REDIS CACHE
     public static final String USER_ID = "user.id";
+    public static final String USERS_ALL = "users.all";
 
     public static final String USER_MENU_ID = "user.activeMenuId";
     public static final String USER_MENU = "user.activeMenu";

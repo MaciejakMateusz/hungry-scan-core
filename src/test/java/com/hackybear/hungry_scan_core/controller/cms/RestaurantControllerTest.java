@@ -33,6 +33,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.RESTAURANTS_ALL;
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -104,7 +105,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"COOK"})
+    @WithMockUser(roles = {STAFF})
     void shouldShowRestaurantById() throws Exception {
         RestaurantDTO restaurant =
                 apiRequestUtils.postObjectExpect200("/api/cms/restaurants/show", 1, RestaurantDTO.class);
@@ -117,7 +118,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void shouldNotShowRestaurantById() throws Exception {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -168,7 +169,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     void shouldNotAllowUnauthorizedToAddCategory() throws Exception {
         RestaurantDTO restaurantDTO = createRestaurantDTO();
         apiRequestUtils.postAndExpect("/api/cms/restaurants/add", restaurantDTO, status().isForbidden());
@@ -297,7 +298,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     void shouldNotAllowUnauthorizedAccessToUpdateRestaurant() throws Exception {
         RestaurantDTO restaurantDTO = createRestaurantDTO();
         apiRequestUtils.patchAndExpectForbidden("/api/cms/restaurants/update", restaurantDTO);
@@ -356,7 +357,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     void shouldNotAllowUnauthorizedAccessToDeleteRestaurant() throws Exception {
         apiRequestUtils.deleteAndExpect(
                 "/api/cms/restaurants/delete", 2, status().isForbidden());

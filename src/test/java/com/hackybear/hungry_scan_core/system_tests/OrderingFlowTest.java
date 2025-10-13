@@ -92,52 +92,52 @@ class OrderingFlowTest {
 //    @Order(2)
 //    public void addFirstWaiter() throws Exception {
 //        User user = createUser(
-//                "RadekWaiter", "radek@waiter.pl", "Radek123!", "ROLE_WAITER");
+//                "RadekWaiter", "radek@waiter.pl", "Radek123!", "ROLE_STAFF");
 //
 //        apiRequestUtils.postAndExpect200("/api/admin/users/add", user, JWTs.get("admin"));
 //
 //        User persistedUser = userService.findById(6);
 //        assertEquals("RadekWaiter", persistedUser.getUsername());
-//        assertEquals("ROLE_WAITER", user.getRoles().stream().findFirst().orElseThrow().getName());
+//        assertEquals("ROLE_STAFF", user.getRoles().stream().findFirst().orElseThrow().getName());
 //    }
 //
 //    @Test
 //    @Order(3)
 //    public void addFirstCook() throws Exception {
 //        User user = createUser(
-//                "DarekCook", "darek@cook.pl", "Darek123!", "ROLE_COOK");
+//                "DarekCook", "darek@cook.pl", "Darek123!", "ROLE_STAFF");
 //
 //        apiRequestUtils.postAndExpect200("/api/admin/users/add", user, JWTs.get("admin"));
 //
 //        User persistedUser = userService.findById(7);
 //        assertEquals("DarekCook", persistedUser.getUsername());
-//        assertEquals("ROLE_COOK", user.getRoles().stream().findFirst().orElseThrow().getName());
+//        assertEquals("ROLE_STAFF", user.getRoles().stream().findFirst().orElseThrow().getName());
 //    }
 //
 //    @Test
 //    @Order(4)
 //    public void addSecondWaiter() throws Exception {
 //        User user = createUser(
-//                "AnitaWaiter", "anita@waiter.pl", "Anita123!", "ROLE_WAITER");
+//                "AnitaWaiter", "anita@waiter.pl", "Anita123!", "ROLE_STAFF");
 //
 //        apiRequestUtils.postAndExpect200("/api/admin/users/add", user, JWTs.get("admin"));
 //
 //        User persistedUser = userService.findById(8);
 //        assertEquals("AnitaWaiter", persistedUser.getUsername());
-//        assertEquals("ROLE_WAITER", user.getRoles().stream().findFirst().orElseThrow().getName());
+//        assertEquals("ROLE_STAFF", user.getRoles().stream().findFirst().orElseThrow().getName());
 //    }
 //
 //    @Test
 //    @Order(5)
 //    public void addSecondCook() throws Exception {
 //        User user = createUser(
-//                "TomekCook", "tomek@cook.pl", "Tomek123!", "ROLE_COOK");
+//                "TomekCook", "tomek@cook.pl", "Tomek123!", "ROLE_STAFF");
 //
 //        apiRequestUtils.postAndExpect200("/api/admin/users/add", user, JWTs.get("admin"));
 //
 //        User persistedUser = userService.findById(9);
 //        assertEquals("TomekCook", persistedUser.getUsername());
-//        assertEquals("ROLE_COOK", user.getRoles().stream().findFirst().orElseThrow().getName());
+//        assertEquals("ROLE_STAFF", user.getRoles().stream().findFirst().orElseThrow().getName());
 //    }
 //
 //    @Test

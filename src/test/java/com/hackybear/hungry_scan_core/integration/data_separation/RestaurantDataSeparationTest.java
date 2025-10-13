@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
@@ -68,7 +69,7 @@ public class RestaurantDataSeparationTest {
     }
 
     @Test
-    @WithMockUser(roles = {"COOK"}, username = "kucharz@antek.pl")
+    @WithMockUser(roles = {STAFF}, username = "kucharz@antek.pl")
     @Transactional
     @Rollback
     void getAllowedUserRestaurants_1stUser() throws Exception {

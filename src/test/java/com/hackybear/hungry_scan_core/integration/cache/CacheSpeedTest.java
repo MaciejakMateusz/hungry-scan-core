@@ -19,8 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 import java.util.Objects;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.CATEGORIES_ALL;
-import static com.hackybear.hungry_scan_core.utility.Fields.CATEGORY_ID;
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +53,7 @@ public class CacheSpeedTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"}, username = "matimemek@test.com")
+    @WithMockUser(roles = {STAFF}, username = "matimemek@test.com")
     @Order(2)
     void getAllCategoriesTest() throws Exception {
         long firstRequestBegin = System.currentTimeMillis();

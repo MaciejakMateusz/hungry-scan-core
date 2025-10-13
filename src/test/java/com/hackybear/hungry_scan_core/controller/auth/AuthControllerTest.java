@@ -17,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Objects;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.USER_RESTAURANT_ID;
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,7 +51,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER", "COOK", "MANAGER", "ADMIN"})
+    @WithMockUser(roles = {STAFF, MANAGER, ADMIN})
     public void shouldAuthorizeForRestaurantModule() throws Exception {
         boolean isAuthorized = apiRequestUtils.fetchObject("/api/auth/restaurant", Boolean.class);
         assertTrue(isAuthorized);
@@ -63,7 +63,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER", "CUSTOMER_READONLY"})
+    @WithMockUser(roles = {CUSTOMER, "CUSTOMER_READONLY"})
     public void shouldNotAllowCustomerForRestaurantModule() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/restaurant");
     }
@@ -76,7 +76,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER", "COOK", "MANAGER", "CUSTOMER", "CUSTOMER_READONLY"})
+    @WithMockUser(roles = {"STAFF", "MANAGER", "CUSTOMER", "CUSTOMER_READONLY"})
     public void shouldNotAuthorizeForAdminPanelModule() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/admin");
     }
@@ -89,7 +89,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER", "COOK", "CUSTOMER", "CUSTOMER_READONLY"})
+    @WithMockUser(roles = {STAFF, CUSTOMER, CUSTOMER_READONLY})
     public void shouldNotAuthorizeForApp() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/app");
     }

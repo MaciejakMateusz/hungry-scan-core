@@ -18,6 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -57,7 +58,7 @@ class SettingsControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void shouldNotAllowAccessToSettings() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/admin/settings");
     }

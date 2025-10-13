@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,7 +63,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"}, username = "matimemek@test.com")
+    @WithMockUser(roles = {STAFF}, username = "matimemek@test.com")
     @Order(2)
     void shouldGetAllCategories() throws Exception {
         List<CategoryDTO> categories =
@@ -162,13 +163,13 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER", "COOK", "CUSTOMER_READONLY", "CUSTOMER"}, username = "matimemek@test.com")
+    @WithMockUser(roles = {STAFF, CUSTOMER_READONLY, CUSTOMER}, username = "matimemek@test.com")
     void shouldNotAllowAccessToCount() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/count");
     }
 
     @Test
-    @WithMockUser(roles = {"CUSTOMER_READONLY"}, username = "ff3abf8-9b6a@temp.it")
+    @WithMockUser(roles = {CUSTOMER_READONLY}, username = "ff3abf8-9b6a@temp.it")
     @Order(6)
     void shouldGetAllAvailable() throws Exception {
         List<CategoryCustomerDTO> categories =
@@ -196,7 +197,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"}, username = "matimemek@test.com")
+    @WithMockUser(roles = {STAFF}, username = "matimemek@test.com")
     void shouldShowCategoryById() throws Exception {
         CategoryFormDTO category = apiRequestUtils.postObjectExpect200(
                 "/api/cms/categories/show", 4, CategoryFormDTO.class);
@@ -209,7 +210,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"}, username = "matimemek@test.com")
+    @WithMockUser(roles = {STAFF}, username = "matimemek@test.com")
     void shouldNotShowCategoryById() throws Exception {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -238,7 +239,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
+    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
     void shouldNotAllowAccessToAddCategory() throws Exception {
         CategoryFormDTO category = createCategoryFormDTO("Food");
         apiRequestUtils.postAndExpect("/api/cms/categories/add", category, status().isForbidden());
@@ -286,7 +287,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
+    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
     void shouldNotAllowAccessToUpdateCategory() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/cms/categories/update", new Category());
     }
@@ -404,7 +405,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     void shouldNotAllowAccessToRemoveCategory() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isForbidden());
     }

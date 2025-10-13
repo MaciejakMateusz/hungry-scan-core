@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,7 +82,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"COOK"})
+    @WithMockUser(roles = {STAFF})
     void shouldShowMenuItemById() throws Exception {
         MenuItemFormDTO menuItemFormDTO = fetchMenuItemFormDTO(4L);
         assertEquals("Roladki z bakłażana", menuItemFormDTO.name().pl());
@@ -93,7 +94,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void shouldNotShowMenuItemById() throws Exception {
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
@@ -125,7 +126,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     void shouldNotAllowUnauthorizedAccessToItemsAdd() throws Exception {
         MenuItem menuItem = createMenuItem();
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
@@ -356,7 +357,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     @Transactional
     @Rollback
     void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {

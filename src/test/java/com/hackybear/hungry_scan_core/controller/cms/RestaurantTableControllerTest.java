@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -97,7 +98,7 @@ class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void shouldNotAllowUnauthorizedAccessToTableObject() throws Exception {
         mockMvc.perform(get("/api/cms/tables/add")).andExpect(status().isForbidden());
     }
@@ -119,7 +120,7 @@ class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     void shouldNotAllowUnauthorizedAccessToAddTable() throws Exception {
         RestaurantTable restaurantTable = createTable();
         apiRequestUtils.postAndExpect("/api/cms/tables/add", restaurantTable, status().isForbidden());
@@ -176,7 +177,7 @@ class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void shouldNotAllowUnauthorizedAccessToRemoveTable() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/tables/delete", 12, status().isForbidden());
     }
@@ -202,7 +203,7 @@ class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void shouldNotAllowUnauthorizedAccessToGenerateQr() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/tables/generate-qr", 12, status().isForbidden());
     }
@@ -228,7 +229,7 @@ class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void shouldNotAllowUnauthorizedAccessToDownload() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/tables/download", 12, status().isForbidden());
     }

@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,7 +52,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     @Order(2)
     public void shouldGetById() throws Exception {
         Booking booking =
@@ -60,7 +61,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
+    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
     @Transactional
     @Rollback
     @Order(3)
@@ -86,7 +87,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER", username = "matimemek@test.com")
+    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
     @Transactional
     @Rollback
     @Order(4)
@@ -113,7 +114,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     @Transactional
     @Rollback
     @Order(5)
@@ -131,7 +132,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     public void shouldGetByDate() throws Exception {
         Map<String, Object> requestParams = getPageableAndDateRanges();
         Page<Booking> bookings =
@@ -143,14 +144,14 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     public void shouldCountAll() throws Exception {
         Long count = apiRequestUtils.fetchObject("/api/restaurant/bookings/count-all", Long.class);
         assertEquals(2L, count);
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     public void shouldCountByDateBetween() throws Exception {
         Map<String, LocalDate> requestParams =
                 Map.of("dateFrom", LocalDate.of(2024, 2, 23),

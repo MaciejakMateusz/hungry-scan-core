@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -110,7 +111,7 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     void shouldNotAllowUnauthorizedAccessToAddIngredient() throws Exception {
         Ingredient ingredient = createIngredient("Muchomor", Money.of(350.00));
         IngredientSimpleDTO ingredientDTO = ingredientMapper.toSimpleDTO(ingredient);
@@ -169,7 +170,7 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/ingredients/delete", 12, status().isForbidden());
     }

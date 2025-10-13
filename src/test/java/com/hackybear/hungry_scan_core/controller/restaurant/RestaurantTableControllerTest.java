@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,7 +51,7 @@ public class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     public void shouldGetAllFromEndpoint() throws Exception {
         List<RestaurantTable> restaurantTables =
                 apiRequestUtils.fetchAsList(
@@ -66,7 +67,7 @@ public class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "COOK")
+    @WithMockUser(roles = STAFF)
     public void shouldGetByIdFromEndpoint() throws Exception {
         RestaurantTable table =
                 apiRequestUtils.postObjectExpect200(
@@ -87,7 +88,7 @@ public class RestaurantTableControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "WAITER")
+    @WithMockUser(roles = STAFF)
     @Transactional
     @Rollback
     void shouldToggleTableActivation() throws Exception {
@@ -200,7 +201,7 @@ public class RestaurantTableControllerTest {
 //    }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     @Transactional
     @Rollback
     public void shouldResolveWaiterCall() throws Exception {

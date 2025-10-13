@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,7 +67,7 @@ public class OrderedItemControllerTest {
 
     @Test
     @org.junit.jupiter.api.Order(2)
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     @Transactional
     void orderInitializationCheck() throws Exception {
         prepareOrders();
@@ -77,7 +78,7 @@ public class OrderedItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     @Transactional
     void shouldFindAll() throws Exception {
         prepareOrders();
@@ -97,7 +98,7 @@ public class OrderedItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     @Transactional
     void shouldFindAllDrinks() throws Exception {
         prepareOrders();
@@ -147,7 +148,7 @@ public class OrderedItemControllerTest {
         apiRequestUtils.postAndExpect("/api/restaurant/ordered-items/show", 4, status().isForbidden());
     }
 
-    @WithMockUser(roles = {"WAITER"})
+    @WithMockUser(roles = {STAFF})
     void prepareOrders() throws Exception {
         log.info("Preparing orders for test...");
         this.table9Order = orderFactory.createOrder(9L, false,
