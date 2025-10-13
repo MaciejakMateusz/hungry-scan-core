@@ -148,7 +148,7 @@ public class RegistrationFlowTest {
         user.setUsername(USER_EMAIL);
         user.setPassword("Password123!");
         user.setRepeatedPassword("Password123!");
-        return userMapper.toDTO(user);
+        return userMapper.toRegistrationDTO(user);
     }
 
     private RegistrationDTO createIncorrectRegistrationDTO() {
@@ -158,6 +158,6 @@ public class RegistrationFlowTest {
         user.setUsername("juan.bomboclat@testcom");
         user.setPassword("Password123");
         user.setRepeatedPassword("Password123!");
-        return userMapper.toDTO(user);
+        return userMapper.toRegistrationDTO(user);
     }
 }
