@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
+
 @RestController
 @RequestMapping("/api/cms/items")
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class MenuItemController {
     }
 
     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> add(@RequestPart("menuItem") @Valid MenuItemFormDTO menuItem,
                                  BindingResult br,
                                  @RequestPart(value = "image", required = false) MultipartFile image) {
@@ -50,7 +52,7 @@ public class MenuItemController {
     }
 
     @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> update(@RequestPart("menuItem") @Valid MenuItemFormDTO menuItem,
                                     BindingResult br,
                                     @RequestPart(value = "image", required = false) MultipartFile image) {
@@ -65,7 +67,7 @@ public class MenuItemController {
     }
 
     @PatchMapping(value = "/display-orders")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> updateDisplayOrders(@RequestBody List<MenuItemSimpleDTO> menuItems) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
@@ -83,11 +85,25 @@ public class MenuItemController {
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> delete(@RequestBody Long id) {
         try {
             Long activeMenuId = userService.getActiveMenuId();
             menuItemService.delete(id, activeMenuId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
+    @PatchMapping("/switch-category")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
+    public ResponseEntity<?> switchCategory(@RequestBody Map<String, Long> params) {
+        try {
+            Long activeMenuId = userService.getActiveMenuId();
+            Long menuItemId = params.get("menuItemId");
+            Long newCategoryId = params.get("newCategoryId");
+            menuItemService.switchCategory(menuItemId, newCategoryId, activeMenuId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
