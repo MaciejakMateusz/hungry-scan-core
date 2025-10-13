@@ -35,6 +35,13 @@ public class RestaurantController {
         return responseHelper.buildResponse(supplier, restaurantService::findAll);
     }
 
+    @GetMapping("/organization")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<?> listByOrganizationId() {
+        ThrowingSupplier<User> supplier = userService::getCurrentUser;
+        return responseHelper.buildResponse(supplier, restaurantService::findAllByOrganizationId);
+    }
+
     @GetMapping("/current")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> currentRestaurant() {
