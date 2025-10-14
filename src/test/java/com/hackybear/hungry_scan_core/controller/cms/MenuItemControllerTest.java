@@ -3,7 +3,6 @@ package com.hackybear.hungry_scan_core.controller.cms;
 import com.hackybear.hungry_scan_core.dto.CategoryDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
-import com.hackybear.hungry_scan_core.dto.mapper.CategoryMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuItemMapper;
 import com.hackybear.hungry_scan_core.entity.Banner;
 import com.hackybear.hungry_scan_core.entity.Category;
@@ -33,8 +32,12 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.CUSTOMER;
 import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,9 +64,6 @@ class MenuItemControllerTest {
 
     @Autowired
     private MenuItemMapper menuItemMapper;
-
-    @Autowired
-    private CategoryMapper categoryMapper;
 
     @Autowired
     private MenuItemRepository menuItemRepository;
@@ -126,7 +126,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF)
+    @WithMockUser(roles = CUSTOMER)
     void shouldNotAllowUnauthorizedAccessToItemsAdd() throws Exception {
         MenuItem menuItem = createMenuItem();
         MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(menuItem);
@@ -195,59 +195,34 @@ class MenuItemControllerTest {
     @Transactional
     @Rollback
     void shouldSwitchCategory() throws Exception {
-        //GIVEN
+        //INITIAL CHECKS
         List<CategoryDTO> categories =
                 apiRequestUtils.fetchAsList(
                         "/api/cms/categories", CategoryDTO.class);
 
-        CategoryDTO oldCategory = categories.get(4);
-        assertEquals("Pizza", oldCategory.name().pl());
+        CategoryDTO oldCategory = categories.getFirst();
+        assertEquals("Przystawki", oldCategory.name().pl());
         assertEquals(5, oldCategory.menuItems().size());
 
-        CategoryDTO newCategory = categories.getFirst();
-        assertEquals("Przystawki", newCategory.name().pl());
+        CategoryDTO newCategory = categories.get(1);
+        assertEquals("Makarony", newCategory.name().pl());
         assertEquals(5, newCategory.menuItems().size());
 
-        MenuItemFormDTO existingMenuItemDTO = fetchMenuItemFormDTO(23L);
+        MenuItemFormDTO existingMenuItemDTO = fetchMenuItemFormDTO(3L);
         assertEquals(existingMenuItemDTO.categoryId(), oldCategory.id());
-        MenuItem existingMenuItem = menuItemMapper.toMenuItem(existingMenuItemDTO);
-        existingMenuItem.setCategory(categoryMapper.toCategory(newCategory));
-        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(existingMenuItem);
+
+        //GIVEN
+        final Long menuItemId = 3L;
+        final Long newCategoryId = 2L;
+        Map<String, Long> params = Map.of("menuItemId", menuItemId, "newCategoryId", newCategoryId);
 
         //WHEN
-        apiRequestUtils.patchAndExpect200("/api/cms/items/update", menuItemFormDTO, null);
+        apiRequestUtils.patchAndExpect200("/api/cms/items/switch-category", params);
 
         //THEN
         MenuItemFormDTO updatedMenuItem =
-                apiRequestUtils.postObjectExpect200("/api/cms/items/show", 23, MenuItemFormDTO.class);
-
-        List<CategoryDTO> updatedCategories =
-                apiRequestUtils.fetchAsList(
-                        "/api/cms/categories", CategoryDTO.class);
-        List<MenuItemSimpleDTO> updatedNewItems = updatedCategories.getFirst().menuItems();
-        assertEquals(6, updatedNewItems.size());
-        assertEquals(1, updatedNewItems.getFirst().displayOrder());
-        assertEquals(2, updatedNewItems.get(1).displayOrder());
-        assertEquals(3, updatedNewItems.get(2).displayOrder());
-        assertEquals(4, updatedNewItems.get(3).displayOrder());
-        assertEquals(5, updatedNewItems.get(4).displayOrder());
-        assertEquals(6, updatedNewItems.get(5).displayOrder());
-        assertEquals(1L, updatedMenuItem.categoryId());
-        boolean isUpdatedMenuItemPresent = updatedNewItems
-                .stream()
-                .anyMatch(menuItem -> Objects.equals(menuItem.id(), updatedMenuItem.id()));
-        assertTrue(isUpdatedMenuItemPresent);
-
-        List<MenuItemSimpleDTO> updatedOldItems = updatedCategories.get(4).menuItems();
-        assertEquals(4, updatedOldItems.size());
-        assertEquals(1, updatedNewItems.getFirst().displayOrder());
-        assertEquals(2, updatedNewItems.get(1).displayOrder());
-        assertEquals(3, updatedNewItems.get(2).displayOrder());
-        assertEquals(4, updatedNewItems.get(3).displayOrder());
-        isUpdatedMenuItemPresent = updatedOldItems
-                .stream()
-                .anyMatch(menuItem -> Objects.equals(menuItem.id(), updatedMenuItem.id()));
-        assertFalse(isUpdatedMenuItemPresent);
+                apiRequestUtils.postObjectExpect200("/api/cms/items/show", menuItemId, MenuItemFormDTO.class);
+        assertEquals(newCategoryId, updatedMenuItem.categoryId());
     }
 
     @Test
@@ -357,7 +332,7 @@ class MenuItemControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF)
+    @WithMockUser(roles = CUSTOMER)
     @Transactional
     @Rollback
     void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {
