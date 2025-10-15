@@ -36,7 +36,8 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
+import static com.hackybear.hungry_scan_core.utility.Fields.CUSTOMER;
+import static com.hackybear.hungry_scan_core.utility.Fields.CUSTOMER_READONLY;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -95,7 +96,7 @@ class MenuControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {STAFF}, username = "matimemek@test.com")
+    @WithMockUser(roles = CUSTOMER, username = "matimemek@test.com")
     void shouldForbidToGetAll() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/cms/menus");
     }
@@ -188,7 +189,7 @@ class MenuControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
+    @WithMockUser(roles = CUSTOMER, username = "matimemek@test.com")
     void shouldNotAllowAccessToAdd() throws Exception {
         MenuSimpleDTO menu = createMenuDTO("Test", 1L);
         apiRequestUtils.postAndExpect("/api/cms/menus/add", menu, status().isForbidden());
@@ -228,7 +229,7 @@ class MenuControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
+    @WithMockUser(roles = CUSTOMER, username = "matimemek@test.com")
     void shouldNotAllowAccessToSwitchStandard() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/switch-standard", 2);
     }
@@ -356,13 +357,13 @@ class MenuControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
+    @WithMockUser(roles = CUSTOMER_READONLY, username = "matimemek@test.com")
     void shouldNotAllowAccessToUpdatePlans() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/update-plans", List.of());
     }
 
     @Test
-    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
+    @WithMockUser(roles = CUSTOMER, username = "matimemek@test.com")
     void shouldNotAllowAccessToUpdate() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/update", new Menu());
     }
@@ -405,7 +406,7 @@ class MenuControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
+    @WithMockUser(roles = CUSTOMER, username = "matimemek@test.com")
     void shouldNotAllowAccessToRemove() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/menus/delete", 5, status().isForbidden());
     }
