@@ -95,10 +95,11 @@ public class RestaurantServiceImp implements RestaurantService {
     })
     public void save(RestaurantDTO restaurantDTO, User currentUser) throws Exception {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
+        restaurant.addUser(currentUser);
         restaurant.setOrganizationId(currentUser.getOrganizationId());
         setupRestaurantSettings(restaurant);
         restaurant.getSettings().setOperatingHours(restaurantDTO.settings().operatingHours());
-        restaurant = setupInitial(restaurant);
+        restaurant = setupNew(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
     }
@@ -182,10 +183,23 @@ public class RestaurantServiceImp implements RestaurantService {
     private void createAndPersistNew(RestaurantDTO restaurantDTO, User currentUser) throws Exception {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
         restaurant.setOrganizationId(currentUser.getOrganizationId());
-        restaurant = setupInitial(restaurant);
+        restaurant.addUser(currentUser);
         setupRestaurantSettings(restaurant);
+        restaurant = setupInitial(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
+    }
+
+    @NotNull
+    private Restaurant setupNew(Restaurant restaurant) throws Exception {
+        restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow());
+        restaurant.setToken(UUID.randomUUID().toString());
+        restaurant.setQrVersion(1);
+        restaurant = restaurantRepository.save(restaurant);
+        restaurant.setMenus(new TreeSet<>());
+        createNewMenu(restaurant);
+        qrService.generate(restaurant.getId());
+        return restaurant;
     }
 
     @NotNull
@@ -221,6 +235,21 @@ public class RestaurantServiceImp implements RestaurantService {
         return operatingHours;
     }
 
+    private void createNewMenu(Restaurant restaurant) throws LocalizedException {
+        Menu menu = new Menu();
+        menu.setStandard(true);
+        menu.setName("Menu");
+        menu.setRestaurant(restaurant);
+        menu.setTheme(Theme.COLOR_318E41);
+        menu.setMessage(getMenuMessage());
+        menu.setPlan(createNewPlan(menu, restaurant));
+        MenuColor menuColor = menuColorRepository.findById(9L)
+                .orElseThrow(exceptionHelper.supplyLocalizedMessage(
+                        "error.menuColorService.menuColorNotFound"));
+        menu.setColor(menuColor);
+        restaurant.addMenu(menu);
+    }
+
     private void createInitialMenu(Restaurant restaurant) throws LocalizedException {
         Menu menu = new Menu();
         menu.setStandard(true);
@@ -234,6 +263,20 @@ public class RestaurantServiceImp implements RestaurantService {
                         "error.menuColorService.menuColorNotFound"));
         menu.setColor(menuColor);
         restaurant.addMenu(menu);
+    }
+
+    private static Set<MenuPlan> createNewPlan(Menu menu, Restaurant restaurant) {
+        Set<MenuPlan> plans = new HashSet<>();
+        Settings settings = restaurant.getSettings();
+        Map<DayOfWeek, TimeRange> operatingHours = settings.getOperatingHours();
+        for (Map.Entry<DayOfWeek, TimeRange> entry : operatingHours.entrySet()) {
+            MenuPlan plan = new MenuPlan();
+            plan.setDayOfWeek(entry.getKey());
+            plan.setTimeRanges(Set.of(entry.getValue()));
+            plan.setMenu(menu);
+            plans.add(plan);
+        }
+        return plans;
     }
 
     private static Set<MenuPlan> createDefaultPlan(Menu menu) {
@@ -260,12 +303,23 @@ public class RestaurantServiceImp implements RestaurantService {
         userService.save(currentUser);
     }
 
-    private void validateDeletion(Long id, User user) throws LocalizedException {
+    private void validateDeletion(Long id, User currentUser) throws LocalizedException {
         boolean hasPaidPricePlan = restaurantRepository.hasPaidPricePlan(id);
+
         if (hasPaidPricePlan) {
             exceptionHelper.throwLocalizedMessage("error.restaurantService.paidPlanRestaurantRemoval");
-        } else if (user.getRestaurants().size() == 1) {
+        } else if (currentUser.getRestaurants().size() == 1) {
             exceptionHelper.throwLocalizedMessage("error.restaurantService.lastRestaurantRemoval");
+        }
+        Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(
+                exceptionHelper.supplyLocalizedMessage("error.restaurantService.restaurantNotFound"));
+        Set<User> users = restaurant.getUsers();
+
+        Set<User> usersWithOneRestaurant = users.stream()
+                .filter(user -> user.getRestaurants().size() == 1)
+                .collect(Collectors.toSet());
+        if (!usersWithOneRestaurant.isEmpty()) {
+            exceptionHelper.throwLocalizedMessage("error.restaurantService.oneUserOneRestaurant");
         }
     }
 
