@@ -60,7 +60,7 @@ public class RestaurantController {
     }
 
     @PostMapping("/create-first")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createFirst(@Valid @RequestBody RestaurantDTO restaurantDTO, BindingResult br) {
         Map<String, Object> params = Map.of(
                 "restaurantDTO", restaurantDTO,
