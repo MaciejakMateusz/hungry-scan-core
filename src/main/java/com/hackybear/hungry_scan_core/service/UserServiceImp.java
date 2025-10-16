@@ -11,6 +11,7 @@ import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.RoleRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
@@ -19,6 +20,7 @@ import com.hackybear.hungry_scan_core.utility.RandomPasswordGenerator;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -28,6 +30,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -51,6 +54,8 @@ public class UserServiceImp implements UserService {
     private final ExceptionHelper exceptionHelper;
     private final RoleRepository roleRepository;
     private final EmailService emailService;
+    private final MenuRepository menuRepository;
+    private final CacheManager cacheManager;
 
     @Value("${CMS_APP_URL}")
     private String cmsAppUrl;
@@ -84,6 +89,7 @@ public class UserServiceImp implements UserService {
 
         ResponseEntity<?> errorResponse = validatePasswords(dto, user);
         if (errorResponse != null) return errorResponse;
+        user.setPassword(BCrypt.hashpw(dto.newPassword(), BCrypt.gensalt()));
 
         userMapper.updateFromProfileUpdateDTO(dto, user);
         userRepository.save(user);
@@ -197,6 +203,10 @@ public class UserServiceImp implements UserService {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("message",
                                 exceptionHelper.getLocalizedMsg("validation.user.accessToActionDenied")));
+            } else if (userRepository.existsByUsername(userDTO.username())) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("username",
+                                exceptionHelper.getLocalizedMsg("validation.username.usernameExists")));
             }
             user.setOrganizationId(currentUser.getOrganizationId());
             String tempPassword = RandomPasswordGenerator.generatePassword();
@@ -230,8 +240,9 @@ public class UserServiceImp implements UserService {
                         .body(Map.of("message",
                                 exceptionHelper.getLocalizedMsg("validation.user.accessToActionDenied")));
             }
-            userMapper.updateFromDTO(userDTO, user);
-            userRepository.save(user);
+            userMapper.updateFromDTO(userDTO, existing);
+            setActiveIds(existing);
+            userRepository.save(existing);
             return ResponseEntity.ok().build();
         } catch (LocalizedException e) {
             return responseHelper.createErrorResponse(e);
@@ -376,6 +387,15 @@ public class UserServiceImp implements UserService {
                         "error.userService.userNotFound"));
     }
 
+    private void setActiveIds(User user) {
+        Long restaurantId = user.getRestaurants().iterator().next().getId();
+        Set<Menu> menus = menuRepository.findAllByRestaurantId(restaurantId);
+        Long menuId = menus.iterator().next().getId();
+        user.setActiveRestaurantId(restaurantId);
+        user.setActiveMenuId(menuId);
+        Objects.requireNonNull(cacheManager.getCache(RESTAURANTS_ALL)).evict(user.getId());
+    }
+
     private void setUserRoleAsAdmin(User user) {
         Role role = roleRepository.findByName("ROLE_ADMIN");
         user.setRoles(new HashSet<>(Collections.singletonList(role)));
@@ -402,7 +422,6 @@ public class UserServiceImp implements UserService {
             return createResponse(HttpStatus.BAD_REQUEST,
                     "repeatedPassword", "validation.repeatedPassword.notMatch");
         }
-        user.setPassword(dto.newPassword());
         return null;
     }
 
