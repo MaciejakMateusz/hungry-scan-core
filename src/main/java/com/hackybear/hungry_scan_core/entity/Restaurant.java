@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -65,6 +66,10 @@ public class Restaurant implements Serializable {
     @Length(max = 300)
     private String city;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "restaurants")
+    private Set<User> users = new HashSet<>();
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Menu> menus = new HashSet<>();
 
@@ -104,6 +109,11 @@ public class Restaurant implements Serializable {
 
     public void addMenu(Menu menu) {
         this.menus.add(menu);
+    }
+
+    public void addUser(User user) {
+        this.users.add(user);
+        user.addRestaurant(this);
     }
 
     @PrePersist
