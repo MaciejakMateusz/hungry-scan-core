@@ -270,11 +270,14 @@ public class RestaurantServiceImp implements RestaurantService {
         Settings settings = restaurant.getSettings();
         Map<DayOfWeek, TimeRange> operatingHours = settings.getOperatingHours();
         for (Map.Entry<DayOfWeek, TimeRange> entry : operatingHours.entrySet()) {
-            MenuPlan plan = new MenuPlan();
-            plan.setDayOfWeek(entry.getKey());
-            plan.setTimeRanges(Set.of(entry.getValue()));
-            plan.setMenu(menu);
-            plans.add(plan);
+            TimeRange timeRange = entry.getValue();
+            if (timeRange.isAvailable()) {
+                MenuPlan plan = new MenuPlan();
+                plan.setDayOfWeek(entry.getKey());
+                plan.setTimeRanges(Set.of(timeRange));
+                plan.setMenu(menu);
+                plans.add(plan);
+            }
         }
         return plans;
     }
