@@ -79,7 +79,7 @@ VALUES (true, true, 'Całodniowe', 1, 'COLOR_318E41', 9, 1),
        (true, true, 'Menu', 2, 'COLOR_318E41', 9, 2),
        (false, true, 'Śniadaniowe', 2, 'COLOR_318E41', 10, 3),
        (false, true, 'Obiadowe', 2, 'COLOR_318E41', 10, 4),
-       (false, false, 'Kolacyjne', 2, 'COLOR_318E41', 10, 5),
+       (false, false, 'Kolacyjne', 4, 'COLOR_318E41', 10, 5),
        (false, false, 'Ziemniaczane', 5, 'COLOR_318E41', 10, 6),
        (false, false, 'Menu', 11, 'COLOR_318E41', 10, 7);
 
@@ -486,7 +486,7 @@ VALUES (1, true, '2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
         'admin@example.com', null, null, 'edmin', '', 'edminowsky', 1, 1),
        (1, true, '2024-01-24 19:06:36.680304', 'netka@test.com', 0,
         '$2a$12$SnVI60OEgQMpEA./cc4Sl.G9whg6O2szOnM4BG3ZOYuNpRE3RenpG', null, 'netka@test.com', null, null, 'Neta',
-        null, 'Menagera', 1, 1),
+        null, 'Menagera', 1, 4),
        (1, true, '2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', 1,
         '$2a$10$fb4q1jBqnMLDkUBi2YXQ4eHZ0M17bP5gxzwU84UwCkEUbyekGRDlC', null, 'ff3abf8-9b6a@temp.it', null, 1, 'temp',
         null, 'user', 1, 1),
@@ -509,9 +509,9 @@ VALUES (2, true, '2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1,
        (3, true, '2024-04-23 12:50:41.531670', 'fresh@user.it', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, 'fresh@user.it', null, null, 'Fresh',
         null, 'User', null, null),
-       (3, true, '2024-04-23 12:50:41.531670', 'fresh@user.it', 1,
+       (3, true, '2024-04-23 12:50:41.531670', 'freeplan@example.com', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, 'freeplan@example.com', null, null,
-        'Free', null, 'User', null, 10);
+        'Free', null, 'User', 7, 10);
 
 
 INSERT INTO user_role (user_id, role_id)
@@ -540,6 +540,7 @@ VALUES (1, 1),
        (7, 2),
        (8, 2),
        (9, 10),
+       (10, 10),
        (10, 11);
 
 -- MENU PLANS
