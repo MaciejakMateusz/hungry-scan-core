@@ -163,7 +163,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {STAFF, CUSTOMER_READONLY, CUSTOMER}, username = "matimemek@test.com")
+    @WithMockUser(roles = {CUSTOMER_READONLY, CUSTOMER}, username = "matimemek@test.com")
     void shouldNotAllowAccessToCount() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/cms/categories/count");
     }
@@ -239,7 +239,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
+    @WithMockUser(roles = CUSTOMER, username = "matimemek@test.com")
     void shouldNotAllowAccessToAddCategory() throws Exception {
         CategoryFormDTO category = createCategoryFormDTO("Food");
         apiRequestUtils.postAndExpect("/api/cms/categories/add", category, status().isForbidden());
@@ -287,7 +287,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF, username = "matimemek@test.com")
+    @WithMockUser(roles = CUSTOMER_READONLY, username = "matimemek@test.com")
     void shouldNotAllowAccessToUpdateCategory() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/cms/categories/update", new Category());
     }
@@ -405,7 +405,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF)
+    @WithMockUser(roles = CUSTOMER)
     void shouldNotAllowAccessToRemoveCategory() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/categories/delete", 5, status().isForbidden());
     }
