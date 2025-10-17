@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -79,7 +79,7 @@ class ZoneControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"STAFF"})
+    @WithMockUser(roles = CUSTOMER)
     void shouldNotAllowUnauthorizedAccessToShowZone() throws Exception {
         apiRequestUtils.postAndExpect("/api/cms/zones/show", 4, status().isForbidden());
     }
@@ -101,7 +101,7 @@ class ZoneControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "STAFF")
+    @WithMockUser(roles = CUSTOMER)
     void shouldNotAllowUnauthorizedAccessToNewZoneObject() throws Exception {
         mockMvc.perform(get("/api/cms/zones/add")).andExpect(status().isForbidden());
     }
@@ -121,7 +121,7 @@ class ZoneControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF)
+    @WithMockUser(roles = CUSTOMER_READONLY)
     void shouldNotAllowUnauthorizedAccessToAddZone() throws Exception {
         Zone zone = createZone();
         apiRequestUtils.postAndExpect("/api/cms/zones/add", zone, status().isForbidden());
@@ -177,7 +177,7 @@ class ZoneControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "STAFF")
+    @WithMockUser(roles = CUSTOMER)
     void shouldNotAllowUnauthorizedAccessToRemoveZone() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/zones/delete", 4, status().isForbidden());
     }
