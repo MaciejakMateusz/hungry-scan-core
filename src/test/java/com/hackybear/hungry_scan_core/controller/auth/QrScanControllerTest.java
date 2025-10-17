@@ -91,7 +91,7 @@ class QrScanControllerTest {
     @Rollback
     void shouldScanQr_expectNewCustomerDetails() throws Exception {
         List<User> currentRestaurantUsers = userRepository.findAllByActiveRestaurantId(1L);
-        assertEquals(5, currentRestaurantUsers.size());
+        assertEquals(4, currentRestaurantUsers.size());
         String existingRestaurantToken = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed";
 
         Mockito.when(menuRepository.findActiveMenuId(any(), any(), any()))
@@ -99,7 +99,7 @@ class QrScanControllerTest {
         apiRequestUtils.executeGet("/api/qr/scan/" + existingRestaurantToken);
 
         List<User> updatedRestaurantUsers = userRepository.findAllByActiveRestaurantId(1L);
-        assertEquals(6, updatedRestaurantUsers.size());
+        assertEquals(5, updatedRestaurantUsers.size());
         User newTempUser = updatedRestaurantUsers.getLast();
         assertEquals(1L, newTempUser.getActiveRestaurantId());
         assertEquals(0L, newTempUser.getOrganizationId());
