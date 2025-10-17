@@ -1,6 +1,6 @@
 package com.hackybear.hungry_scan_core.integration.data_separation;
 
-import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.dto.UserDTO;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -14,8 +14,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,30 +43,28 @@ class UserDataSeparationTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void getAllUsers_1stAdmin() throws Exception {
-        List<User> users =
+        Set<UserDTO> users =
                 apiRequestUtils.fetchAsSet(
-                        "/api/admin/users", User.class).stream().toList();
+                        "/api/admin/users", UserDTO.class);
 
         assertEquals(2, users.size());
-        assertEquals("matimemek@test.com", users.getFirst().getUsername());
-        assertEquals("netka@test.com", users.getLast().getEmail());
-        assertTrue(users.stream().allMatch(user -> user.getOrganizationId() == 1L));
-        assertTrue(users.stream().noneMatch(user -> Objects.equals(user.getSurname(), "temp")));
-        assertTrue(users.stream().noneMatch(user -> Objects.equals(user.getUsername(), "admin@example.com")));
+        assertTrue(users.stream().anyMatch(user -> user.username().equals("matimemek@test.com")));
+        assertTrue(users.stream().anyMatch(user -> user.username().equals("netka@test.com")));
+        assertTrue(users.stream().noneMatch(user -> Objects.equals(user.surname(), "temp")));
+        assertTrue(users.stream().noneMatch(user -> Objects.equals(user.username(), "admin@example.com")));
     }
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     void getAllUsers_2ndAdmin() throws Exception {
-        List<User> users =
+        Set<UserDTO> users =
                 apiRequestUtils.fetchAsSet(
-                        "/api/admin/users", User.class).stream().toList();
+                        "/api/admin/users", UserDTO.class);
 
         assertEquals(1, users.size());
-        assertEquals("kucharz@antek.pl", users.getFirst().getUsername());
-        assertTrue(users.stream().allMatch(user -> user.getOrganizationId() == 2L));
-        assertTrue(users.stream().noneMatch(user -> Objects.equals(user.getSurname(), "temp")));
-        assertTrue(users.stream().noneMatch(user -> Objects.equals(user.getUsername(), "restaurator@rarytas.pl")));
+        assertTrue(users.stream().anyMatch(user -> user.username().equals("kucharz@antek.pl")));
+        assertTrue(users.stream().noneMatch(user -> Objects.equals(user.surname(), "temp")));
+        assertTrue(users.stream().noneMatch(user -> Objects.equals(user.username(), "restaurator@rarytas.pl")));
     }
 
 }
