@@ -272,7 +272,7 @@ public class ApiRequestUtils {
      * Executes GET HTTP request and checks if it returns with the right status code.
      *
      * @param endpointUrl The URL endpoint to execute the request to.
-     * @param matcher The expected status code in ResultMatcher format.
+     * @param matcher     The expected status code in ResultMatcher format.
      * @throws Exception If an error occurs during the request.
      */
     public void executeGet(String endpointUrl, ResultMatcher matcher) throws Exception {
@@ -798,6 +798,30 @@ public class ApiRequestUtils {
         ResultActions resultActions = mockMvc.perform(delete(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
+                .andExpect(matcher)
+                .andDo(print());
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+        };
+        return objectMapper.readValue(responseBody, typeReference);
+    }
+
+    /**
+     * Sends a DELETE HTTP request to the specified endpoint URL.
+     * Expects a certain result based on the provided ResultMatcher.
+     * Retrieves and returns the response body as a Map of String keys to Object values.
+     *
+     * @param endpointUrl The URL endpoint to send the POST request to.
+     * @param matcher     The ResultMatcher to apply to the response.
+     * @return A Map representing the response body, with String keys and Object values.
+     * @throws Exception If there are any errors during the request or response handling.
+     */
+    public Map<String, Object> deleteAndReturnResponseBody(String endpointUrl,
+                                                           ResultMatcher matcher) throws Exception {
+
+        ResultActions resultActions = mockMvc.perform(delete(endpointUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(matcher)
                 .andDo(print());
 
