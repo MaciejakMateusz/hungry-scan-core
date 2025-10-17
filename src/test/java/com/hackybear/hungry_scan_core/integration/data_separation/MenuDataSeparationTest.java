@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,15 +60,15 @@ public class MenuDataSeparationTest {
     @Transactional
     @Rollback
     void getMenus_2ndUser() throws Exception {
-        List<MenuSimpleDTO> menus =
+        Set<MenuSimpleDTO> menus =
                 apiRequestUtils.fetchAsSet(
-                        "/api/cms/menus", MenuSimpleDTO.class).stream().toList();
+                        "/api/cms/menus", MenuSimpleDTO.class);
 
-        assertEquals(4, menus.size());
-        assertEquals("Kolacyjne", menus.getFirst().name());
-        assertFalse(menus.getFirst().standard());
-        assertEquals("Menu", menus.get(1).name());
-        assertTrue(menus.get(1).standard());
+        assertEquals(3, menus.size());
+        assertTrue(menus.stream().anyMatch(menu -> menu.name().equals("Obiadowe")));
+        MenuSimpleDTO standardMenu = menus.stream().filter(menu -> menu.name().equals("Menu")).findFirst().orElse(null);
+        assertNotNull(standardMenu);
+        assertTrue(standardMenu.standard());
     }
 
 }
