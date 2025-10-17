@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.UserDTO;
 import com.hackybear.hungry_scan_core.dto.UserProfileDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
@@ -8,6 +9,8 @@ import com.hackybear.hungry_scan_core.entity.Role;
 import com.hackybear.hungry_scan_core.entity.Translatable;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
+import com.hackybear.hungry_scan_core.repository.UserRepository;
+import com.hackybear.hungry_scan_core.service.interfaces.EmailService;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -20,13 +23,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,8 +48,15 @@ class AdminManagementControllerTest {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Autowired
     private RestaurantRepository restaurantRepository;
+
+    @MockitoBean
+    private EmailService emailService;
 
     @Test
     @Order(1)
@@ -60,13 +68,13 @@ class AdminManagementControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     void shouldGetAllUsers() throws Exception {
-        List<User> users =
+        List<UserDTO> users =
                 apiRequestUtils.fetchAsList(
-                        "/api/admin/users", User.class);
+                        "/api/admin/users", UserDTO.class);
 
         assertEquals(2, users.size());
-        assertEquals("matimemek@test.com", users.getFirst().getUsername());
-        assertEquals("netka@test.com", users.getLast().getEmail());
+        assertTrue(users.stream().anyMatch(user -> user.username().equals("matimemek@test.com")));
+        assertTrue(users.stream().anyMatch(user -> user.username().equals("netka@test.com")));
     }
 
     @Test
@@ -82,12 +90,25 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    void shouldGetAllRoles() throws Exception {
+        List<Role> roles =
+                apiRequestUtils.fetchAsList(
+                        "/api/admin/users/roles", Role.class);
+
+        assertEquals(5, roles.size());
+        assertTrue(roles.stream().anyMatch(role -> role.getName().equals("ROLE_MANAGER")));
+        assertTrue(roles.stream().anyMatch(role -> role.getName().equals("ROLE_CUSTOMER_READONLY")));
+        assertTrue(roles.stream().anyMatch(role -> role.getName().equals("ROLE_STAFF")));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
     @Rollback
     @Transactional
     void shouldAddNewUser() throws Exception {
         User user = createUser(1L);
-        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
-        apiRequestUtils.postAndExpect200("/api/admin/users/add", registrationDTO);
+        UserDTO userDTO = userMapper.toDTO(user);
+        apiRequestUtils.postAndExpect200("/api/admin/users/add", userDTO);
 
         UserProfileDTO persistedUser = findUser("example@example.com");
         assertEquals("example@example.com", persistedUser.username());
@@ -95,6 +116,8 @@ class AdminManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "STAFF")
+    @Rollback
+    @Transactional
     void shouldNotAllowToAddUser() throws Exception {
         User user = createUser(1L);
         RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
@@ -109,26 +132,15 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldNotAddWithIncorrectEmail() throws Exception {
-        User user = createUser(1L);
-        user.setEmail("mordo@gmailcom");
-        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
-
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
-
-        assertEquals(1, errors.size());
-        assertEquals("Niepoprawny format adresu email", errors.get("email"));
-    }
-
-    @Test
     @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
+    @Rollback
+    @Transactional
     void shouldNotAddWithIncorrectUsername() throws Exception {
         User user = createUser(2L);
         user.setUsername("ex");
-        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
+        UserDTO userDTO = userMapper.toDTO(user);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", userDTO);
 
         assertEquals(1, errors.size());
         assertEquals(
@@ -137,53 +149,129 @@ class AdminManagementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    void shouldNotAddWithIncorrectPassword() throws Exception {
-        User user = createUser(1L);
-        user.setPassword("example123");
-        user.setRepeatedPassword("example123");
-        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
-
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/admin/users/add", registrationDTO);
-
-        assertEquals(1, errors.size());
-        assertEquals(
-                "Hasło musi posiadać przynajmniej  jedną dużą literę, jedną małą literę, jedną cyfrę i jeden znak specjalny",
-                errors.get("password"));
-    }
-
-    @Test
     @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
+    @Rollback
+    @Transactional
     void shouldNotAddWithExistingUsername() throws Exception {
         User user = createUser(2L);
         user.setUsername("netka@test.com");
         user.setEmail("netka@test.com");
-        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
+        UserDTO userDTO = userMapper.toDTO(user);
 
         Map<String, Object> responseParams =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/add", registrationDTO, status().isBadRequest());
+                        "/api/admin/users/add", userDTO, status().isBadRequest());
 
         assertEquals("Konto z podanym adresem email już istnieje", responseParams.get("username"));
-        assertEquals("netka@test.com", responseParams.get("givenUsername"));
     }
 
     @Test
     @WithMockUser(roles = "ADMIN", username = "admin@example.com")
-    void shouldNotAddWithNotMatchingPasswords() throws Exception {
-        User user = createUser(1L);
-        user.setRepeatedPassword("Examplepass123");
-        RegistrationDTO registrationDTO = userMapper.toRegistrationDTO(user);
+    @Rollback
+    @Transactional
+    void shouldUpdateUser() throws Exception {
+        List<User> users =
+                apiRequestUtils.fetchAsList(
+                        "/api/admin/users", User.class);
+        User user = users.stream()
+                .filter(u -> u.getUsername().equals("matimemek@test.com"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("mati", user.getForename());
+        assertTrue(user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_STAFF")));
+        assertEquals(1, user.getRestaurants().size());
+        assertTrue(user.getRestaurants().stream().anyMatch(restaurant -> restaurant.getId().equals(1L)));
 
-        Map<String, Object> responseParams =
-                apiRequestUtils.postAndReturnResponseBody(
-                        "/api/admin/users/add", registrationDTO, status().isBadRequest());
+        user.setForename("Gregor");
 
-        assertEquals("Hasła nie są identyczne", responseParams.get("repeatedPassword"));
+        List<Role> roles =
+                apiRequestUtils.fetchAsList(
+                        "/api/admin/users/roles", Role.class);
+        Role role = roles.stream().filter(r -> r.getName().equals("ROLE_MANAGER")).findFirst().orElseThrow();
+        user.getRoles().clear();
+        user.setRoles(Set.of(role));
+
+        user.getRestaurants().clear();
+        Restaurant restaurant = getRestaurant(4L);
+        user.addRestaurant(restaurant);
+
+        UserDTO userDTO = userMapper.toDTO(user);
+
+        apiRequestUtils.patchAndExpect200("/api/admin/users/update", userDTO);
+
+        User updatedUser = userRepository.findUserByUsername("matimemek@test.com");
+        assertEquals("Gregor", updatedUser.getForename());
+        assertTrue(updatedUser.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_MANAGER")));
+        assertEquals(1, updatedUser.getRestaurants().size());
+        assertTrue(updatedUser.getRestaurants().stream().anyMatch(r -> r.getId().equals(4L)));
+        assertEquals(4L, updatedUser.getActiveRestaurantId());
+        assertEquals(5L, updatedUser.getActiveMenuId());
     }
 
-    //todo shouldUpdateUser
-    //todo shouldNotUpdateIncorrectUser
+    @Test
+    @WithMockUser(roles = "MANAGER", username = "netka@test.com")
+    @Rollback
+    @Transactional
+    void shouldNotAllowAdminElevation() throws Exception {
+        List<User> users =
+                apiRequestUtils.fetchAsList(
+                        "/api/admin/users", User.class);
+        User user = users.stream()
+                .filter(u -> u.getUsername().equals("matimemek@test.com"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("mati", user.getForename());
+        assertTrue(user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_STAFF")));
+        assertEquals(1, user.getRestaurants().size());
+        assertTrue(user.getRestaurants().stream().anyMatch(restaurant -> restaurant.getId().equals(1L)));
+
+        user.setForename("Gregor");
+
+        List<Role> roles =
+                apiRequestUtils.fetchAsList(
+                        "/api/admin/users/roles", Role.class);
+        Role role = roles.stream().filter(r -> r.getName().equals("ROLE_ADMIN")).findFirst().orElseThrow();
+        user.getRoles().clear();
+        user.setRoles(Set.of(role));
+
+        UserDTO userDTO = userMapper.toDTO(user);
+
+        Map<?, ?> response = apiRequestUtils.patchAndReturnResponseBody(
+                "/api/admin/users/update", userDTO, status().isForbidden());
+        assertEquals("Nie masz uprawnień do wykonania tej akcji.", response.get("message"));
+    }
+
+    @Test
+    @WithMockUser(roles = "MANAGER", username = "netka@test.com")
+    @Rollback
+    @Transactional
+    void shouldNotUpdateIncorrectUser() throws Exception {
+        List<User> users =
+                apiRequestUtils.fetchAsList(
+                        "/api/admin/users", User.class);
+        User user = users.stream()
+                .filter(u -> u.getUsername().equals("matimemek@test.com"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("mati", user.getForename());
+        assertTrue(user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_STAFF")));
+        assertEquals(1, user.getRestaurants().size());
+        assertTrue(user.getRestaurants().stream().anyMatch(restaurant -> restaurant.getId().equals(1L)));
+
+        user.setForename("");
+        user.setSurname("Jones1");
+        user.getRestaurants().clear();
+        user.getRoles().clear();
+
+        UserDTO userDTO = userMapper.toDTO(user);
+
+        Map<?, ?> response = apiRequestUtils.patchAndReturnResponseBody(
+                "/api/admin/users/update", userDTO, status().isBadRequest());
+        assertEquals("Pole nie może być puste", response.get("forename"));
+        assertEquals("Pole powinno mieć minimum dwa znaki i zawierać tylko litery", response.get("surname"));
+        assertEquals("Pole nie może być puste", response.get("roles"));
+        assertEquals("Pole nie może być puste", response.get("restaurants"));
+    }
 
     @Test
     @WithMockUser(roles = STAFF)
@@ -266,4 +354,5 @@ class AdminManagementControllerTest {
     private UserProfileDTO findUser(String username) throws Exception {
         return apiRequestUtils.postAndFetchObject("/api/admin/users/profile", username, UserProfileDTO.class);
     }
+
 }
