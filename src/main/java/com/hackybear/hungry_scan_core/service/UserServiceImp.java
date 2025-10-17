@@ -89,7 +89,7 @@ public class UserServiceImp implements UserService {
 
         ResponseEntity<?> errorResponse = validatePasswords(dto, user);
         if (errorResponse != null) return errorResponse;
-        user.setPassword(BCrypt.hashpw(dto.newPassword(), BCrypt.gensalt()));
+        if (Objects.nonNull(dto.newPassword())) user.setPassword(BCrypt.hashpw(dto.newPassword(), BCrypt.gensalt()));
 
         userMapper.updateFromProfileUpdateDTO(dto, user);
         userRepository.save(user);
@@ -182,7 +182,7 @@ public class UserServiceImp implements UserService {
             errorParams.put("error", exceptionHelper.getLocalizedMsg("validation.recovery.tokenExpired"));
             return ResponseEntity.badRequest().body(errorParams);
         }
-        user.setPassword(recovery.password());
+        user.setPassword(BCrypt.hashpw(recovery.password(), BCrypt.gensalt()));
         user.setEmailToken(null);
         user.setEmailTokenExpiry(null);
         userRepository.save(user);
