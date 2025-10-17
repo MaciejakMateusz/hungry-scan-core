@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.STAFF;
+import static com.hackybear.hungry_scan_core.utility.Fields.CUSTOMER;
+import static com.hackybear.hungry_scan_core.utility.Fields.CUSTOMER_READONLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,7 +56,7 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"MANAGER"}, username = "netka@test.com")
+    @WithMockUser(roles = {"STAFF"}, username = "matimemek@test.com")
     void shouldGetAllIngredients() throws Exception {
         Page<IngredientDTO> ingredients = apiRequestUtils.fetchAsPage(
                 "/api/cms/ingredients", getPageableParams(), IngredientDTO.class);
@@ -111,7 +112,7 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = STAFF)
+    @WithMockUser(roles = CUSTOMER)
     void shouldNotAllowUnauthorizedAccessToAddIngredient() throws Exception {
         Ingredient ingredient = createIngredient("Muchomor", Money.of(350.00));
         IngredientSimpleDTO ingredientDTO = ingredientMapper.toSimpleDTO(ingredient);
@@ -170,7 +171,7 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {STAFF})
+    @WithMockUser(roles = CUSTOMER_READONLY)
     void shouldNotAllowUnauthorizedAccessToRemoveMenuItem() throws Exception {
         apiRequestUtils.deleteAndExpect("/api/cms/ingredients/delete", 12, status().isForbidden());
     }
