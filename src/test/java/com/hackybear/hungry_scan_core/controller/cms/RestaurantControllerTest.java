@@ -145,15 +145,15 @@ public class RestaurantControllerTest {
 
         SettingsDTO settingsDTO = persistedRestaurant.settings();
         assertEquals(7, settingsDTO.operatingHours().size());
-        assertEquals(LocalTime.of(10, 0), settingsDTO.operatingHours().get(DayOfWeek.MONDAY).getStartTime());
-        assertEquals(LocalTime.of(22, 0), settingsDTO.operatingHours().get(DayOfWeek.MONDAY).getEndTime());
-        assertEquals(LocalTime.of(10, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getStartTime());
-        assertEquals(LocalTime.of(22, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getEndTime());
+        assertEquals(LocalTime.of(11, 0), settingsDTO.operatingHours().get(DayOfWeek.MONDAY).getStartTime());
+        assertEquals(LocalTime.of(19, 0), settingsDTO.operatingHours().get(DayOfWeek.MONDAY).getEndTime());
+        assertEquals(LocalTime.of(11, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getStartTime());
+        assertEquals(LocalTime.of(19, 0), settingsDTO.operatingHours().get(DayOfWeek.SUNDAY).getEndTime());
 
         MenuSimpleDTO menuDTO = persistedRestaurant.menus().stream().findFirst().orElseThrow();
         assertNotNull(menuDTO);
         assertTrue(menuDTO.standard());
-        assertEquals(7, menuDTO.plan().size());
+        assertEquals(6, menuDTO.plan().size());
 
         MenuPlanDTO menuPlanDTO = menuDTO.plan()
                 .stream()
@@ -164,8 +164,8 @@ public class RestaurantControllerTest {
         assertNotNull(menuPlanDTO.menuId());
 
         TimeRange timeRange = menuPlanDTO.timeRanges().stream().findFirst().orElseThrow();
-        assertEquals(LocalTime.of(10, 0), timeRange.getStartTime());
-        assertEquals(LocalTime.of(22, 0), timeRange.getEndTime());
+        assertEquals(LocalTime.of(11, 0), timeRange.getStartTime());
+        assertEquals(LocalTime.of(19, 0), timeRange.getEndTime());
     }
 
     @Test
@@ -320,7 +320,7 @@ public class RestaurantControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN", username = "freeplan@example.com")
+    @WithMockUser(roles = "MANAGER", username = "netka@test.com")
     @Transactional
     @Rollback
     void shouldRemove() throws Exception {
@@ -328,12 +328,22 @@ public class RestaurantControllerTest {
 
         Map<String, Object> responseBody =
                 apiRequestUtils.postAndReturnResponseBody(
-                        "/api/cms/restaurants/show", 10, status().isBadRequest());
+                        "/api/cms/restaurants/show", 4, status().isBadRequest());
         assertEquals("Restauracja z podanym ID nie istnieje.", responseBody.get("exceptionMsg"));
 
         User user = userRepository.findUserByUsername("freeplan@example.com");
-        assertEquals(11L, user.getActiveRestaurantId());
+        assertEquals(10L, user.getActiveRestaurantId());
         assertEquals(7L, user.getActiveMenuId());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "freeplan@example.com")
+    @Transactional
+    @Rollback
+    void shouldRemoveAsLastOneAssignedToOtherUser() throws Exception {
+        Map<?, ?> response = apiRequestUtils.deleteAndReturnResponseBody(
+                "/api/cms/restaurants/delete", status().isBadRequest());
+        assertEquals("Jedyna restauracja innego użytkownika nie może zostać usunięta.", response.get("exceptionMsg"));
     }
 
     @Test
@@ -363,22 +373,20 @@ public class RestaurantControllerTest {
                 "/api/cms/restaurants/delete", 2, status().isForbidden());
     }
 
+    private RestaurantDTO createRestaurantDTO() {
+        return restaurantMapper.toDTO(createRestaurant());
+    }
+
     private Restaurant createRestaurant() {
         Restaurant restaurant = new Restaurant();
         restaurant.setName("Real Greek Carbonara");
         restaurant.setAddress("Korfantego 123");
         restaurant.setCity("Katowice");
         restaurant.setPostalCode("40-404");
+        Settings settings = new Settings();
+        settings.setOperatingHours(createOperatingHours());
+        restaurant.setSettings(settings);
         return restaurant;
-    }
-
-    private RestaurantDTO createRestaurantDTO() {
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("Real Greek Carbonara");
-        restaurant.setAddress("Korfantego 123");
-        restaurant.setCity("Katowice");
-        restaurant.setPostalCode("40-404");
-        return restaurantMapper.toDTO(restaurant);
     }
 
     private static Map<DayOfWeek, TimeRange> createOperatingHours() {
