@@ -89,7 +89,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {STAFF, CUSTOMER, CUSTOMER_READONLY})
+    @WithMockUser(roles = {CUSTOMER, CUSTOMER_READONLY})
     public void shouldNotAuthorizeForApp() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/app");
     }
