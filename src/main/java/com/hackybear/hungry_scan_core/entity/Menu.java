@@ -69,13 +69,12 @@ public class Menu implements Serializable, Comparable<Menu> {
     @Enumerated(EnumType.STRING)
     private Theme theme;
 
-    @JoinColumn(nullable = false, name = "color_id", referencedColumnName = "id")
     @ManyToOne
     @NotNull
     private MenuColor color;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "translatable_message_id", referencedColumnName = "id")
+    @JoinColumn(name = "translatable_message_id", referencedColumnName = "id", nullable = false)
     @AnyTranslationNotBlank
     @LimitTranslationsLength
     @NotNull
