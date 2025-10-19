@@ -1,5 +1,7 @@
 package com.hackybear.hungry_scan_core.dto;
 
+import com.hackybear.hungry_scan_core.annotation.AnyTranslationNotBlankDTO;
+import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLengthDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,6 +15,9 @@ public record MenuSimpleDTO(Long id,
                             @NotBlank
                             String name,
 
+                            @AnyTranslationNotBlankDTO
+                            @LimitTranslationsLengthDTO
+                            @NotNull
                             TranslatableDTO message,
 
                             @NotNull
