@@ -45,4 +45,13 @@ public class Fields {
 
     public static final String VARIANT_ID = "variant.id";
     public static final String VARIANTS_ALL = "variants.all";
+
+    public static final String STATS_SCANS_YEARLY = "stats.scans.yearly";
+    public static final String STATS_SCANS_MONTHLY = "stats.scans.monthly";
+    public static final String STATS_SCANS_WEEKLY = "stats.scans.weekly";
+    public static final String STATS_SCANS_DAILY = "stats.scans.daily";
+    public static final String STATS_MENU_ITEMS_YEARLY = "stats.menuItems.yearly";
+    public static final String STATS_MENU_ITEMS_MONTHLY = "stats.menuItems.monthly";
+    public static final String STATS_MENU_ITEMS_WEEKLY = "stats.menuItems.weekly";
+    public static final String STATS_MENU_ITEMS_DAILY = "stats.menuItems.daily";
 }
