@@ -4,6 +4,7 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.IngredientSimpleDTO;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.IngredientService;
+import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -25,13 +26,15 @@ import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOME
 public class IngredientController {
 
     private final IngredientService ingredientService;
+    private final UserService userService;
     private final ResponseHelper responseHelper;
 
     @GetMapping
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> findAll() {
         try {
-            return ResponseEntity.ok(ingredientService.findAll());
+            Long restaurantId = userService.getActiveRestaurantId();
+            return ResponseEntity.ok(ingredientService.findAll(restaurantId));
         } catch (LocalizedException e) {
             return responseHelper.createErrorResponse(e);
         }
@@ -44,7 +47,8 @@ public class IngredientController {
         Integer pageNumber = (Integer) params.get("pageNumber");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         try {
-            return ResponseEntity.ok(ingredientService.findAllPages(pageable));
+            Long restaurantId = userService.getActiveRestaurantId();
+            return ResponseEntity.ok(ingredientService.findAllPages(pageable, restaurantId));
         } catch (LocalizedException e) {
             return responseHelper.createErrorResponse(e);
         }
@@ -59,22 +63,44 @@ public class IngredientController {
 
     @PostMapping("/add")
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
-    public ResponseEntity<?> add(@RequestBody @Valid IngredientSimpleDTO ingredient,
-                                 BindingResult br) {
-        return responseHelper.buildResponse(ingredient, br, ingredientService::save);
+    public ResponseEntity<?> add(@RequestBody @Valid IngredientSimpleDTO ingredient, BindingResult br) {
+        if (br.hasErrors()) {
+            return responseHelper.createErrorResponse(br);
+        }
+        try {
+            Long restaurantId = userService.getActiveRestaurantId();
+            ingredientService.save(ingredient, restaurantId);
+            return ResponseEntity.ok().build();
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @PatchMapping("/update")
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
-    public ResponseEntity<?> update(@RequestBody @Valid IngredientSimpleDTO ingredient,
-                                    BindingResult br) {
-        return responseHelper.buildResponse(ingredient, br, ingredientService::update);
+    public ResponseEntity<?> update(@RequestBody @Valid IngredientSimpleDTO ingredient, BindingResult br) {
+        if (br.hasErrors()) {
+            return responseHelper.createErrorResponse(br);
+        }
+        try {
+            Long restaurantId = userService.getActiveRestaurantId();
+            ingredientService.update(ingredient, restaurantId);
+            return ResponseEntity.ok().build();
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<Map<String, Object>> delete(@RequestBody Long id) {
-        return responseHelper.buildResponse(id, ingredientService::delete);
+        try {
+            Long restaurantId = userService.getActiveRestaurantId();
+            ingredientService.delete(id, restaurantId);
+            return ResponseEntity.ok().build();
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
     }
 
     @PostMapping("/filter")
