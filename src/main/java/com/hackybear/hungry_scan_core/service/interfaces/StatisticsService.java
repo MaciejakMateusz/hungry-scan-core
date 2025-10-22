@@ -1,7 +1,6 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
 import com.hackybear.hungry_scan_core.dto.MenuItemViewCountDTO;
-import com.hackybear.hungry_scan_core.entity.User;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -9,13 +8,13 @@ import java.util.Set;
 
 public interface StatisticsService {
 
-    Map<String, Object> getYearlyScanStats(Map<String, Object> params, User user);
+    Map<String, Object> getYearlyScanStats(Map<String, Object> params, Long restaurantId);
 
-    Map<String, Object> getMonthlyScanStats(Map<String, Object> params, User user);
+    Map<String, Object> getMonthlyScanStats(Map<String, Object> params, Long restaurantId);
 
-    Map<String, Object> getWeeklyScanStats(Map<String, Object> params, User user);
+    Map<String, Object> getWeeklyScanStats(Map<String, Object> params, Long restaurantId);
 
-    Map<String, Object> getDailyScanStats(Map<String, Object> params, User user);
+    Map<String, Object> getDailyScanStats(Map<String, Object> params, Long restaurantId);
 
     Set<MenuItemViewCountDTO> getYearlyMenuItemViewsStats(Long menuId, int year);
 
