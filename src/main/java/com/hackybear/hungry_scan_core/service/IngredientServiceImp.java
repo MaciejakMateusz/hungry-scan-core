@@ -13,12 +13,17 @@ import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.IngredientService;
 import com.hackybear.hungry_scan_core.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +38,11 @@ public class IngredientServiceImp implements IngredientService {
 
     @Override
     @Transactional
-    public void save(IngredientSimpleDTO ingredientDTO) throws LocalizedException {
-        Long restaurantId = userService.getActiveRestaurantId();
+    @Caching(evict = {
+            @CacheEvict(value = INGREDIENTS_ALL, key = "#restaurantId"),
+            @CacheEvict(value = INGREDIENTS_PAGES, key = "#restaurantId"),
+    })
+    public void save(IngredientSimpleDTO ingredientDTO, Long restaurantId) throws LocalizedException {
         Ingredient ingredient = ingredientMapper.toIngredient(ingredientDTO);
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
         ingredient.setRestaurant(restaurant);
@@ -43,9 +51,13 @@ public class IngredientServiceImp implements IngredientService {
 
     @Override
     @Transactional
-    public void update(IngredientSimpleDTO ingredientDTO) throws LocalizedException {
+    @Caching(evict = {
+            @CacheEvict(value = INGREDIENTS_ALL, key = "#restaurantId"),
+            @CacheEvict(value = INGREDIENTS_PAGES, key = "#restaurantId"),
+            @CacheEvict(value = INGREDIENT_ID, key = "#ingredientDTO.id()")
+    })
+    public void update(IngredientSimpleDTO ingredientDTO, Long restaurantId) throws LocalizedException {
         Ingredient existing = getIngredient(ingredientDTO.id());
-        Long restaurantId = userService.getActiveRestaurantId();
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
         existing.setRestaurant(restaurant);
         existing.setName(translatableMapper.toTranslatable(ingredientDTO.name()));
@@ -55,25 +67,31 @@ public class IngredientServiceImp implements IngredientService {
     }
 
     @Override
-    public List<IngredientDTO> findAll() throws LocalizedException {
-        Long restaurantId = userService.getActiveRestaurantId();
+    @Cacheable(value = INGREDIENTS_ALL, key = "#restaurantId")
+    public List<IngredientDTO> findAll(Long restaurantId) {
         List<Ingredient> ingredients = ingredientRepository.findAllOrderByDefaultTranslation(restaurantId);
         return ingredients.stream().map(ingredientMapper::toDTO).toList();
     }
 
     @Override
-    public Page<IngredientDTO> findAllPages(Pageable pageable) throws LocalizedException {
-        Long restaurantId = userService.getActiveRestaurantId();
+    @Cacheable(value = INGREDIENTS_PAGES, key = "#restaurantId")
+    public Page<IngredientDTO> findAllPages(Pageable pageable, Long restaurantId) {
         return ingredientRepository.findAllOrderByDefaultTranslation(pageable, restaurantId).map(ingredientMapper::toDTO);
     }
 
     @Override
+    @Cacheable(value = INGREDIENT_ID, key = "#id")
     public IngredientDTO findById(Long id) throws LocalizedException {
         return ingredientMapper.toDTO(getIngredient(id));
     }
 
     @Override
-    public void delete(Long id) throws LocalizedException {
+    @Caching(evict = {
+            @CacheEvict(value = INGREDIENTS_ALL, key = "#restaurantId"),
+            @CacheEvict(value = INGREDIENTS_PAGES, key = "#restaurantId"),
+            @CacheEvict(value = INGREDIENT_ID, key = "#id")
+    })
+    public void delete(Long id, Long restaurantId) {
         ingredientRepository.deleteById(id);
     }
 

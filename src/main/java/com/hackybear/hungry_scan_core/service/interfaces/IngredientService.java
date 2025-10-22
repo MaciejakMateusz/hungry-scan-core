@@ -10,17 +10,17 @@ import java.util.List;
 
 public interface IngredientService {
 
-    void save(IngredientSimpleDTO ingredientDTO) throws LocalizedException;
+    void save(IngredientSimpleDTO ingredientDTO, Long restaurantId) throws LocalizedException;
 
-    void update(IngredientSimpleDTO ingredientDTO) throws LocalizedException;
+    void update(IngredientSimpleDTO ingredientDTO, Long restaurantId) throws LocalizedException;
 
-    List<IngredientDTO> findAll() throws LocalizedException;
+    List<IngredientDTO> findAll(Long restaurantId);
 
-    Page<IngredientDTO> findAllPages(Pageable pageable) throws LocalizedException;
+    Page<IngredientDTO> findAllPages(Pageable pageable, Long restaurantId);
 
     IngredientDTO findById(Long id) throws LocalizedException;
 
-    void delete(Long id) throws LocalizedException;
+    void delete(Long id, Long restaurantId);
 
     List<IngredientDTO> filterByName(String name) throws LocalizedException;
 
