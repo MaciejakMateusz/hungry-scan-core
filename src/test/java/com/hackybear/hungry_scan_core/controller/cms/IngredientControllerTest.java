@@ -73,11 +73,11 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"ADMIN"})
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
     void shouldShowIngredientById() throws Exception {
         IngredientDTO ingredient =
-                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 6, IngredientDTO.class);
-        assertEquals("Mozzarella", ingredient.name().pl());
+                apiRequestUtils.postObjectExpect200("/api/cms/ingredients/show", 3, IngredientDTO.class);
+        assertEquals("Czosnek", ingredient.name().pl());
     }
 
     @Test
@@ -154,7 +154,7 @@ class IngredientControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"ADMIN"})
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
     void shouldDeleteIngredient() throws Exception {
