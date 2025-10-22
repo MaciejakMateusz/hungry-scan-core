@@ -1,6 +1,5 @@
 package com.hackybear.hungry_scan_core.controller.statistics;
 
-import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.service.interfaces.StatisticsService;
@@ -30,8 +29,8 @@ public class StatisticsController {
     @PostMapping("/dashboard/year/scans")
     public ResponseEntity<?> getYearlyScanStats(@RequestBody Map<String, Object> params) {
         try {
-            User user = userService.getCurrentUser();
-            return ResponseEntity.ok(statisticsService.getYearlyScanStats(params, user));
+            Long restaurantId = userService.getActiveRestaurantId();
+            return ResponseEntity.ok(statisticsService.getYearlyScanStats(params, restaurantId));
         } catch (LocalizedException e) {
             return ResponseEntity.badRequest()
                     .body(exceptionHelper.getLocalizedMsg("error.userService.userNotFound"));
@@ -48,8 +47,8 @@ public class StatisticsController {
     @PostMapping("/dashboard/month/scans")
     public ResponseEntity<?> getMonthlyScanStats(@RequestBody Map<String, Object> params) {
         try {
-            User user = userService.getCurrentUser();
-            return ResponseEntity.ok(statisticsService.getMonthlyScanStats(params, user));
+            Long restaurantId = userService.getActiveRestaurantId();
+            return ResponseEntity.ok(statisticsService.getMonthlyScanStats(params, restaurantId));
         } catch (LocalizedException e) {
             return ResponseEntity.badRequest()
                     .body(exceptionHelper.getLocalizedMsg("error.userService.userNotFound"));
@@ -67,8 +66,8 @@ public class StatisticsController {
     @PostMapping("/dashboard/week/scans")
     public ResponseEntity<?> getWeeklyScanStats(@RequestBody Map<String, Object> params) {
         try {
-            User user = userService.getCurrentUser();
-            return ResponseEntity.ok(statisticsService.getWeeklyScanStats(params, user));
+            Long restaurantId = userService.getActiveRestaurantId();
+            return ResponseEntity.ok(statisticsService.getWeeklyScanStats(params, restaurantId));
         } catch (LocalizedException e) {
             return ResponseEntity.badRequest()
                     .body(exceptionHelper.getLocalizedMsg("error.userService.userNotFound"));
@@ -86,8 +85,8 @@ public class StatisticsController {
     @PostMapping("/dashboard/day/scans")
     public ResponseEntity<?> getDailyScanStats(@RequestBody Map<String, Object> params) {
         try {
-            User user = userService.getCurrentUser();
-            return ResponseEntity.ok(statisticsService.getDailyScanStats(params, user));
+            Long restaurantId = userService.getActiveRestaurantId();
+            return ResponseEntity.ok(statisticsService.getDailyScanStats(params, restaurantId));
         } catch (LocalizedException e) {
             return ResponseEntity.badRequest()
                     .body(exceptionHelper.getLocalizedMsg("error.userService.userNotFound"));
