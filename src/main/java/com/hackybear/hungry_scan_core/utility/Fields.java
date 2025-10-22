@@ -38,6 +38,11 @@ public class Fields {
     public static final String CATEGORIES_COUNT = "categories.count";
     public static final String CATEGORY_ID = "category.id";
 
+    public static final String INGREDIENTS_ALL = "ingredients.all";
+    public static final String INGREDIENTS_PAGES = "ingredients.pages";
+    public static final String INGREDIENTS_AVAILABLE = "ingredients.available";
+    public static final String INGREDIENT_ID = "ingredient.id";
+
     public static final String VARIANT_ID = "variant.id";
     public static final String VARIANTS_ALL = "variants.all";
 }
