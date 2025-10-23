@@ -25,14 +25,14 @@ public class StatisticsServiceImp implements StatisticsService {
     private final MenuItemViewEventAggregator viewEventAggregator;
 
     @Override
-    @Cacheable(value = STATS_SCANS_YEARLY, key = "#restaurantId")
+    @Cacheable(value = STATS_SCANS_YEARLY, key = "#params.get('year') + '-' + #restaurantId")
     public Map<String, Object> getYearlyScanStats(Map<String, Object> params, Long restaurantId) {
         Integer year = (Integer) params.get("year");
         return scanEventAggregator.projectYearlyScans(restaurantId, year);
     }
 
     @Override
-    @Cacheable(value = STATS_SCANS_MONTHLY, key = "#restaurantId")
+    @Cacheable(value = STATS_SCANS_MONTHLY, key = "#params.get('year') + '-' + #params.get('month') + '-' + #restaurantId")
     public Map<String, Object> getMonthlyScanStats(Map<String, Object> params, Long restaurantId) {
         Integer year = (Integer) params.get("year");
         Integer month = (Integer) params.get("month");
@@ -40,7 +40,7 @@ public class StatisticsServiceImp implements StatisticsService {
     }
 
     @Override
-    @Cacheable(value = STATS_SCANS_WEEKLY, key = "#restaurantId")
+    @Cacheable(value = STATS_SCANS_WEEKLY, key = "#params.get('year') + '-' + #params.get('week') + '-' + #restaurantId")
     public Map<String, Object> getWeeklyScanStats(Map<String, Object> params, Long restaurantId) {
         Integer year = (Integer) params.get("year");
         Integer week = (Integer) params.get("week");
@@ -48,7 +48,7 @@ public class StatisticsServiceImp implements StatisticsService {
     }
 
     @Override
-    @Cacheable(value = STATS_SCANS_DAILY, key = "#restaurantId")
+    @Cacheable(value = STATS_SCANS_DAILY, key = "#params.get('day') + '-' + #restaurantId")
     public Map<String, Object> getDailyScanStats(Map<String, Object> params, Long restaurantId) {
         Instant instant = Instant.parse((String) params.get("day"));
         LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
