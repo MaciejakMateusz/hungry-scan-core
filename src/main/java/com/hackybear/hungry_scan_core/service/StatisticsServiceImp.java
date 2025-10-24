@@ -56,25 +56,25 @@ public class StatisticsServiceImp implements StatisticsService {
     }
 
     @Override
-    @Cacheable(value = STATS_MENU_ITEMS_YEARLY, key = "#menuId")
+    @Cacheable(value = STATS_MENU_ITEMS_YEARLY, key = "#menuId + '-' + #year")
     public Set<MenuItemViewCountDTO> getYearlyMenuItemViewsStats(Long menuId, int year) {
         return viewEventAggregator.projectYearlyMenuItemViews(menuId, year);
     }
 
     @Override
-    @Cacheable(value = STATS_MENU_ITEMS_MONTHLY, key = "#menuId")
+    @Cacheable(value = STATS_MENU_ITEMS_MONTHLY, key = "#menuId + '-' + #month")
     public Set<MenuItemViewCountDTO> getMonthlyMenuItemViewsStats(Long menuId, int year, int month) {
         return viewEventAggregator.projectMonthlyMenuItemViews(menuId, year, month);
     }
 
     @Override
-    @Cacheable(value = STATS_MENU_ITEMS_WEEKLY, key = "#menuId")
+    @Cacheable(value = STATS_MENU_ITEMS_WEEKLY, key = "#menuId + '-' + #year + '-' + #week")
     public Set<MenuItemViewCountDTO> getWeeklyMenuItemViewsStats(Long menuId, int year, int week) {
         return viewEventAggregator.projectWeeklyMenuItemViews(menuId, year, week);
     }
 
     @Override
-    @Cacheable(value = STATS_MENU_ITEMS_DAILY, key = "#menuId")
+    @Cacheable(value = STATS_MENU_ITEMS_DAILY, key = "#menuId + '-' + #date.toString()")
     public Set<MenuItemViewCountDTO> getDailyMenuItemViewsStats(Long menuId, LocalDate date) {
         return viewEventAggregator.projectDailyMenuItemViews(menuId, date);
     }
