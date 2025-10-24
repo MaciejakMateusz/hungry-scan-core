@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.service.helpers;
 
 import com.hackybear.hungry_scan_core.dto.MenuItemViewCountDTO;
+import com.hackybear.hungry_scan_core.dto.TranslatableDTO;
 import com.hackybear.hungry_scan_core.interfaces.aggregators.MenuItemViewAggregation;
 import com.hackybear.hungry_scan_core.repository.MenuItemViewEventRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,12 +63,13 @@ public class MenuItemViewEventAggregator {
     private static MenuItemViewCountDTO getViewCountDTO(MenuItemViewAggregation event) {
         return new MenuItemViewCountDTO(
                 event.getId(),
-                event.getPl(),
-                event.getEn(),
-                event.getFr(),
-                event.getDe(),
-                event.getEs(),
-                event.getUk(),
+                new TranslatableDTO(
+                        null, event.getPl(),
+                        event.getEn(),
+                        event.getFr(),
+                        event.getDe(),
+                        event.getEs(),
+                        event.getUk()),
                 event.getViews());
     }
 
