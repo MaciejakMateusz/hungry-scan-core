@@ -107,14 +107,14 @@ class MenuItemViewEventAggregatorTest {
 
         MenuItemViewCountDTO dto10 = map.get(10L);
         assertNotNull(dto10);
-        assertEquals("Domyślny10", dto10.pl());
-        assertEquals("Default10", dto10.en());
+        assertEquals("Domyślny10", dto10.name().pl());
+        assertEquals("Default10", dto10.name().en());
         assertEquals(100, dto10.viewsCount());
 
         MenuItemViewCountDTO dto20 = map.get(20L);
         assertNotNull(dto20);
-        assertEquals("Domyślny20", dto20.pl());
-        assertEquals("Default20", dto20.en());
+        assertEquals("Domyślny20", dto20.name().pl());
+        assertEquals("Default20", dto20.name().en());
         assertEquals(200, dto20.viewsCount());
 
         verify(repository).aggregateByYear(1L, 2024);
@@ -132,8 +132,8 @@ class MenuItemViewEventAggregatorTest {
         assertEquals(1, result.size());
         MenuItemViewCountDTO dto = result.iterator().next();
         assertEquals(5L, dto.id());
-        assertEquals("M-Def", dto.pl());
-        assertEquals("M-En", dto.en());
+        assertEquals("M-Def", dto.name().pl());
+        assertEquals("M-En", dto.name().en());
         assertEquals(55, dto.viewsCount());
 
         verify(repository).aggregateByMonth(7L, 2025, 3);
@@ -151,8 +151,8 @@ class MenuItemViewEventAggregatorTest {
         assertEquals(1, result.size());
         MenuItemViewCountDTO dto = result.iterator().next();
         assertEquals(99L, dto.id());
-        assertEquals("W-Def", dto.pl());
-        assertEquals("W-En", dto.en());
+        assertEquals("W-Def", dto.name().pl());
+        assertEquals("W-En", dto.name().en());
         assertEquals(999, dto.viewsCount());
 
         verify(repository).aggregateByWeek(8L, 2025, 15);
@@ -174,7 +174,7 @@ class MenuItemViewEventAggregatorTest {
                 .collect(Collectors.toMap(MenuItemViewCountDTO::id, Function.identity()));
 
         assertEquals(11, map.get(1L).viewsCount());
-        assertEquals("D-En2", map.get(2L).en());
+        assertEquals("D-En2", map.get(2L).name().en());
 
         verify(repository).aggregateByDay(99L, date);
     }
@@ -239,8 +239,8 @@ class MenuItemViewEventAggregatorTest {
 
         assertEquals(1, result.size());
         MenuItemViewCountDTO dto = result.iterator().next();
-        assertNull(dto.pl(), "Default translation should be null");
-        assertNull(dto.en(), "English translation should be null");
+        assertNull(dto.name().pl(), "Default translation should be null");
+        assertNull(dto.name().en(), "English translation should be null");
         assertEquals(0, dto.viewsCount(), "View count should still be 0");
 
         verify(repository).aggregateByWeek(4L, 2025, 10);
