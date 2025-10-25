@@ -62,13 +62,13 @@ public class StatisticsServiceImp implements StatisticsService {
     }
 
     @Override
-    @Cacheable(value = STATS_MENU_ITEMS_MONTHLY, key = "#menuId + '-' + #month")
+    @Cacheable(value = STATS_MENU_ITEMS_MONTHLY, key = "#menuId + '-' + #year + '-' + #month")
     public Set<MenuItemViewCountDTO> getMonthlyMenuItemViewsStats(Long menuId, int year, int month) {
         return viewEventAggregator.projectMonthlyMenuItemViews(menuId, year, month);
     }
 
     @Override
-    @Cacheable(value = STATS_MENU_ITEMS_WEEKLY, key = "#menuId + '-' + #year + '-' + #week")
+    @Cacheable(value = STATS_MENU_ITEMS_WEEKLY, key = "#menuId + '-' + #year + '-w' + #week")
     public Set<MenuItemViewCountDTO> getWeeklyMenuItemViewsStats(Long menuId, int year, int week) {
         return viewEventAggregator.projectWeeklyMenuItemViews(menuId, year, week);
     }
