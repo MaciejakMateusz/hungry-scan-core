@@ -23,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
@@ -37,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @SpringBootTest
-@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -125,6 +123,17 @@ class AdminManagementControllerTest {
         assertTrue(roles.stream().anyMatch(role -> role.getName().equals("ROLE_MANAGER")));
         assertTrue(roles.stream().anyMatch(role -> role.getName().equals("ROLE_CUSTOMER_READONLY")));
         assertTrue(roles.stream().anyMatch(role -> role.getName().equals("ROLE_STAFF")));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    void shouldFilterUsers() throws Exception {
+        Set<UserDTO> users =
+                apiRequestUtils.postAndGetSet(
+                        "/api/admin/users/filter", "mat", UserDTO.class);
+
+        assertEquals(1, users.size());
+        assertTrue(users.stream().anyMatch(user -> user.username().equals("matimemek@test.com")));
     }
 
     @Test
