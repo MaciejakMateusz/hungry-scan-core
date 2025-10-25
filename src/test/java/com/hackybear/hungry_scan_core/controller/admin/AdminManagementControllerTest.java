@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.admin;
 
 import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
+import com.hackybear.hungry_scan_core.dto.UserActivityDTO;
 import com.hackybear.hungry_scan_core.dto.UserDTO;
 import com.hackybear.hungry_scan_core.dto.UserProfileDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.UserMapper;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -86,6 +89,29 @@ class AdminManagementControllerTest {
     @Test
     void shouldNotAllowUnauthorizedAccessToUsers() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/admin/users");
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    void shouldGetUsersActivity() throws Exception {
+        List<UserActivityDTO> users =
+                apiRequestUtils.fetchAsList(
+                        "/api/admin/users/activity", UserActivityDTO.class);
+
+        assertEquals(2, users.size());
+        assertTrue(users.stream().anyMatch(user -> user.username().equals("matimemek@test.com")));
+        assertTrue(users.stream().anyMatch(user -> user.username().equals("netka@test.com")));
+    }
+
+    @Test
+    @WithMockUser(roles = "STAFF")
+    void shouldNotAllowAccessUserActivity() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/activity");
+    }
+
+    @Test
+    void shouldNotAllowUnauthorizedAccessToUsersActivity() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/admin/users/activity");
     }
 
     @Test

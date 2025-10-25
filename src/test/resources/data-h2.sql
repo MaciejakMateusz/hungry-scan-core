@@ -476,22 +476,24 @@ VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZjNhYmY4LTliNmEiLCJpYXQiOjE3MTM4MTAzNT
         NOW());
 
 INSERT INTO users (organization_id, active, created, email, enabled, password, updated, username, email_token,
-                   jwt_token_id, forename, phone_number, surname, active_menu_id, active_restaurant_id, signed_in)
+                   jwt_token_id, forename, phone_number, surname, active_menu_id, active_restaurant_id, signed_in,
+                   last_seen_at)
 VALUES (1, true, '2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
         '$2a$10$z/0edEimosa3QjYYxjiHuO8bNZHfI3jxDVwqDNd5bc2vCr5TERDz6', '2024-02-02 20:54:41.531670',
-        'matimemek@test.com', null, null, 'mati', '+48 123 123 123', 'Memek', 1, 1, false),
+        'matimemek@test.com', null, null, 'mati', '+48 123 123 123', 'Memek', 1, 1, false,
+        '2025-02-24 19:06:36.680304'),
        (1, true, '2024-01-20 19:09:00.000000', 'admin@example.com', 1,
         '$2y$10$0jWCcLQydTOa5vY60YhmPelYeWobYb5i/cJ9ezYtB1nUHOwnoOPny', '2024-02-04 07:50:29.047589',
-        'admin@example.com', null, null, 'edmin', '', 'edminowsky', 1, 1, false),
+        'admin@example.com', null, null, 'edmin', '', 'edminowsky', 1, 1, false, '2025-03-24 19:06:36.680304'),
        (1, true, '2024-01-24 19:06:36.680304', 'netka@test.com', 0,
         '$2a$12$SnVI60OEgQMpEA./cc4Sl.G9whg6O2szOnM4BG3ZOYuNpRE3RenpG', null, 'netka@test.com', null, null, 'Neta',
-        null, 'Menagera', 1, 4, false),
+        null, 'Menagera', 1, 4, false, '2024-01-24 19:06:36.680304'),
        (1, true, '2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', 1,
         '$2a$10$fb4q1jBqnMLDkUBi2YXQ4eHZ0M17bP5gxzwU84UwCkEUbyekGRDlC', null, 'ff3abf8-9b6a@temp.it', null, 1, 'temp',
-        null, 'user', 1, 1, false),
+        null, 'user', 1, 1, false, '2024-01-24 19:06:36.680304'),
        (1, true, '2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, '2c73bfc-16fc@temp.it', null, 2, 'temp',
-        null, 'user', 1, 1, false);
+        null, 'user', 1, 1, false, '2024-04-24 18:06:36.680304');
 
 
 INSERT INTO users (organization_id, active, created, email, enabled, password, updated, username, email_token,
