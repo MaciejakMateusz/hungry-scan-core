@@ -13,6 +13,6 @@ public record UserProfileDTO(String forename,
 
     @Override
     public int compareTo(UserProfileDTO other) {
-        return this.surname.compareTo(other.surname);
+        return this.username.compareTo(other.username);
     }
 }
