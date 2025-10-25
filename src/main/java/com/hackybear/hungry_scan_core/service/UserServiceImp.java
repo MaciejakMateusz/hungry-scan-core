@@ -74,6 +74,21 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public TreeSet<UserActivityDTO> findAllActivity(String username) throws LocalizedException {
+        User currentUser = findByUsername(username);
+        Set<User> users = userRepository.findAllByOrganizationId(currentUser.getOrganizationId(), currentUser.getId());
+        return users.stream().map(userMapper::toUserActivityDTO).collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    @Override
+    public List<UserDTO> filterUsers(String value, User user) {
+        String filterValue = "%" + value.toLowerCase() + "%";
+        return userRepository.filterUsers(filterValue, user.getActiveRestaurantId())
+                .stream()
+                .map(userMapper::toDTO).toList();
+    }
+
+    @Override
     @Cacheable(value = USER_ID, key = "#user.id")
     public UserProfileDTO getUserProfileData(User user) {
         return userMapper.toUserProfileDTO(user);
@@ -160,6 +175,14 @@ public class UserServiceImp implements UserService {
             userRepository.save(user);
             emailService.passwordRecovery(email, emailToken);
         }
+    }
+
+    @Override
+    @Transactional
+    public void noteActivity(String username) throws LocalizedException {
+        User user = findByUsername(username);
+        user.setLastSeenAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 
     @Override

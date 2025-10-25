@@ -9,12 +9,17 @@ import org.springframework.validation.BindingResult;
 
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public interface UserService {
 
     User findByUsername(String email) throws LocalizedException;
 
     Set<UserDTO> findAll(String username) throws LocalizedException;
+
+    TreeSet<UserActivityDTO> findAllActivity(String username) throws LocalizedException;
+
+    List<UserDTO> filterUsers(String value, User user);
 
     UserProfileDTO getUserProfileData(User user);
 
@@ -31,6 +36,8 @@ public interface UserService {
     void resendActivation(String email) throws LocalizedException, MessagingException;
 
     void sendPasswordRecovery(String email) throws LocalizedException, MessagingException;
+
+    void noteActivity(String username) throws LocalizedException;
 
     ResponseEntity<?> recoverPassword(RecoveryDTO recovery, BindingResult br);
 
