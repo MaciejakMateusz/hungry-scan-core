@@ -12,6 +12,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test ")
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -51,7 +53,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {STAFF, MANAGER, ADMIN})
+    @WithMockUser(roles = {STAFF, MANAGER, ADMIN}, username = "matimemek@test.com")
     public void shouldAuthorizeForRestaurantModule() throws Exception {
         boolean isAuthorized = apiRequestUtils.fetchObject("/api/auth/restaurant", Boolean.class);
         assertTrue(isAuthorized);
@@ -63,7 +65,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {CUSTOMER, "CUSTOMER_READONLY"})
+    @WithMockUser(roles = {CUSTOMER, CUSTOMER_READONLY})
     public void shouldNotAllowCustomerForRestaurantModule() throws Exception {
         apiRequestUtils.fetchAndExpectForbidden("/api/auth/restaurant");
     }
