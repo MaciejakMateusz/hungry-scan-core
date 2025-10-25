@@ -30,6 +30,6 @@ public record UserDTO(@NotBlank
 
     @Override
     public int compareTo(UserDTO other) {
-        return this.surname.compareTo(other.surname);
+        return this.username.compareTo(other.username);
     }
 }
