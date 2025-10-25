@@ -11,16 +11,15 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
@@ -31,9 +30,6 @@ public class UserController {
     private final UserService userService;
     private final LoginService loginService;
     private final ResponseHelper responseHelper;
-
-    @Value("${IS_PROD}")
-    private boolean isProduction;
 
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
@@ -126,10 +122,8 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        String invalidatedJwtCookie = invalidateJwtCookie();
-        response.setHeader("Set-Cookie", invalidatedJwtCookie);
-        return ResponseEntity.ok().body(Map.of("redirectUrl", "/sign-in"));
+    public ResponseEntity<?> logout(HttpServletResponse response, Principal principal) {
+        return loginService.handleLogout(response, principal.getName());
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -156,17 +150,6 @@ public class UserController {
     @GetMapping("/current-menu")
     public ResponseEntity<?> getCurrentMenu() {
         return responseHelper.buildResponse(userService::getCurrentMenu);
-    }
-
-    private String invalidateJwtCookie() {
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
-                .path("/")
-                .httpOnly(true)
-                .secure(isProduction)
-                .maxAge(0)
-                .sameSite(isProduction ? "None" : "Strict")
-                .build();
-        return cookie.toString();
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
