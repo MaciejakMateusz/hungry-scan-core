@@ -23,6 +23,6 @@ public record UserProfileUpdateDTO(@NotBlank
 
     @Override
     public int compareTo(UserProfileUpdateDTO other) {
-        return this.surname.compareTo(other.surname);
+        return this.forename.concat(this.surname).compareTo(other.forename.concat(this.surname));
     }
 }
