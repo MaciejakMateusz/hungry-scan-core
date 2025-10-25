@@ -26,6 +26,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
             """)
     Set<User> findAllByOrganizationId(@Param("organizationId") Long organizationId, @Param("currentUserId") Long currentUserId);
 
+    @Query("""
+            SELECT u from User u
+            WHERE u.forename LIKE :filterValue
+            OR u.surname LIKE :filterValue
+            OR u.username LIKE :filterValue
+            AND u.organizationId = :organizationId
+            ORDER BY u.forename ASC
+            """)
+    Set<User> filterUsers(@Param("filterValue") String filterValue, @Param("organizationId") Long organizationId);
+
     User findUserByUsername(String username);
 
     boolean existsByUsername(String username);
