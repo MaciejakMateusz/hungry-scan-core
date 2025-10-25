@@ -1,9 +1,6 @@
 package com.hackybear.hungry_scan_core.dto.mapper;
 
-import com.hackybear.hungry_scan_core.dto.RegistrationDTO;
-import com.hackybear.hungry_scan_core.dto.UserDTO;
-import com.hackybear.hungry_scan_core.dto.UserProfileDTO;
-import com.hackybear.hungry_scan_core.dto.UserProfileUpdateDTO;
+import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.entity.User;
 import org.mapstruct.*;
 
@@ -32,5 +29,7 @@ public interface UserMapper {
     void updateFromDTO(UserDTO userDTO, @MappingTarget User user);
 
     User toUser(UserDTO userDTO);
+
+    UserActivityDTO toUserActivityDTO(User user);
 
 }
