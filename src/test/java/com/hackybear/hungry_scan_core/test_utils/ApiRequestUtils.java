@@ -131,7 +131,13 @@ public class ApiRequestUtils {
      * @throws Exception If an error occurs during the request.
      */
     public <T, R> Set<T> postAndGetSet(String endpointUrl, R object, Class<T> itemType) throws Exception {
-        String jsonRequest = objectMapper.writeValueAsString(object);
+        String jsonRequest;
+        if (!(object instanceof String)) {
+            jsonRequest = objectMapper.writeValueAsString(object);
+        } else {
+            jsonRequest = (String) object;
+        }
+
 
         MvcResult result = mockMvc.perform(post(endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
