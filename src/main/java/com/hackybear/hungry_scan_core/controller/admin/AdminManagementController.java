@@ -37,6 +37,28 @@ public class AdminManagementController {
         }
     }
 
+    @GetMapping("/activity")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<?> activity(Principal principal) {
+        try {
+            return ResponseEntity.ok(userService.findAllActivity(principal.getName()));
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
+    @PostMapping("/filter")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<?> filterUsers(@RequestBody String value) {
+        try {
+            User user = userService.getCurrentUser();
+            return ResponseEntity.ok(userService.filterUsers(value, user));
+        } catch (LocalizedException e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
+
     @GetMapping("/roles")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<?> roles() {
@@ -64,7 +86,9 @@ public class AdminManagementController {
 
     @PatchMapping("/update")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<?> update(@Valid @RequestBody UserDTO userDTO, BindingResult br, Principal principal) throws LocalizedException {
+    public ResponseEntity<?> update(@Valid @RequestBody UserDTO userDTO,
+                                    BindingResult br,
+                                    Principal principal) throws LocalizedException {
         if (br.hasErrors()) {
             return ResponseEntity.badRequest().body(responseHelper.getFieldErrors(br));
         }
