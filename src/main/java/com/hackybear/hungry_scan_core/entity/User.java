@@ -98,6 +98,12 @@ public class User implements Serializable, Comparable<User> {
     @Column(name = "active_menu_id")
     private Long activeMenuId;
 
+    private LocalDateTime lastLoginAt;
+
+    private LocalDateTime lastSeenAt;
+
+    private boolean signedIn = false;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
 
