@@ -95,7 +95,6 @@ public class RestaurantServiceImp implements RestaurantService {
     })
     public void save(RestaurantDTO restaurantDTO, User currentUser) throws Exception {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
-        restaurant.addUser(currentUser);
         restaurant.setOrganizationId(currentUser.getOrganizationId());
         setupRestaurantSettings(restaurant);
         restaurant.getSettings().setOperatingHours(restaurantDTO.settings().operatingHours());
@@ -299,7 +298,7 @@ public class RestaurantServiceImp implements RestaurantService {
     }
 
     private static void setupUser(Restaurant restaurant, User currentUser, UserService userService) {
-        currentUser.addRestaurant(restaurant);
+        restaurant.addUser(currentUser);
         currentUser.setActiveRestaurantId(restaurant.getId());
         Optional<Menu> menu = restaurant.getMenus().stream().findFirst();
         menu.ifPresent(m -> currentUser.setActiveMenuId(m.getId()));
