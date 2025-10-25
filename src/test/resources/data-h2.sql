@@ -476,42 +476,41 @@ VALUES ('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZjNhYmY4LTliNmEiLCJpYXQiOjE3MTM4MTAzNT
         NOW());
 
 INSERT INTO users (organization_id, active, created, email, enabled, password, updated, username, email_token,
-                   jwt_token_id,
-                   forename, phone_number, surname, active_menu_id, active_restaurant_id)
+                   jwt_token_id, forename, phone_number, surname, active_menu_id, active_restaurant_id, signed_in)
 VALUES (1, true, '2024-01-20 12:04:00.000000', 'matimemek@test.com', 1,
         '$2a$10$z/0edEimosa3QjYYxjiHuO8bNZHfI3jxDVwqDNd5bc2vCr5TERDz6', '2024-02-02 20:54:41.531670',
-        'matimemek@test.com', null, null, 'mati', '+48 123 123 123', 'Memek', 1, 1),
+        'matimemek@test.com', null, null, 'mati', '+48 123 123 123', 'Memek', 1, 1, false),
        (1, true, '2024-01-20 19:09:00.000000', 'admin@example.com', 1,
         '$2y$10$0jWCcLQydTOa5vY60YhmPelYeWobYb5i/cJ9ezYtB1nUHOwnoOPny', '2024-02-04 07:50:29.047589',
-        'admin@example.com', null, null, 'edmin', '', 'edminowsky', 1, 1),
+        'admin@example.com', null, null, 'edmin', '', 'edminowsky', 1, 1, false),
        (1, true, '2024-01-24 19:06:36.680304', 'netka@test.com', 0,
         '$2a$12$SnVI60OEgQMpEA./cc4Sl.G9whg6O2szOnM4BG3ZOYuNpRE3RenpG', null, 'netka@test.com', null, null, 'Neta',
-        null, 'Menagera', 1, 4),
+        null, 'Menagera', 1, 4, false),
        (1, true, '2024-04-23 12:50:41.531670', 'ff3abf8-9b6a@temp.it', 1,
         '$2a$10$fb4q1jBqnMLDkUBi2YXQ4eHZ0M17bP5gxzwU84UwCkEUbyekGRDlC', null, 'ff3abf8-9b6a@temp.it', null, 1, 'temp',
-        null, 'user', 1, 1),
+        null, 'user', 1, 1, false),
        (1, true, '2024-04-23 12:50:41.531670', '2c73bfc-16fc@temp.it', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, '2c73bfc-16fc@temp.it', null, 2, 'temp',
-        null, 'user', 1, 1);
+        null, 'user', 1, 1, false);
 
 
 INSERT INTO users (organization_id, active, created, email, enabled, password, updated, username, email_token,
                    jwt_token_id,
-                   forename, phone_number, surname, active_menu_id, active_restaurant_id)
+                   forename, phone_number, surname, active_menu_id, active_restaurant_id, signed_in)
 VALUES (2, true, '2024-02-03 10:21:00.000000', 'kucharz@antek.pl', 1,
         '$2a$10$.HWarZkysOgBF0/tOXmmtONdRkZHGZCsRFs27Q7FcNrDc4bSzE0fW', '2024-02-03 10:33:07.307903',
-        'kucharz@antek.pl', null, null, 'ada', '', 'asdqwe', 2, 2),
+        'kucharz@antek.pl', null, null, 'ada', '', 'asdqwe', 2, 2, false),
        (2, true, '2024-02-03 10:24:02.744722', 'restaurator@rarytas.pl', 1,
         '$2a$10$tykyevzP4v1WV/FyuYWNOO6wspbmAHnzI.deEAZQU6SA8NSxod3Vy', null, 'restaurator@rarytas.pl', null, null,
-        'Właściciel', '', 'Biznesmen', 3, 2),
+        'Właściciel', '', 'Biznesmen', 3, 2, false),
        (2, true, NOW(), '0c9e683-8576@temp.it', 1, '$2a$10$cn1IjWjjz4QBcfukawrzw.FkwxgFpYOUs/rBtg2k9b5xoPKiHZsvW', null,
-        '0c9e683-8576@temp.it', null, 3, 'temp', null, 'surname', 2, 2),
+        '0c9e683-8576@temp.it', null, 3, 'temp', null, 'surname', 2, 2, false),
        (3, true, '2024-04-23 12:50:41.531670', 'fresh@user.it', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, 'fresh@user.it', null, null, 'Fresh',
-        null, 'User', null, null),
+        null, 'User', null, null, false),
        (3, true, '2024-04-23 12:50:41.531670', 'freeplan@example.com', 1,
         '$2a$10$0F.xiCJux5So7.C6GJEWyeLkBiKlfYFXUS9jr9W5y4GinZgmxv5v.', null, 'freeplan@example.com', null, null,
-        'Free', null, 'User', 7, 10);
+        'Free', null, 'User', 7, 10, false);
 
 
 INSERT INTO user_role (user_id, role_id)

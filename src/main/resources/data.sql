@@ -67,29 +67,30 @@ VALUES (1, 'ROLE_STAFF', 1),
 
 INSERT IGNORE INTO users (id, organization_id, active, created, email, enabled, password, updated, username,
                           email_token,
-                          jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id)
+                          jwt_token_id, forename, phone_number, surname, active_restaurant_id, active_menu_id,
+                          signed_in, last_seen_at)
 VALUES (1, 1, true, NOW(), 'admin@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin@example.com', null, null, 'Admin',
         '',
-        'Admin', 1, 1),
+        'Admin', 1, 1, false, NOW()),
        (2, 1, true, NOW(), 'admin2@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'admin2@example.com', null, null,
         'Admina',
         '',
-        'Admina', 1, 1),
+        'Admina', 1, 1, false, NOW()),
        (3, 1, true, NOW(), 'manager@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'manager@example.com', null, null,
         'Manager',
         '',
-        'Manager', 1, 1),
+        'Manager', 1, 1, false, NOW()),
        (4, 1, true, NOW(), 'staff@example.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'staff@example.com', null, null,
         'Staff',
         '',
-        'Staff', 1, 1),
+        'Staff', 1, 1, false, NOW()),
        (5, 2, true, NOW(), 'mati@test.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'mati@test.com', null, null, '', '',
-        '', null, null);
+        '', null, null, false, NOW());
 
 INSERT IGNORE INTO users_restaurants (user_id, restaurant_id)
 VALUES (1, 1),
