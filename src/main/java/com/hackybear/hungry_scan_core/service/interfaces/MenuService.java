@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.service.interfaces;
 
 import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
+import com.hackybear.hungry_scan_core.dto.MenuFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
@@ -17,7 +18,7 @@ public interface MenuService {
 
     MenuCustomerDTO projectPlannedMenu(Long id) throws LocalizedException;
 
-    void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception;
+    void save(MenuFormDTO menuFormDTO, User currentUser) throws Exception;
 
     void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception;
 

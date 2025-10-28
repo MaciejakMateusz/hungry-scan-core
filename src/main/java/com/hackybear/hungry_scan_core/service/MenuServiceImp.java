@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
+import com.hackybear.hungry_scan_core.dto.MenuFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuDeepCopyMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
@@ -76,9 +77,9 @@ public class MenuServiceImp implements MenuService {
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()"),
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getActiveRestaurantId()")
     })
-    public void save(MenuSimpleDTO menuDTO, User currentUser) throws Exception {
-        validateUniqueness(menuDTO.name(), currentUser.getActiveRestaurantId());
-        Menu menu = menuMapper.toMenu(menuDTO);
+    public void save(MenuFormDTO menuFormDTO, User currentUser) throws Exception {
+        validateUniqueness(menuFormDTO.name(), currentUser.getActiveRestaurantId());
+        Menu menu = menuMapper.toMenu(menuFormDTO);
         Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId()).orElseThrow();
         menu.setRestaurant(restaurant);
         menu.setTheme(Theme.COLOR_318E41);
