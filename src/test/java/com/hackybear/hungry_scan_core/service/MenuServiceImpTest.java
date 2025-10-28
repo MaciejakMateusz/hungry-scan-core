@@ -1,9 +1,6 @@
 package com.hackybear.hungry_scan_core.service;
 
-import com.hackybear.hungry_scan_core.dto.MenuColorDTO;
-import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
-import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
-import com.hackybear.hungry_scan_core.dto.TranslatableDTO;
+import com.hackybear.hungry_scan_core.dto.*;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuDeepCopyMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
 import com.hackybear.hungry_scan_core.entity.*;
@@ -116,16 +113,10 @@ class MenuServiceImpTest implements WithAssertions {
 
     @Test
     void saveHappyPath() throws Exception {
-        MenuSimpleDTO req = new MenuSimpleDTO(
+        MenuFormDTO req = new MenuFormDTO(
                 null,
-                restaurant.getId(),
                 "Lunch",
-                getMessageDTO(),
-                color,
-                Theme.COLOR_AD175A.getHex(),
-                Collections.emptySet(),
-                false,
-                true);
+                color);
 
         when(menuRepository.existsByRestaurantIdAndName(restaurant.getId(), "Lunch"))
                 .thenReturn(false);
@@ -149,16 +140,10 @@ class MenuServiceImpTest implements WithAssertions {
 
     @Test
     void saveDuplicateName() throws Exception {
-        MenuSimpleDTO req = new MenuSimpleDTO(
+        MenuFormDTO req = new MenuFormDTO(
                 null,
-                restaurant.getId(),
                 "Breakfast",
-                getMessageDTO(),
-                color,
-                Theme.COLOR_DA8414.getHex(),
-                Collections.emptySet(),
-                false,
-                true);
+                color);
 
         when(menuRepository.existsByRestaurantIdAndName(restaurant.getId(), "Breakfast"))
                 .thenReturn(true);
