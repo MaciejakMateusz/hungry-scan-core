@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
+import com.hackybear.hungry_scan_core.dto.MenuFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.enums.Theme;
@@ -71,7 +72,7 @@ public class MenuController {
 
     @PostMapping("/add")
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
-    public ResponseEntity<?> add(@Valid @RequestBody MenuSimpleDTO menuDTO, BindingResult br) {
+    public ResponseEntity<?> add(@Valid @RequestBody MenuFormDTO menuDTO, BindingResult br) {
         return responseHelper.buildResponse(menuDTO, br, userService::getCurrentUser, menuService::save);
     }
 
