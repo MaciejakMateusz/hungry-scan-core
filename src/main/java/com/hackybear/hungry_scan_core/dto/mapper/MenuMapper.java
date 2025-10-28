@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.dto.mapper;
 
 import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.MenuDTO;
+import com.hackybear.hungry_scan_core.dto.MenuFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.enums.Theme;
@@ -39,6 +40,8 @@ public interface MenuMapper {
             target = "restaurant")
     @Mapping(qualifiedByName = "hexToTheme", target = "theme")
     Menu toMenu(MenuSimpleDTO menuSimpleDTO);
+
+    Menu toMenu(MenuFormDTO menuFormDTO);
 
     @Mapping(qualifiedByName = "themeToHex", target = "theme")
     MenuDTO toDTO(Menu menu);
