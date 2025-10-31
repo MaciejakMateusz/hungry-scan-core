@@ -41,6 +41,9 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Transient
+    private Long sourceId;
+
     @Serial
     private static final long serialVersionUID = 1L;
 
