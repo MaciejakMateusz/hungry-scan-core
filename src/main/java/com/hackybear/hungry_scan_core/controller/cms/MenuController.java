@@ -78,8 +78,14 @@ public class MenuController {
 
     @PatchMapping("/update")
     @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
-    public ResponseEntity<?> update(@Valid @RequestBody MenuSimpleDTO menuDTO, BindingResult br) {
+    public ResponseEntity<?> update(@Valid @RequestBody MenuFormDTO menuDTO, BindingResult br) {
         return responseHelper.buildResponse(menuDTO, br, userService::getActiveRestaurantId, menuService::update);
+    }
+
+    @PatchMapping("/personalize")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
+    public ResponseEntity<?> personalize(@Valid @RequestBody MenuSimpleDTO menuDTO, BindingResult br) {
+        return responseHelper.buildResponse(menuDTO, br, userService::getActiveRestaurantId, menuService::personalize);
     }
 
     @PatchMapping("/update-plans")
