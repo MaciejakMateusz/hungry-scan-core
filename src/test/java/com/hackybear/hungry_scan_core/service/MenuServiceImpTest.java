@@ -158,23 +158,17 @@ class MenuServiceImpTest implements WithAssertions {
 
     @Test
     void updateMenu() throws Exception {
-        MenuSimpleDTO req = new MenuSimpleDTO(
+        MenuFormDTO req = new MenuFormDTO(
                 menu.getId(),
-                restaurant.getId(),
                 "Brunch-Renamed",
-                getMessageDTO(),
-                color,
-                Theme.COLOR_090909.getHex(),
-                Collections.emptySet(),
-                false,
-                false);
+                color);
 
         doAnswer(inv -> {
-            MenuSimpleDTO dto = inv.getArgument(0);
+            MenuFormDTO dto = inv.getArgument(0);
             Menu target = inv.getArgument(1);
             target.setName(dto.name());
             return null;
-        }).when(menuMapper).updateFromSimpleDTO(any(MenuSimpleDTO.class), any(Menu.class));
+        }).when(menuMapper).updateFromFormDTO(any(MenuFormDTO.class), any(Menu.class));
 
         when(menuRepository.existsByRestaurantIdAndName(restaurant.getId(), "Brunch-Renamed"))
                 .thenReturn(false);
@@ -237,11 +231,11 @@ class MenuServiceImpTest implements WithAssertions {
         when(menuRepository.existsByRestaurantIdAndName(eq(restaurant.getId()), anyString()))
                 .thenReturn(false);
 
-        when(menuRepository.save(copied)).thenReturn(copied);
+        when(menuRepository.saveAndFlush(copied)).thenReturn(copied);
 
         service.duplicate(user);
 
-        verify(menuRepository).save(copied);
+        verify(menuRepository).saveAndFlush(copied);
         verify(userRepository).save(user);
         assertThat(user.getActiveMenuId()).isEqualTo(101L);
     }
@@ -267,11 +261,11 @@ class MenuServiceImpTest implements WithAssertions {
                 .thenReturn(copied);
         when(menuRepository.existsByRestaurantIdAndName(eq(restaurant.getId()), anyString()))
                 .thenReturn(false);
-        when(menuRepository.save(copied)).thenReturn(copied);
+        when(menuRepository.saveAndFlush(copied)).thenReturn(copied);
 
         service.duplicate(user);
 
-        verify(menuRepository).save(copied);
+        verify(menuRepository).saveAndFlush(copied);
         verify(userRepository).save(user);
         assertThat(user.getActiveMenuId()).isEqualTo(101L);
 
