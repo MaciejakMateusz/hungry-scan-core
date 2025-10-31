@@ -181,7 +181,8 @@ class MenuDeepCopyMapperTest {
         assertEquals(1, copyItem.getVariants().size());
         Variant copyVar = copyItem.getVariants().getFirst();
         assertNull(copyVar.getId());
-        assertNull(copyVar.getMenuItem());
+        assertNotNull(copyVar.getMenuItem());
+        assertSame(copyItem, copyVar.getMenuItem(), "variant should reference the copied MenuItem");
         assertNotSame(srcVar, copyVar);
 
         assertNotSame(srcVar.getName(), copyVar.getName());
