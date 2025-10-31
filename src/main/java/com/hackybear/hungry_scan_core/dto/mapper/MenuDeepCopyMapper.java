@@ -1,10 +1,9 @@
 package com.hackybear.hungry_scan_core.dto.mapper;
 
 import com.hackybear.hungry_scan_core.entity.*;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +45,7 @@ public interface MenuDeepCopyMapper {
     }
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "sourceId", expression = "java(src.getId())")  // carry old id ONLY
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "created", ignore = true)
     @Mapping(target = "updated", ignore = true)
@@ -79,6 +79,31 @@ public interface MenuDeepCopyMapper {
                 .withDe(src.getDe())
                 .withEs(src.getEs())
                 .withUk(src.getUk());
+    }
+
+    @AfterMapping
+    default void tagSourceIds(@MappingTarget Menu target, Menu src) {
+        Iterator<Category> srcCats = src.getCategories().iterator();
+        Iterator<Category> dstCats = target.getCategories().iterator();
+        while (srcCats.hasNext() && dstCats.hasNext()) {
+            Category sc = srcCats.next();
+            Category dc = dstCats.next();
+
+            Iterator<MenuItem> srcItems = sc.getMenuItems().iterator();
+            Iterator<MenuItem> dstItems = dc.getMenuItems().iterator();
+            while (srcItems.hasNext() && dstItems.hasNext()) {
+                MenuItem si = srcItems.next();
+                MenuItem di = dstItems.next();
+                di.setSourceId(si.getId());
+
+                Iterator<Variant> sv = si.getVariants().iterator();
+                Iterator<Variant> dv = di.getVariants().iterator();
+                while (sv.hasNext() && dv.hasNext()) {
+                    dv.next().setMenuItem(di);
+                    sv.next();
+                }
+            }
+        }
     }
 
 }
