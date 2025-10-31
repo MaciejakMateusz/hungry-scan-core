@@ -96,11 +96,25 @@ public class MenuServiceImp implements MenuService {
             @CacheEvict(value = MENU_ID, key = "#menuDTO.id()"),
             @CacheEvict(value = USER_RESTAURANT, key = "#activeRestaurantId")
     })
-    public void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
+    public void update(MenuFormDTO menuDTO, Long activeRestaurantId) throws Exception {
         Menu menu = getById(menuDTO.id());
         if (!Objects.equals(menu.getName(), menuDTO.name())) {
             validateUniqueness(menuDTO.name(), activeRestaurantId);
         }
+        validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
+        menuMapper.updateFromFormDTO(menuDTO, menu);
+        menuRepository.saveAndFlush(menu);
+    }
+
+    @Transactional
+    @Override
+    @Caching(evict = {
+            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
+            @CacheEvict(value = MENU_ID, key = "#menuDTO.id()"),
+            @CacheEvict(value = USER_RESTAURANT, key = "#activeRestaurantId")
+    })
+    public void personalize(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception {
+        Menu menu = getById(menuDTO.id());
         validateOperation(menu.getRestaurant().getId(), activeRestaurantId);
         menuMapper.updateFromSimpleDTO(menuDTO, menu);
         menuRepository.saveAndFlush(menu);
@@ -177,14 +191,23 @@ public class MenuServiceImp implements MenuService {
 
         Menu copy = menuDeepCopyMapper.duplicateMenu(src);
         copy.setRestaurant(src.getRestaurant());
-
-        String srcName = src.getName();
-        copy.setName(constructDuplicateName(srcName));
-
+        copy.setName(constructDuplicateName(src.getName()));
         validateUniqueness(copy.getName(), currentUser.getActiveRestaurantId());
 
         cascadeDuplicateCategory(copy);
-        copy = menuRepository.save(copy);
+
+        copy = menuRepository.saveAndFlush(copy);
+
+        copy.getCategories().forEach(c ->
+                c.getMenuItems().forEach(mi -> {
+                    Long oldId = mi.getSourceId();
+                    Long newId = mi.getId();
+                    if (oldId != null && newId != null) {
+                        s3Service.copyFile(S3_PATH, oldId, newId);
+                    }
+                })
+        );
+
         currentUser.setActiveMenuId(copy.getId());
         userRepository.save(currentUser);
     }

@@ -20,7 +20,9 @@ public interface MenuService {
 
     void save(MenuFormDTO menuFormDTO, User currentUser) throws Exception;
 
-    void update(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception;
+    void update(MenuFormDTO menuDTO, Long activeRestaurantId) throws Exception;
+
+    void personalize(MenuSimpleDTO menuDTO, Long activeRestaurantId) throws Exception;
 
     void updatePlans(List<MenuSimpleDTO> menuDTOs, Long activeRestaurantId) throws Exception;
 
