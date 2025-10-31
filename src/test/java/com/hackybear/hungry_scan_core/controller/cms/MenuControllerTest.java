@@ -6,19 +6,18 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.TranslatableDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuColorMapper;
 import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
-import com.hackybear.hungry_scan_core.entity.Menu;
-import com.hackybear.hungry_scan_core.entity.MenuColor;
-import com.hackybear.hungry_scan_core.entity.MenuPlan;
-import com.hackybear.hungry_scan_core.entity.User;
+import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
 import com.hackybear.hungry_scan_core.repository.MenuColorRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
+import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.test_utils.ApiRequestUtils;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -29,6 +28,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +74,9 @@ class MenuControllerTest {
 
     @Autowired
     private MenuColorRepository menuColorRepository;
+
+    @MockitoBean
+    private S3Service s3Service;
 
     @Order(1)
     @Sql("/data-h2.sql")
@@ -257,6 +260,28 @@ class MenuControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN", username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldPersonalize() throws Exception {
+        MenuSimpleDTO existingMenu = apiRequestUtils.postObjectExpect200(
+                "/api/cms/menus/show", 1, MenuSimpleDTO.class);
+        assertEquals("Całodniowe", existingMenu.name());
+        Menu menu = menuMapper.toMenu(existingMenu);
+        menu.setTheme(Theme.COLOR_5C259D);
+        menu.setMessage(new Translatable().withPl("Mniam!"));
+
+        existingMenu = menuMapper.toSimpleDTO(menu);
+
+        apiRequestUtils.patchAndExpect200("/api/cms/menus/personalize", existingMenu);
+
+        Menu updatedMenu = getMenu(1L);
+        assertEquals("Mniam!", updatedMenu.getMessage().getPl());
+        assertEquals(Theme.COLOR_5C259D, updatedMenu.getTheme());
+        assertEquals("admin@example.com", updatedMenu.getModifiedBy());
+    }
+
+    @Test
     @WithMockUser(roles = {"ADMIN"}, username = "restaurator@rarytas.pl")
     @Transactional
     @Rollback
@@ -366,6 +391,12 @@ class MenuControllerTest {
     @WithMockUser(roles = CUSTOMER, username = "matimemek@test.com")
     void shouldNotAllowAccessToUpdate() throws Exception {
         apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/update", new Menu());
+    }
+
+    @Test
+    @WithMockUser(roles = CUSTOMER, username = "matimemek@test.com")
+    void shouldNotAllowAccessToPersonalize() throws Exception {
+        apiRequestUtils.patchAndExpectForbidden("/api/cms/menus/personalize", new Menu());
     }
 
     @Test
