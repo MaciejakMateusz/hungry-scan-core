@@ -25,4 +25,7 @@ public interface S3Service {
     ResponseEntity<Resource> downloadFile(String path, Long id);
 
     ResponseEntity<Resource> downloadFile(String path, Long restaurantId, Long tableId);
+
+    void copyFile(String path, Long sourceId, Long destinationId);
+
 }

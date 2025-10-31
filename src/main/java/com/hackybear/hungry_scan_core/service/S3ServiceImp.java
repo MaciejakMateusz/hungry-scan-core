@@ -63,7 +63,7 @@ public class S3ServiceImp implements S3Service {
 
     @Override
     public void uploadFile(String path, Long id, MultipartFile file) throws LocalizedException {
-        String key = path + "/" + id + ".png";
+        String key = getKey(path, id);
 
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -95,7 +95,7 @@ public class S3ServiceImp implements S3Service {
 
     @Override
     public void deleteFile(String path, Long id) {
-        String key = path + "/" + id + ".png";
+        String key = getKey(path, id);
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
@@ -151,7 +151,7 @@ public class S3ServiceImp implements S3Service {
 
     @Override
     public ResponseEntity<Resource> downloadFile(String path, Long id) {
-        String key = path + "/" + id + ".png";
+        String key = getKey(path, id);
 
         GetObjectRequest request = GetObjectRequest.builder()
                 .bucket(bucketName)
@@ -175,6 +175,42 @@ public class S3ServiceImp implements S3Service {
         return getResourceResponseEntity(headerValue, request);
     }
 
+    @Override
+    public void copyFile(String path, Long sourceId, Long destinationId) {
+        if (!exists(path, sourceId)) return;
+
+        String sourceKey = getKey(path, sourceId);
+        String destKey = getKey(path, destinationId);
+
+        try {
+            s3.copyObject(CopyObjectRequest.builder()
+                    .sourceBucket(bucketName)
+                    .sourceKey(sourceKey)
+                    .destinationBucket(bucketName)
+                    .destinationKey(destKey)
+                    .metadataDirective(MetadataDirective.COPY)
+                    .build());
+        } catch (S3Exception e) {
+            log.warn("S3 copy failed for {} -> {}: {}", sourceKey, destKey, e.awsErrorDetails() != null ? e.awsErrorDetails().errorMessage() : e.getMessage());
+        }
+    }
+
+    private boolean exists(String path, Long id) {
+        try {
+            s3.headObject(HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(getKey(path, id))
+                    .build());
+            return true;
+        } catch (S3Exception e) {
+            return false;
+        }
+    }
+
+    private String getKey(String path, Long id) {
+        return path + "/" + id + ".png";
+    }
+
     private ResponseEntity<Resource> getResourceResponseEntity(String headerValue, GetObjectRequest request) {
         ResponseInputStream<GetObjectResponse> in = s3.getObject(request);
         try {
@@ -185,7 +221,7 @@ public class S3ServiceImp implements S3Service {
                     .contentLength(in.response().contentLength())
                     .body(new ByteArrayResource(bytes));
         } catch (IOException e) {
-            log.error(e.getCause().getMessage());
+            log.error("Failed to read S3 object {} from bucket {}: {}", request.key(), request.bucket(), e, e);
             return ResponseEntity.internalServerError().build();
         }
     }
