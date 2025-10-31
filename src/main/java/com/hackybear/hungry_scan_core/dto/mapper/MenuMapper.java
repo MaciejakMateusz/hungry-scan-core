@@ -31,10 +31,16 @@ public interface MenuMapper {
     @Mapping(qualifiedByName = "themeToHex", target = "theme")
     MenuSimpleDTO toSimpleDTO(Menu menu);
 
+    MenuFormDTO toFormDTO(Menu menu);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "color", ignore = true)
     @Mapping(qualifiedByName = "hexToTheme", target = "theme")
     void updateFromSimpleDTO(MenuSimpleDTO menuSimpleDTO, @MappingTarget Menu menu);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "color", ignore = true)
+    void updateFromFormDTO(MenuFormDTO menuFormDTO, @MappingTarget Menu menu);
 
     @Mapping(expression = "java(new com.hackybear.hungry_scan_core.entity.Restaurant(menuSimpleDTO.restaurantId()))",
             target = "restaurant")
