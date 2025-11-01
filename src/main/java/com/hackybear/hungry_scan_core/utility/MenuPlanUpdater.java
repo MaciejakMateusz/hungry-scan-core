@@ -378,7 +378,8 @@ public class MenuPlanUpdater {
     }
 
     private boolean isOvernight(TimeRange timeRange) {
-        return ClockPoint.end(timeRange.getEndTime()).isBefore(ClockPoint.start(timeRange.getStartTime()));
+        return ClockPoint.end(timeRange.getEndTime()).isBefore(ClockPoint.start(timeRange.getStartTime())) ||
+                ClockPoint.end(timeRange.getEndTime()).equals(ClockPoint.start(timeRange.getStartTime()));
     }
 
     private Optional<MenuPlan> getMenuPlanTemplate(Menu menu, DayOfWeek day) {
