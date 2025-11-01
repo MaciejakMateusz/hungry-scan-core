@@ -5,7 +5,6 @@ import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.Settings;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.record.ClockPoint;
 import com.hackybear.hungry_scan_core.repository.SettingsRepository;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import lombok.RequiredArgsConstructor;
@@ -66,8 +65,8 @@ public class MenuPlanValidator {
         Map<DayOfWeek, List<NormRange>> planned = buildPlannedSegments(scheduleByDay);
 
         for (DayOfWeek day : DayOfWeek.values()) {
-            List<NormRange> reqs = required.get(day);
-            if (reqs == null || reqs.isEmpty()) {
+            List<NormRange> requiredRanges = required.get(day);
+            if (requiredRanges == null || requiredRanges.isEmpty()) {
                 continue;
             }
 
@@ -76,19 +75,26 @@ public class MenuPlanValidator {
                 exceptionHelper.throwLocalizedMessage("error.menuService.scheduleIncomplete");
             }
 
-            for (NormRange p : plans) {
-                boolean ok = reqs.stream()
-                        .anyMatch(r -> p.start >= r.start && p.end <= r.end);
-                if (!ok) {
-                    exceptionHelper.throwLocalizedMessage(
-                            "error.menuService.scheduleNotWithinOpeningHours");
+            for (NormRange plan : plans) {
+                int covered = 0;
+                for (NormRange r : requiredRanges) {
+                    int s = Math.max(plan.start, r.start);
+                    int e = Math.min(plan.end, r.end);
+                    if (e > s) covered += (e - s);
+                }
+                int planLen = plan.end - plan.start;
+                if (planLen <= 0) {
+                    exceptionHelper.throwLocalizedMessage("error.menuService.invalidRange");
+                }
+                if (covered < planLen) {
+                    exceptionHelper.throwLocalizedMessage("error.menuService.scheduleNotWithinOpeningHours");
                 }
             }
 
-            reqs.sort(Comparator.comparingInt(r -> r.start));
+            requiredRanges.sort(Comparator.comparingInt(r -> r.start));
             plans.sort(Comparator.comparingInt(r -> r.start));
 
-            for (NormRange r : reqs) {
+            for (NormRange r : requiredRanges) {
                 List<NormRange> slice = new ArrayList<>();
                 for (NormRange p : plans) {
                     if (p.end > r.start && p.start < r.end) {
@@ -119,6 +125,22 @@ public class MenuPlanValidator {
         }
     }
 
+    private void addRange(Map<DayOfWeek, List<NormRange>> byDay,
+                          DayOfWeek day, int start, int end) {
+        if (end == 0) end = MINUTES_PER_DAY;
+
+        if (end > start) {
+            byDay.computeIfAbsent(day, d -> new ArrayList<>())
+                    .add(new NormRange(start, end));
+        } else {
+            byDay.computeIfAbsent(day, d -> new ArrayList<>())
+                    .add(new NormRange(start, MINUTES_PER_DAY));
+            DayOfWeek next = day.plus(1);
+            byDay.computeIfAbsent(next, d -> new ArrayList<>())
+                    .add(new NormRange(0, end));
+        }
+    }
+
     private Map<DayOfWeek, List<NormRange>> buildRequiredSegments(
             Map<DayOfWeek, TimeRange> operatingHours) {
         var map = new EnumMap<DayOfWeek, List<NormRange>>(DayOfWeek.class);
@@ -127,15 +149,10 @@ public class MenuPlanValidator {
             TimeRange op = operatingHours.get(day);
             if (op == null || !op.isAvailable()) continue;
 
-            ClockPoint cs = ClockPoint.start(op.getStartTime());
-            ClockPoint ce = ClockPoint.end(op.getEndTime());
+            int s = op.getStartTime().getHour() * 60 + op.getStartTime().getMinute();
+            int e = op.getEndTime().getHour() * 60 + op.getEndTime().getMinute();
 
-            if (cs.compareTo(ce) <= 0) {
-                addReq(map, day, cs.asMinutes(), ce.asMinutes());
-            } else {
-                addReq(map, day, cs.asMinutes(), MINUTES_PER_DAY);
-                addReq(map, day.plus(1), 0, ce.asMinutes());
-            }
+            addRange(map, day, s, e);
         }
         return map;
     }
@@ -146,16 +163,13 @@ public class MenuPlanValidator {
 
         for (var ent : scheduleByDay.entrySet()) {
             DayOfWeek day = ent.getKey();
-            for (ScheduleEntry se : ent.getValue()) {
-                ClockPoint cs = ClockPoint.start(se.range.getStartTime());
-                ClockPoint ce = ClockPoint.end(se.range.getEndTime());
 
-                if (cs.compareTo(ce) <= 0) {
-                    addPlan(map, day, cs.asMinutes(), ce.asMinutes());
-                } else {
-                    addPlan(map, day, cs.asMinutes(), MINUTES_PER_DAY);
-                    addPlan(map, day.plus(1), 0, ce.asMinutes());
-                }
+            for (ScheduleEntry se : ent.getValue()) {
+                TimeRange tr = se.range;
+                int s = tr.getStartTime().getHour() * 60 + tr.getStartTime().getMinute();
+                int e = tr.getEndTime().getHour() * 60 + tr.getEndTime().getMinute();
+
+                addRange(map, day, s, e);
             }
         }
         return map;
