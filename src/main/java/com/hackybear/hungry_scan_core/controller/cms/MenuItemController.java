@@ -44,8 +44,7 @@ public class MenuItemController {
         if (br.hasErrors()) return responseHelper.createErrorResponse(br);
         try {
             Long activeMenuId = userService.getActiveMenuId();
-            menuItemService.save(menuItem, activeMenuId, image);
-            return ResponseEntity.ok().build();
+            return menuItemService.save(menuItem, activeMenuId, image);
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
@@ -59,8 +58,7 @@ public class MenuItemController {
         if (br.hasErrors()) return responseHelper.createErrorResponse(br);
         try {
             Long activeMenuId = userService.getActiveMenuId();
-            menuItemService.update(menuItem, activeMenuId, image);
-            return ResponseEntity.ok().build();
+            return menuItemService.update(menuItem, activeMenuId, image);
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
@@ -103,8 +101,7 @@ public class MenuItemController {
             Long activeMenuId = userService.getActiveMenuId();
             Long menuItemId = params.get("menuItemId");
             Long newCategoryId = params.get("newCategoryId");
-            menuItemService.switchCategory(menuItemId, newCategoryId, activeMenuId);
-            return ResponseEntity.ok().build();
+            return menuItemService.switchCategory(menuItemId, newCategoryId, activeMenuId);
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
