@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.AnyTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
-import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
@@ -16,7 +15,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -31,7 +29,6 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @Table(name = "menu_items")
 @Entity
 public class MenuItem implements Comparable<MenuItem>, Serializable {
@@ -65,11 +62,12 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
     private Category category;
 
     @Column(nullable = false)
-    @DecimalMin(value = "1")
+    @DecimalMin(value = "1", message = "{jakarta.validation.constraints.MinPrice.message}")
     @NotNull
     private BigDecimal price = Money.of(0.00);
 
-    private BigDecimal promoPrice = Money.of(0.00);
+    @DecimalMin(value = "1", message = "{jakarta.validation.constraints.MinPrice.message}")
+    private BigDecimal promoPrice;
 
     @ManyToMany
     @JsonIgnore
