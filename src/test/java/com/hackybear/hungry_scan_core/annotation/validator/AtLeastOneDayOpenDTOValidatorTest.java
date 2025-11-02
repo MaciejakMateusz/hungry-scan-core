@@ -20,7 +20,7 @@ import java.util.Map;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class AtLeastOneDayOpenValidatorDTOTest extends ValidatorTestBase {
+public class AtLeastOneDayOpenDTOValidatorTest extends ValidatorTestBase {
 
     @Test
     void givenValidOpeningHours_whenValidate_thenNoViolations() {
