@@ -12,7 +12,7 @@ public class AtLeastOneDayOpenValidator implements ConstraintValidator<AtLeastOn
 
     @Override
     public boolean isValid(Settings settings, ConstraintValidatorContext constraintValidatorContext) {
-        if (settings.getOperatingHours() == null || settings.getOperatingHours().isEmpty()) {
+        if (settings == null || settings.getOperatingHours() == null || settings.getOperatingHours().isEmpty()) {
             return true;
         }
         return settings.getOperatingHours().values().stream().anyMatch(TimeRange::isAvailable);
