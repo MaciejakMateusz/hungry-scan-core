@@ -98,12 +98,13 @@ public class UserServiceImp implements UserService {
     @CacheEvict(value = USER_ID, key = "#user.id")
     @Transactional
     public ResponseEntity<?> updateUserProfile(User user, UserProfileUpdateDTO dto, BindingResult br) {
+        ResponseEntity<?> errorResponse = validatePasswords(dto, user);
+        if (errorResponse != null) return errorResponse;
+
         if (br.hasErrors()) {
             return responseHelper.createErrorResponse(br);
         }
 
-        ResponseEntity<?> errorResponse = validatePasswords(dto, user);
-        if (errorResponse != null) return errorResponse;
         if (Objects.nonNull(dto.newPassword())) user.setPassword(BCrypt.hashpw(dto.newPassword(), BCrypt.gensalt()));
 
         userMapper.updateFromProfileUpdateDTO(dto, user);
