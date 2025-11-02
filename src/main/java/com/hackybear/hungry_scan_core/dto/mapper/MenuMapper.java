@@ -8,7 +8,7 @@ import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {TranslatableMapper.class, MenuPlanMapper.class})
+@Mapper(componentModel = "spring", uses = {TranslatableMapper.class, MenuPlanMapper.class, CategoryMapper.class, MenuItemMapper.class})
 public interface MenuMapper {
 
     @Named("themeToHex")
