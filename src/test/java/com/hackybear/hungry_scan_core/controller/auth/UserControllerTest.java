@@ -119,7 +119,7 @@ class UserControllerTest {
                 "Super",
                 "TestPass923.",
                 "Karagor500",
-                null
+                "Karagor500"
         );
 
         Map<?, ?> response = apiRequestUtils.patchAndReturnResponseBody(
