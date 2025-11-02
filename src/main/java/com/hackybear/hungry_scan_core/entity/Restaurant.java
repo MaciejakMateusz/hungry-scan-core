@@ -3,6 +3,7 @@ package com.hackybear.hungry_scan_core.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.AtLeastOneDayOpen;
+import com.hackybear.hungry_scan_core.annotation.OpeningClosingTime;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -78,6 +79,7 @@ public class Restaurant implements Serializable {
     private Set<Ingredient> ingredients = new HashSet<>();
 
     @AtLeastOneDayOpen
+    @OpeningClosingTime
     @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Settings settings;
 
