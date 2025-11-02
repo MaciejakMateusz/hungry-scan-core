@@ -4,7 +4,10 @@ import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.MenuItemFormDTO;
 import com.hackybear.hungry_scan_core.dto.MenuItemSimpleDTO;
 import com.hackybear.hungry_scan_core.dto.mapper.*;
-import com.hackybear.hungry_scan_core.entity.*;
+import com.hackybear.hungry_scan_core.entity.Category;
+import com.hackybear.hungry_scan_core.entity.MenuItem;
+import com.hackybear.hungry_scan_core.entity.MenuItemViewEvent;
+import com.hackybear.hungry_scan_core.entity.Variant;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.CategoryRepository;
@@ -21,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,7 +62,14 @@ public class MenuItemServiceImp implements MenuItemService {
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
     })
-    public void save(MenuItemFormDTO menuItemFormDTO, Long activeMenuId, MultipartFile image) throws Exception {
+    public ResponseEntity<?> save(MenuItemFormDTO menuItemFormDTO, Long activeMenuId, MultipartFile image) throws Exception {
+        if (isPromoPriceIncorrect(menuItemFormDTO)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "promoPrice",
+                            exceptionHelper.getLocalizedMsg("jakarta.validation.constraints.LowerThanPrice.message"
+                            )));
+        }
         MenuItem menuItem = menuItemMapper.toMenuItem(menuItemFormDTO);
         Optional<Integer> maxDisplayOrder = menuItemRepository.findMaxDisplayOrder(menuItem.getCategory().getId());
         menuItem.setDisplayOrder(maxDisplayOrder.orElse(0) + 1);
@@ -76,6 +85,7 @@ public class MenuItemServiceImp implements MenuItemService {
 
         menuItemRepository.save(menuItem);
         if (Objects.nonNull(image)) s3Service.uploadFile(S3_PATH, menuItem.getId(), image);
+        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -85,12 +95,20 @@ public class MenuItemServiceImp implements MenuItemService {
             @CacheEvict(value = CATEGORIES_AVAILABLE, key = "#activeMenuId"),
             @CacheEvict(value = CATEGORY_ID, key = "#menuItemFormDTO.categoryId()")
     })
-    public void update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId, MultipartFile image) throws Exception {
+    public ResponseEntity<?> update(MenuItemFormDTO menuItemFormDTO, Long activeMenuId, MultipartFile image) throws Exception {
+        if (isPromoPriceIncorrect(menuItemFormDTO)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "promoPrice",
+                            exceptionHelper.getLocalizedMsg("jakarta.validation.constraints.LowerThanPrice.message"
+                            )));
+        }
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
         updateMenuItem(existingMenuItem, menuItemFormDTO);
         menuItemRepository.save(existingMenuItem);
         if (Objects.isNull(image)) s3Service.deleteFile(S3_PATH, existingMenuItem.getId());
         if (Objects.nonNull(image)) s3Service.uploadFile(S3_PATH, existingMenuItem.getId(), image);
+        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -192,9 +210,6 @@ public class MenuItemServiceImp implements MenuItemService {
 
         existing.setAvailable(dto.available());
 
-        if (isPromoPriceInvalid(dto)) {
-            exceptionHelper.throwLocalizedMessage("error.menuItemService.invalidPromoPrice");
-        }
         existing.setPromoPrice(dto.promoPrice());
         existing.setBanners(dto.banners());
     }
@@ -205,9 +220,9 @@ public class MenuItemServiceImp implements MenuItemService {
         menuItemRepository.deleteById(menuItem.getId());
     }
 
-    private static boolean isPromoPriceInvalid(MenuItemFormDTO dto) {
-        List<Banner> promo = dto.banners().stream().filter(banner -> banner.getId().equals("promo")).toList();
-        return !promo.isEmpty() && (Objects.isNull(dto.promoPrice())
-                || dto.promoPrice().compareTo(BigDecimal.ZERO) <= 0);
+    private static boolean isPromoPriceIncorrect(MenuItemFormDTO dto) {
+        return (Objects.nonNull(dto.promoPrice()) && dto.promoPrice().compareTo(dto.price()) >= 0);
     }
+
+
 }
