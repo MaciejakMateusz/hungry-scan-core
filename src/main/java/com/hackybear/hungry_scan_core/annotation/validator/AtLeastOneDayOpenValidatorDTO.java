@@ -12,7 +12,7 @@ public class AtLeastOneDayOpenValidatorDTO implements ConstraintValidator<AtLeas
 
     @Override
     public boolean isValid(SettingsDTO settings, ConstraintValidatorContext constraintValidatorContext) {
-        if (settings.operatingHours() == null || settings.operatingHours().isEmpty()) {
+        if (settings == null || settings.operatingHours() == null || settings.operatingHours().isEmpty()) {
             return true;
         }
         return settings.operatingHours().values().stream().anyMatch(TimeRange::isAvailable);
