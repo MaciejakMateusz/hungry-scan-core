@@ -177,7 +177,7 @@ class MenuItemControllerTest {
     @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
     @Transactional
     @Rollback
-    void shouldNotUpdateWithIncorrectPromoPrice() throws Exception {
+    void shouldNotUpdateWithZeroPromoPrice() throws Exception {
         MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
         MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
         persistedMenuItem.setBanners(Set.of(getBanner("bestseller"), getBanner("promo")));
@@ -187,7 +187,43 @@ class MenuItemControllerTest {
         Map<?, ?> errors =
                 apiRequestUtils.patchAndExpectErrors("/api/cms/items/update", menuItemFormDTO, null);
         assertFalse(errors.isEmpty());
-        assertEquals("Cena promocyjna powinna był uzupełniona.", errors.get("exceptionMsg"));
+        assertEquals("Cena musi być większa od 1zł", errors.get("promoPrice"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotUpdateWithEqualPromoPrice() throws Exception {
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
+        persistedMenuItem.setBanners(Set.of(getBanner("bestseller"), getBanner("promo")));
+        persistedMenuItem.setPromoPrice(Money.of(12));
+        persistedMenuItem.setPrice(Money.of(12));
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
+
+        Map<?, ?> errors =
+                apiRequestUtils.patchAndExpectErrors("/api/cms/items/update", menuItemFormDTO, null);
+        assertFalse(errors.isEmpty());
+        assertEquals("Cena promocyjna musi być mniejsza od ceny pozycji", errors.get("promoPrice"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MANAGER", "ADMIN"}, username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldNotUpdateWithHigherPromoPrice() throws Exception {
+        MenuItemFormDTO persistedDTO = fetchMenuItemFormDTO(23L);
+        MenuItem persistedMenuItem = menuItemMapper.toMenuItem(persistedDTO);
+        persistedMenuItem.setBanners(Set.of(getBanner("bestseller"), getBanner("promo")));
+        persistedMenuItem.setPromoPrice(Money.of(13));
+        persistedMenuItem.setPrice(Money.of(12));
+        MenuItemFormDTO menuItemFormDTO = menuItemMapper.toFormDTO(persistedMenuItem);
+
+        Map<?, ?> errors =
+                apiRequestUtils.patchAndExpectErrors("/api/cms/items/update", menuItemFormDTO, null);
+        assertFalse(errors.isEmpty());
+        assertEquals("Cena promocyjna musi być mniejsza od ceny pozycji", errors.get("promoPrice"));
     }
 
     @Test
