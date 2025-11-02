@@ -21,6 +21,8 @@ public interface MenuItemMapper {
             target = "allergensCount")
     @Mapping(expression = "java(menuItem.getVariants().size())",
             target = "variantsCount")
+    @Mapping(expression = "java(menuItem.getAdditionalIngredients().size())",
+            target = "additionsCount")
     MenuItemSimpleDTO toDTO(MenuItem menuItem);
 
     MenuItem toMenuItem(MenuItemSimpleDTO menuItemSimpleDTO);
