@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public record MenuItemSimpleDTO(Long id,
                                 TranslatableDTO name,
@@ -11,9 +12,11 @@ public record MenuItemSimpleDTO(Long id,
                                 CategoryFormDTO category,
                                 BigDecimal price,
                                 BigDecimal promoPrice,
+                                Set<BannerDTO> banners,
                                 int labelsCount,
                                 int allergensCount,
                                 int variantsCount,
+                                int additionsCount,
                                 Integer displayOrder,
                                 boolean available,
                                 boolean visible,
