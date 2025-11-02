@@ -26,9 +26,11 @@ public record MenuItemFormDTO(Long id,
                               @NotNull
                               Long categoryId,
 
-                              @DecimalMin(value = "1", message = "Cena musi być większa od 1zł")
+                              @DecimalMin(value = "1", message = "{jakarta.validation.constraints.MinPrice.message}")
                               @NotNull
                               BigDecimal price,
+
+                              @DecimalMin(value = "1", message = "{jakarta.validation.constraints.MinPrice.message}")
                               BigDecimal promoPrice,
 
                               Set<LabelDTO> labels,
