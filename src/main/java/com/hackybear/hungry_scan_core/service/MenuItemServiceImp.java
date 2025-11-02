@@ -191,7 +191,7 @@ public class MenuItemServiceImp implements MenuItemService {
                         "error.categoryService.categoryNotFound", id));
     }
 
-    private void updateMenuItem(MenuItem existing, MenuItemFormDTO dto) throws LocalizedException {
+    private void updateMenuItem(MenuItem existing, MenuItemFormDTO dto) {
         existing.setName(translatableMapper.toTranslatable(dto.name()));
         existing.setDescription(translatableMapper.toTranslatable(dto.description()));
         existing.setCategory(categoryRepository.findById(dto.categoryId()).orElseThrow());
