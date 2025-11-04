@@ -98,6 +98,8 @@ public class RestaurantServiceImp implements RestaurantService {
         restaurant.setOrganizationId(currentUser.getOrganizationId());
         setupRestaurantSettings(restaurant);
         restaurant.getSettings().setOperatingHours(restaurantDTO.settings().operatingHours());
+        restaurant.getSettings().setLanguage(restaurantDTO.settings().language());
+        restaurant.getSettings().setSupportedLanguages(restaurantDTO.settings().supportedLanguages());
         restaurant = setupNew(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
@@ -105,7 +107,6 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @Override
     @Transactional
-    @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()")
     public ResponseEntity<?> persistInitialRestaurant(Map<String, Object> params, User currentUser) throws Exception {
         BindingResult br = (BindingResult) params.get("bindingResult");
         ResponseHelper responseHelper = (ResponseHelper) params.get("responseHelper");
@@ -184,9 +185,19 @@ public class RestaurantServiceImp implements RestaurantService {
         restaurant.setOrganizationId(currentUser.getOrganizationId());
         restaurant.addUser(currentUser);
         setupRestaurantSettings(restaurant);
+        restaurant.getSettings().setLanguage(restaurantDTO.settings().language());
+        setupSupportedLanguages(restaurant, restaurantDTO);
         restaurant = setupInitial(restaurant);
         restaurant = restaurantRepository.save(restaurant);
         setupUser(restaurant, currentUser, userService);
+    }
+
+    private void setupSupportedLanguages(Restaurant restaurant, RestaurantDTO restaurantDTO) {
+        Set<Language> allSupported = Arrays.stream(Language.values()).collect(Collectors.toSet());
+        Set<Language> supported = allSupported.stream()
+                .filter(language -> !language.equals(restaurantDTO.settings().language()))
+                .collect(Collectors.toSet());
+        restaurant.getSettings().setSupportedLanguages(supported);
     }
 
     @NotNull
@@ -219,7 +230,6 @@ public class RestaurantServiceImp implements RestaurantService {
         s.setCapacity((short) 100);
         s.setOperatingHours(createDefaultOperatingHours());
         s.setBookingDuration(2L);
-        s.setLanguage(Language.PL);
         s.setOrderCommentAllowed(false);
         s.setWaiterCommentAllowed(false);
         restaurant.setSettings(s);
