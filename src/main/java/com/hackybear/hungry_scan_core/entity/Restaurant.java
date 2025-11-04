@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.AtLeastOneDayOpen;
 import com.hackybear.hungry_scan_core.annotation.OpeningClosingTime;
+import com.hackybear.hungry_scan_core.annotation.SupportedLanguagesNotEmpty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -80,6 +81,7 @@ public class Restaurant implements Serializable {
 
     @AtLeastOneDayOpen
     @OpeningClosingTime
+    @SupportedLanguagesNotEmpty
     @OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Settings settings;
 
