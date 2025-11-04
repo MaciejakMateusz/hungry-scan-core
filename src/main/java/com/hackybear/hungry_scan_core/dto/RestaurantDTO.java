@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.dto;
 
 import com.hackybear.hungry_scan_core.annotation.AtLeastOneDayOpenDTO;
 import com.hackybear.hungry_scan_core.annotation.OpeningClosingTimeDTO;
+import com.hackybear.hungry_scan_core.annotation.SupportedLanguagesNotEmptyDTO;
 import com.hackybear.hungry_scan_core.entity.PricePlan;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
@@ -36,6 +37,7 @@ public record RestaurantDTO(
 
         @AtLeastOneDayOpenDTO
         @OpeningClosingTimeDTO
+        @SupportedLanguagesNotEmptyDTO
         SettingsDTO settings,
 
         PricePlan pricePlan,
