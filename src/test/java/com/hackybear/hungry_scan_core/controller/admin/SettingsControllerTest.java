@@ -54,7 +54,7 @@ class SettingsControllerTest {
         assertFalse(settings.operatingHours().get(DayOfWeek.MONDAY).isAvailable());
         assertEquals(LocalTime.of(12, 0), settings.operatingHours().get(DayOfWeek.SUNDAY).getStartTime());
         assertEquals(LocalTime.of(3, 0), settings.operatingHours().get(DayOfWeek.SUNDAY).getEndTime());
-        assertEquals(Language.ENG, settings.language());
+        assertEquals(Language.PL, settings.language());
     }
 
     @Test
