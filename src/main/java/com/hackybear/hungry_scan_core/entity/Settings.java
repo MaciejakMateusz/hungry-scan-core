@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.utility.TimeRange;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +14,7 @@ import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -42,7 +45,21 @@ public class Settings implements Serializable {
 
     private Long bookingDuration;
 
-    private Language language = Language.PL;
+    @Column(nullable = false, length = 2)
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Language language;
+
+    @ElementCollection(targetClass = Language.class, fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "settings_supported_languages",
+            joinColumns = @JoinColumn(name = "settings_id")
+    )
+    @Column(name = "language", nullable = false, length = 16)
+    @Enumerated(EnumType.STRING)
+    @NotEmpty
+    @NotNull
+    private Set<Language> supportedLanguages;
 
     private Long employeeSessionTime = 20L;
 
