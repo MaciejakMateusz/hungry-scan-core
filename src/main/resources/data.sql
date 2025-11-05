@@ -16,7 +16,11 @@ VALUES (1, 1, null, null, null, null),
 INSERT IGNORE INTO settings (id, booking_duration, language, capacity,
                              customer_session_time,
                              employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
-VALUES (1, 3, 1, 120, 20, 20, true, true, 1);
+VALUES (1, 3, 'PL', 120, 20, 20, true, true, 1);
+
+INSERT IGNORE INTO settings_supported_languages (settings_id, language)
+VALUES (1, 'EN'),
+       (1, 'DE');
 
 INSERT IGNORE INTO settings_operating_hours
     (settings_id, day_of_week, start_time, end_time, available)

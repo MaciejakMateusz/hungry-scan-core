@@ -32,8 +32,14 @@ VALUES (1, 2, '2024-01-15', '2025-01-15', 'yearly', 'card'),
 
 INSERT INTO settings (booking_duration, language, capacity, customer_session_time,
                       employee_session_time, order_comment_allowed, waiter_comment_allowed, restaurant_id)
-VALUES (3, 1, 120, 3, 20, true, true, 1),
-       (3, 1, 312, 3, 20, false, false, 2);
+VALUES (3, 'PL', 120, 3, 20, true, true, 1),
+       (3, 'EN', 312, 3, 20, false, false, 2);
+
+INSERT IGNORE INTO settings_supported_languages (settings_id, language)
+VALUES (1, 'EN'),
+       (1, 'DE'),
+       (2, 'PL'),
+       (2, 'ES');
 
 INSERT INTO settings_operating_hours
     (settings_id, day_of_week, start_time, end_time, available)
