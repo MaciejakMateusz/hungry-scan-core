@@ -17,8 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
-import static com.hackybear.hungry_scan_core.utility.Fields.CATEGORIES_ALL;
-import static com.hackybear.hungry_scan_core.utility.Fields.MENUS_ALL;
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +32,9 @@ public class TranslatableServiceImp implements TranslatableService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = CATEGORIES_ALL, key = "#activeMenuId"),
-            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId")
+            @CacheEvict(value = MENUS_ALL, key = "#activeRestaurantId"),
+            @CacheEvict(value = INGREDIENTS_ALL, key = "#activeRestaurantId"),
+            @CacheEvict(value = INGREDIENTS_PAGES, key = "#activeRestaurantId")
     })
     public void saveAll(List<Translatable> translatables, Long activeMenuId, Long activeRestaurantId) {
         translatableRepository.saveAll(translatables);
