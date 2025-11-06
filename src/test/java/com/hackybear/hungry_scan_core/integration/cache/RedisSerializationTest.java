@@ -102,6 +102,7 @@ public class RedisSerializationTest {
                 getOperatingHours(),
                 2L,
                 Language.PL,
+                Set.of(Language.EN, Language.DE),
                 1200L,
                 100L,
                 (short) 150,
