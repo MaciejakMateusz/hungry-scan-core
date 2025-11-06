@@ -35,7 +35,7 @@ INSERT INTO settings (booking_duration, language, capacity, customer_session_tim
 VALUES (3, 'PL', 120, 3, 20, true, true, 1),
        (3, 'EN', 312, 3, 20, false, false, 2);
 
-INSERT IGNORE INTO settings_supported_languages (settings_id, language)
+INSERT INTO settings_supported_languages (settings_id, language)
 VALUES (1, 'EN'),
        (1, 'DE'),
        (2, 'PL'),
