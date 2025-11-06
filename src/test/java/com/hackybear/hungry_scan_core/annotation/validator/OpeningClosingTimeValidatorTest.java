@@ -65,6 +65,7 @@ public class OpeningClosingTimeValidatorTest extends ValidatorTestBase {
                 operatingHours,
                 2L,
                 Language.PL,
+                Set.of(Language.EN, Language.DE),
                 2L,
                 2L,
                 (short) 2,
