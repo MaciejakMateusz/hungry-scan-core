@@ -78,6 +78,7 @@ public class MenuServiceImp implements MenuService {
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getActiveRestaurantId()")
     })
     public void save(MenuFormDTO menuFormDTO, User currentUser) throws Exception {
+        validateCount(currentUser.getActiveRestaurantId());
         validateUniqueness(menuFormDTO.name(), currentUser.getActiveRestaurantId());
         Menu menu = menuMapper.toMenu(menuFormDTO);
         Restaurant restaurant = restaurantRepository.findById(currentUser.getActiveRestaurantId()).orElseThrow();
@@ -186,6 +187,7 @@ public class MenuServiceImp implements MenuService {
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()")
     })
     public void duplicate(User currentUser) throws LocalizedException {
+        validateCount(currentUser.getActiveRestaurantId());
         Menu src = menuRepository.findByIdWithAllGraph(currentUser.getActiveMenuId())
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.menuService.menuNotFound"));
 
@@ -227,6 +229,13 @@ public class MenuServiceImp implements MenuService {
     private void validateUniqueness(String menuName, Long restaurantId) throws LocalizedException {
         if (menuRepository.existsByRestaurantIdAndName(restaurantId, menuName)) {
             exceptionHelper.throwLocalizedMessage("error.menuService.uniqueNameViolation");
+        }
+    }
+
+    private void validateCount(Long restaurantId) throws LocalizedException {
+        Integer menusCount = menuRepository.countByRestaurantId(restaurantId);
+        if (menusCount == 10) {
+            exceptionHelper.throwLocalizedMessage("error.menuService.menusCountLimitExceeded");
         }
     }
 
