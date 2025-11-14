@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackybear.hungry_scan_core.annotation.AnyTranslationNotBlank;
 import com.hackybear.hungry_scan_core.annotation.LimitTranslationsLength;
+import com.hackybear.hungry_scan_core.listener.GeneralListener;
 import com.hackybear.hungry_scan_core.utility.Money;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
@@ -15,6 +16,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -28,6 +30,7 @@ import java.util.Set;
 @Slf4j
 @Getter
 @Setter
+@EntityListeners({AuditingEntityListener.class, GeneralListener.class})
 @ToString
 @Table(name = "menu_items")
 @Entity
