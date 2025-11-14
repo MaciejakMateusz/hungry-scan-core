@@ -8,7 +8,14 @@ import com.hackybear.hungry_scan_core.entity.Menu;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {TranslatableMapper.class, MenuPlanMapper.class, CategoryMapper.class, MenuItemMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {
+                TranslatableMapper.class,
+                MenuPlanMapper.class,
+                CategoryMapper.class,
+                MenuItemMapper.class,
+                MenuColorMapper.class
+        })
 public interface MenuMapper {
 
     @Named("themeToHex")
@@ -39,7 +46,6 @@ public interface MenuMapper {
     void updateFromSimpleDTO(MenuSimpleDTO menuSimpleDTO, @MappingTarget Menu menu);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "color", ignore = true)
     void updateFromFormDTO(MenuFormDTO menuFormDTO, @MappingTarget Menu menu);
 
     @Mapping(expression = "java(new com.hackybear.hungry_scan_core.entity.Restaurant(menuSimpleDTO.restaurantId()))",
