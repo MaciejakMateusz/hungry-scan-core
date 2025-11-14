@@ -38,16 +38,16 @@ VALUES (163, 'Smacznego!', 'Enjoy your meal!'),
        (165, 'Smacznego!', 'Enjoy your meal!');
 
 INSERT IGNORE INTO menu_colors (id, hex)
-VALUES (1, '#1A1A1A'),
-       (2, '#003366'),
-       (3, '#4B0082'),
-       (4, '#800000'),
-       (5, '#2F4F4F'),
-       (6, '#8B0000'),
-       (7, '#006400'),
-       (8, '#2C3E50'),
-       (9, '#9746FF'),
-       (10, '#016DFF');
+VALUES (1, '#078480'),
+       (2, '#266DD7'),
+       (3, '#318E41'),
+       (4, '#7737B3'),
+       (5, '#DA8414'),
+       (6, '#DD4B10'),
+       (7, '#F7C911'),
+       (8, '#C41E20'),
+       (9, '#152966'),
+       (10, '#27343B');
 
 INSERT IGNORE INTO menus (id, standard, banner_icon_visible, name, color_id, restaurant_id, theme,
                           translatable_message_id)
