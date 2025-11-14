@@ -63,4 +63,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     boolean existsByRestaurantIdAndName(Long restaurantId, String name);
 
+    Integer countByRestaurantId(Long restaurantId);
+
 }
