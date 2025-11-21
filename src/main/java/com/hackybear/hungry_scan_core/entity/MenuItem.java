@@ -135,7 +135,6 @@ public class MenuItem implements Comparable<MenuItem>, Serializable {
         this.additionalIngredients.add(additionalIngredient);
     }
 
-
     public void addVariant(Variant v) {
         variants.add(v);
         v.setMenuItem(this);
