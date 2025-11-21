@@ -6,6 +6,7 @@ import io.micrometer.common.lang.NonNullApi;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
 
+    private static final String SECONDARY_COOKIE = "menu_jwt";
+    private static final List<String> nonMenuPaths = List.of("/api/auth/app", "/api/auth/anonymous");
+
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
     private final List<String> jwtInvalidateURIs;
@@ -44,6 +48,17 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
         Map<String, String> jwtParams = getJwtParams(request, jwtService::extractUsername);
         String token = jwtParams.get("token");
         String username = jwtParams.get("username");
+
+        if ((token == null || token.isBlank())) {
+            String secondaryToken = resolveTokenFromCookie(request);
+            if (secondaryToken != null && !secondaryToken.isBlank() && !nonMenuPaths.contains(request.getRequestURI())) {
+                token = secondaryToken;
+                username = jwtService.extractUsername(token);
+            } else {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
 
         if (jwtInvalidateURIs.contains(request.getRequestURI())) {
             String invalidatedJwtCookie = invalidateJwtCookie(isProduction);
@@ -68,5 +83,19 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
                 securityContext.setAuthentication(authenticationToken);
             }
         }
+    }
+
+    @Nullable
+    private String resolveTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (SECONDARY_COOKIE.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }
