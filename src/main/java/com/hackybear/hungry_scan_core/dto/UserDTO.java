@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public record UserDTO(@NotBlank
@@ -26,7 +27,12 @@ public record UserDTO(@NotBlank
 
                       @NotEmpty
                       Set<Role> roles,
-                      boolean active) implements Serializable, Comparable<UserDTO> {
+
+                      boolean active,
+                      LocalDateTime created,
+                      LocalDateTime updated,
+                      String modifiedBy,
+                      String createdBy) implements Serializable, Comparable<UserDTO> {
 
     @Override
     public int compareTo(UserDTO other) {
