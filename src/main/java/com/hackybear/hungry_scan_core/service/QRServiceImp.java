@@ -197,7 +197,7 @@ public class QRServiceImp implements QRService {
     }
 
     private String prepareJwtCookie(String jwt) {
-        ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
+        ResponseCookie cookie = ResponseCookie.from("menu_jwt", jwt)
                 .path("/")
                 .httpOnly(true)
                 .secure(isProduction)
