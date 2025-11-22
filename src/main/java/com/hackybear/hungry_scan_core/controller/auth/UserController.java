@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.Map;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.ROLES_EXCEPT_CUSTOMER;
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class UserController {
     private final ResponseHelper responseHelper;
 
     @GetMapping("/profile")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     public ResponseEntity<?> getUserProfileData() {
         try {
             User user = userService.getCurrentUser();
@@ -43,7 +45,7 @@ public class UserController {
     }
 
     @PatchMapping("/profile")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(ROLES_EXCEPT_CUSTOMER)
     @WithRateLimitProtection
     public ResponseEntity<?> updateUserProfile(@Valid @RequestBody final UserProfileUpdateDTO dto, BindingResult br) {
         try {
