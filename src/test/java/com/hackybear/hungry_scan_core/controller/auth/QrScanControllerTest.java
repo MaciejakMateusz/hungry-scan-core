@@ -76,12 +76,12 @@ class QrScanControllerTest {
         MockHttpServletResponse response = apiRequestUtils.executeGet("/api/qr/scan/" + restaurantToken);
 
         assertEquals(2, response.getCookies().length);
-        assertEquals("jwt", response.getCookies()[0].getName());
+        assertEquals("menu_jwt", response.getCookies()[0].getName());
         assertEquals("restaurantToken", response.getCookies()[1].getName());
         assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", response.getCookies()[1].getValue());
         assertEquals(308, response.getStatus());
         assertEquals("pl_PL", response.getLocale().toString());
-        assertEquals(9, response.getHeaderNames().size());
+        assertEquals(8, response.getHeaderNames().size());
         assertEquals(this.customerAppUrl, response.getHeader("Location"));
         assertNull(response.getErrorMessage());
     }
@@ -118,7 +118,7 @@ class QrScanControllerTest {
         MockHttpServletResponse response = apiRequestUtils.executeGet("/api/qr/scan/" + restaurantToken);
         assertEquals(302, response.getStatus());
         assertEquals("pl_PL", response.getLocale().toString());
-        assertEquals(8, response.getHeaderNames().size());
+        assertEquals(7, response.getHeaderNames().size());
         assertEquals(this.customerAppUrl + "/invalid-token", response.getHeader("Location"));
     }
 
