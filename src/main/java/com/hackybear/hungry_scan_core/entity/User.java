@@ -1,6 +1,5 @@
 package com.hackybear.hungry_scan_core.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hackybear.hungry_scan_core.annotation.Email;
 import com.hackybear.hungry_scan_core.annotation.ForenameSurname;
 import com.hackybear.hungry_scan_core.annotation.Password;
@@ -104,10 +103,8 @@ public class User implements Serializable, Comparable<User> {
 
     private boolean signedIn = false;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
 
     @LastModifiedBy
