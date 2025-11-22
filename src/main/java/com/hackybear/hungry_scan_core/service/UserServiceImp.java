@@ -83,7 +83,7 @@ public class UserServiceImp implements UserService {
     @Override
     public List<UserDTO> filterUsers(String value, User user) {
         String filterValue = "%" + value.toLowerCase() + "%";
-        return userRepository.filterUsers(filterValue, user.getActiveRestaurantId())
+        return userRepository.filterUsers(filterValue, user.getActiveRestaurantId(), user.getUsername())
                 .stream()
                 .map(userMapper::toDTO).toList();
     }
