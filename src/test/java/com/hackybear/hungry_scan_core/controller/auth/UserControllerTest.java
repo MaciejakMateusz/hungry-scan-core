@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.hackybear.hungry_scan_core.utility.Fields.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,7 +66,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(username = "admin@example.com", roles = {STAFF})
     void shouldGetUserProfileData() throws Exception {
         UserProfileDTO userProfileDTO = apiRequestUtils.fetchObject("/api/user/profile", UserProfileDTO.class);
         assertNotNull(userProfileDTO);
@@ -80,7 +81,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(username = "admin@example.com", roles = {STAFF})
     void shouldNotUpdateUserProfile_wrongPassword() throws Exception {
         UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
                 "Admin",
@@ -96,7 +97,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(username = "admin@example.com", roles = {STAFF})
     void shouldNotUpdateUserProfile_newPasswordsEmpty() throws Exception {
         UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
                 "Admin",
@@ -112,7 +113,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(username = "admin@example.com", roles = {STAFF})
     void shouldNotUpdateUserProfile_wrongPasswordFormat() throws Exception {
         UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
                 "Admin",
@@ -129,7 +130,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(username = "admin@example.com", roles = {ADMIN})
     void shouldNotUpdateUserProfile_passwordsNotTheSame() throws Exception {
         UserProfileUpdateDTO dto = new UserProfileUpdateDTO(
                 "Admin",
@@ -145,7 +146,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(username = "admin@example.com", roles = {MANAGER})
     @Transactional
     @Rollback
     void shouldUpdateUserProfile_onlyBasicData() throws Exception {
@@ -166,7 +167,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin@example.com")
+    @WithMockUser(username = "admin@example.com", roles = {STAFF})
     @Transactional
     @Rollback
     void shouldUpdateUserProfile_withPasswords() throws Exception {
