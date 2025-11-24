@@ -2,7 +2,7 @@ INSERT INTO restaurants (organization_id, address, name, postal_code, city, toke
 VALUES (1, 'ul. Główna 123, Miastowo, Województwo, 54321', 'Rarytas', '12-1234', 'TEST',
         '3d90381d-80d2-48f8-80b3-d237d5f0a8ed', '2024-01-15T00:00:00Z', NOW(), 1),
        (2, 'ul. Dębowa 456, Miasteczko, Wiejskie, 98765', 'Wykwintna Bistro', '12-1234', 'TEST', null, NOW(), NOW(), 1),
-       (2, 'Test address, 111', 'Test 1', '12-1234', 'TEST', null, NOW(), NOW(), 1),
+       (2, 'Test address, 111', 'Test 1', '12-1234', 'TEST', '4j90381e-80d5-42f2-80c3-d237d5f0a2xc', NOW(), NOW(), 1),
        (1, 'Test address, 222', 'Test 2', '12-1234', 'TEST', null, NOW(), NOW(), 1),
        (1, 'Test address, 333', 'Test 3', '12-1234', 'TEST', null, NOW(), NOW(), 1),
        (2, 'Test address, 444', 'Test 4', '12-1234', 'TEST', null, NOW(), NOW(), 1),
