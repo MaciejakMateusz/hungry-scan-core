@@ -51,12 +51,6 @@ public interface UserService {
 
     void switchMenu(Long menuId, User user);
 
-    boolean isUpdatedUserValid(RegistrationDTO registrationDTO) throws LocalizedException;
-
-    String getErrorParam(RegistrationDTO registrationDTO) throws LocalizedException;
-
-    List<User> findAllByRole(String roleName);
-
     List<User> findAllCustomers();
 
     User getCurrentUser() throws LocalizedException;

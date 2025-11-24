@@ -318,26 +318,6 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public boolean isUpdatedUserValid(RegistrationDTO registrationDTO) throws LocalizedException {
-        return "".equals(getErrorParam(registrationDTO));
-    }
-
-    @Override
-    public String getErrorParam(RegistrationDTO registrationDTO) throws LocalizedException {
-        User modifiedUser = getUser(registrationDTO.username());
-
-        if (existsByUsername(registrationDTO.username()) && !registrationDTO.username().equals(modifiedUser.getUsername())) {
-            return "userNameExists";
-        }
-        return "";
-    }
-
-    @Override
-    public List<User> findAllByRole(String roleName) {
-        return userRepository.findByRole(roleName);
-    }
-
-    @Override
     public List<User> findAllCustomers() {
         return userRepository.findAllCustomers();
     }
@@ -395,10 +375,6 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean isActive(String username) {
         return userRepository.isUserActiveByUsername(username).orElse(false);
-    }
-
-    private boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
     }
 
     private Authentication getAuthentication() {
