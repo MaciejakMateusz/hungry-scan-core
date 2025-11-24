@@ -1,10 +1,7 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
-import com.hackybear.hungry_scan_core.entity.QrScanEvent;
-import com.hackybear.hungry_scan_core.entity.Restaurant;
-import com.hackybear.hungry_scan_core.entity.RestaurantTable;
-import com.hackybear.hungry_scan_core.entity.Role;
+import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
@@ -167,6 +164,44 @@ class QRServiceImpTest {
         verify(resp).sendRedirect("http://customer.app/invalid-token");
         assertEquals(HttpStatus.PERMANENT_REDIRECT, result.getStatusCode());
     }
+//
+//    @Test
+//    void scanQRCode_restaurantClosed_redirectsToRestaurantClosed() throws Exception {
+//        // given
+//        HttpServletResponse resp = mock(HttpServletResponse.class);
+//
+//        String token = "test-token";
+//
+//        Restaurant restaurant = new Restaurant();
+//        restaurant.setId(1L);
+//        restaurant.setToken(token);
+//
+//        when(restaurantRepository.existsByToken(token)).thenReturn(true);
+//        when(restaurantRepository.findByToken(token)).thenReturn(Optional.of(restaurant));
+//
+//        when(jwtService.generateToken(anyString())).thenReturn("dummy-jwt");
+//
+//        // Make getActiveMenuId(...) return 0L by returning Optional.empty()
+//        when(menuRepository.findActiveMenuId(any(), any(), eq(1L)))
+//                .thenReturn(Optional.empty());
+//
+//        Role role = new Role();
+//        role.setName("ROLE_CUSTOMER_READONLY");
+//        when(roleService.findByName("ROLE_CUSTOMER_READONLY")).thenReturn(role);
+//
+//        // Let saveTempUser just return the same user instance it receives
+//        when(userService.saveTempUser(any(User.class)))
+//                .thenAnswer(invocation -> invocation.getArgument(0));
+//
+//        // when
+//        ResponseEntity<?> result = qrService.scanQRCode(resp, token);
+//
+//        // then
+//        verify(resp).sendRedirect("http://customer.app/restaurant-closed");
+//        assertEquals(HttpStatus.PERMANENT_REDIRECT, result.getStatusCode());
+//    }
+
+
 
     @Test
     void scanQRCode_persistUserThrows_returnsErrorResponse() throws IOException {
@@ -194,7 +229,7 @@ class QRServiceImpTest {
         )).thenReturn(Optional.of(99L));
         Role role = new Role();
         when(roleService.findByName("ROLE_CUSTOMER_READONLY")).thenReturn(role);
-        doNothing().when(userService).saveTempUser(any());
+        when(userService.saveTempUser(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(restaurantRepository.findByToken("rt"))
                 .thenReturn(Optional.of(r));
 
@@ -231,7 +266,7 @@ class QRServiceImpTest {
                 eq(20L)
         )).thenReturn(Optional.of(55L));
         when(roleService.findByName("ROLE_CUSTOMER_READONLY")).thenReturn(new Role());
-        doNothing().when(userService).saveTempUser(any());
+        when(userService.saveTempUser(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(restaurantRepository.findByToken("rt"))
                 .thenReturn(Optional.of(r));
 
