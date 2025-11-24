@@ -114,12 +114,24 @@ class QrScanControllerTest {
     @Transactional
     @Rollback
     void shouldScanQr_wrongRestaurantToken() throws Exception {
-        String restaurantToken = "3d90381d-80d2-48f8-80b3-hehe";
+        String restaurantToken = "3d90381d-80d2-48f8-non-existing";
         MockHttpServletResponse response = apiRequestUtils.executeGet("/api/qr/scan/" + restaurantToken);
         assertEquals(302, response.getStatus());
         assertEquals("pl_PL", response.getLocale().toString());
         assertEquals(7, response.getHeaderNames().size());
         assertEquals(this.customerAppUrl + "/invalid-token", response.getHeader("Location"));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void shouldScanQr_noActiveMenu_expectRestaurantClosedUrl() throws Exception {
+        String restaurantToken = "4j90381e-80d5-42f2-80c3-d237d5f0a2xc";
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/qr/scan/" + restaurantToken);
+        assertEquals(302, response.getStatus());
+        assertEquals("pl_PL", response.getLocale().toString());
+        assertEquals(7, response.getHeaderNames().size());
+        assertEquals(this.customerAppUrl + "/restaurant-closed", response.getHeader("Location"));
     }
 
     @Test
