@@ -27,7 +27,7 @@ public interface UserService {
 
     ResponseEntity<?> save(RegistrationDTO registrationDTO, BindingResult br);
 
-    void saveTempUser(User tempUser);
+    User saveTempUser(User tempUser);
 
     void save(User user);
 

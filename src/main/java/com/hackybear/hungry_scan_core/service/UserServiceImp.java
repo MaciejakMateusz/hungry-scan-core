@@ -144,9 +144,9 @@ public class UserServiceImp implements UserService {
 
     @Transactional
     @Override
-    public void saveTempUser(User tempUser) {
+    public User saveTempUser(User tempUser) {
         tempUser.setEnabled(1);
-        userRepository.save(tempUser);
+        return userRepository.save(tempUser);
     }
 
     @Override
