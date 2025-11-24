@@ -28,6 +28,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
@@ -114,7 +115,12 @@ public class QRServiceImp implements QRService {
         String username = UUID.randomUUID().toString().substring(1, 13) + "@temp.it";
         String jwt = jwtService.generateToken(username);
         try {
-            persistUser(new JwtToken(jwt), username, restaurantToken);
+            User user = persistUser(new JwtToken(jwt), username, restaurantToken);
+            if (Objects.equals(0L, user.getActiveMenuId())) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                response.sendRedirect(customerAppUrl + "/restaurant-closed");
+                return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).build();
+            }
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
@@ -218,9 +224,9 @@ public class QRServiceImp implements QRService {
         return cookie.toString();
     }
 
-    private void persistUser(JwtToken jwtToken, String username, String restaurantToken) throws LocalizedException {
+    private User persistUser(JwtToken jwtToken, String username, String restaurantToken) throws LocalizedException {
         User user = createTempCustomer(jwtToken, username, restaurantToken);
-        userService.saveTempUser(user);
+        return userService.saveTempUser(user);
     }
 
     private User createTempCustomer(JwtToken jwtToken,
@@ -247,12 +253,11 @@ public class QRServiceImp implements QRService {
         return temp;
     }
 
-    private Long getActiveMenuId(Long restaurantId) throws LocalizedException {
+    private Long getActiveMenuId(Long restaurantId) {
         LocalDateTime current = LocalDateTime.now();
         DayOfWeek today = current.toLocalDate().getDayOfWeek();
         Optional<Long> activeMenuIdOptional =
                 menuRepository.findActiveMenuId(today, current.toLocalTime(), restaurantId);
-        return activeMenuIdOptional.orElseThrow(
-                exceptionHelper.supplyLocalizedMessage("error.qrService.menuNotFound"));
+        return activeMenuIdOptional.orElse(0L);
     }
 }
