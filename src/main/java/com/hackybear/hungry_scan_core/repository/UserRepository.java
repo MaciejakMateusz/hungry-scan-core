@@ -29,9 +29,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
             SELECT u FROM User u
             WHERE (
-                u.forename LIKE :filterValue
-            OR u.surname LIKE :filterValue
-            OR u.username LIKE :filterValue
+                lower(u.forename)  LIKE :filterValue
+                OR lower(u.surname) LIKE :filterValue
+                OR u.username LIKE :filterValue
             )
             AND u.organizationId = :organizationId
             AND u.username != :currentUsername
