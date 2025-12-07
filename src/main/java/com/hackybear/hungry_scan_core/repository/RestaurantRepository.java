@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.repository;
 
 import com.hackybear.hungry_scan_core.entity.Restaurant;
+import com.hackybear.hungry_scan_core.entity.Settings;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +14,11 @@ import java.util.Set;
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     Optional<Restaurant> findByToken(String token);
+
+    @Query("SELECT r.settings " +
+            "FROM Restaurant r " +
+            "WHERE r.token = :token")
+    Optional<Settings> findRestaurantSettingsByToken(String token);
 
     Set<Restaurant> findAllByOrganizationId(Long organizationId);
 
