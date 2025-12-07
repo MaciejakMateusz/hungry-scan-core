@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.repository;
 
 import com.hackybear.hungry_scan_core.entity.Menu;
+import com.hackybear.hungry_scan_core.entity.MenuColor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -31,6 +32,13 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     Optional<Menu> findByIdWithAllGraph(@Param("id") Long id);
 
     Set<Menu> findAllByRestaurantId(Long restaurantId);
+
+    @Query("""
+            SELECT m.color
+            FROM Menu m
+            WHERE m.restaurant.id = :restaurantId
+            """)
+    Set<MenuColor> findAllUsedColorsByRestaurantId(@Param("restaurantId") Long restaurantId);
 
     @Query("""
               SELECT DISTINCT m.id
