@@ -1,6 +1,7 @@
 package com.hackybear.hungry_scan_core.dto.mapper;
 
 import com.hackybear.hungry_scan_core.dto.OrganizationRestaurantDTO;
+import com.hackybear.hungry_scan_core.dto.RestaurantCustomerDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.Restaurant;
@@ -20,5 +21,9 @@ public interface RestaurantMapper {
     RestaurantSimpleDTO toSimpleDTO(Restaurant restaurant);
 
     OrganizationRestaurantDTO toOrganizationDTO(Restaurant restaurant);
+
+    @Mapping(expression = "java(restaurant.getSettings().getLanguage())",
+            target = "language")
+    RestaurantCustomerDTO toCustomerDTO(Restaurant restaurant);
 
 }
