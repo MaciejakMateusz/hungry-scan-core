@@ -1,5 +1,6 @@
 package com.hackybear.hungry_scan_core.controller.cms;
 
+import com.hackybear.hungry_scan_core.annotation.WithRateLimitProtection;
 import com.hackybear.hungry_scan_core.controller.ResponseHelper;
 import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.entity.User;
@@ -91,6 +92,16 @@ public class RestaurantController {
         try {
             User currentUser = userService.getCurrentUser();
             return responseHelper.buildResponse(currentUser, restaurantService::delete);
+        } catch (Exception e) {
+            return responseHelper.createErrorResponse(e);
+        }
+    }
+
+    @GetMapping("/operating-hours/{restaurantToken}")
+    @WithRateLimitProtection
+    public ResponseEntity<?> getOperatingHours(@PathVariable String restaurantToken) {
+        try {
+            return ResponseEntity.ok(restaurantService.getOperatingHours(restaurantToken));
         } catch (Exception e) {
             return responseHelper.createErrorResponse(e);
         }
