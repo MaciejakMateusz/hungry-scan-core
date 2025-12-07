@@ -1,12 +1,12 @@
 package com.hackybear.hungry_scan_core.service;
 
 import com.hackybear.hungry_scan_core.dto.*;
-import com.hackybear.hungry_scan_core.dto.mapper.MenuDeepCopyMapper;
-import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
+import com.hackybear.hungry_scan_core.dto.mapper.*;
 import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.repository.MenuColorRepository;
 import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
 import com.hackybear.hungry_scan_core.repository.UserRepository;
@@ -33,6 +33,18 @@ class MenuServiceImpTest implements WithAssertions {
 
     @Mock
     MenuRepository menuRepository;
+
+    @Mock
+    MenuColorRepository menuColorRepository;
+
+    @Mock
+    CategoryMapper categoryMapper;
+
+    @Mock
+    RestaurantMapper restaurantMapper;
+
+    @Mock
+    TranslatableMapper translatableMapper;
 
     @Mock
     MenuMapper menuMapper;
@@ -232,6 +244,8 @@ class MenuServiceImpTest implements WithAssertions {
                 .thenReturn(false);
 
         when(menuRepository.saveAndFlush(copied)).thenReturn(copied);
+        when(menuRepository.findAllUsedColorsByRestaurantId(restaurant.getId())).thenReturn(new HashSet<>());
+        when(menuColorRepository.findAll()).thenReturn(getMenuColors());
 
         service.duplicate(user);
 
@@ -262,6 +276,8 @@ class MenuServiceImpTest implements WithAssertions {
         when(menuRepository.existsByRestaurantIdAndName(eq(restaurant.getId()), anyString()))
                 .thenReturn(false);
         when(menuRepository.saveAndFlush(copied)).thenReturn(copied);
+        when(menuRepository.findAllUsedColorsByRestaurantId(restaurant.getId())).thenReturn(new HashSet<>());
+        when(menuColorRepository.findAll()).thenReturn(getMenuColors());
 
         service.duplicate(user);
 
@@ -284,12 +300,13 @@ class MenuServiceImpTest implements WithAssertions {
 
     @Test
     void projectPlannedMenuReturnsCustomerDto() throws LocalizedException {
-        MenuCustomerDTO customerDto = mock(MenuCustomerDTO.class);
-        when(menuMapper.toCustomerDTO(menu)).thenReturn(customerDto);
+        List<CategoryCustomerDTO> categoryCustomerDTOs = new ArrayList<>();
+        categoryCustomerDTOs.add(null);
+        categoryCustomerDTOs.add(null);
+        MenuCustomerDTO customerDto = new MenuCustomerDTO(categoryCustomerDTOs, null, "#318E41", null, true);
         MenuCustomerDTO result = service.projectPlannedMenu(menu.getId());
 
-        assertThat(result).isSameAs(customerDto);
-        verify(menuMapper).toCustomerDTO(menu);
+        assertThat(result).isEqualTo(customerDto);
     }
 
     @Test
@@ -341,6 +358,15 @@ class MenuServiceImpTest implements WithAssertions {
         menuItems.add(item1);
         menuItems.add(item2);
         return menuItems;
+    }
+
+    private List<MenuColor> getMenuColors() {
+        MenuColor menuColor = new MenuColor();
+        menuColor.setId(22L);
+        menuColor.setHex("#FFFFFF");
+        List<MenuColor> menuColors = new ArrayList<>();
+        menuColors.add(menuColor);
+        return menuColors;
     }
 
     private TranslatableDTO getMessageDTO() {
