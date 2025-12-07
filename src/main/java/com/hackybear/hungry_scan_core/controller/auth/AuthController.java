@@ -32,6 +32,12 @@ public class AuthController {
         return authService.authorizeApp();
     }
 
+    @GetMapping("/menu")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> menuAuth() {
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> adminAuth() {
