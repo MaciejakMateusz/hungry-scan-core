@@ -118,7 +118,7 @@ public class QRServiceImp implements QRService {
             User user = persistUser(new JwtToken(jwt), username, restaurantToken);
             if (Objects.equals(0L, user.getActiveMenuId())) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                response.sendRedirect(customerAppUrl + "/restaurant-closed");
+                response.sendRedirect(customerAppUrl + "/restaurant-closed/" + restaurantToken);
                 return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).build();
             }
         } catch (Exception e) {
