@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public record MenuCustomerDTO(List<CategoryCustomerDTO> categories,
-                              RestaurantSimpleDTO restaurant,
+                              RestaurantCustomerDTO restaurant,
                               String theme,
                               TranslatableDTO message,
                               boolean bannerIconVisible) implements Serializable {
