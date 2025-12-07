@@ -246,7 +246,7 @@ public class MenuPlanUpdater {
     }
 
     private void createPlanForNewlyAvailableDay(Menu menu, DayOfWeek day) {
-        if (!Boolean.TRUE.equals(menu.isStandard())) {
+        if (Boolean.FALSE.equals(menu.isStandard())) {
             return;
         }
 
@@ -287,7 +287,7 @@ public class MenuPlanUpdater {
             plan.getTimeRanges().addAll(rangesToPlan);
             menu.getPlan().removeIf(p -> day.equals(p.getDayOfWeek()));
             menu.getPlan().add(plan);
-        } else if (!isPrevOvernight && templatePlan.isEmpty()) {
+        } else {
             MenuPlan newPlan = new MenuPlan();
             newPlan.setMenu(menu);
             newPlan.setDayOfWeek(day);
@@ -305,8 +305,10 @@ public class MenuPlanUpdater {
         if (isPrevOvernight && currentTemplatePlan.isPresent()) {
             MenuPlan plan = currentTemplatePlan.get();
 
+            TimeRange prevOvernightPortion = overnightPortionFrom(prevHours);
+
             Set<TimeRange> filteredRanges = plan.getTimeRanges().stream()
-                    .filter(timeRange -> timeRange.getStartTime().equals(LocalTime.MIDNIGHT))
+                    .filter(timeRange -> Objects.nonNull(timeRange.intersect(prevOvernightPortion)))
                     .collect(Collectors.toSet());
 
             MenuPlan newPlan = new MenuPlan();
