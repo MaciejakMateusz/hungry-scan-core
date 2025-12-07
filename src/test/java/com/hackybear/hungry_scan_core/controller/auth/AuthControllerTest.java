@@ -95,6 +95,18 @@ class AuthControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = CUSTOMER_READONLY)
+    public void shouldAuthorizeForMenuModule() throws Exception {
+        MockHttpServletResponse response = apiRequestUtils.executeGet("/api/auth/menu");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void shouldNotAuthorizeForMenuModule() throws Exception {
+        apiRequestUtils.fetchAndExpectForbidden("/api/auth/menu");
+    }
+
+    @Test
     @WithMockUser(roles = {"ADMIN"}, username = "fresh@user.it")
     public void shouldRedirectToCreateRestaurant() throws Exception {
         MockHttpServletResponse response = apiRequestUtils.fetchAndExpect("/api/auth/app", status().isFound());
