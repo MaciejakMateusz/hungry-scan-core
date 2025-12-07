@@ -1,10 +1,7 @@
 package com.hackybear.hungry_scan_core.service;
 
-import com.hackybear.hungry_scan_core.dto.MenuCustomerDTO;
-import com.hackybear.hungry_scan_core.dto.MenuFormDTO;
-import com.hackybear.hungry_scan_core.dto.MenuSimpleDTO;
-import com.hackybear.hungry_scan_core.dto.mapper.MenuDeepCopyMapper;
-import com.hackybear.hungry_scan_core.dto.mapper.MenuMapper;
+import com.hackybear.hungry_scan_core.dto.*;
+import com.hackybear.hungry_scan_core.dto.mapper.*;
 import com.hackybear.hungry_scan_core.entity.*;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
@@ -38,13 +35,16 @@ public class MenuServiceImp implements MenuService {
     private final MenuRepository menuRepository;
     private final MenuPlanValidator menuPlanValidator;
     private final MenuMapper menuMapper;
+    private final CategoryMapper categoryMapper;
+    private final RestaurantMapper restaurantMapper;
+    private final TranslatableMapper translatableMapper;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
+    private final MenuColorRepository menuColorRepository;
     private final MenuDeepCopyMapper menuDeepCopyMapper;
     private final S3Service s3Service;
 
     static final String S3_PATH = "menuItems";
-    private final MenuColorRepository menuColorRepository;
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -66,7 +66,17 @@ public class MenuServiceImp implements MenuService {
     @Override
     public MenuCustomerDTO projectPlannedMenu(Long id) throws LocalizedException {
         Menu menu = getById(id);
-        return menuMapper.toCustomerDTO(menu);
+        List<CategoryCustomerDTO> categoryDTOs = menu.getCategories().stream()
+                .map(categoryMapper::toCustomerDTO)
+                .toList();
+        RestaurantCustomerDTO restaurantDTO = restaurantMapper.toCustomerDTO(menu.getRestaurant());
+        TranslatableDTO translatableDTO = translatableMapper.toDTO(menu.getMessage());
+        return new MenuCustomerDTO(
+                categoryDTOs,
+                restaurantDTO,
+                menu.getTheme().getHex(),
+                translatableDTO,
+                menu.isBannerIconVisible());
     }
 
     @Transactional
@@ -194,6 +204,10 @@ public class MenuServiceImp implements MenuService {
         copy.setRestaurant(src.getRestaurant());
         copy.setName(constructDuplicateName(src.getName()));
         validateUniqueness(copy.getName(), currentUser.getActiveRestaurantId());
+        Set<MenuColor> usedColors = menuRepository.findAllUsedColorsByRestaurantId(currentUser.getActiveRestaurantId());
+        List<MenuColor> allColors = menuColorRepository.findAll();
+        allColors.removeAll(usedColors);
+        copy.setColor(allColors.getFirst());
 
         cascadeDuplicateCategory(copy);
 
