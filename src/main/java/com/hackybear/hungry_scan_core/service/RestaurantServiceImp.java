@@ -167,6 +167,14 @@ public class RestaurantServiceImp implements RestaurantService {
         return restaurantMapper.toDTO(restaurant);
     }
 
+    @Override
+    @Cacheable(value = RESTAURANT_OPERATING_HOURS, key = "#token")
+    public Map<DayOfWeek, TimeRange> getOperatingHours(String token) throws LocalizedException {
+        Optional<Settings> settings = restaurantRepository.findRestaurantSettingsByToken(token);
+        if (settings.isEmpty()) return new HashMap<>();
+        return settings.get().getOperatingHours();
+    }
+
     private Restaurant getById(Long id) throws LocalizedException {
         return restaurantRepository.findById(id)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage(

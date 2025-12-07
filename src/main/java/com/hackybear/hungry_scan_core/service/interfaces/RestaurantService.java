@@ -5,8 +5,10 @@ import com.hackybear.hungry_scan_core.dto.RestaurantDTO;
 import com.hackybear.hungry_scan_core.dto.RestaurantSimpleDTO;
 import com.hackybear.hungry_scan_core.entity.User;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
+import com.hackybear.hungry_scan_core.utility.TimeRange;
 import org.springframework.http.ResponseEntity;
 
+import java.time.DayOfWeek;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -31,4 +33,5 @@ public interface RestaurantService {
 
     RestaurantDTO findByToken(String token) throws LocalizedException;
 
+    Map<DayOfWeek, TimeRange> getOperatingHours(String token) throws LocalizedException;
 }
