@@ -374,6 +374,16 @@ public class RestaurantControllerTest {
                 "/api/cms/restaurants/delete", 2, status().isForbidden());
     }
 
+    @Test
+    void shouldGetOperatingHours() throws Exception {
+        Map<?, ?> operatingHours = apiRequestUtils.fetchObject(
+                "/api/cms/restaurants/operating-hours/3d90381d-80d2-48f8-80b3-d237d5f0a8ed", Map.class);
+        assertEquals(7, operatingHours.size());
+        Map<?, ?> fridayRanges = (Map<?, ?>) operatingHours.get("FRIDAY");
+        assertEquals("12:00:00", fridayRanges.get("startTime"));
+        assertTrue((Boolean) fridayRanges.get("available"));
+    }
+
     private RestaurantDTO createRestaurantDTO() {
         return restaurantMapper.toDTO(createRestaurant());
     }
