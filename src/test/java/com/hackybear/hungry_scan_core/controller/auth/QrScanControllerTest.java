@@ -131,7 +131,7 @@ class QrScanControllerTest {
         assertEquals(302, response.getStatus());
         assertEquals("pl_PL", response.getLocale().toString());
         assertEquals(7, response.getHeaderNames().size());
-        assertEquals(this.customerAppUrl + "/restaurant-closed", response.getHeader("Location"));
+        assertEquals(this.customerAppUrl + "/restaurant-closed/4j90381e-80d5-42f2-80c3-d237d5f0a2xc", response.getHeader("Location"));
     }
 
     @Test
