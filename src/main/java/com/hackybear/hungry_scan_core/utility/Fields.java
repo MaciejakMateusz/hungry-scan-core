@@ -27,6 +27,7 @@ public class Fields {
     public static final String RESTAURANT_ID = "restaurant.id";
     public static final String RESTAURANT_TOKEN = "restaurant.token";
     public static final String RESTAURANTS_ALL = "restaurants.all";
+    public static final String RESTAURANT_OPERATING_HOURS = "restaurant.operatingHours";
 
     public static final String MENU_ID = "menu.id";
     public static final String MENU_CUSTOMER_ID = "menu.customer.id";
