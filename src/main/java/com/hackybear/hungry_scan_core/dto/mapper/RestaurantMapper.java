@@ -24,6 +24,8 @@ public interface RestaurantMapper {
 
     @Mapping(expression = "java(restaurant.getSettings().getLanguage())",
             target = "language")
+    @Mapping(expression = "java(restaurant.getSettings().getSupportedLanguages())",
+            target = "supportedLanguages")
     RestaurantCustomerDTO toCustomerDTO(Restaurant restaurant);
 
 }
