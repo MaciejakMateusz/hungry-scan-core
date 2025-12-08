@@ -4,10 +4,13 @@ import com.hackybear.hungry_scan_core.enums.Language;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Set;
 
 public record RestaurantCustomerDTO(Long id,
                                     String name,
-                                    Language language) implements Serializable, Comparable<RestaurantCustomerDTO> {
+                                    Language language,
+                                    Set<Language> supportedLanguages)
+        implements Serializable, Comparable<RestaurantCustomerDTO> {
 
     @Serial
     private static final long serialVersionUID = 1L;
