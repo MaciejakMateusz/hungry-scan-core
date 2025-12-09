@@ -67,6 +67,7 @@ public class MenuServiceImp implements MenuService {
     public MenuCustomerDTO projectPlannedMenu(Long id) throws LocalizedException {
         Menu menu = getById(id);
         List<CategoryCustomerDTO> categoryDTOs = menu.getCategories().stream()
+                .filter(Category::isAvailable)
                 .map(categoryMapper::toCustomerDTO)
                 .toList();
         RestaurantCustomerDTO restaurantDTO = restaurantMapper.toCustomerDTO(menu.getRestaurant());
@@ -178,6 +179,8 @@ public class MenuServiceImp implements MenuService {
         validateOperation(existingMenu.getRestaurant().getId(), activeRestaurantId);
         if (existingMenu.isStandard()) {
             exceptionHelper.throwLocalizedMessage("error.menuService.illegalMenuRemoval");
+        } else if (!existingMenu.getPlan().isEmpty()) {
+            exceptionHelper.throwLocalizedMessage("error.menuService.plannedMenuRemoval");
         }
         Long standardId = menuRepository.findStandardIdByRestaurantId(activeRestaurantId)
                 .orElseThrow(exceptionHelper.supplyLocalizedMessage("error.menuService.menuNotFound"));
