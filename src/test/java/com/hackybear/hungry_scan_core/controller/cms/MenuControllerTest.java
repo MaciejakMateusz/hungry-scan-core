@@ -153,7 +153,7 @@ class MenuControllerTest {
         assertEquals("#318E41", menu.theme());
         assertEquals("Smacznego!", menu.message().pl());
         assertEquals("Enjoy your meal!", menu.message().en());
-        assertEquals(9, menu.categories().size());
+        assertEquals(8, menu.categories().size());
         assertEquals(5, menu.categories().getFirst().menuItems().size());
     }
 
