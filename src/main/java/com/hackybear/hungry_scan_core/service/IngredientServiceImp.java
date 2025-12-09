@@ -86,12 +86,15 @@ public class IngredientServiceImp implements IngredientService {
     }
 
     @Override
+    @Transactional
     @Caching(evict = {
             @CacheEvict(value = INGREDIENTS_ALL, key = "#restaurantId"),
             @CacheEvict(value = INGREDIENTS_PAGES, key = "#restaurantId"),
             @CacheEvict(value = INGREDIENT_ID, key = "#id")
     })
     public void delete(Long id, Long restaurantId) {
+        ingredientRepository.deleteFromIngredientsJoin(id);
+        ingredientRepository.deleteFromAdditionalJoin(id);
         ingredientRepository.deleteById(id);
     }
 
