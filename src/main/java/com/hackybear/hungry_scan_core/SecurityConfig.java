@@ -18,9 +18,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.List;
 import java.util.Set;
@@ -43,11 +42,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector hmi) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        MvcRequestMatcher.Builder mvcMatcherBuilder =
-                new MvcRequestMatcher
-                        .Builder(hmi);
+        String servletPath = env.getProperty("spring.mvc.servlet.path", "/");
+        PathPatternRequestMatcher.Builder paths = PathPatternRequestMatcher.withDefaults()
+                .basePath(servletPath);
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -63,12 +62,11 @@ public class SecurityConfig {
             return corsConfiguration;
         }));
 
-
-        http.authorizeHttpRequests(
-                c -> c.dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/app/api/**")).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/order-websocket/**")).permitAll()
+        http.authorizeHttpRequests(auth -> auth
+                .dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
+                .requestMatchers(paths.matcher("/api/**")).permitAll()
+                .requestMatchers(paths.matcher("/app/api/**")).permitAll()
+                .requestMatchers(paths.matcher("/order-websocket/**")).permitAll()
                         .requestMatchers(PathRequest.toStaticResources()
                                 .at(Set.of(StaticResourceLocation.IMAGES))).permitAll()
         );
