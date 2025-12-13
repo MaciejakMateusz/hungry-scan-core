@@ -91,7 +91,8 @@ public class RestaurantServiceImp implements RestaurantService {
     @Caching(evict = {
             @CacheEvict(value = RESTAURANTS_ALL, key = "#currentUser.getId()"),
             @CacheEvict(value = USER_RESTAURANT, key = "#currentUser.getActiveRestaurantId()"),
-            @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()")
+            @CacheEvict(value = USER_RESTAURANT_ID, key = "#currentUser.getActiveRestaurantId()"),
+            @CacheEvict(value = USERS_ALL, key = "#currentUser.getUsername()")
     })
     public void save(RestaurantDTO restaurantDTO, User currentUser) throws Exception {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDTO);
@@ -318,6 +319,7 @@ public class RestaurantServiceImp implements RestaurantService {
     private static void setupUser(Restaurant restaurant, User currentUser, UserService userService) {
         restaurant.addUser(currentUser);
         currentUser.setActiveRestaurantId(restaurant.getId());
+        currentUser.addRestaurant(restaurant);
         Optional<Menu> menu = restaurant.getMenus().stream().findFirst();
         menu.ifPresent(m -> currentUser.setActiveMenuId(m.getId()));
         userService.save(currentUser);
