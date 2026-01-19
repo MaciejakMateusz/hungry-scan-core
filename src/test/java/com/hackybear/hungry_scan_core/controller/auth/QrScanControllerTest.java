@@ -45,7 +45,7 @@ class QrScanControllerTest {
     @Autowired
     private ApiJwtRequestUtils apiRequestUtils;
 
-    @Value("${CUSTOMER_APP_URL}")
+    @Value("${MENU_APP_URL}")
     private String customerAppUrl;
 
     @Autowired
