@@ -63,7 +63,7 @@ public class QRServiceImp implements QRService {
     @Value("${qr.name}")
     private String qrName;
 
-    @Value("${CUSTOMER_APP_URL}")
+    @Value("${MENU_APP_URL}")
     private String customerAppUrl;
 
     @Value("${APP_URL}")
