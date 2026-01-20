@@ -69,6 +69,9 @@ public class QRServiceImp implements QRService {
     @Value("${APP_URL}")
     private String appUrl;
 
+    @Value("${DOMAIN}")
+    private String domain;
+
     @Value("${IS_PROD}")
     private boolean isProduction;
 
@@ -211,6 +214,7 @@ public class QRServiceImp implements QRService {
                 .secure(isProduction)
                 .maxAge(10800)
                 .sameSite(isProduction ? "None" : "Strict")
+                .domain(domain)
                 .build();
         return cookie.toString();
     }
