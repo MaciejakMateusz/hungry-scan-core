@@ -50,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
         String username = jwtParams.get("username");
 
         if ((token == null || token.isBlank())) {
-            String secondaryToken = resolveTokenFromCookie(request);
+            String secondaryToken = resolveSecondaryToken(request);
             if (secondaryToken != null && !secondaryToken.isBlank() && !nonMenuPaths.contains(request.getRequestURI())) {
                 token = secondaryToken;
                 username = jwtService.extractUsername(token);
@@ -86,7 +86,7 @@ public class JwtAuthFilter extends OncePerRequestFilter implements FilterBase {
     }
 
     @Nullable
-    private String resolveTokenFromCookie(HttpServletRequest request) {
+    private String resolveSecondaryToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             return null;
