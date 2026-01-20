@@ -72,6 +72,8 @@ public class QRServiceImp implements QRService {
     @Value("${IS_PROD}")
     private boolean isProduction;
 
+    private static final String SCAN_QR_ENDPOINT = "/api/qr/scan/";
+
     @Override
     @Transactional
     @CacheEvict(value = USER_RESTAURANT, key = "#restaurantId")
@@ -80,7 +82,7 @@ public class QRServiceImp implements QRService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
         Integer newQrVersion = restaurant.getQrVersion() + 1;
         String keyPath = qrPath + "/" + restaurantId + "/" + newQrVersion + ".png";
-        String url = appUrl + "/api/scan/" + restaurant.getToken();
+        String url = appUrl + SCAN_QR_ENDPOINT + restaurant.getToken();
         MultipartFile qrFile = createQrFile(format, qrName, url);
         s3Service.uploadFile(keyPath, qrFile);
         restaurant.setQrVersion(newQrVersion);
@@ -89,7 +91,7 @@ public class QRServiceImp implements QRService {
 
     @Override
     public void generate(RestaurantTable table, String name) throws Exception {
-        String url = appUrl + "/api/scan/" + table.getToken();
+        String url = appUrl + SCAN_QR_ENDPOINT + table.getToken();
 
         String format = "png";
         String fileName;
