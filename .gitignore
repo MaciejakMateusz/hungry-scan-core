@@ -42,3 +42,6 @@ src/main/java/com/hackybear/hungry_scan_core/utility/ToDo.java
 
 ### TESTS ###
 src/test/files/
+
+### TEST DATA ###
+src/main/resources/local-data.sql
