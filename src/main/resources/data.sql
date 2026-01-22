@@ -1,3 +1,7 @@
+INSERT IGNORE INTO price_plan_types (name, price)
+VALUES ('free', 0.00),
+       ('basic', 99.00);
+
 INSERT IGNORE INTO menu_colors (id, hex)
 VALUES (1, '#078480'),
        (2, '#266DD7'),
