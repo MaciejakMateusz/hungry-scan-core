@@ -10,10 +10,7 @@ import com.hackybear.hungry_scan_core.enums.Language;
 import com.hackybear.hungry_scan_core.enums.Theme;
 import com.hackybear.hungry_scan_core.exception.ExceptionHelper;
 import com.hackybear.hungry_scan_core.exception.LocalizedException;
-import com.hackybear.hungry_scan_core.repository.MenuColorRepository;
-import com.hackybear.hungry_scan_core.repository.PricePlanRepository;
-import com.hackybear.hungry_scan_core.repository.RestaurantRepository;
-import com.hackybear.hungry_scan_core.repository.UserRepository;
+import com.hackybear.hungry_scan_core.repository.*;
 import com.hackybear.hungry_scan_core.service.interfaces.QRService;
 import com.hackybear.hungry_scan_core.service.interfaces.RestaurantService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
@@ -43,6 +40,7 @@ public class RestaurantServiceImp implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final PricePlanRepository pricePlanRepository;
+    private final PricePlanTypeRepository pricePlanTypeRepository;
     private final MenuColorRepository menuColorRepository;
     private final UserService userService;
     private final QRService qrService;
@@ -211,11 +209,11 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @NotNull
     private Restaurant setupNew(Restaurant restaurant) throws Exception {
-        restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow());
         restaurant.setToken(UUID.randomUUID().toString());
         restaurant.setQrVersion(1);
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
+        setupPricePlan(restaurant);
         createNewMenu(restaurant);
         qrService.generate(restaurant.getId());
         return restaurant;
@@ -223,11 +221,14 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @NotNull
     private Restaurant setupInitial(Restaurant restaurant) throws Exception {
-        restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow());
+        restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow(
+                exceptionHelper.supplyLocalizedMessage("error.pricePlanService.planNotFound")
+        ));
         restaurant.setToken(UUID.randomUUID().toString());
         restaurant.setQrVersion(1);
         restaurant = restaurantRepository.save(restaurant);
         restaurant.setMenus(new TreeSet<>());
+        setupPricePlan(restaurant);
         createInitialMenu(restaurant);
         qrService.generate(restaurant.getId());
         return restaurant;
@@ -251,6 +252,16 @@ public class RestaurantServiceImp implements RestaurantService {
             operatingHours.put(day, timeRange);
         });
         return operatingHours;
+    }
+
+    private void setupPricePlan(Restaurant restaurant) throws LocalizedException {
+        PricePlanType pricePlanType = pricePlanTypeRepository.findById(1L).orElseThrow(
+                exceptionHelper.supplyLocalizedMessage("error.pricePlanService.planNotFound")
+        );
+        PricePlan pricePlan = new PricePlan();
+        pricePlan.setRestaurant(restaurant);
+        pricePlan.setPlanType(pricePlanType);
+        restaurant.setPricePlan(pricePlan);
     }
 
     private void createNewMenu(Restaurant restaurant) throws LocalizedException {
