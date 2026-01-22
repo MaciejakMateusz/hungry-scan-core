@@ -32,12 +32,12 @@ VALUES (1, 1, true, NOW(), 'maciejakmateusz@gmail.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'maciejakmateusz@gmail.com', null, null,
         'Mateusz',
         '',
-        'Maciejak', 1, 1, false, NOW()),
+        'Maciejak', null, null, false, NOW()),
        (2, 1, true, NOW(), 'maciejak.neta@gmail.com', 1,
         '$2y$10$S4Qu.8BEsEqHftYQmDcQ2.mKi5yXi9XRU8IlHBgvQ./N/UYIVhXAG', null, 'maciejak.neta@gmail.com', null, null,
         'Aneta',
         '',
-        'Maciejak', 1, 1, false, NOW());
+        'Maciejak', null, null, false, NOW());
 
 INSERT IGNORE INTO user_role (user_id, role_id)
 VALUES (1, 2),
