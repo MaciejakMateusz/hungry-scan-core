@@ -248,7 +248,7 @@ class QRServiceImpTest {
         assertTrue(jwtCookie.contains("SameSite=Strict"));
         String rtCookie = cookies.get(1);
         assertTrue(rtCookie.contains("restaurantToken=rt"));
-        assertTrue(rtCookie.contains("SameSite=none"));
+        assertTrue(rtCookie.contains("SameSite=None"));
         assertFalse(rtCookie.contains("Secure"));
     }
 
@@ -278,7 +278,7 @@ class QRServiceImpTest {
         assertTrue(jwtCookie.contains("SameSite=None"));
         String rtCookie = cookies.get(1);
         assertTrue(rtCookie.contains("Secure"));
-        assertTrue(rtCookie.contains("SameSite=none"));
+        assertTrue(rtCookie.contains("SameSite=None"));
     }
 
     @Test
