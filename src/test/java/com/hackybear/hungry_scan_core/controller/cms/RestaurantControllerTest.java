@@ -24,11 +24,13 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
@@ -40,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -167,6 +170,11 @@ public class RestaurantControllerTest {
         TimeRange timeRange = menuPlanDTO.timeRanges().stream().findFirst().orElseThrow();
         assertEquals(LocalTime.of(11, 0), timeRange.getStartTime());
         assertEquals(LocalTime.of(19, 0), timeRange.getEndTime());
+
+        assertNotNull(persistedRestaurant.pricePlan());
+        assertEquals(1L, persistedRestaurant.pricePlan().getPlanType().getId());
+        assertEquals("free", persistedRestaurant.pricePlan().getPlanType().getName());
+        assertEquals(BigDecimal.valueOf(0.0), persistedRestaurant.pricePlan().getPlanType().getPrice());
     }
 
     @Test
@@ -227,6 +235,11 @@ public class RestaurantControllerTest {
         currentUser = userService.findByUsername("fresh@user.it");
         assertNotNull(currentUser.getActiveRestaurantId());
         assertNotNull(currentUser.getActiveMenuId());
+
+        assertNotNull(persistedRestaurant.pricePlan());
+        assertEquals(1L, persistedRestaurant.pricePlan().getPlanType().getId());
+        assertEquals("free", persistedRestaurant.pricePlan().getPlanType().getName());
+        assertEquals(BigDecimal.valueOf(0.0), persistedRestaurant.pricePlan().getPlanType().getPrice());
     }
 
     @Test
