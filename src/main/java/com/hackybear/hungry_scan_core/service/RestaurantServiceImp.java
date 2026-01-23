@@ -221,9 +221,6 @@ public class RestaurantServiceImp implements RestaurantService {
 
     @NotNull
     private Restaurant setupInitial(Restaurant restaurant) throws Exception {
-        restaurant.setPricePlan(pricePlanRepository.findById(1L).orElseThrow(
-                exceptionHelper.supplyLocalizedMessage("error.pricePlanService.planNotFound")
-        ));
         restaurant.setToken(UUID.randomUUID().toString());
         restaurant.setQrVersion(1);
         restaurant = restaurantRepository.save(restaurant);
@@ -261,6 +258,7 @@ public class RestaurantServiceImp implements RestaurantService {
         PricePlan pricePlan = new PricePlan();
         pricePlan.setRestaurant(restaurant);
         pricePlan.setPlanType(pricePlanType);
+        pricePlan = pricePlanRepository.save(pricePlan);
         restaurant.setPricePlan(pricePlan);
     }
 
