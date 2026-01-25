@@ -55,7 +55,8 @@ public class EmailServiceImp implements EmailService {
         helper.setSubject("HungryScan - Jednorazowy link do zmiany hasła");
 
         String link = cmsUrl + "/new-password/?token=" + emailToken;
-        helper.setText("<p>Aby zmienić hasło <a href='" + link + "'>kliknij tutaj</a>.</p>");
+        String htmlContent = "<p>Aby zmienić hasło <a href='" + link + "'>kliknij tutaj</a>.</p>";
+        helper.setText(htmlContent, true);
 
         emailSender.send(mimeMessage);
     }
