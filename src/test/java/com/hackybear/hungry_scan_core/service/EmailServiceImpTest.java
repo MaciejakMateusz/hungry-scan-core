@@ -76,6 +76,7 @@ class EmailServiceImpTest {
     @Test
     void testContactForm() {
         String from = "user@example.com";
+        String noReply = "noreply@example.com";
         String subject = "Test Subject";
         String text = "Test Message";
 
@@ -87,7 +88,8 @@ class EmailServiceImpTest {
         verify(emailSender, times(1)).send(captor.capture());
         SimpleMailMessage sentMessage = captor.getValue();
 
-        assertEquals(from, sentMessage.getFrom());
+        assertEquals(noReply, sentMessage.getFrom());
+        assertEquals(from, sentMessage.getReplyTo());
         assertEquals("contact@example.com", Objects.requireNonNull(sentMessage.getTo())[0]);
         assertEquals(subject, sentMessage.getSubject());
         assertEquals(text, sentMessage.getText());

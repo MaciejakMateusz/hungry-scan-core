@@ -37,7 +37,8 @@ public class EmailServiceImp implements EmailService {
     @Override
     public void contactForm(String from, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(from);
+        message.setFrom(noReplyMail);
+        message.setReplyTo(from);
         message.setTo(contactMail);
         message.setSubject(subject);
         message.setText(text);
@@ -104,7 +105,7 @@ public class EmailServiceImp implements EmailService {
         String activationLink = applicationUrl + "/api/user/register/" + emailToken;
         return """
                 <p>Witaj!</p>
-                <p>Dziękujemy za rejestrację w <b>HungryScan</b>. Aby aktywować swoje konto, 
+                <p>Dziękujemy za rejestrację w <b>HungryScan</b>. Aby aktywować swoje konto,
                 prosimy <a href='%s'>kliknij tutaj</a>.</p>
                 <p>Jeśli link nie działa, skopiuj i wklej go w pasku adresu przeglądarki:</p>
                 <p>%s</p>
