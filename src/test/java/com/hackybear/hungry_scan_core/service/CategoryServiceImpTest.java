@@ -15,6 +15,7 @@ import com.hackybear.hungry_scan_core.repository.MenuRepository;
 import com.hackybear.hungry_scan_core.repository.VariantRepository;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -22,6 +23,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -58,6 +60,11 @@ class CategoryServiceImpTest {
 
     private final Long MENU_ID = 42L;
     private final Long CAT_ID = 7L;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(service, "s3Prefix", "local");
+    }
 
     @Test
     void findAll_shouldReturnMappedSortedDTOs() throws LocalizedException {
@@ -252,6 +259,6 @@ class CategoryServiceImpTest {
                         any(Consumer.class)
                 );
 
-        verify(s3Service).deleteAllFiles("menuItems", List.of(100L));
+        verify(s3Service).deleteAllFiles("local/menuItems", List.of(100L));
     }
 }
