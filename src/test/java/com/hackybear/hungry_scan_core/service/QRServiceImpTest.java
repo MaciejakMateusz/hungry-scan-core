@@ -74,6 +74,7 @@ class QRServiceImpTest {
 
         ReflectionTestUtils.setField(qrService, "qrPath", tempDir.toString());
         ReflectionTestUtils.setField(qrService, "qrName", "QR code - HungryScan");
+        ReflectionTestUtils.setField(qrService, "s3Prefix", "local");
     }
 
     @Test
@@ -91,7 +92,7 @@ class QRServiceImpTest {
 
         qrService.generate(restaurantId);
 
-        String expectedKey = tempDir.toString().replace('\\', '/')
+        String expectedKey = "local" + tempDir.toString().replace('\\', '/')
                 + "/" + restaurantId + "/" + expectedNewVersion + ".png";
 
         ArgumentCaptor<MultipartFile> fileCaptor = ArgumentCaptor.forClass(MultipartFile.class);
