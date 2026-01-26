@@ -17,6 +17,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.MenuItemService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ public class MenuItemServiceImp implements MenuItemService {
     private final MenuItemRepository menuItemRepository;
     private final CategoryRepository categoryRepository;
     private final ExceptionHelper exceptionHelper;
+    private final ResponseHelper responseHelper;
     private final SortingHelper sortingHelper;
     private final MenuItemMapper menuItemMapper;
     private final TranslatableMapper translatableMapper;
@@ -46,8 +48,8 @@ public class MenuItemServiceImp implements MenuItemService {
     private final MenuItemViewEventRepository menuItemViewEventRepository;
     private final S3Service s3Service;
 
-    private static final String S3_PATH = "menuItems";
-    private final ResponseHelper responseHelper;
+    @Value("${aws.bucket.prefix}")
+    private String s3Prefix;
 
     @Override
     public MenuItemFormDTO findById(Long id) throws LocalizedException {
@@ -84,7 +86,7 @@ public class MenuItemServiceImp implements MenuItemService {
         }
 
         menuItemRepository.save(menuItem);
-        if (Objects.nonNull(image)) s3Service.uploadFile(S3_PATH, menuItem.getId(), image);
+        if (Objects.nonNull(image)) s3Service.uploadFile(getMenuItemsPath(), menuItem.getId(), image);
         return ResponseEntity.ok().build();
     }
 
@@ -106,8 +108,8 @@ public class MenuItemServiceImp implements MenuItemService {
         MenuItem existingMenuItem = getMenuItem(menuItemFormDTO.id());
         updateMenuItem(existingMenuItem, menuItemFormDTO);
         menuItemRepository.save(existingMenuItem);
-        if (Objects.isNull(image)) s3Service.deleteFile(S3_PATH, existingMenuItem.getId());
-        if (Objects.nonNull(image)) s3Service.uploadFile(S3_PATH, existingMenuItem.getId(), image);
+        if (Objects.isNull(image)) s3Service.deleteFile(getMenuItemsPath(), existingMenuItem.getId());
+        if (Objects.nonNull(image)) s3Service.uploadFile(getMenuItemsPath(), existingMenuItem.getId(), image);
         return ResponseEntity.ok().build();
     }
 
@@ -144,7 +146,7 @@ public class MenuItemServiceImp implements MenuItemService {
         removeMenuItem(category, existingMenuItem);
         Set<MenuItem> menuItems = menuItemRepository.findAllByCategoryIdOrderByDisplayOrder(category.getId());
         sortingHelper.reassignDisplayOrders(menuItems, menuItemRepository::saveAllAndFlush);
-        s3Service.deleteFile(S3_PATH, existingMenuItem.getId());
+        s3Service.deleteFile(getMenuItemsPath(), existingMenuItem.getId());
     }
 
     @Override
@@ -224,5 +226,8 @@ public class MenuItemServiceImp implements MenuItemService {
         return (Objects.nonNull(dto.promoPrice()) && dto.promoPrice().compareTo(dto.price()) >= 0);
     }
 
+    private String getMenuItemsPath() {
+        return s3Prefix + "/menuItems";
+    }
 
 }
