@@ -17,6 +17,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.CategoryService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.utility.SortingHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -43,7 +44,8 @@ public class CategoryServiceImp implements CategoryService {
     private final MenuRepository menuRepository;
     private final S3Service s3Service;
 
-    private static final String S3_PATH = "menuItems";
+    @Value("${aws.bucket.prefix}")
+    private String s3Prefix;
 
     @Override
     @Cacheable(value = CATEGORIES_ALL, key = "#activeMenuId")
@@ -138,7 +140,7 @@ public class CategoryServiceImp implements CategoryService {
         Set<Category> categories = categoryRepository.findAllByMenuId(existingCategory.getMenu().getId());
         sortingHelper.reassignDisplayOrders(categories, categoryRepository::saveAllAndFlush);
         List<Long> menuItemIds = menuItems.stream().map(MenuItem::getId).toList();
-        if (!menuItems.isEmpty()) s3Service.deleteAllFiles(S3_PATH, menuItemIds);
+        if (!menuItems.isEmpty()) s3Service.deleteAllFiles(getMenuItemsPath(), menuItemIds);
     }
 
     private Category getCategory(Long id) throws LocalizedException {
@@ -169,5 +171,9 @@ public class CategoryServiceImp implements CategoryService {
     private List<CategoryDTO> getAllCategories(Long activeMenuId) {
         Set<Category> categories = categoryRepository.findAllByMenuId(activeMenuId);
         return categories.stream().sorted().map(this::mapToCategoryDTO).toList();
+    }
+
+    private String getMenuItemsPath() {
+        return s3Prefix + "/menuItems";
     }
 }
