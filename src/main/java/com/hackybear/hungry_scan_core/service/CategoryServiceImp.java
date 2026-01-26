@@ -65,7 +65,7 @@ public class CategoryServiceImp implements CategoryService {
             CATEGORIES_ALL,
             CATEGORIES_DISPLAY_ORDERS},
             key = "#activeMenuId")
-    public void updateDisplayOrders(List<CategoryFormDTO> categoryDTOs, Long activeMenuId) throws LocalizedException {
+    public void updateDisplayOrders(List<CategoryFormDTO> categoryDTOs, Long activeMenuId) {
         List<Category> categories = categoryDTOs.stream().map(categoryMapper::toCategory).toList();
         for (Category category : categories) {
             categoryRepository.updateDisplayOrders(category.getId(), category.getDisplayOrder());
