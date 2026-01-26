@@ -57,6 +57,9 @@ public class QRServiceImp implements QRService {
     private final ResponseHelper responseHelper;
     private final UserService userService;
 
+    @Value("${aws.bucket.prefix}")
+    private String s3Prefix;
+
     @Value("${qr.path}")
     private String qrPath;
 
@@ -81,7 +84,7 @@ public class QRServiceImp implements QRService {
         String format = "png";
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
         Integer newQrVersion = restaurant.getQrVersion() + 1;
-        String keyPath = qrPath + "/" + restaurantId + "/" + newQrVersion + ".png";
+        String keyPath = s3Prefix + qrPath + "/" + restaurantId + "/" + newQrVersion + ".png";
         String url = appUrl + SCAN_QR_ENDPOINT + restaurant.getToken();
         MultipartFile qrFile = createQrFile(format, qrName, url);
         s3Service.uploadFile(keyPath, qrFile);
@@ -158,7 +161,7 @@ public class QRServiceImp implements QRService {
             exceptionHelper.throwLocalizedMessage("error.restaurantService.restaurantNotFound");
         }
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
-        String keyPath = qrPath + "/" + restaurantId + "/" + restaurant.getQrVersion() + ".png";
+        String keyPath = s3Prefix + qrPath + "/" + restaurantId + "/" + restaurant.getQrVersion() + ".png";
         return s3Service.downloadFile(keyPath);
     }
 
@@ -169,7 +172,7 @@ public class QRServiceImp implements QRService {
         } else if (!restaurantTableRepository.existsById(tableId)) {
             exceptionHelper.throwLocalizedMessage("error.restaurantTableService.tableNotFound");
         }
-        return s3Service.downloadFile(qrPath, restaurantId, tableId);
+        return s3Service.downloadFile(s3Prefix + qrPath, restaurantId, tableId);
     }
 
     private MultipartFile createQrFile(String format,
