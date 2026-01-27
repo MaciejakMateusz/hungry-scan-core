@@ -41,7 +41,7 @@ class S3ServiceImpTest {
 
     private AutoCloseable mocks;
 
-    private static final String S3_PATH = "menuItems";
+    private static final String S3_PATH = "local/menuItems";
 
     @BeforeEach
     void setUp() {
@@ -91,7 +91,7 @@ class S3ServiceImpTest {
 
         PutObjectRequest req = reqCap.getValue();
         assertEquals("test-bucket", req.bucket());
-        assertEquals("menuItems/7.png", req.key());
+        assertEquals("local/menuItems/7.png", req.key());
         assertEquals("image/png", req.contentType());
     }
 
@@ -141,7 +141,7 @@ class S3ServiceImpTest {
 
         DeleteObjectRequest req = cap.getValue();
         assertEquals("test-bucket", req.bucket());
-        assertEquals("menuItems/99.png", req.key());
+        assertEquals("local/menuItems/99.png", req.key());
     }
 
     @Test
@@ -162,7 +162,7 @@ class S3ServiceImpTest {
 
         assertEquals(3, keys.size(), "Should have three objects to delete");
         assertTrue(keys.containsAll(
-                Arrays.asList("menuItems/1", "menuItems/2", "menuItems/3")
+                Arrays.asList("local/menuItems/1.png", "local/menuItems/2.png", "local/menuItems/3.png")
         ), "All requested keys must be present");
     }
 
@@ -173,7 +173,7 @@ class S3ServiceImpTest {
         String url = service.getPublicUrl(S3_PATH, menuItemId);
 
         assertEquals(
-                "http://test-bucket-url/menuItems/5",
+                "http://test-bucket-url/local/menuItems/5.png",
                 url,
                 "getPublicUrl should prepend bucketUrl and folder"
         );
@@ -222,7 +222,7 @@ class S3ServiceImpTest {
         ArgumentCaptor<GetObjectRequest> cap = ArgumentCaptor.forClass(GetObjectRequest.class);
         verify(s3Client).getObject(cap.capture());
         assertEquals("test-bucket", cap.getValue().bucket());
-        assertEquals("menuItems/42.png", cap.getValue().key());
+        assertEquals("local/menuItems/42.png", cap.getValue().key());
 
         assertEquals(200, resp.getStatusCode().value());
         assertEquals(MediaType.IMAGE_PNG, resp.getHeaders().getContentType());
@@ -293,9 +293,9 @@ class S3ServiceImpTest {
 
         CopyObjectRequest req = cap.getValue();
         assertEquals("test-bucket", req.sourceBucket());
-        assertEquals("menuItems/10.png", req.sourceKey());
+        assertEquals("local/menuItems/10.png", req.sourceKey());
         assertEquals("test-bucket", req.destinationBucket());
-        assertEquals("menuItems/20.png", req.destinationKey());
+        assertEquals("local/menuItems/20.png", req.destinationKey());
         assertEquals(MetadataDirective.COPY, req.metadataDirective());
     }
 

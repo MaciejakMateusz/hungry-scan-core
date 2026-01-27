@@ -108,7 +108,7 @@ public class S3ServiceImp implements S3Service {
     public void deleteAllFiles(String path, List<Long> ids) {
         List<ObjectIdentifier> toDelete = ids.stream()
                 .map(id -> ObjectIdentifier.builder()
-                        .key(path + "/" + id)
+                        .key(getKey(path, id))
                         .build())
                 .collect(Collectors.toList());
 
@@ -134,7 +134,7 @@ public class S3ServiceImp implements S3Service {
 
     @Override
     public String getPublicUrl(String path, Long id) {
-        return bucketUrl + "/" + path + "/" + id;
+        return bucketUrl + "/" + getKey(path, id);
     }
 
     @Override
