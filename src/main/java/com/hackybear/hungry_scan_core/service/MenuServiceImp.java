@@ -14,6 +14,7 @@ import com.hackybear.hungry_scan_core.service.interfaces.MenuService;
 import com.hackybear.hungry_scan_core.service.interfaces.S3Service;
 import com.hackybear.hungry_scan_core.validator.MenuPlanValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -44,7 +45,8 @@ public class MenuServiceImp implements MenuService {
     private final MenuDeepCopyMapper menuDeepCopyMapper;
     private final S3Service s3Service;
 
-    static final String S3_PATH = "menuItems";
+    @Value("${aws.bucket.prefix}")
+    private String s3Prefix;
 
     @Override
     @Cacheable(value = MENUS_ALL, key = "#activeRestaurantId")
@@ -221,7 +223,7 @@ public class MenuServiceImp implements MenuService {
                     Long oldId = mi.getSourceId();
                     Long newId = mi.getId();
                     if (oldId != null && newId != null) {
-                        s3Service.copyFile(S3_PATH, oldId, newId);
+                        s3Service.copyFile(getMenuItemsPath(), oldId, newId);
                     }
                 })
         );
@@ -261,7 +263,7 @@ public class MenuServiceImp implements MenuService {
             menuPositions.addAll(category.getMenuItems());
         }
         List<Long> menuItemIds = menuPositions.stream().map(MenuItem::getId).toList();
-        s3Service.deleteAllFiles(S3_PATH, menuItemIds);
+        s3Service.deleteAllFiles(getMenuItemsPath(), menuItemIds);
     }
 
     private void cascadeDuplicateCategory(Menu copy) {
@@ -278,5 +280,9 @@ public class MenuServiceImp implements MenuService {
         return new Translatable()
                 .withPl("Welcome!")
                 .withEn("Enjoy your meal!");
+    }
+
+    private String getMenuItemsPath() {
+        return s3Prefix + "/menuItems";
     }
 }

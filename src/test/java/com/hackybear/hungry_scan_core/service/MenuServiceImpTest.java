@@ -20,6 +20,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -72,6 +73,8 @@ class MenuServiceImpTest implements WithAssertions {
 
     @BeforeEach
     void setUp() {
+        ReflectionTestUtils.setField(service, "s3Prefix", "local");
+
         restaurant = new Restaurant();
         restaurant.setId(11L);
 
@@ -222,7 +225,7 @@ class MenuServiceImpTest implements WithAssertions {
 
         verify(menuRepository).delete(menu);
         verify(userRepository).save(user);
-        verify(s3Service).deleteAllFiles("menuItems", List.of(200L));
+        verify(s3Service).deleteAllFiles("local/menuItems", List.of(200L));
         assertThat(user.getActiveMenuId()).isEqualTo(77L);
     }
 
