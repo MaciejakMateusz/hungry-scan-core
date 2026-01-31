@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,8 +48,20 @@ public class ScanEventAggregator {
     }
 
     public Map<String, Object> projectWeeklyScans(Long restaurantId, Integer year, Integer week) {
-        List<ScanAggregation> aggregation = scanEventRepository.aggregateByDayOfWeek(restaurantId, year, week);
-        List<ScanAggregation> prevPeriodAggregation = scanEventRepository.aggregateByDayOfWeek(restaurantId, year, week - 1);
+        WeekFields wf = WeekFields.ISO;
+
+        LocalDate weekStart = LocalDate.now()
+                .with(wf.weekBasedYear(), year)
+                .with(wf.weekOfWeekBasedYear(), week)
+                .with(wf.dayOfWeek(), 1);
+
+        LocalDate prevWeekStart = weekStart.minusWeeks(1);
+
+        int yearWeek = weekStart.get(wf.weekBasedYear()) * 100 + weekStart.get(wf.weekOfWeekBasedYear());
+        int prevYearWeek = prevWeekStart.get(wf.weekBasedYear()) * 100 + prevWeekStart.get(wf.weekOfWeekBasedYear());
+
+        List<ScanAggregation> aggregation = scanEventRepository.aggregateByIsoWeek(restaurantId, yearWeek);
+        List<ScanAggregation> prevPeriodAggregation = scanEventRepository.aggregateByIsoWeek(restaurantId, prevYearWeek);
         Result result = getResult(aggregation);
 
         for (int w = 1; w <= 7; w++) {
