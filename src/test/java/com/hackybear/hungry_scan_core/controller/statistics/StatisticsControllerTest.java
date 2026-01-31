@@ -40,10 +40,10 @@ class StatisticsControllerTest {
     private ApiJwtRequestUtils apiRequestUtils;
 
     @Order(1)
-    @Sql({"/data-h2.sql", "/test-packs/qr-scans.sql", "/test-packs/menu-item-view-events.sql"})
+    @Sql({"/data-h2.sql", "/test-packs/qr-scans.sql", "/test-packs/menu-item-view-events.sql", "/h2/functions.sql"})
     @Test
     void init() {
-        log.info("Initializing H2 database with QR scans data...");
+        log.info("Initializing H2 database: inserting QR scans data, view events and SQL functions...");
     }
 
     @Test
