@@ -86,7 +86,9 @@ public class StatisticsController {
     public ResponseEntity<?> getDailyScanStats(@RequestBody Map<String, Object> params) {
         try {
             Long restaurantId = userService.getActiveRestaurantId();
-            return ResponseEntity.ok(statisticsService.getDailyScanStats(params, restaurantId));
+            Instant instant = Instant.parse((String) params.get("day"));
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            return ResponseEntity.ok(statisticsService.getDailyScanStats(localDateTime.toLocalDate(), restaurantId));
         } catch (LocalizedException e) {
             return ResponseEntity.badRequest()
                     .body(exceptionHelper.getLocalizedMsg("error.userService.userNotFound"));
