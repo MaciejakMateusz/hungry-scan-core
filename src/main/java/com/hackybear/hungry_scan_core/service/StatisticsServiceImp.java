@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,11 +45,9 @@ public class StatisticsServiceImp implements StatisticsService {
     }
 
     @Override
-    @Cacheable(value = STATS_SCANS_DAILY, key = "#params.get('day') + '-' + #restaurantId")
-    public Map<String, Object> getDailyScanStats(Map<String, Object> params, Long restaurantId) {
-        Instant instant = Instant.parse((String) params.get("day"));
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-        return scanEventAggregator.projectDailyScans(restaurantId, localDateTime.toLocalDate());
+    @Cacheable(value = STATS_SCANS_DAILY, key = "#day.toString() + '-' + #restaurantId")
+    public Map<String, Object> getDailyScanStats(LocalDate day, Long restaurantId) {
+        return scanEventAggregator.projectDailyScans(restaurantId, day);
     }
 
     @Override

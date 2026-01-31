@@ -14,7 +14,7 @@ public interface StatisticsService {
 
     Map<String, Object> getWeeklyScanStats(Map<String, Object> params, Long restaurantId);
 
-    Map<String, Object> getDailyScanStats(Map<String, Object> params, Long restaurantId);
+    Map<String, Object> getDailyScanStats(LocalDate day, Long restaurantId);
 
     Set<MenuItemViewCountDTO> getYearlyMenuItemViewsStats(Long menuId, int year);
 
