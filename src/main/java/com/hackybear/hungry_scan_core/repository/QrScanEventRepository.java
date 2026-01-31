@@ -38,18 +38,17 @@ public interface QrScanEventRepository extends JpaRepository<QrScanEvent, Long> 
                                          @Param("year") int year,
                                          @Param("month") int month);
 
-    @Query(value = "SELECT DAYOFWEEK(scanned_at) AS period, " +
-            "COUNT(*) AS total, " +
-            "COUNT(DISTINCT footprint) AS uniqueCount " +
-            "FROM qr_scan_events " +
-            "WHERE restaurant_id = :restaurantId " +
-            "AND YEAR(scanned_at) = :year " +
-            "AND WEEK(scanned_at) = :week " +
-            "GROUP BY DAYOFWEEK(scanned_at)",
-            nativeQuery = true)
-    List<ScanAggregation> aggregateByDayOfWeek(@Param("restaurantId") Long restaurantId,
-                                               @Param("year") int year,
-                                               @Param("week") int week);
+    @Query(value = """
+            SELECT (WEEKDAY(scanned_at) + 1) AS period,
+                   COUNT(*) AS total,
+                   COUNT(DISTINCT footprint) AS uniqueCount
+            FROM qr_scan_events
+            WHERE restaurant_id = :restaurantId
+              AND YEARWEEK(scanned_at, 3) = :yearWeek
+            GROUP BY (WEEKDAY(scanned_at) + 1)
+            """, nativeQuery = true)
+    List<ScanAggregation> aggregateByIsoWeek(@Param("restaurantId") Long restaurantId,
+                                             @Param("yearWeek") int yearWeek);
 
     @Query(value = "SELECT HOUR(scanned_at) AS period, " +
             "COUNT(*) AS total, " +
