@@ -72,9 +72,6 @@ public class QRServiceImp implements QRService {
     @Value("${APP_URL}")
     private String appUrl;
 
-    @Value("${IS_PROD}")
-    private boolean isProduction;
-
     private static final String SCAN_QR_ENDPOINT = "/api/qr/scan/";
 
     @Override
@@ -131,22 +128,21 @@ public class QRServiceImp implements QRService {
         }
 
         String jwtCookie = prepareJwtCookie(jwt);
-        String restaurantTokenCookie = getRestaurantTokenCookie(restaurantToken);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.LOCATION, customerAppUrl);
         headers.add(HttpHeaders.SET_COOKIE, jwtCookie);
-        headers.add(HttpHeaders.SET_COOKIE, restaurantTokenCookie);
         return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> persistScanEvent(String footprint) {
+    public ResponseEntity<?> persistScanEvent(String visitorId) {
         try {
             QrScanEvent qrScanEvent = new QrScanEvent();
-            qrScanEvent.setFootprint(footprint);
-            qrScanEvent.setRestaurantId(userService.getActiveRestaurantId());
+            qrScanEvent.setVisitorId(visitorId);
+            Long restaurantId = userService.getActiveRestaurantId();
+            qrScanEvent.setRestaurantId(restaurantId);
             qrScanEventRepository.save(qrScanEvent);
             return ResponseEntity.ok().build();
         } catch (LocalizedException e) {
@@ -211,19 +207,8 @@ public class QRServiceImp implements QRService {
         ResponseCookie cookie = ResponseCookie.from("menu_jwt", jwt)
                 .path("/")
                 .httpOnly(true)
-                .secure(isProduction)
+                .secure(true)
                 .maxAge(10800)
-                .sameSite(isProduction ? "None" : "Strict")
-                .build();
-        return cookie.toString();
-    }
-
-    private String getRestaurantTokenCookie(String value) {
-        long maxAllowedAge = 400L * 24 * 60 * 60; // 400 days in seconds
-        ResponseCookie cookie = ResponseCookie.from("restaurantToken", value)
-                .path("/")
-                .secure(isProduction)
-                .maxAge(maxAllowedAge)
                 .sameSite("None")
                 .build();
         return cookie.toString();
@@ -231,7 +216,7 @@ public class QRServiceImp implements QRService {
 
     private User persistUser(JwtToken jwtToken, String username, String restaurantToken) throws LocalizedException {
         User user = createTempCustomer(jwtToken, username, restaurantToken);
-        return userService.saveTempUser(user);
+        return userService.save(user);
     }
 
     private User createTempCustomer(JwtToken jwtToken,
@@ -251,6 +236,7 @@ public class QRServiceImp implements QRService {
         temp.setEmail(username);
         temp.setForename("Temp");
         temp.setSurname("Customer");
+        temp.setActive(true);
         temp.setPassword(UUID.randomUUID().toString());
         Role role = roleService.findByName("ROLE_CUSTOMER_READONLY");
         temp.setRoles(new HashSet<>(Collections.singletonList(role)));
