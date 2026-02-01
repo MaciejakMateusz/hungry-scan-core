@@ -13,11 +13,11 @@ import java.util.List;
 @Repository
 public interface QrScanEventRepository extends JpaRepository<QrScanEvent, Long> {
 
-    List<QrScanEvent> findByFootprint(String footprint);
+    List<QrScanEvent> findByVisitorId(String visitorId);
 
     @Query(value = "SELECT MONTH(scanned_at) AS period, " +
             "COUNT(*) AS total, " +
-            "COUNT(DISTINCT footprint) AS uniqueCount " +
+            "COUNT(DISTINCT visitor_id) AS uniqueCount " +
             "FROM qr_scan_events " +
             "WHERE restaurant_id = :restaurantId " +
             "AND YEAR(scanned_at) = :year " +
@@ -28,7 +28,7 @@ public interface QrScanEventRepository extends JpaRepository<QrScanEvent, Long> 
 
     @Query(value = "SELECT DAY(scanned_at) AS period, " +
             "COUNT(*) AS total, " +
-            "COUNT(DISTINCT footprint) AS uniqueCount " +
+            "COUNT(DISTINCT visitor_id) AS uniqueCount " +
             "FROM qr_scan_events " +
             "WHERE restaurant_id = :restaurantId AND YEAR(scanned_at) = :year " +
             "AND MONTH(scanned_at) = :month " +
@@ -41,7 +41,7 @@ public interface QrScanEventRepository extends JpaRepository<QrScanEvent, Long> 
     @Query(value = """
             SELECT (WEEKDAY(scanned_at) + 1) AS period,
                    COUNT(*) AS total,
-                   COUNT(DISTINCT footprint) AS uniqueCount
+                   COUNT(DISTINCT visitor_id) AS uniqueCount
             FROM qr_scan_events
             WHERE restaurant_id = :restaurantId
               AND YEARWEEK(scanned_at, 3) = :yearWeek
@@ -52,7 +52,7 @@ public interface QrScanEventRepository extends JpaRepository<QrScanEvent, Long> 
 
     @Query(value = "SELECT HOUR(scanned_at) AS period, " +
             "COUNT(*) AS total, " +
-            "COUNT(DISTINCT footprint) AS uniqueCount " +
+            "COUNT(DISTINCT visitor_id) AS uniqueCount " +
             "FROM qr_scan_events " +
             "WHERE restaurant_id = :restaurantId " +
             "AND CAST(scanned_at AS DATE) = :date " +
