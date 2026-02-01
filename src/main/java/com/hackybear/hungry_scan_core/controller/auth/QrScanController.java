@@ -26,8 +26,8 @@ public class QrScanController {
 
     @WithRateLimitProtection
     @PostMapping("/post-scan")
-    public ResponseEntity<?> postScan(@RequestBody String footprint) {
-        return qrService.persistScanEvent(footprint);
+    public ResponseEntity<?> postScan(@RequestBody String visitorId) {
+        return qrService.persistScanEvent(visitorId);
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
