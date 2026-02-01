@@ -27,9 +27,7 @@ public interface UserService {
 
     ResponseEntity<?> save(RegistrationDTO registrationDTO, BindingResult br);
 
-    User saveTempUser(User tempUser);
-
-    void save(User user);
+    User save(User user);
 
     void activateAccount(String emailToken) throws LocalizedException;
 
