@@ -9,7 +9,8 @@ import java.util.Set;
 public record RestaurantCustomerDTO(Long id,
                                     String name,
                                     Language language,
-                                    Set<Language> supportedLanguages)
+                                    Set<Language> supportedLanguages,
+                                    String token)
         implements Serializable, Comparable<RestaurantCustomerDTO> {
 
     @Serial
