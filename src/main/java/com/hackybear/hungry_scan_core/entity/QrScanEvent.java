@@ -28,7 +28,7 @@ public class QrScanEvent implements Serializable, Comparable<QrScanEvent> {
 
     @Column(nullable = false)
     @NotBlank
-    private String footprint;
+    private String visitorId;
 
     @Serial
     private static final long serialVersionUID = 1L;
