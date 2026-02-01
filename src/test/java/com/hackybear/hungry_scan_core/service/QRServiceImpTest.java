@@ -203,7 +203,6 @@ class QRServiceImpTest {
 //    }
 
 
-
     @Test
     void scanQRCode_persistUserThrows_returnsErrorResponse() throws IOException {
         when(restaurantRepository.existsByToken("tok")).thenReturn(true);
@@ -230,7 +229,7 @@ class QRServiceImpTest {
         )).thenReturn(Optional.of(99L));
         Role role = new Role();
         when(roleService.findByName("ROLE_CUSTOMER_READONLY")).thenReturn(role);
-        when(userService.saveTempUser(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userService.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(restaurantRepository.findByToken("rt"))
                 .thenReturn(Optional.of(r));
 
@@ -242,15 +241,11 @@ class QRServiceImpTest {
         assertEquals("http://customer.app", h.getFirst(HttpHeaders.LOCATION));
         List<String> cookies = h.get(HttpHeaders.SET_COOKIE);
         assertNotNull(cookies);
-        assertEquals(2, cookies.size());
+        assertEquals(1, cookies.size());
         String jwtCookie = cookies.getFirst();
         assertTrue(jwtCookie.contains("jwt=jwtval"));
         assertTrue(jwtCookie.contains("HttpOnly"));
-        assertTrue(jwtCookie.contains("SameSite=Strict"));
-        String rtCookie = cookies.get(1);
-        assertTrue(rtCookie.contains("restaurantToken=rt"));
-        assertTrue(rtCookie.contains("SameSite=None"));
-        assertFalse(rtCookie.contains("Secure"));
+        assertTrue(jwtCookie.contains("SameSite=None"));
     }
 
     @Test
@@ -267,9 +262,8 @@ class QRServiceImpTest {
                 eq(20L)
         )).thenReturn(Optional.of(55L));
         when(roleService.findByName("ROLE_CUSTOMER_READONLY")).thenReturn(new Role());
-        when(userService.saveTempUser(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(restaurantRepository.findByToken("rt"))
-                .thenReturn(Optional.of(r));
+        when(userService.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(restaurantRepository.findByToken("rt")).thenReturn(Optional.of(r));
 
         ResponseEntity<?> result = qrService.scanQRCode(mock(HttpServletResponse.class), "rt");
         List<String> cookies = result.getHeaders().get(HttpHeaders.SET_COOKIE);
@@ -277,20 +271,17 @@ class QRServiceImpTest {
         String jwtCookie = cookies.getFirst();
         assertTrue(jwtCookie.contains("Secure"));
         assertTrue(jwtCookie.contains("SameSite=None"));
-        String rtCookie = cookies.get(1);
-        assertTrue(rtCookie.contains("Secure"));
-        assertTrue(rtCookie.contains("SameSite=None"));
     }
 
     @Test
     void persistScanEvent_success_savesEventAndReturnsOk() throws LocalizedException {
         when(userService.getActiveRestaurantId()).thenReturn(123L);
 
-        ResponseEntity<?> result = qrService.persistScanEvent("footprint");
+        ResponseEntity<?> result = qrService.persistScanEvent("visitorId");
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
         verify(qrScanEventRepository).save(argThat((QrScanEvent ev) ->
-                "footprint".equals(ev.getFootprint()) &&
+                "visitorId".equals(ev.getVisitorId()) &&
                         ev.getRestaurantId() == 123L
         ));
     }

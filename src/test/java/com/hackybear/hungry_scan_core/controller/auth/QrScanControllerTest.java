@@ -75,10 +75,8 @@ class QrScanControllerTest {
                 .thenReturn(Optional.of(1L));
         MockHttpServletResponse response = apiRequestUtils.executeGet("/api/qr/scan/" + restaurantToken);
 
-        assertEquals(2, response.getCookies().length);
+        assertEquals(1, response.getCookies().length);
         assertEquals("menu_jwt", response.getCookies()[0].getName());
-        assertEquals("restaurantToken", response.getCookies()[1].getName());
-        assertEquals("3d90381d-80d2-48f8-80b3-d237d5f0a8ed", response.getCookies()[1].getValue());
         assertEquals(308, response.getStatus());
         assertEquals("pl_PL", response.getLocale().toString());
         assertEquals(8, response.getHeaderNames().size());
@@ -139,15 +137,15 @@ class QrScanControllerTest {
     @Transactional
     @Rollback
     void shouldExecutePostScanActions() throws Exception {
-        String existingFootprint = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed_A";
-        List<QrScanEvent> qrScans = qrScanEventRepository.findByFootprint(existingFootprint);
+        String existingVisitorId = "3d90381d-80d2-48f8-80b3-d237d5f0a8ed_A";
+        List<QrScanEvent> qrScans = qrScanEventRepository.findByVisitorId(existingVisitorId);
         assertEquals(2, qrScans.size());
         QrScanEvent qrScan = qrScans.getFirst();
         assertEquals(1L, qrScan.getRestaurantId());
 
-        apiRequestUtils.postAndExpect200("/api/qr/post-scan", existingFootprint);
+        apiRequestUtils.postAndExpect200("/api/qr/post-scan", existingVisitorId);
 
-        qrScans = qrScanEventRepository.findByFootprint(existingFootprint).stream().sorted().toList();
+        qrScans = qrScanEventRepository.findByVisitorId(existingVisitorId).stream().sorted().toList();
         assertEquals(3, qrScans.size());
         assertEquals(1L, qrScans.getLast().getRestaurantId());
     }
