@@ -123,9 +123,15 @@ public class UserController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response, Principal principal) {
         return loginService.handleLogout(response, principal.getName());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/inactivity-logout")
+    public ResponseEntity<?> inactivityLogout(HttpServletResponse response, Principal principal) {
+        return loginService.handleInactivityLogout(response, principal.getName());
     }
 
     @PreAuthorize("isAuthenticated()")
