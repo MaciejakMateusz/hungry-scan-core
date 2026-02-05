@@ -248,6 +248,26 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldLogout() throws Exception {
+        Map<?, ?> response =
+                apiRequestUtils.getAndReturnResponseBody("/api/user/logout", status().isOk());
+        assertEquals("/sign-in?logout=true", response.get("redirectUrl"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
+    @Transactional
+    @Rollback
+    void shouldLogoutInactiveUser() throws Exception {
+        Map<?, ?> response =
+                apiRequestUtils.getAndReturnResponseBody("/api/user/inactivity-logout", status().isOk());
+        assertEquals("/sign-in?inactive=true", response.get("redirectUrl"));
+    }
+
+    @Test
     @Transactional
     @Rollback
     @WithMockUser(roles = {"ADMIN"}, username = "admin@example.com")
