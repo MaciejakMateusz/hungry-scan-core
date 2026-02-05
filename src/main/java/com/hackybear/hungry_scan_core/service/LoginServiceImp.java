@@ -54,16 +54,13 @@ public class LoginServiceImp implements LoginService {
     @Override
     @Transactional
     public ResponseEntity<?> handleLogout(HttpServletResponse response, String username) {
-        String invalidatedJwtCookie = invalidateJwtCookie();
-        response.setHeader("Set-Cookie", invalidatedJwtCookie);
-        try {
-            User user = userService.findByUsername(username);
-            user.setSignedIn(false);
-            userRepository.save(user);
-        } catch (LocalizedException e) {
-            responseHelper.createErrorResponse(e);
-        }
-        return ResponseEntity.ok().body(Map.of("redirectUrl", "/sign-in"));
+        return executeLogout(response, username, "/sign-in?logout=true");
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> handleInactivityLogout(HttpServletResponse response, String username) {
+        return executeLogout(response, username, "/sign-in?inactive=true");
     }
 
     private ResponseEntity<?> validateLogin(AuthRequestDTO authRequestDTO, HttpServletResponse response) throws LocalizedException {
@@ -142,5 +139,18 @@ public class LoginServiceImp implements LoginService {
                 .sameSite(isProduction ? "None" : "Strict")
                 .build();
         return cookie.toString();
+    }
+
+    private ResponseEntity<?> executeLogout(HttpServletResponse response, String username, String redirectUrl) {
+        String invalidatedJwtCookie = invalidateJwtCookie();
+        response.setHeader("Set-Cookie", invalidatedJwtCookie);
+        try {
+            User user = userService.findByUsername(username);
+            user.setSignedIn(false);
+            userRepository.save(user);
+        } catch (LocalizedException e) {
+            responseHelper.createErrorResponse(e);
+        }
+        return ResponseEntity.ok().body(Map.of("redirectUrl", redirectUrl));
     }
 }
