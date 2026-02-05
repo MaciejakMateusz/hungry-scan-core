@@ -70,7 +70,6 @@ class QRServiceImpTest {
         ReflectionTestUtils.setField(qrService, "qrPath", tempDir.toString());
         ReflectionTestUtils.setField(qrService, "customerAppUrl", "http://customer.app");
         ReflectionTestUtils.setField(qrService, "appUrl", "http://my.app");
-        ReflectionTestUtils.setField(qrService, "isProduction", false);
 
         ReflectionTestUtils.setField(qrService, "qrPath", tempDir.toString());
         ReflectionTestUtils.setField(qrService, "qrName", "QR code - HungryScan");
@@ -250,8 +249,6 @@ class QRServiceImpTest {
 
     @Test
     void scanQRCode_success_production_cookiesAreSecureAndNone() throws Exception {
-        ReflectionTestUtils.setField(qrService, "isProduction", true);
-
         when(restaurantRepository.existsByToken("rt")).thenReturn(true);
         when(jwtService.generateToken(anyString())).thenReturn("jwtval");
         Restaurant r = new Restaurant();
