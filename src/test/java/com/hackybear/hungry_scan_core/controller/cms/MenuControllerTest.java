@@ -201,9 +201,14 @@ class MenuControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN", username = "restaurator@rarytas.pl")
     void shouldNotAddWithIncorrectName() throws Exception {
-        MenuSimpleDTO menu = createMenuDTO("", 2L);
+        MenuSimpleDTO blankMenu = createMenuDTO("", 2L);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/menus/add", blankMenu);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/menus/add", menu);
+        assertEquals(1, errors.size());
+        assertEquals("Pole nie może być puste", errors.get("name"));
+
+        MenuSimpleDTO tooLongMenu = createMenuDTO("Too long name that has more that 100 characters to test if this particular endpoint returns 400 bad request.", 2L);
+        errors = apiRequestUtils.postAndExpectErrors("/api/cms/menus/add", blankMenu);
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
@@ -409,7 +414,7 @@ class MenuControllerTest {
         Map<?, ?> errors = apiRequestUtils.patchAndExpectErrors("/api/cms/menus/update", menuDTO);
 
         assertEquals(1, errors.size());
-        assertEquals("Pole nie może być puste", errors.get("name"));
+        assertEquals("Długość musi wynosić od 1 do 100.", errors.get("name"));
     }
 
     @Test
