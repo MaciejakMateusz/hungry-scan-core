@@ -22,6 +22,7 @@ public record RestaurantDTO(
         Integer qrVersion,
 
         @NotBlank
+        @Length(min = 1, max = 100)
         String name,
 
         @NotBlank
