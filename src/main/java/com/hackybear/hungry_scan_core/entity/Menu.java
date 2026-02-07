@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -46,6 +47,7 @@ public class Menu implements Serializable, Comparable<Menu> {
 
     @Column(length = 100, nullable = false)
     @NotBlank
+    @Length(max = 100)
     private String name;
 
     @ManyToOne
