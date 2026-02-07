@@ -2,6 +2,7 @@ package com.hackybear.hungry_scan_core.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 public record MenuFormDTO(Long id,
 
                           @NotBlank
+                          @Length(min = 1, max = 100)
                           String name,
 
                           @NotNull
