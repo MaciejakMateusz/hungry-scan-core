@@ -256,12 +256,19 @@ public class RestaurantControllerTest {
     void shouldNotAddWithIncorrectName() throws Exception {
         Restaurant restaurant = createRestaurant();
         restaurant.setName("");
-        RestaurantDTO restaurantDTO = restaurantMapper.toDTO(restaurant);
+        RestaurantDTO blankDTO = restaurantMapper.toDTO(restaurant);
 
-        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/add", restaurantDTO);
+        Map<?, ?> errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/add", blankDTO);
 
         assertEquals(1, errors.size());
         assertEquals("Pole nie może być puste", errors.get("name"));
+
+        restaurant.setName("Too long name that has more that 100 characters to test if this particular endpoint returns 400 bad request.");
+        RestaurantDTO tooLongDTO = restaurantMapper.toDTO(restaurant);
+
+        errors = apiRequestUtils.postAndExpectErrors("/api/cms/restaurants/add", tooLongDTO);
+        assertEquals(1, errors.size());
+        assertEquals("Długość musi wynosić od 1 do 100.", errors.get("name"));
     }
 
     @Test
